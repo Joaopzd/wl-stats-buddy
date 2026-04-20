@@ -1,5 +1,39 @@
-export type Position = "GK" | "DEF" | "MID" | "ATT";
-export type Rarity = "Common" | "Rare" | "Gold" | "TOTW" | "Icon" | "Hero" | "Special";
+export type Position =
+  | "GK"
+  | "LB" | "CB" | "RB"
+  | "CDM" | "CM" | "LM" | "RM" | "CAM"
+  | "LW" | "RW" | "ST";
+
+export type Rarity =
+  // Standard
+  | "Gold" | "Silver" | "Bronze"
+  // Promos / specials
+  | "TOTW"
+  | "Cornerstone"
+  | "Winter Wildcards"
+  | "TOTY"
+  | "TOTS"
+  | "Ratings Reload"
+  | "Ultimate Scream"
+  | "FoF Captains"
+  | "FC Pro Live"
+  | "Thunderstruck"
+  | "Joga Bonito"
+  | "Unbreakables"
+  | "Time Warp"
+  | "Future Stars"
+  | "Knockout Royalty"
+  | "UEFA Primetime"
+  | "UEFA RTTF"
+  | "FUT Birthday"
+  | "Fantasy FC"
+  | "FoF Answer the Call"
+  | "Path to Glory"
+  | "Trophy Titans"
+  // Legends
+  | "Icon Base"
+  | "Hero Base";
+
 export type Platform = "PC" | "PS5" | "Xbox";
 
 export interface Player {
@@ -15,14 +49,14 @@ export interface MatchPlayerStat {
   playerId: string;
   goals: number;
   assists: number;
-  offensive: number; // shots / dribbles
-  defensive: number; // tackles / interceptions
+  offensive: number;
+  defensive: number;
 }
 
 export interface Match {
   id: string;
   wlId: string;
-  index: number; // 1..15
+  index: number;
   scoreFor: number;
   scoreAgainst: number;
   platform: Platform;
