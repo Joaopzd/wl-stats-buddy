@@ -8,6 +8,7 @@ import { Plus, Trash2, Pencil, X, Search } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import type { Player, Position, Rarity } from "@/lib/types";
+import { rarityClass, raritySwatch } from "@/lib/format";
 
 export const Route = createFileRoute("/players")({
   head: () => ({
@@ -21,8 +22,30 @@ export const Route = createFileRoute("/players")({
   component: PlayersPage,
 });
 
-const POSITIONS: Position[] = ["GK", "DEF", "MID", "ATT"];
-const RARITIES: Rarity[] = ["Common", "Rare", "Gold", "TOTW", "Special", "Hero", "Icon"];
+const POSITIONS: Position[] = [
+  "GK",
+  "LB", "CB", "RB",
+  "CDM", "CM", "LM", "RM", "CAM",
+  "LW", "RW", "ST",
+];
+
+const RARITY_GROUPS: { label: string; items: Rarity[] }[] = [
+  { label: "Standard", items: ["Gold", "Silver", "Bronze"] },
+  {
+    label: "Specials / Promos",
+    items: [
+      "TOTW", "Cornerstone", "Winter Wildcards", "TOTY", "TOTS",
+      "Ratings Reload", "Ultimate Scream", "FoF Captains", "FC Pro Live",
+      "Thunderstruck", "Joga Bonito", "Unbreakables", "Time Warp",
+      "Future Stars", "Knockout Royalty", "UEFA Primetime", "UEFA RTTF",
+      "FUT Birthday", "Fantasy FC", "FoF Answer the Call",
+      "Path to Glory", "Trophy Titans",
+    ],
+  },
+  { label: "Legends", items: ["Icon Base", "Hero Base"] },
+];
+
+const ALL_RARITIES: Rarity[] = RARITY_GROUPS.flatMap((g) => g.items);
 
 function PlayersPage() {
   const players = usePlayers();
@@ -115,7 +138,10 @@ function PlayersPage() {
                         <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} size="sm" />
                         <div>
                           <div className="font-semibold">{a.player.name}</div>
-                          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{a.player.rarity}</div>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className={`h-2 w-2 rounded-full ${raritySwatch(a.player.rarity)}`} />
+                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{a.player.rarity}</span>
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -161,7 +187,7 @@ function PlayersPage() {
 
 function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: () => void }) {
   const [name, setName] = useState(existing?.name ?? "");
-  const [position, setPosition] = useState<Position>(existing?.position ?? "ATT");
+  const [position, setPosition] = useState<Position>(existing?.position ?? "ST");
   const [overall, setOverall] = useState<number>(existing?.overall ?? 85);
   const [rarity, setRarity] = useState<Rarity>(existing?.rarity ?? "Gold");
 
@@ -205,9 +231,38 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
             </Field>
           </div>
           <Field label="Card Rarity">
-            <select value={rarity} onChange={(e) => setRarity(e.target.value as Rarity)} className="w-full bg-input border border-border rounded-md px-3 py-2">
-              {RARITIES.map((r) => <option key={r} value={r}>{r}</option>)}
+            <select
+              value={rarity}
+              onChange={(e) => setRarity(e.target.value as Rarity)}
+              className="w-full bg-input border border-border rounded-md px-3 py-2"
+            >
+              {RARITY_GROUPS.map((g) => (
+                <optgroup key={g.label} label={g.label}>
+                  {g.items.map((r) => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </optgroup>
+              ))}
             </select>
+            <div className="mt-3">
+              <div className={`inline-block px-3 py-2 rounded-md font-display text-sm tracking-wider ${rarityClass(rarity)}`}>
+                PREVIEW · {rarity}
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {ALL_RARITIES.map((r) => (
+                <button
+                  type="button"
+                  key={r}
+                  onClick={() => setRarity(r)}
+                  title={r}
+                  aria-label={r}
+                  className={`h-5 w-5 rounded-full ${raritySwatch(r)} transition ${
+                    rarity === r ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : "opacity-80 hover:opacity-100"
+                  }`}
+                />
+              ))}
+            </div>
           </Field>
         </div>
         <div className="flex gap-3 mt-6">
