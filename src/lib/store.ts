@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import type { Match, Player, WeekendLeague } from "./types";
 
 const KEYS = {
@@ -79,10 +79,3 @@ function useStoreSlice<T>(getter: () => T): T {
 export const usePlayers = () => useStoreSlice(store.getPlayers);
 export const useWLs = () => useStoreSlice(store.getWLs);
 export const useMatches = () => useStoreSlice(store.getMatches);
-
-// Hydration guard for SSR
-export function useHydrated() {
-  const [hydrated, setHydrated] = (require("react") as typeof import("react")).useState(false);
-  useEffect(() => setHydrated(true), []);
-  return hydrated;
-}
