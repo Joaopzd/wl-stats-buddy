@@ -9,13 +9,31 @@ const KEYS = {
 
 type Listener = () => void;
 const listeners = new Set<Listener>();
-const emit = () => listeners.forEach((l) => l());
+const emit = () => {
+  // invalidate caches before notifying
+  cache.players = null;
+  cache.wls = null;
+  cache.matches = null;
+  listeners.forEach((l) => l());
+};
 const subscribe = (l: Listener) => {
   listeners.add(l);
   return () => listeners.delete(l);
 };
 
 const isBrowser = typeof window !== "undefined";
+
+const EMPTY_PLAYERS: Player[] = [];
+const EMPTY_WLS: WeekendLeague[] = [];
+const EMPTY_MATCHES: Match[] = [];
+
+// Stable snapshot cache — useSyncExternalStore requires the same reference
+// when data hasn't changed, otherwise React loops infinitely.
+const cache: {
+  players: Player[] | null;
+  wls: WeekendLeague[] | null;
+  matches: Match[] | null;
+} = { players: null, wls: null, matches: null };
 
 function read<T>(key: string, fallback: T): T {
   if (!isBrowser) return fallback;
@@ -33,10 +51,26 @@ function write<T>(key: string, value: T) {
   emit();
 }
 
+function getPlayers(): Player[] {
+  if (!isBrowser) return EMPTY_PLAYERS;
+  if (cache.players === null) cache.players = read<Player[]>(KEYS.players, EMPTY_PLAYERS);
+  return cache.players;
+}
+function getWLs(): WeekendLeague[] {
+  if (!isBrowser) return EMPTY_WLS;
+  if (cache.wls === null) cache.wls = read<WeekendLeague[]>(KEYS.wls, EMPTY_WLS);
+  return cache.wls;
+}
+function getMatches(): Match[] {
+  if (!isBrowser) return EMPTY_MATCHES;
+  if (cache.matches === null) cache.matches = read<Match[]>(KEYS.matches, EMPTY_MATCHES);
+  return cache.matches;
+}
+
 export const store = {
-  getPlayers: (): Player[] => read(KEYS.players, []),
-  getWLs: (): WeekendLeague[] => read(KEYS.wls, []),
-  getMatches: (): Match[] => read(KEYS.matches, []),
+  getPlayers,
+  getWLs,
+  getMatches,
 
   setPlayers: (p: Player[]) => write(KEYS.players, p),
   setWLs: (w: WeekendLeague[]) => write(KEYS.wls, w),
@@ -68,14 +102,10 @@ if (isBrowser) {
   window.addEventListener("storage", emit);
 }
 
-function useStoreSlice<T>(getter: () => T): T {
-  return useSyncExternalStore(
-    subscribe,
-    getter,
-    getter,
-  );
+function useStoreSlice<T>(getter: () => T, serverFallback: T): T {
+  return useSyncExternalStore(subscribe, getter, () => serverFallback);
 }
 
-export const usePlayers = () => useStoreSlice(store.getPlayers);
-export const useWLs = () => useStoreSlice(store.getWLs);
-export const useMatches = () => useStoreSlice(store.getMatches);
+export const usePlayers = () => useStoreSlice(store.getPlayers, EMPTY_PLAYERS);
+export const useWLs = () => useStoreSlice(store.getWLs, EMPTY_WLS);
+export const useMatches = () => useStoreSlice(store.getMatches, EMPTY_MATCHES);
