@@ -4,7 +4,7 @@ import { AppShell } from "@/components/AppShell";
 import { StatTile } from "@/components/StatTile";
 import { useMatches, usePlayers, useWLs } from "@/lib/store";
 import { aggregateAllPlayers, rankFromWins, wlRecord } from "@/lib/stats";
-import { Trophy, Target, Shield, Star, Award, Plus } from "lucide-react";
+import { Trophy, Target, Shield, Star, Award, Plus, TrendingUp, TrendingDown } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -81,7 +81,7 @@ function Dashboard() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <StatTile
               label={lastWL ? `WL #${lastWL.number}` : "Last WL"}
               value={lastRecord ? `${lastRecord.wins}-${lastRecord.losses}` : "—"}
@@ -98,6 +98,25 @@ function Dashboard() {
             <StatTile label="Goals scored" value={totals.gf} icon={<Target />} />
             <StatTile label="Goals conceded" value={totals.ga} icon={<Shield />} />
           </div>
+
+          {(() => {
+            const gd = totals.gf - totals.ga;
+            const positive = gd >= 0;
+            return (
+              <div className="surface-card p-5 mb-8 flex items-center justify-between gap-4 border-l-4" style={{ borderLeftColor: positive ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
+                <div>
+                  <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
+                    {positive ? <TrendingUp className="h-3.5 w-3.5 text-primary" /> : <TrendingDown className="h-3.5 w-3.5 text-destructive" />}
+                    Cumulative Goal Difference
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">Across all {wls.length} WL{wls.length === 1 ? "" : "s"} · {matches.length} matches</div>
+                </div>
+                <div className={`font-display text-5xl stat-num ${positive ? "text-primary" : "text-destructive"}`}>
+                  {positive ? "+" : ""}{gd}
+                </div>
+              </div>
+            );
+          })()}
 
           <h2 className="font-display text-2xl tracking-wider mb-4 flex items-center gap-2">
             <Star className="h-5 w-5 text-primary" /> Club Legends

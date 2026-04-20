@@ -93,11 +93,12 @@ function WLDetail() {
           <div className="font-display text-6xl mt-1 leading-none">#{wl.number}</div>
           <div className="mt-2 text-sm text-muted-foreground">{record?.played}/15 matches · {rankFromWins(record?.wins ?? 0)}</div>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-5 flex-wrap">
           <Stat label="Wins" value={record?.wins ?? 0} accent />
           <Stat label="Losses" value={record?.losses ?? 0} danger />
           <Stat label="GF" value={record?.goalsFor ?? 0} />
           <Stat label="GA" value={record?.goalsAgainst ?? 0} />
+          <GDStat value={(record?.goalsFor ?? 0) - (record?.goalsAgainst ?? 0)} />
         </div>
       </div>
 
@@ -222,6 +223,18 @@ function Stat({ label, value, accent, danger }: { label: string; value: number; 
     <div className="text-center">
       <div className={`stat-num text-4xl font-display ${accent ? "text-primary" : danger ? "text-destructive" : ""}`}>{value}</div>
       <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1">{label}</div>
+    </div>
+  );
+}
+
+function GDStat({ value }: { value: number }) {
+  const positive = value >= 0;
+  return (
+    <div className={`text-center px-4 py-2 rounded-lg border ${positive ? "border-primary/40 bg-primary/10" : "border-destructive/40 bg-destructive/10"}`}>
+      <div className={`stat-num text-4xl font-display ${positive ? "text-primary" : "text-destructive"}`}>
+        {positive ? "+" : ""}{value}
+      </div>
+      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1">GD</div>
     </div>
   );
 }
