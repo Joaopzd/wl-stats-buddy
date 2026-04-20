@@ -9,9 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PlayersRouteImport } from './routes/players'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WeekendLeaguesIndexRouteImport } from './routes/weekend-leagues.index'
+import { Route as WeekendLeaguesWlIdRouteImport } from './routes/weekend-leagues.$wlId'
 
+const PlayersRoute = PlayersRouteImport.update({
+  id: '/players',
+  path: '/players',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -22,35 +29,60 @@ const WeekendLeaguesIndexRoute = WeekendLeaguesIndexRouteImport.update({
   path: '/weekend-leagues/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WeekendLeaguesWlIdRoute = WeekendLeaguesWlIdRouteImport.update({
+  id: '/weekend-leagues/$wlId',
+  path: '/weekend-leagues/$wlId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/players': typeof PlayersRoute
+  '/weekend-leagues/$wlId': typeof WeekendLeaguesWlIdRoute
   '/weekend-leagues/': typeof WeekendLeaguesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/players': typeof PlayersRoute
+  '/weekend-leagues/$wlId': typeof WeekendLeaguesWlIdRoute
   '/weekend-leagues': typeof WeekendLeaguesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/players': typeof PlayersRoute
+  '/weekend-leagues/$wlId': typeof WeekendLeaguesWlIdRoute
   '/weekend-leagues/': typeof WeekendLeaguesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/weekend-leagues/'
+  fullPaths: '/' | '/players' | '/weekend-leagues/$wlId' | '/weekend-leagues/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/weekend-leagues'
-  id: '__root__' | '/' | '/weekend-leagues/'
+  to: '/' | '/players' | '/weekend-leagues/$wlId' | '/weekend-leagues'
+  id:
+    | '__root__'
+    | '/'
+    | '/players'
+    | '/weekend-leagues/$wlId'
+    | '/weekend-leagues/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PlayersRoute: typeof PlayersRoute
+  WeekendLeaguesWlIdRoute: typeof WeekendLeaguesWlIdRoute
   WeekendLeaguesIndexRoute: typeof WeekendLeaguesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/players': {
+      id: '/players'
+      path: '/players'
+      fullPath: '/players'
+      preLoaderRoute: typeof PlayersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -65,11 +97,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WeekendLeaguesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/weekend-leagues/$wlId': {
+      id: '/weekend-leagues/$wlId'
+      path: '/weekend-leagues/$wlId'
+      fullPath: '/weekend-leagues/$wlId'
+      preLoaderRoute: typeof WeekendLeaguesWlIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PlayersRoute: PlayersRoute,
+  WeekendLeaguesWlIdRoute: WeekendLeaguesWlIdRoute,
   WeekendLeaguesIndexRoute: WeekendLeaguesIndexRoute,
 }
 export const routeTree = rootRouteImport
