@@ -8,6 +8,7 @@ import { Plus, Trash2, Pencil, X, Search } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import type { Player, Position, Rarity } from "@/lib/types";
+import { rarityClass, raritySwatch } from "@/lib/format";
 
 export const Route = createFileRoute("/players")({
   head: () => ({
@@ -21,8 +22,30 @@ export const Route = createFileRoute("/players")({
   component: PlayersPage,
 });
 
-const POSITIONS: Position[] = ["GK", "DEF", "MID", "ATT"];
-const RARITIES: Rarity[] = ["Common", "Rare", "Gold", "TOTW", "Special", "Hero", "Icon"];
+const POSITIONS: Position[] = [
+  "GK",
+  "LB", "CB", "RB",
+  "CDM", "CM", "LM", "RM", "CAM",
+  "LW", "RW", "ST",
+];
+
+const RARITY_GROUPS: { label: string; items: Rarity[] }[] = [
+  { label: "Standard", items: ["Gold", "Silver", "Bronze"] },
+  {
+    label: "Specials / Promos",
+    items: [
+      "TOTW", "Cornerstone", "Winter Wildcards", "TOTY", "TOTS",
+      "Ratings Reload", "Ultimate Scream", "FoF Captains", "FC Pro Live",
+      "Thunderstruck", "Joga Bonito", "Unbreakables", "Time Warp",
+      "Future Stars", "Knockout Royalty", "UEFA Primetime", "UEFA RTTF",
+      "FUT Birthday", "Fantasy FC", "FoF Answer the Call",
+      "Path to Glory", "Trophy Titans",
+    ],
+  },
+  { label: "Legends", items: ["Icon Base", "Hero Base"] },
+];
+
+const ALL_RARITIES: Rarity[] = RARITY_GROUPS.flatMap((g) => g.items);
 
 function PlayersPage() {
   const players = usePlayers();
@@ -161,7 +184,7 @@ function PlayersPage() {
 
 function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: () => void }) {
   const [name, setName] = useState(existing?.name ?? "");
-  const [position, setPosition] = useState<Position>(existing?.position ?? "ATT");
+  const [position, setPosition] = useState<Position>(existing?.position ?? "ST");
   const [overall, setOverall] = useState<number>(existing?.overall ?? 85);
   const [rarity, setRarity] = useState<Rarity>(existing?.rarity ?? "Gold");
 
