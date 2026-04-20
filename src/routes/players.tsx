@@ -228,9 +228,38 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
             </Field>
           </div>
           <Field label="Card Rarity">
-            <select value={rarity} onChange={(e) => setRarity(e.target.value as Rarity)} className="w-full bg-input border border-border rounded-md px-3 py-2">
-              {RARITIES.map((r) => <option key={r} value={r}>{r}</option>)}
+            <select
+              value={rarity}
+              onChange={(e) => setRarity(e.target.value as Rarity)}
+              className="w-full bg-input border border-border rounded-md px-3 py-2"
+            >
+              {RARITY_GROUPS.map((g) => (
+                <optgroup key={g.label} label={g.label}>
+                  {g.items.map((r) => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </optgroup>
+              ))}
             </select>
+            <div className="mt-3">
+              <div className={`inline-block px-3 py-2 rounded-md font-display text-sm tracking-wider ${rarityClass(rarity)}`}>
+                PREVIEW · {rarity}
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {ALL_RARITIES.map((r) => (
+                <button
+                  type="button"
+                  key={r}
+                  onClick={() => setRarity(r)}
+                  title={r}
+                  aria-label={r}
+                  className={`h-5 w-5 rounded-full ${raritySwatch(r)} transition ${
+                    rarity === r ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : "opacity-80 hover:opacity-100"
+                  }`}
+                />
+              ))}
+            </div>
           </Field>
         </div>
         <div className="flex gap-3 mt-6">
