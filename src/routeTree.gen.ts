@@ -10,33 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WeekendLeaguesIndexRouteImport } from './routes/weekend-leagues.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WeekendLeaguesIndexRoute = WeekendLeaguesIndexRouteImport.update({
+  id: '/weekend-leagues/',
+  path: '/weekend-leagues/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/weekend-leagues/': typeof WeekendLeaguesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/weekend-leagues': typeof WeekendLeaguesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/weekend-leagues/': typeof WeekendLeaguesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/weekend-leagues/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/weekend-leagues'
+  id: '__root__' | '/' | '/weekend-leagues/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  WeekendLeaguesIndexRoute: typeof WeekendLeaguesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,12 +58,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/weekend-leagues/': {
+      id: '/weekend-leagues/'
+      path: '/weekend-leagues'
+      fullPath: '/weekend-leagues/'
+      preLoaderRoute: typeof WeekendLeaguesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  WeekendLeaguesIndexRoute: WeekendLeaguesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

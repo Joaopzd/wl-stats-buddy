@@ -1,0 +1,120 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { AppShell } from "@/components/AppShell";
+import { useMatches, useWLs, store } from "@/lib/store";
+import { wlRecord, rankFromWins } from "@/lib/stats";
+import { Plus, ChevronRight, Trophy, Trash2 } from "lucide-react";
+import { v4 as uuid } from "uuid";
+import { toast } from "sonner";
+
+export const Route = createFileRoute("/weekend-leagues/")({
+  head: () => ({
+    meta: [
+      { title: "Weekend Leagues — WL Tracker" },
+      { name: "description", content: "All your EA FC 26 Weekend League sessions and records." },
+      { property: "og:title", content: "Weekend Leagues" },
+      { property: "og:description", content: "Browse, create and analyze every WL session." },
+    ],
+  }),
+  component: WLList,
+});
+
+function WLList() {
+  const wls = useWLs();
+  const matches = useMatches();
+  const [creating, setCreating] = useState(false);
+  const [num, setNum] = useState("");
+
+  const sorted = [...wls].sort((a, b) => b.number - a.number);
+  const nextNum = (Math.max(0, ...wls.map((w) => w.number)) + 1).toString();
+
+  const create = () => {
+    const parsed = parseInt(num || nextNum, 10);
+    if (!parsed || parsed < 1) return toast.error("Enter a valid WL number");
+    if (wls.some((w) => w.number === parsed)) return toast.error(`WL #${parsed} already exists`);
+    store.addWL({ id: uuid(), number: parsed, squadPlayerIds: [], createdAt: Date.now() });
+    setCreating(false);
+    setNum("");
+    toast.success(`WL #${parsed} created`);
+  };
+
+  return (
+    <AppShell>
+      <div className="flex items-end justify-between mb-6 gap-4">
+        <div>
+          <h1 className="font-display text-4xl tracking-wider">Weekend Leagues</h1>
+          <p className="text-sm text-muted-foreground mt-1">{wls.length} sessions logged</p>
+        </div>
+        <button onClick={() => { setNum(nextNum); setCreating(true); }} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90 transition shadow-[var(--shadow-neon)]">
+          <Plus className="h-4 w-4" /> New WL
+        </button>
+      </div>
+
+      {creating && (
+        <div className="surface-glow p-5 mb-6 flex flex-wrap items-end gap-3">
+          <div className="flex-1 min-w-[180px]">
+            <label className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">WL Number</label>
+            <input
+              type="number"
+              value={num}
+              onChange={(e) => setNum(e.target.value)}
+              autoFocus
+              className="w-full bg-input border border-border rounded-md px-3 py-2 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <button onClick={create} className="px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm">Create</button>
+          <button onClick={() => setCreating(false)} className="px-4 py-2.5 rounded-md border border-border text-muted-foreground hover:text-foreground text-sm">Cancel</button>
+        </div>
+      )}
+
+      {sorted.length === 0 ? (
+        <div className="surface-card p-12 text-center">
+          <Trophy className="h-12 w-12 text-muted-foreground/40 mx-auto mb-3" />
+          <p className="text-muted-foreground">No Weekend Leagues yet. Create your first to start tracking.</p>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {sorted.map((wl) => {
+            const r = wlRecord(wl, matches);
+            return (
+              <Link
+                key={wl.id}
+                to="/weekend-leagues/$wlId"
+                params={{ wlId: wl.id }}
+                className="surface-card p-5 group hover:border-primary/50 hover:shadow-[var(--shadow-glow)] transition-all relative"
+              >
+                <button
+                  onClick={(e) => { e.preventDefault(); if (confirm(`Delete WL #${wl.number} and all its matches?`)) { store.deleteWL(wl.id); toast.success("Deleted"); } }}
+                  className="absolute top-3 right-3 p-1.5 rounded text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition"
+                  aria-label="Delete"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Weekend League</div>
+                <div className="font-display text-5xl mt-1">#{wl.number}</div>
+                <div className="mt-4 flex items-end justify-between">
+                  <div>
+                    <div className="stat-num text-2xl">
+                      <span className="text-primary">{r.wins}</span>
+                      <span className="text-muted-foreground/50 mx-1">·</span>
+                      <span className="text-destructive">{r.losses}</span>
+                    </div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">{r.played}/15 played</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Rank</div>
+                    <div className="text-xs font-semibold text-primary">{rankFromWins(r.wins)}</div>
+                  </div>
+                </div>
+                <div className="mt-4 pt-4 border-t border-border/60 flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{r.goalsFor} GF · {r.goalsAgainst} GA</span>
+                  <ChevronRight className="h-4 w-4 group-hover:text-primary group-hover:translate-x-0.5 transition" />
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </AppShell>
+  );
+}
