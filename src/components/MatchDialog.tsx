@@ -141,18 +141,20 @@ export function MatchDialog({
 function ScoreInput({ label, value, onChange, accent }: { label: string; value: number; onChange: (v: number) => void; accent?: boolean }) {
   return (
     <div>
-      <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">{label}</span>
-      <div className="flex items-center gap-2 bg-input border border-border rounded-md p-1">
-        <button type="button" onClick={() => onChange(Math.max(0, value - 1))} className="h-9 w-9 grid place-items-center rounded text-muted-foreground hover:text-foreground hover:bg-secondary"><Minus className="h-4 w-4" /></button>
-        <input
-          type="number"
-          min={0}
-          value={value}
-          onChange={(e) => onChange(Math.max(0, parseInt(e.target.value) || 0))}
-          className={`flex-1 bg-transparent text-center font-display text-3xl outline-none ${accent ? "text-primary" : ""}`}
-        />
-        <button type="button" onClick={() => onChange(value + 1)} className="h-9 w-9 grid place-items-center rounded text-muted-foreground hover:text-foreground hover:bg-secondary"><Plus className="h-4 w-4" /></button>
-      </div>
+      <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 text-center">{label}</span>
+      <input
+        type="number"
+        inputMode="numeric"
+        min={0}
+        value={value}
+        onFocus={(e) => e.target.select()}
+        onChange={(e) => {
+          const v = e.target.value;
+          if (v === "") return onChange(0);
+          onChange(Math.max(0, parseInt(v) || 0));
+        }}
+        className={`w-full h-16 bg-input border border-border rounded-md text-center font-display text-4xl outline-none focus:border-primary focus:ring-1 focus:ring-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${accent ? "text-primary" : ""}`}
+      />
     </div>
   );
 }
