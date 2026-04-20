@@ -7,7 +7,7 @@ import { Plus, ChevronRight, Trophy, Trash2 } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/weekend-leagues/")({
+export const Route = createFileRoute("/weekend-leagues")({
   head: () => ({
     meta: [
       { title: "Weekend Leagues — WL Tracker" },

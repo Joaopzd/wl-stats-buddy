@@ -9,48 +9,55 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WeekendLeaguesRouteImport } from './routes/weekend-leagues'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as WeekendLeaguesIndexRouteImport } from './routes/weekend-leagues.index'
 
+const WeekendLeaguesRoute = WeekendLeaguesRouteImport.update({
+  id: '/weekend-leagues',
+  path: '/weekend-leagues',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WeekendLeaguesIndexRoute = WeekendLeaguesIndexRouteImport.update({
-  id: '/weekend-leagues/',
-  path: '/weekend-leagues/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/weekend-leagues/': typeof WeekendLeaguesIndexRoute
+  '/weekend-leagues': typeof WeekendLeaguesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/weekend-leagues': typeof WeekendLeaguesIndexRoute
+  '/weekend-leagues': typeof WeekendLeaguesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/weekend-leagues/': typeof WeekendLeaguesIndexRoute
+  '/weekend-leagues': typeof WeekendLeaguesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/weekend-leagues/'
+  fullPaths: '/' | '/weekend-leagues'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/weekend-leagues'
-  id: '__root__' | '/' | '/weekend-leagues/'
+  id: '__root__' | '/' | '/weekend-leagues'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  WeekendLeaguesIndexRoute: typeof WeekendLeaguesIndexRoute
+  WeekendLeaguesRoute: typeof WeekendLeaguesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/weekend-leagues': {
+      id: '/weekend-leagues'
+      path: '/weekend-leagues'
+      fullPath: '/weekend-leagues'
+      preLoaderRoute: typeof WeekendLeaguesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -58,19 +65,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/weekend-leagues/': {
-      id: '/weekend-leagues/'
-      path: '/weekend-leagues'
-      fullPath: '/weekend-leagues/'
-      preLoaderRoute: typeof WeekendLeaguesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  WeekendLeaguesIndexRoute: WeekendLeaguesIndexRoute,
+  WeekendLeaguesRoute: WeekendLeaguesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
