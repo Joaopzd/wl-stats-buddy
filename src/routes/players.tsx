@@ -138,7 +138,10 @@ function PlayersPage() {
                         <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} size="sm" />
                         <div>
                           <div className="font-semibold">{a.player.name}</div>
-                          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{a.player.rarity}</div>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className={`h-2 w-2 rounded-full ${raritySwatch(a.player.rarity)}`} />
+                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{a.player.rarity}</span>
+                          </div>
                         </div>
                       </div>
                     </td>
