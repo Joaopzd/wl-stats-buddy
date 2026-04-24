@@ -127,6 +127,7 @@ function PlayersPage() {
                   <th className="text-right p-3 font-semibold hidden md:table-cell">Off</th>
                   <th className="text-right p-3 font-semibold hidden md:table-cell">Def</th>
                   <th className="text-right p-3 font-semibold">G/A</th>
+                  <th className="text-right p-3 font-semibold">Rating</th>
                   <th className="p-3"></th>
                 </tr>
               </thead>
