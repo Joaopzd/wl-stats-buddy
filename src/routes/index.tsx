@@ -137,9 +137,46 @@ function Dashboard() {
             <LegendCard label="Top Assister" agg={topAssist} metric={(a) => `${a.assists} assists`} />
             <LegendCard label="Best G/A per game" agg={topGAperGame} metric={(a) => `${a.gaPerGame.toFixed(2)}`} sub="min. 3 matches" />
           </div>
+
+          <h2 className="font-display text-2xl tracking-wider mt-10 mb-2 flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary" /> Top Rated Players
+          </h2>
+          <p className="text-xs text-muted-foreground mb-4">
+            Career average match rating · must have played at least {ratingMinMatches} of {totalClubMatches} club matches (50%).
+          </p>
+          {topRated.length === 0 ? (
+            <div className="surface-card p-6 text-sm text-muted-foreground text-center">
+              Not enough rated appearances yet. Log match ratings to populate this leaderboard.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {topRated.map((a, i) => (
+                <RatedCard key={a.player.id} agg={a} rank={i + 1} />
+              ))}
+            </div>
+          )}
         </>
       )}
     </AppShell>
+  );
+}
+
+function RatedCard({ agg, rank }: { agg: ReturnType<typeof aggregateAllPlayers>[number]; rank: number }) {
+  const medal = rank === 1 ? "text-primary" : rank === 2 ? "text-foreground" : "text-muted-foreground";
+  return (
+    <div className={`surface-card p-5 border-l-4 ${rank === 1 ? "border-l-primary" : "border-l-border"}`}>
+      <div className="flex items-baseline justify-between">
+        <div className={`font-display text-3xl ${medal}`}>#{rank}</div>
+        <div className="font-display text-4xl stat-num text-primary">{agg.avgRating.toFixed(2)}</div>
+      </div>
+      <div className="mt-2 font-display text-xl truncate">{agg.player.name}</div>
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        {agg.player.position} · {agg.player.overall} OVR · {agg.player.rarity}
+      </div>
+      <div className="text-[10px] text-muted-foreground mt-1">
+        {agg.ratedMatches} rated apps · {agg.matches} total
+      </div>
+    </div>
   );
 }
 
