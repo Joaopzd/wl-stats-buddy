@@ -9,10 +9,15 @@ export interface PlayerAgg {
   defensive: number;
   ga: number;
   gaPerGame: number;
+  /** Career average match rating (0–10). 0 if no rated appearances. */
+  avgRating: number;
+  /** Number of appearances that had a rating > 0 (used for the avg). */
+  ratedMatches: number;
 }
 
 export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
   let m = 0, g = 0, a = 0, off = 0, def = 0;
+  let ratingSum = 0, ratedMatches = 0;
   for (const match of matches) {
     const perf = match.performances.find((p) => p.playerId === player.id);
     if (!perf) continue;
@@ -21,6 +26,12 @@ export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
     a += perf.assists;
     off += perf.offensive;
     def += perf.defensive;
+    // Treat undefined / 0 as "no rating recorded" so legacy data doesn't drag averages.
+    const r = perf.rating ?? 0;
+    if (r > 0) {
+      ratingSum += r;
+      ratedMatches += 1;
+    }
   }
   const ga = g + a;
   return {
@@ -32,6 +43,8 @@ export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
     defensive: def,
     ga,
     gaPerGame: m ? ga / m : 0,
+    avgRating: ratedMatches ? ratingSum / ratedMatches : 0,
+    ratedMatches,
   };
 }
 
