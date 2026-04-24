@@ -163,3 +163,44 @@ function Award({ type, color, icon, name, sub, stat }: { type: string; color: "p
     </motion.div>
   );
 }
+
+function StartingXI({ wl, aggs }: { wl: WeekendLeague; aggs: ReturnType<typeof aggregatePlayer>[] }) {
+  const slots = wl.startingAssignments ?? {};
+  const aggsById = new Map(aggs.map((a) => [a.player.id, a]));
+  const rows = Object.entries(slots).map(([slotId, playerId]) => {
+    const a = aggsById.get(playerId);
+    return { slotId, agg: a };
+  }).filter((r) => r.agg);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.5 }}
+      className="mt-4 p-4 rounded-lg border border-border bg-secondary/30"
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-foreground">Starting XI · Avg Ratings</div>
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{wl.formation}</div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+        {rows.map(({ slotId, agg }) => {
+          if (!agg) return null;
+          const r = agg.avgRating;
+          const tone = r >= 8 ? "text-primary" : r >= 6 ? "text-foreground" : r > 0 ? "text-destructive" : "text-muted-foreground";
+          return (
+            <div key={slotId} className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded bg-background/40 text-xs">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold w-10 shrink-0">{slotId.replace(/\d+$/, "")}</span>
+                <span className="font-semibold truncate">{agg.player.name}</span>
+              </div>
+              <div className={`stat-num font-display text-base ${tone}`}>
+                {r > 0 ? r.toFixed(2) : "—"}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+}
