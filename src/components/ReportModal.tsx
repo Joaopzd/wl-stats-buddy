@@ -96,10 +96,7 @@ export function ReportModal({
           />
         )}
 
-        {wl.startingAssignments && Object.keys(wl.startingAssignments).length > 0 && (
-          <StartingXI wl={wl} aggs={aggs} />
-        )}
-
+        {under && (
           <Award
             type="Underperformer"
             color="destructive"
@@ -108,6 +105,10 @@ export function ReportModal({
             sub={`${under.player.position} · ${under.player.overall} · played ${under.matches}/${matches.length}`}
             stat={`${under.goals}G + ${under.assists}A · ${under.gaPerGame.toFixed(2)} G+A/game`}
           />
+        )}
+
+        {wl.startingAssignments && Object.keys(wl.startingAssignments).length > 0 && (
+          <StartingXI wl={wl} aggs={aggs} />
         )}
 
         <div className="flex gap-3 mt-6">
