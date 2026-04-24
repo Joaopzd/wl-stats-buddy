@@ -23,14 +23,16 @@ export function MatchDialog({
   const [scoreFor, setScoreFor] = useState<number>(existingMatch?.scoreFor ?? 0);
   const [scoreAgainst, setScoreAgainst] = useState<number>(existingMatch?.scoreAgainst ?? 0);
   const [platform, setPlatform] = useState<Platform>(existingMatch?.platform ?? "PS5");
+  const startingIdSet = new Set(Object.values(wl.startingAssignments ?? {}));
   const [perfs, setPerfs] = useState<Record<string, MatchPlayerStat & { played: boolean }>>(() => {
     const init: Record<string, MatchPlayerStat & { played: boolean }> = {};
     for (const p of squad) {
       const existing = existingMatch?.performances.find((x) => x.playerId === p.id);
+      const isStarter = startingIdSet.has(p.id);
       init[p.id] = existing
         ? { ...existing, rating: existing.rating ?? 0, played: true }
-        // Starting 11 are checked by default per the new rules.
-        : { playerId: p.id, goals: 0, assists: 0, offensive: 0, defensive: 0, rating: 0, played: true };
+        // Starting 11 are checked by default; bench players unchecked until manually toggled.
+        : { playerId: p.id, goals: 0, assists: 0, offensive: 0, defensive: 0, rating: 0, played: isStarter };
     }
     return init;
   });
