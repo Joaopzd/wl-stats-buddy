@@ -67,10 +67,18 @@ export interface Match {
   createdAt: number;
 }
 
+import type { FormationName } from "./formations";
+
 export interface WeekendLeague {
   id: string;
   number: number;
   squadPlayerIds: string[];
   createdAt: number;
   closed?: boolean;
+  /** Tactical formation chosen for this WL. Optional for legacy WLs. */
+  formation?: FormationName;
+  /** Map slot id (e.g. "ST1") → playerId. Starting 11. */
+  startingAssignments?: Record<string, string>;
+  /** Bench player IDs (subset of squadPlayerIds, not in startingAssignments). */
+  benchPlayerIds?: string[];
 }
