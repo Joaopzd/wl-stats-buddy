@@ -100,8 +100,11 @@ export function MatchDialog({
             <p className="text-sm text-muted-foreground py-8 text-center">No squad. Add players to the squad first.</p>
           ) : (
             <div className="space-y-2">
-              {squad.map((p) => {
+              {[...squad]
+                .sort((a, b) => Number(startingIdSet.has(b.id)) - Number(startingIdSet.has(a.id)))
+                .map((p) => {
                 const perf = perfs[p.id];
+                const isStarter = startingIdSet.has(p.id);
                 return (
                   <div key={p.id} className={`p-3 rounded-md border transition ${perf.played ? "border-primary/40 bg-primary/5" : "border-border bg-card"}`}>
                     <div className="flex items-center justify-between gap-3 mb-2">
@@ -109,6 +112,9 @@ export function MatchDialog({
                         <input type="checkbox" checked={perf.played} onChange={(e) => update(p.id, { played: e.target.checked })} className="h-4 w-4 accent-[var(--primary)]" />
                         <span className="font-semibold truncate">{p.name}</span>
                         <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">{p.position} · {p.overall}</span>
+                        <span className={`text-[9px] uppercase tracking-wider font-bold shrink-0 px-1.5 py-0.5 rounded ${isStarter ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"}`}>
+                          {isStarter ? "XI" : "Bench"}
+                        </span>
                       </label>
                     </div>
                     {perf.played && (
