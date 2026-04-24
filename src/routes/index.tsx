@@ -4,7 +4,7 @@ import { AppShell } from "@/components/AppShell";
 import { StatTile } from "@/components/StatTile";
 import { useMatches, usePlayers, useWLs } from "@/lib/store";
 import { aggregateAllPlayers, rankFromWins, wlRecord } from "@/lib/stats";
-import { Trophy, Target, Shield, Star, Award, Plus, TrendingUp, TrendingDown } from "lucide-react";
+import { Trophy, Target, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -47,6 +47,16 @@ function Dashboard() {
   const topScorer = useMemo(() => [...aggs].sort((a, b) => b.goals - a.goals)[0], [aggs]);
   const topAssist = useMemo(() => [...aggs].sort((a, b) => b.assists - a.assists)[0], [aggs]);
   const topGAperGame = useMemo(() => [...aggs].filter(a => a.matches >= 3).sort((a, b) => b.gaPerGame - a.gaPerGame)[0], [aggs]);
+
+  // Top Rated: must have played >= 50% of total club matches.
+  const totalClubMatches = matches.length;
+  const ratingMinMatches = Math.max(1, Math.ceil(totalClubMatches / 2));
+  const topRated = useMemo(() => {
+    return [...aggs]
+      .filter((a) => a.ratedMatches >= ratingMinMatches && a.avgRating > 0)
+      .sort((a, b) => b.avgRating - a.avgRating)
+      .slice(0, 3);
+  }, [aggs, ratingMinMatches]);
 
   const empty = wls.length === 0 && players.length === 0;
 
