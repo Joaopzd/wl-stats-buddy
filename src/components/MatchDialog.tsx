@@ -28,8 +28,9 @@ export function MatchDialog({
     for (const p of squad) {
       const existing = existingMatch?.performances.find((x) => x.playerId === p.id);
       init[p.id] = existing
-        ? { ...existing, played: true }
-        : { playerId: p.id, goals: 0, assists: 0, offensive: 0, defensive: 0, played: false };
+        ? { ...existing, rating: existing.rating ?? 0, played: true }
+        // Starting 11 are checked by default per the new rules.
+        : { playerId: p.id, goals: 0, assists: 0, offensive: 0, defensive: 0, rating: 0, played: true };
     }
     return init;
   });
@@ -109,11 +110,14 @@ export function MatchDialog({
                       </label>
                     </div>
                     {perf.played && (
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                        <Stepper label="G" v={perf.goals} on={(v) => update(p.id, { goals: v })} accent />
-                        <Stepper label="A" v={perf.assists} on={(v) => update(p.id, { assists: v })} />
-                        <Stepper label="Off" v={perf.offensive} on={(v) => update(p.id, { offensive: v })} />
-                        <Stepper label="Def" v={perf.defensive} on={(v) => update(p.id, { defensive: v })} />
+                      <div className="space-y-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                          <Stepper label="G" v={perf.goals} on={(v) => update(p.id, { goals: v })} accent />
+                          <Stepper label="A" v={perf.assists} on={(v) => update(p.id, { assists: v })} />
+                          <Stepper label="Off" v={perf.offensive} on={(v) => update(p.id, { offensive: v })} />
+                          <Stepper label="Def" v={perf.defensive} on={(v) => update(p.id, { defensive: v })} />
+                        </div>
+                        <RatingInput value={perf.rating} onChange={(v) => update(p.id, { rating: v })} />
                       </div>
                     )}
                   </div>
@@ -168,6 +172,37 @@ function Stepper({ label, v, on, accent }: { label: string; v: number; on: (v: n
         <span className={`stat-num font-semibold ${accent ? "text-primary" : ""}`}>{v}</span>
         <button type="button" onClick={() => on(v + 1)} className="h-6 w-6 rounded text-muted-foreground hover:bg-secondary grid place-items-center"><Plus className="h-3 w-3" /></button>
       </div>
+    </div>
+  );
+}
+
+function RatingInput({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  // Clamp 0–10 with one decimal of precision.
+  const clamp = (n: number) => Math.max(0, Math.min(10, Math.round(n * 10) / 10));
+  const tone =
+    value >= 8 ? "text-primary border-primary/60 bg-primary/10" :
+    value >= 6 ? "text-foreground border-border bg-background/60" :
+    value > 0 ? "text-destructive border-destructive/40 bg-destructive/5" :
+    "text-muted-foreground border-border/60 bg-background/40";
+  return (
+    <div className={`flex items-center gap-3 rounded-md border p-2 ${tone}`}>
+      <div className="text-[9px] uppercase tracking-[0.2em] font-semibold opacity-80">Match Rating</div>
+      <input
+        type="number"
+        inputMode="decimal"
+        min={0}
+        max={10}
+        step={0.1}
+        value={value}
+        onFocus={(e) => e.target.select()}
+        onChange={(e) => {
+          const v = e.target.value;
+          if (v === "") return onChange(0);
+          onChange(clamp(parseFloat(v) || 0));
+        }}
+        className="ml-auto w-20 h-9 bg-background/80 border border-border rounded text-center font-display text-lg outline-none focus:border-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+      />
+      <span className="text-xs opacity-60">/ 10</span>
     </div>
   );
 }

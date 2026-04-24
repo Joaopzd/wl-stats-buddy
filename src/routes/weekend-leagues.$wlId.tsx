@@ -137,10 +137,11 @@ function WLDetail() {
                 <div className="min-w-0 flex-1">
                   <div className="font-semibold truncate">{a.player.name}</div>
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{a.player.position} · {a.player.overall}</div>
-                  <div className="mt-1.5 grid grid-cols-3 gap-1 text-[10px]">
+                  <div className="mt-1.5 grid grid-cols-4 gap-1 text-[10px]">
                     <Mini label="MP" v={a.matches} />
                     <Mini label="G" v={a.goals} highlight />
                     <Mini label="A" v={a.assists} />
+                    <Mini label="Rt" v={a.avgRating} fixed={2} highlight={a.avgRating >= 8} dim={a.avgRating === 0} />
                   </div>
                 </div>
               </div>
@@ -239,11 +240,12 @@ function GDStat({ value }: { value: number }) {
   );
 }
 
-function Mini({ label, v, highlight }: { label: string; v: number; highlight?: boolean }) {
+function Mini({ label, v, highlight, fixed, dim }: { label: string; v: number; highlight?: boolean; fixed?: number; dim?: boolean }) {
+  const display = dim ? "—" : fixed != null ? v.toFixed(fixed) : v;
   return (
     <div className="bg-background/60 rounded px-1.5 py-1 text-center">
       <div className="text-muted-foreground/70 text-[8px] uppercase tracking-wider">{label}</div>
-      <div className={`stat-num font-semibold ${highlight ? "text-primary" : ""}`}>{v}</div>
+      <div className={`stat-num font-semibold ${dim ? "text-muted-foreground/60" : highlight ? "text-primary" : ""}`}>{display}</div>
     </div>
   );
 }
