@@ -1,16 +1,19 @@
 import { useSyncExternalStore } from "react";
 import type { Match, Player, WeekendLeague } from "./types";
 
-// Bumped to v2 because the schema added per-player ratings and an Evo rarity.
+// Bumped to v3 because the schema added formation + slot assignments per WL.
 // Old data is wiped on first load by clearing the previous keys.
 const KEYS = {
-  players: "fc26_players_v2",
-  wls: "fc26_wls_v2",
-  matches: "fc26_matches_v2",
+  players: "fc26_players_v3",
+  wls: "fc26_wls_v3",
+  matches: "fc26_matches_v3",
 } as const;
 
-const LEGACY_KEYS = ["fc26_players", "fc26_wls", "fc26_matches"];
-const MIGRATION_FLAG = "fc26_schema_v2_migrated";
+const LEGACY_KEYS = [
+  "fc26_players", "fc26_wls", "fc26_matches",
+  "fc26_players_v2", "fc26_wls_v2", "fc26_matches_v2",
+];
+const MIGRATION_FLAG = "fc26_schema_v3_migrated";
 if (typeof window !== "undefined") {
   try {
     if (!localStorage.getItem(MIGRATION_FLAG)) {

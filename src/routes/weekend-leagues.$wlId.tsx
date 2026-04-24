@@ -91,7 +91,14 @@ function WLDetail() {
         <div>
           <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">Weekend League</div>
           <div className="font-display text-6xl mt-1 leading-none">#{wl.number}</div>
-          <div className="mt-2 text-sm text-muted-foreground">{record?.played}/15 matches · {rankFromWins(record?.wins ?? 0)}</div>
+          <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+            <span>{record?.played}/15 matches · {rankFromWins(record?.wins ?? 0)}</span>
+            {wl.formation && (
+              <span className="px-2 py-0.5 rounded-full bg-secondary text-foreground text-[10px] font-bold uppercase tracking-wider">
+                {wl.formation}
+              </span>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-5 flex-wrap">
           <Stat label="Wins" value={record?.wins ?? 0} accent />

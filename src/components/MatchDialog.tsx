@@ -23,14 +23,16 @@ export function MatchDialog({
   const [scoreFor, setScoreFor] = useState<number>(existingMatch?.scoreFor ?? 0);
   const [scoreAgainst, setScoreAgainst] = useState<number>(existingMatch?.scoreAgainst ?? 0);
   const [platform, setPlatform] = useState<Platform>(existingMatch?.platform ?? "PS5");
+  const startingIdSet = new Set(Object.values(wl.startingAssignments ?? {}));
   const [perfs, setPerfs] = useState<Record<string, MatchPlayerStat & { played: boolean }>>(() => {
     const init: Record<string, MatchPlayerStat & { played: boolean }> = {};
     for (const p of squad) {
       const existing = existingMatch?.performances.find((x) => x.playerId === p.id);
+      const isStarter = startingIdSet.has(p.id);
       init[p.id] = existing
         ? { ...existing, rating: existing.rating ?? 0, played: true }
-        // Starting 11 are checked by default per the new rules.
-        : { playerId: p.id, goals: 0, assists: 0, offensive: 0, defensive: 0, rating: 0, played: true };
+        // Starting 11 are checked by default; bench players unchecked until manually toggled.
+        : { playerId: p.id, goals: 0, assists: 0, offensive: 0, defensive: 0, rating: 0, played: isStarter };
     }
     return init;
   });
@@ -98,8 +100,11 @@ export function MatchDialog({
             <p className="text-sm text-muted-foreground py-8 text-center">No squad. Add players to the squad first.</p>
           ) : (
             <div className="space-y-2">
-              {squad.map((p) => {
+              {[...squad]
+                .sort((a, b) => Number(startingIdSet.has(b.id)) - Number(startingIdSet.has(a.id)))
+                .map((p) => {
                 const perf = perfs[p.id];
+                const isStarter = startingIdSet.has(p.id);
                 return (
                   <div key={p.id} className={`p-3 rounded-md border transition ${perf.played ? "border-primary/40 bg-primary/5" : "border-border bg-card"}`}>
                     <div className="flex items-center justify-between gap-3 mb-2">
@@ -107,6 +112,9 @@ export function MatchDialog({
                         <input type="checkbox" checked={perf.played} onChange={(e) => update(p.id, { played: e.target.checked })} className="h-4 w-4 accent-[var(--primary)]" />
                         <span className="font-semibold truncate">{p.name}</span>
                         <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">{p.position} · {p.overall}</span>
+                        <span className={`text-[9px] uppercase tracking-wider font-bold shrink-0 px-1.5 py-0.5 rounded ${isStarter ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"}`}>
+                          {isStarter ? "XI" : "Bench"}
+                        </span>
                       </label>
                     </div>
                     {perf.played && (
