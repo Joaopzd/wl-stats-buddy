@@ -53,7 +53,7 @@ function PlayersPage() {
   const [editing, setEditing] = useState<Player | null>(null);
   const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<"name" | "ovr" | "matches" | "goals" | "ga">("ga");
+  const [sort, setSort] = useState<"name" | "ovr" | "matches" | "goals" | "ga" | "rating">("ga");
 
   const aggs = useMemo(
     () => players.map((p) => aggregatePlayer(p, matches)),
@@ -72,6 +72,7 @@ function PlayersPage() {
         case "matches": return b.matches - a.matches;
         case "goals": return b.goals - a.goals;
         case "ga": return b.ga - a.ga;
+        case "rating": return b.avgRating - a.avgRating;
       }
     });
     return list;
@@ -103,6 +104,7 @@ function PlayersPage() {
           <option value="ga">Sort: G+A</option>
           <option value="goals">Sort: Goals</option>
           <option value="matches">Sort: Matches</option>
+          <option value="rating">Sort: Avg Rating</option>
           <option value="ovr">Sort: Overall</option>
           <option value="name">Sort: Name</option>
         </select>
@@ -154,6 +156,15 @@ function PlayersPage() {
                     <td className="p-3 text-right stat-num hidden md:table-cell text-muted-foreground">{a.offensive}</td>
                     <td className="p-3 text-right stat-num hidden md:table-cell text-muted-foreground">{a.defensive}</td>
                     <td className="p-3 text-right stat-num font-semibold">{a.ga}</td>
+                    <td className="p-3 text-right stat-num">
+                      {a.avgRating > 0 ? (
+                        <span className={a.avgRating >= 8 ? "text-primary font-semibold" : a.avgRating < 6 ? "text-destructive" : ""}>
+                          {a.avgRating.toFixed(2)}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground/60">—</span>
+                      )}
+                    </td>
                     <td className="p-3 text-right whitespace-nowrap">
                       <button onClick={() => setEditing(a.player)} className="p-1.5 text-muted-foreground hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
                       <button
