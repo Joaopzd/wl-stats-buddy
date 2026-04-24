@@ -96,7 +96,10 @@ export function ReportModal({
           />
         )}
 
-        {under && (
+        {wl.startingAssignments && Object.keys(wl.startingAssignments).length > 0 && (
+          <StartingXI wl={wl} aggs={aggs} />
+        )}
+
           <Award
             type="Underperformer"
             color="destructive"
