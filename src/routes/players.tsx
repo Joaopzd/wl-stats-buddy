@@ -39,7 +39,7 @@ const RARITY_GROUPS: { label: string; items: Rarity[] }[] = [
       "Thunderstruck", "Joga Bonito", "Unbreakables", "Time Warp",
       "Future Stars", "Knockout Royalty", "UEFA Primetime", "UEFA RTTF",
       "FUT Birthday", "Fantasy FC", "FoF Answer the Call",
-      "Path to Glory", "Trophy Titans",
+      "Path to Glory", "Trophy Titans", "Evo",
     ],
   },
   { label: "Legends", items: ["Icon Base", "Hero Base"] },

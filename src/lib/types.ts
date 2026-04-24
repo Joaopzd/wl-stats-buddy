@@ -30,6 +30,7 @@ export type Rarity =
   | "FoF Answer the Call"
   | "Path to Glory"
   | "Trophy Titans"
+  | "Evo"
   // Legends
   | "Icon Base"
   | "Hero Base";
@@ -51,6 +52,8 @@ export interface MatchPlayerStat {
   assists: number;
   offensive: number;
   defensive: number;
+  /** Match rating 0–10, one decimal. 0 = no rating recorded yet (legacy migration). */
+  rating: number;
 }
 
 export interface Match {
