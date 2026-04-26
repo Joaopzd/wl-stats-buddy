@@ -283,11 +283,15 @@ function WLDetail() {
   );
 }
 
-function Stat({ label, value, accent, danger }: { label: string; value: number; accent?: boolean; danger?: boolean }) {
+function IconStat({ icon, value, label, tone }: { icon: React.ReactNode; value: number; label: string; tone: "primary" | "muted" }) {
+  const color = tone === "primary" ? "text-primary" : "text-foreground";
   return (
-    <div className="text-center">
-      <div className={`stat-num text-4xl font-display ${accent ? "text-primary" : danger ? "text-destructive" : ""}`}>{value}</div>
-      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1">{label}</div>
+    <div className="surface-card px-3 py-3 sm:px-4 sm:py-4 flex items-center gap-3">
+      <div className={`${color} opacity-80 shrink-0`}>{icon}</div>
+      <div className="min-w-0">
+        <div className={`stat-num font-display text-2xl sm:text-3xl leading-none ${color}`}>{value}</div>
+        <div className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground mt-1 font-semibold">{label}</div>
+      </div>
     </div>
   );
 }
@@ -295,11 +299,13 @@ function Stat({ label, value, accent, danger }: { label: string; value: number; 
 function GDStat({ value }: { value: number }) {
   const positive = value >= 0;
   return (
-    <div className={`text-center px-4 py-2 rounded-lg border ${positive ? "border-primary/40 bg-primary/10" : "border-destructive/40 bg-destructive/10"}`}>
-      <div className={`stat-num text-4xl font-display ${positive ? "text-primary" : "text-destructive"}`}>
-        {positive ? "+" : ""}{value}
+    <div className={`px-3 py-3 sm:px-4 sm:py-4 rounded-lg border-2 flex items-center gap-3 ${positive ? "border-primary/60 bg-primary/15 shadow-[0_0_20px_-5px_var(--primary)]" : "border-destructive/60 bg-destructive/15"}`}>
+      <div className="min-w-0">
+        <div className={`stat-num text-2xl sm:text-3xl font-display leading-none ${positive ? "text-primary" : "text-destructive"}`}>
+          {positive ? "+" : ""}{value}
+        </div>
+        <div className="text-[9px] uppercase tracking-[0.25em] mt-1 font-bold text-foreground/80">GD</div>
       </div>
-      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1">GD</div>
     </div>
   );
 }
