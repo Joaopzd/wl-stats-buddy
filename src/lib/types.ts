@@ -43,6 +43,8 @@ export interface Player {
   position: Position;
   overall: number;
   rarity: Rarity;
+  /** ISO alpha-2 country code (e.g. "BR", "FR"). Empty/undefined = unset. */
+  nationality?: string;
   createdAt: number;
 }
 
@@ -50,11 +52,11 @@ export interface MatchPlayerStat {
   playerId: string;
   goals: number;
   assists: number;
-  offensive: number;
-  defensive: number;
-  /** Match rating 0–10, one decimal. 0 = no rating recorded yet (legacy migration). */
+  /** Match rating 0–10, one decimal. 0 = no rating recorded yet. */
   rating: number;
 }
+
+export type PenaltyWinner = "us" | "them";
 
 export interface Match {
   id: string;
@@ -64,6 +66,14 @@ export interface Match {
   scoreAgainst: number;
   platform: Platform;
   performances: MatchPlayerStat[];
+  /** Match went to extra time. */
+  extraTime?: boolean;
+  /** Match went to penalty shootout. */
+  penalties?: boolean;
+  /** Who won the shootout (only meaningful if penalties=true). */
+  penaltyWinner?: PenaltyWinner;
+  /** Opponent rage-quit early. */
+  rageQuit?: boolean;
   createdAt: number;
 }
 
@@ -72,6 +82,8 @@ import type { FormationName } from "./formations";
 export interface WeekendLeague {
   id: string;
   number: number;
+  /** User-provided custom name (e.g. "TOTS Premiere WL"). Falls back to "WL #N" when empty. */
+  customName?: string;
   squadPlayerIds: string[];
   createdAt: number;
   closed?: boolean;
@@ -81,4 +93,9 @@ export interface WeekendLeague {
   startingAssignments?: Record<string, string>;
   /** Bench player IDs (subset of squadPlayerIds, not in startingAssignments). */
   benchPlayerIds?: string[];
+}
+
+/** Convenience: render the user-facing label for a WL. */
+export function wlLabel(wl: Pick<WeekendLeague, "number" | "customName">): string {
+  return wl.customName?.trim() || `WL #${wl.number}`;
 }

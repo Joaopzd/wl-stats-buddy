@@ -5,8 +5,6 @@ export interface PlayerAgg {
   matches: number;
   goals: number;
   assists: number;
-  offensive: number;
-  defensive: number;
   ga: number;
   gaPerGame: number;
   /** Career average match rating (0–10). 0 if no rated appearances. */
@@ -16,7 +14,7 @@ export interface PlayerAgg {
 }
 
 export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
-  let m = 0, g = 0, a = 0, off = 0, def = 0;
+  let m = 0, g = 0, a = 0;
   let ratingSum = 0, ratedMatches = 0;
   for (const match of matches) {
     const perf = match.performances.find((p) => p.playerId === player.id);
@@ -24,9 +22,6 @@ export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
     m += 1;
     g += perf.goals;
     a += perf.assists;
-    off += perf.offensive;
-    def += perf.defensive;
-    // Treat undefined / 0 as "no rating recorded" so legacy data doesn't drag averages.
     const r = perf.rating ?? 0;
     if (r > 0) {
       ratingSum += r;
@@ -39,8 +34,6 @@ export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
     matches: m,
     goals: g,
     assists: a,
-    offensive: off,
-    defensive: def,
     ga,
     gaPerGame: m ? ga / m : 0,
     avgRating: ratedMatches ? ratingSum / ratedMatches : 0,
@@ -66,17 +59,23 @@ export function wlRecord(wl: WeekendLeague, matches: Match[]): WLRecord {
   for (const m of ms) {
     gf += m.scoreFor;
     ga += m.scoreAgainst;
-    if (m.scoreFor > m.scoreAgainst) wins += 1;
+    if (matchIsWin(m)) wins += 1;
     else losses += 1;
   }
   return { wins, losses, played: ms.length, goalsFor: gf, goalsAgainst: ga };
+}
+
+/** Determine if a match is a win, taking into account penalty shootouts. */
+export function matchIsWin(m: Match): boolean {
+  if (m.penalties && m.penaltyWinner) return m.penaltyWinner === "us";
+  return m.scoreFor > m.scoreAgainst;
 }
 
 export function bestStreak(matches: Match[]): number {
   let best = 0, cur = 0;
   const sorted = [...matches].sort((a, b) => a.index - b.index);
   for (const m of sorted) {
-    if (m.scoreFor > m.scoreAgainst) {
+    if (matchIsWin(m)) {
       cur += 1;
       best = Math.max(best, cur);
     } else cur = 0;

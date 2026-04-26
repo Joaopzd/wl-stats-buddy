@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { X, Minus, Plus } from "lucide-react";
+import { X, Minus, Plus, Zap, Flag as FlagIcon, AlertTriangle } from "lucide-react";
 import { store } from "@/lib/store";
-import type { Match, MatchPlayerStat, Platform, Player, WeekendLeague } from "@/lib/types";
+import type { Match, MatchPlayerStat, Platform, PenaltyWinner, Player, WeekendLeague } from "@/lib/types";
+import { wlLabel } from "@/lib/types";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
+import { Flag } from "./Flag";
 
 const PLATFORMS: Platform[] = ["PC", "PS5", "Xbox"];
 
@@ -23,6 +25,11 @@ export function MatchDialog({
   const [scoreFor, setScoreFor] = useState<number>(existingMatch?.scoreFor ?? 0);
   const [scoreAgainst, setScoreAgainst] = useState<number>(existingMatch?.scoreAgainst ?? 0);
   const [platform, setPlatform] = useState<Platform>(existingMatch?.platform ?? "PS5");
+  const [extraTime, setExtraTime] = useState<boolean>(existingMatch?.extraTime ?? false);
+  const [penalties, setPenalties] = useState<boolean>(existingMatch?.penalties ?? false);
+  const [penaltyWinner, setPenaltyWinner] = useState<PenaltyWinner>(existingMatch?.penaltyWinner ?? "us");
+  const [rageQuit, setRageQuit] = useState<boolean>(existingMatch?.rageQuit ?? false);
+
   const startingIdSet = new Set(Object.values(wl.startingAssignments ?? {}));
   const [perfs, setPerfs] = useState<Record<string, MatchPlayerStat & { played: boolean }>>(() => {
     const init: Record<string, MatchPlayerStat & { played: boolean }> = {};
@@ -31,8 +38,7 @@ export function MatchDialog({
       const isStarter = startingIdSet.has(p.id);
       init[p.id] = existing
         ? { ...existing, rating: existing.rating ?? 0, played: true }
-        // Starting 11 are checked by default; bench players unchecked until manually toggled.
-        : { playerId: p.id, goals: 0, assists: 0, offensive: 0, defensive: 0, rating: 0, played: isStarter };
+        : { playerId: p.id, goals: 0, assists: 0, rating: 0, played: isStarter };
     }
     return init;
   });
@@ -43,13 +49,25 @@ export function MatchDialog({
 
   const save = () => {
     if (scoreFor < 0 || scoreAgainst < 0) return toast.error("Scores can't be negative");
-    if (scoreFor === scoreAgainst) return toast.error("WL has no draws — pick a winner");
+    if (penalties && scoreFor !== scoreAgainst) {
+      return toast.error("If penalties were taken, the regulation score must be level");
+    }
+    if (!penalties && scoreFor === scoreAgainst) {
+      return toast.error("WL has no draws — pick a winner or mark Penalties");
+    }
     const performances = Object.values(perfs)
       .filter((p) => p.played)
       .map(({ played, ...rest }) => rest);
 
+    const flags = {
+      extraTime,
+      penalties,
+      penaltyWinner: penalties ? penaltyWinner : undefined,
+      rageQuit,
+    };
+
     if (existingMatch) {
-      store.updateMatch(existingMatch.id, { scoreFor, scoreAgainst, platform, performances });
+      store.updateMatch(existingMatch.id, { scoreFor, scoreAgainst, platform, performances, ...flags });
       toast.success(`Match ${existingMatch.index} updated`);
     } else {
       const m: Match = {
@@ -57,10 +75,12 @@ export function MatchDialog({
         wlId: wl.id,
         index: nextIndex,
         scoreFor, scoreAgainst, platform, performances,
+        ...flags,
         createdAt: Date.now(),
       };
       store.addMatch(m);
-      toast.success(`Match ${nextIndex} logged · ${scoreFor > scoreAgainst ? "WIN" : "LOSS"}`);
+      const isWin = penalties ? penaltyWinner === "us" : scoreFor > scoreAgainst;
+      toast.success(`Match ${nextIndex} logged · ${isWin ? "WIN" : "LOSS"}`);
     }
     onClose();
   };
@@ -74,12 +94,12 @@ export function MatchDialog({
         <div className="flex items-center justify-between mb-5">
           <div>
             <h2 className="font-display text-2xl tracking-wider">{existingMatch ? `Edit Match ${existingMatch.index}` : `Match ${nextIndex} of 15`}</h2>
-            <p className="text-xs text-muted-foreground mt-1">WL #{wl.number}</p>
+            <p className="text-xs text-muted-foreground mt-1">{wlLabel(wl)}</p>
           </div>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
           <ScoreInput label="You" value={scoreFor} onChange={setScoreFor} accent />
           <ScoreInput label="Opponent" value={scoreAgainst} onChange={setScoreAgainst} />
           <div>
@@ -92,6 +112,28 @@ export function MatchDialog({
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Match flags */}
+        <div className="mb-5 surface-card p-3 space-y-3">
+          <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">Match details</div>
+          <div className="flex flex-wrap gap-2">
+            <FlagToggle active={extraTime} onClick={() => setExtraTime((v) => !v)} icon={<Zap className="h-3.5 w-3.5" />} label="Extra Time" />
+            <FlagToggle active={penalties} onClick={() => setPenalties((v) => !v)} icon={<FlagIcon className="h-3.5 w-3.5" />} label="Penalties" />
+            <FlagToggle active={rageQuit} onClick={() => setRageQuit((v) => !v)} icon={<AlertTriangle className="h-3.5 w-3.5" />} label="Rage Quit" />
+          </div>
+          {penalties && (
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Shootout winner</div>
+              <div className="flex gap-1 bg-input border border-border rounded-md p-1 max-w-xs">
+                {(["us", "them"] as PenaltyWinner[]).map((w) => (
+                  <button key={w} type="button" onClick={() => setPenaltyWinner(w)} className={`flex-1 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition ${penaltyWinner === w ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                    {w === "us" ? "We won" : "They won"}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto -mx-2 px-2">
@@ -110,6 +152,7 @@ export function MatchDialog({
                     <div className="flex items-center justify-between gap-3 mb-2">
                       <label className="flex items-center gap-2 cursor-pointer flex-1 min-w-0">
                         <input type="checkbox" checked={perf.played} onChange={(e) => update(p.id, { played: e.target.checked })} className="h-4 w-4 accent-[var(--primary)]" />
+                        <Flag code={p.nationality} size="sm" />
                         <span className="font-semibold truncate">{p.name}</span>
                         <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">{p.position} · {p.overall}</span>
                         <span className={`text-[9px] uppercase tracking-wider font-bold shrink-0 px-1.5 py-0.5 rounded ${isStarter ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"}`}>
@@ -119,11 +162,9 @@ export function MatchDialog({
                     </div>
                     {perf.played && (
                       <div className="space-y-2">
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <div className="grid grid-cols-2 gap-2">
                           <Stepper label="G" v={perf.goals} on={(v) => update(p.id, { goals: v })} accent />
                           <Stepper label="A" v={perf.assists} on={(v) => update(p.id, { assists: v })} />
-                          <Stepper label="Off" v={perf.offensive} on={(v) => update(p.id, { offensive: v })} />
-                          <Stepper label="Def" v={perf.defensive} on={(v) => update(p.id, { defensive: v })} />
                         </div>
                         <RatingInput value={perf.rating} onChange={(v) => update(p.id, { rating: v })} />
                       </div>
@@ -184,8 +225,24 @@ function Stepper({ label, v, on, accent }: { label: string; v: number; on: (v: n
   );
 }
 
+function FlagToggle({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: React.ReactNode; label: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition border ${
+        active
+          ? "bg-primary/20 text-primary border-primary/60"
+          : "bg-background/40 text-muted-foreground border-border hover:text-foreground"
+      }`}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
 function RatingInput({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  // Clamp 0–10 with one decimal of precision.
   const clamp = (n: number) => Math.max(0, Math.min(10, Math.round(n * 10) / 10));
   const tone =
     value >= 8 ? "text-primary border-primary/60 bg-primary/10" :

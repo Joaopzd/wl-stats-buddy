@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, useWLs, store } from "@/lib/store";
 import { wlRecord, rankFromWins } from "@/lib/stats";
+import { wlLabel } from "@/lib/types";
 import { Plus, ChevronRight, Trophy, Trash2 } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
@@ -24,6 +25,7 @@ function WLList() {
   const matches = useMatches();
   const [creating, setCreating] = useState(false);
   const [num, setNum] = useState("");
+  const [name, setName] = useState("");
 
   const sorted = [...wls].sort((a, b) => b.number - a.number);
   const nextNum = (Math.max(0, ...wls.map((w) => w.number)) + 1).toString();
@@ -32,10 +34,17 @@ function WLList() {
     const parsed = parseInt(num || nextNum, 10);
     if (!parsed || parsed < 1) return toast.error("Enter a valid WL number");
     if (wls.some((w) => w.number === parsed)) return toast.error(`WL #${parsed} already exists`);
-    store.addWL({ id: uuid(), number: parsed, squadPlayerIds: [], createdAt: Date.now() });
+    store.addWL({
+      id: uuid(),
+      number: parsed,
+      customName: name.trim() || undefined,
+      squadPlayerIds: [],
+      createdAt: Date.now(),
+    });
     setCreating(false);
     setNum("");
-    toast.success(`WL #${parsed} created`);
+    setName("");
+    toast.success(`${name.trim() || `WL #${parsed}`} created`);
   };
 
   return (
@@ -45,14 +54,14 @@ function WLList() {
           <h1 className="font-display text-4xl tracking-wider">Weekend Leagues</h1>
           <p className="text-sm text-muted-foreground mt-1">{wls.length} sessions logged</p>
         </div>
-        <button onClick={() => { setNum(nextNum); setCreating(true); }} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90 transition shadow-[var(--shadow-neon)]">
+        <button onClick={() => { setNum(nextNum); setName(""); setCreating(true); }} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90 transition shadow-[var(--shadow-neon)]">
           <Plus className="h-4 w-4" /> New WL
         </button>
       </div>
 
       {creating && (
-        <div className="surface-glow p-5 mb-6 flex flex-wrap items-end gap-3">
-          <div className="flex-1 min-w-[180px]">
+        <div className="surface-glow p-5 mb-6 grid sm:grid-cols-[140px_1fr_auto_auto] gap-3 items-end">
+          <div>
             <label className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">WL Number</label>
             <input
               type="number"
@@ -60,6 +69,15 @@ function WLList() {
               onChange={(e) => setNum(e.target.value)}
               autoFocus
               className="w-full bg-input border border-border rounded-md px-3 py-2 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <div>
+            <label className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Custom Name (optional)</label>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. TOTS Premiere WL"
+              className="w-full bg-input border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
           <button onClick={create} className="px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm">Create</button>
@@ -76,6 +94,8 @@ function WLList() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {sorted.map((wl) => {
             const r = wlRecord(wl, matches);
+            const label = wlLabel(wl);
+            const hasCustom = !!wl.customName?.trim();
             return (
               <Link
                 key={wl.id}
@@ -84,14 +104,17 @@ function WLList() {
                 className="surface-card p-5 group hover:border-primary/50 hover:shadow-[var(--shadow-glow)] transition-all relative"
               >
                 <button
-                  onClick={(e) => { e.preventDefault(); if (confirm(`Delete WL #${wl.number} and all its matches?`)) { store.deleteWL(wl.id); toast.success("Deleted"); } }}
+                  onClick={(e) => { e.preventDefault(); if (confirm(`Delete ${label} and all its matches?`)) { store.deleteWL(wl.id); toast.success("Deleted"); } }}
                   className="absolute top-3 right-3 p-1.5 rounded text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition"
                   aria-label="Delete"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Weekend League</div>
-                <div className="font-display text-5xl mt-1">#{wl.number}</div>
+                <div className={`font-display mt-1 leading-tight pr-6 ${hasCustom ? "text-2xl" : "text-5xl"}`}>{label}</div>
+                {hasCustom && (
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">WL #{wl.number}</div>
+                )}
                 <div className="mt-4 flex items-end justify-between">
                   <div>
                     <div className="stat-num text-2xl">
