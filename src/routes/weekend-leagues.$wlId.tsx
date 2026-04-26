@@ -7,7 +7,7 @@ import { PlayerCard } from "@/components/PlayerCard";
 import { SquadDialog } from "@/components/SquadDialog";
 import { MatchDialog } from "@/components/MatchDialog";
 import { ReportModal } from "@/components/ReportModal";
-import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check } from "lucide-react";
+import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Target, Shield } from "lucide-react";
 import { toast } from "sonner";
 import type { Match } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
@@ -97,7 +97,7 @@ function WLDetail() {
         <ArrowLeft className="h-4 w-4" /> All Weekend Leagues
       </Link>
 
-      <div className="surface-glow p-6 sm:p-8 mb-6 flex flex-wrap items-center justify-between gap-6">
+      <div className="surface-glow p-5 sm:p-8 mb-6">
         <div className="min-w-0">
           <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">Weekend League · #{wl.number}</div>
           {editingName ? (
@@ -114,7 +114,7 @@ function WLDetail() {
             </div>
           ) : (
             <div className="mt-1 flex items-center gap-2">
-              <h1 className="font-display text-4xl sm:text-5xl leading-none truncate">{label}</h1>
+              <h1 className="font-display text-3xl sm:text-5xl leading-none truncate">{label}</h1>
               <button
                 onClick={() => { setNameDraft(wl.customName ?? ""); setEditingName(true); }}
                 className="p-1.5 text-muted-foreground hover:text-primary"
@@ -133,11 +133,28 @@ function WLDetail() {
             )}
           </div>
         </div>
-        <div className="flex items-center gap-5 flex-wrap">
-          <Stat label="Wins" value={record?.wins ?? 0} accent />
-          <Stat label="Losses" value={record?.losses ?? 0} danger />
-          <Stat label="GF" value={record?.goalsFor ?? 0} />
-          <Stat label="GA" value={record?.goalsAgainst ?? 0} />
+
+        {/* Big W-L record */}
+        <div className="mt-6 flex items-end gap-4 sm:gap-6">
+          <div className="flex items-baseline gap-2">
+            <Trophy className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <span className="font-display text-6xl sm:text-7xl stat-num leading-none text-primary">{record?.wins ?? 0}</span>
+          </div>
+          <span className="font-display text-4xl sm:text-5xl text-muted-foreground/50 leading-none pb-1">–</span>
+          <div className="flex items-baseline gap-2">
+            <span className="font-display text-6xl sm:text-7xl stat-num leading-none text-destructive">{record?.losses ?? 0}</span>
+            <XIcon className="h-6 w-6 sm:h-8 sm:w-8 text-destructive" />
+          </div>
+          <div className="ml-auto text-right hidden sm:block">
+            <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold">Record</div>
+            <div className="text-xs text-muted-foreground mt-1">Wins · Losses</div>
+          </div>
+        </div>
+
+        {/* Goals row + GD badge */}
+        <div className="mt-6 grid grid-cols-3 gap-3 sm:gap-5">
+          <IconStat icon={<Target className="h-5 w-5" />} value={record?.goalsFor ?? 0} label="Scored" tone="primary" />
+          <IconStat icon={<Shield className="h-5 w-5" />} value={record?.goalsAgainst ?? 0} label="Conceded" tone="muted" />
           <GDStat value={(record?.goalsFor ?? 0) - (record?.goalsAgainst ?? 0)} />
         </div>
       </div>
