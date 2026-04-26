@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Trophy, Flame, Target, Star, TrendingDown, X, LayoutGrid } from "lucide-react";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
+import { wlLabel } from "@/lib/types";
 import { aggregatePlayer, rankFromWins, type WLRecord } from "@/lib/stats";
 
 export function ReportModal({
@@ -33,14 +34,10 @@ export function ReportModal({
 
   const mvp = [...aggs].sort((a, b) => b.ga - a.ga || b.goals - a.goals)[0];
 
-  // Underperformer: must have played >=50% of matches
   const minMatches = Math.ceil(matches.length / 2);
   const eligible = aggs.filter((a) => a.matches >= minMatches);
   const under = eligible.length
-    ? [...eligible].sort((a, b) =>
-        (a.ga + a.offensive * 0.1 + a.defensive * 0.1) -
-        (b.ga + b.offensive * 0.1 + b.defensive * 0.1)
-      )[0]
+    ? [...eligible].sort((a, b) => a.gaPerGame - b.gaPerGame || a.avgRating - b.avgRating)[0]
     : null;
 
   const rank = rankFromWins(record.wins);
@@ -61,7 +58,8 @@ export function ReportModal({
             <Trophy className="h-14 w-14 text-primary mx-auto" />
           </motion.div>
           <div className="text-[10px] uppercase tracking-[0.4em] text-primary font-bold mt-3">Weekend League Complete</div>
-          <h2 className="font-display text-5xl mt-2 leading-none">WL #{wl.number}</h2>
+          <h2 className="font-display text-4xl sm:text-5xl mt-2 leading-none">{wlLabel(wl)}</h2>
+          {wl.customName && <div className="text-xs text-muted-foreground mt-1">WL #{wl.number}</div>}
           <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
             <span className="inline-block px-4 py-1 rounded-full bg-primary/15 text-primary text-xs font-semibold uppercase tracking-wider">
               {rank}

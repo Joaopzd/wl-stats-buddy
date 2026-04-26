@@ -1,10 +1,11 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { LayoutDashboard, Trophy, Users } from "lucide-react";
+import { LayoutDashboard, Trophy, Users, Sparkles } from "lucide-react";
 
 const links = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/weekend-leagues", label: "Weekend Leagues", icon: Trophy },
   { to: "/players", label: "Players", icon: Users },
+  { to: "/rankings", label: "Club Legends", icon: Sparkles },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {

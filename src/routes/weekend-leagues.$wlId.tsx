@@ -2,14 +2,16 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState, useEffect } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers, useWLs, store } from "@/lib/store";
-import { aggregatePlayer, bestStreak, rankFromWins, wlRecord } from "@/lib/stats";
+import { aggregatePlayer, bestStreak, matchIsWin, rankFromWins, wlRecord } from "@/lib/stats";
 import { PlayerCard } from "@/components/PlayerCard";
+import { Flag } from "@/components/Flag";
 import { SquadDialog } from "@/components/SquadDialog";
 import { MatchDialog } from "@/components/MatchDialog";
 import { ReportModal } from "@/components/ReportModal";
-import { ArrowLeft, Plus, Users, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check } from "lucide-react";
 import { toast } from "sonner";
 import type { Match } from "@/lib/types";
+import { wlLabel } from "@/lib/types";
 
 export const Route = createFileRoute("/weekend-leagues/$wlId")({
   head: () => ({
@@ -44,6 +46,8 @@ function WLDetail() {
   const [editingMatch, setEditingMatch] = useState<Match | null>(null);
   const [reportOpen, setReportOpen] = useState(false);
   const [reportSeen, setReportSeen] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
 
   const matches = useMemo(
     () => allMatches.filter((m) => m.wlId === wlId).sort((a, b) => a.index - b.index),
@@ -60,7 +64,6 @@ function WLDetail() {
     [squad, matches],
   );
 
-  // Auto-open report when 15 matches reached
   useEffect(() => {
     if (matches.length >= 15 && !reportSeen && !wl?.closed) {
       setReportOpen(true);
@@ -80,6 +83,14 @@ function WLDetail() {
   }
 
   const nextMatchIndex = matches.length + 1;
+  const label = wlLabel(wl);
+
+  const saveName = () => {
+    const trimmed = nameDraft.trim();
+    store.updateWL(wl.id, { customName: trimmed || undefined });
+    setEditingName(false);
+    toast.success("Name updated");
+  };
 
   return (
     <AppShell>
@@ -88,9 +99,32 @@ function WLDetail() {
       </Link>
 
       <div className="surface-glow p-6 sm:p-8 mb-6 flex flex-wrap items-center justify-between gap-6">
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">Weekend League</div>
-          <div className="font-display text-6xl mt-1 leading-none">#{wl.number}</div>
+        <div className="min-w-0">
+          <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">Weekend League · #{wl.number}</div>
+          {editingName ? (
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                value={nameDraft}
+                onChange={(e) => setNameDraft(e.target.value)}
+                autoFocus
+                onKeyDown={(e) => { if (e.key === "Enter") saveName(); if (e.key === "Escape") setEditingName(false); }}
+                placeholder="Custom name..."
+                className="bg-input border border-border rounded-md px-3 py-2 font-display text-2xl focus:outline-none focus:ring-2 focus:ring-primary min-w-0 flex-1 max-w-md"
+              />
+              <button onClick={saveName} className="p-2 rounded-md bg-primary text-primary-foreground"><Check className="h-4 w-4" /></button>
+            </div>
+          ) : (
+            <div className="mt-1 flex items-center gap-2">
+              <h1 className="font-display text-4xl sm:text-5xl leading-none truncate">{label}</h1>
+              <button
+                onClick={() => { setNameDraft(wl.customName ?? ""); setEditingName(true); }}
+                className="p-1.5 text-muted-foreground hover:text-primary"
+                aria-label="Edit WL name"
+              >
+                <PencilIcon className="h-4 w-4" />
+              </button>
+            </div>
+          )}
           <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
             <span>{record?.played}/15 matches · {rankFromWins(record?.wins ?? 0)}</span>
             {wl.formation && (
@@ -140,9 +174,12 @@ function WLDetail() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {squadAggs.map((a) => (
               <div key={a.player.id} className="surface-card p-3 flex gap-3 items-center">
-                <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} />
+                <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} nationality={a.player.nationality} />
                 <div className="min-w-0 flex-1">
-                  <div className="font-semibold truncate">{a.player.name}</div>
+                  <div className="font-semibold truncate flex items-center gap-1.5">
+                    <Flag code={a.player.nationality} size="sm" />
+                    <span className="truncate">{a.player.name}</span>
+                  </div>
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{a.player.position} · {a.player.overall}</div>
                   <div className="mt-1.5 grid grid-cols-4 gap-1 text-[10px]">
                     <Mini label="MP" v={a.matches} />
@@ -166,7 +203,7 @@ function WLDetail() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {matches.map((m) => {
-              const win = m.scoreFor > m.scoreAgainst;
+              const win = matchIsWin(m);
               return (
                 <div key={m.id} className={`surface-card p-4 border-l-4 ${win ? "border-l-primary" : "border-l-destructive"}`}>
                   <div className="flex items-center justify-between">
@@ -181,7 +218,14 @@ function WLDetail() {
                     <span className="text-muted-foreground/50 mx-2">–</span>
                     <span className={!win ? "text-destructive" : ""}>{m.scoreAgainst}</span>
                   </div>
-                  <div className={`mt-1 text-xs font-semibold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>{win ? "Win" : "Loss"}</div>
+                  <div className="mt-1 flex items-center justify-between gap-2">
+                    <div className={`text-xs font-semibold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>{win ? "Win" : "Loss"}</div>
+                    <div className="flex items-center gap-1 flex-wrap">
+                      {m.extraTime && <Tag tone="warn">ET</Tag>}
+                      {m.penalties && <Tag tone="info">PEN {m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
+                      {m.rageQuit && <Tag tone="rq">RQ</Tag>}
+                    </div>
+                  </div>
                   <div className="mt-3 pt-3 border-t border-border/60 text-[11px] text-muted-foreground">
                     {m.performances.filter(p => p.goals > 0 || p.assists > 0).slice(0, 3).map((p) => {
                       const player = players.find(pl => pl.id === p.playerId);
@@ -254,5 +298,17 @@ function Mini({ label, v, highlight, fixed, dim }: { label: string; v: number; h
       <div className="text-muted-foreground/70 text-[8px] uppercase tracking-wider">{label}</div>
       <div className={`stat-num font-semibold ${dim ? "text-muted-foreground/60" : highlight ? "text-primary" : ""}`}>{display}</div>
     </div>
+  );
+}
+
+function Tag({ children, tone }: { children: React.ReactNode; tone: "warn" | "info" | "rq" }) {
+  const cls =
+    tone === "warn" ? "bg-amber-500/20 text-amber-300 border-amber-500/40" :
+    tone === "info" ? "bg-sky-500/20 text-sky-300 border-sky-500/40" :
+    "bg-destructive/20 text-destructive border-destructive/40";
+  return (
+    <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${cls}`}>
+      {children}
+    </span>
   );
 }
