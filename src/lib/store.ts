@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 import type { Match, Player, WeekendLeague } from "./types";
 
-// Bumped to v4: nationality on players, custom WL names, removed off/def actions,
+// Bumped to v4: custom WL names, removed off/def actions,
 // added match flags (ET / penalties / rage quit). Old data wiped on first load.
 const KEYS = {
   players: "fc26_players_v4",

@@ -4,11 +4,10 @@ import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers, useWLs, store } from "@/lib/store";
 import { aggregatePlayer, bestStreak, matchIsWin, rankFromWins, wlRecord } from "@/lib/stats";
 import { PlayerCard } from "@/components/PlayerCard";
-import { Flag } from "@/components/Flag";
 import { SquadDialog } from "@/components/SquadDialog";
 import { MatchDialog } from "@/components/MatchDialog";
 import { ReportModal } from "@/components/ReportModal";
-import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check } from "lucide-react";
+import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Target, Shield } from "lucide-react";
 import { toast } from "sonner";
 import type { Match } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
@@ -98,7 +97,7 @@ function WLDetail() {
         <ArrowLeft className="h-4 w-4" /> All Weekend Leagues
       </Link>
 
-      <div className="surface-glow p-6 sm:p-8 mb-6 flex flex-wrap items-center justify-between gap-6">
+      <div className="surface-glow p-5 sm:p-8 mb-6">
         <div className="min-w-0">
           <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">Weekend League · #{wl.number}</div>
           {editingName ? (
@@ -115,7 +114,7 @@ function WLDetail() {
             </div>
           ) : (
             <div className="mt-1 flex items-center gap-2">
-              <h1 className="font-display text-4xl sm:text-5xl leading-none truncate">{label}</h1>
+              <h1 className="font-display text-3xl sm:text-5xl leading-none truncate">{label}</h1>
               <button
                 onClick={() => { setNameDraft(wl.customName ?? ""); setEditingName(true); }}
                 className="p-1.5 text-muted-foreground hover:text-primary"
@@ -134,11 +133,28 @@ function WLDetail() {
             )}
           </div>
         </div>
-        <div className="flex items-center gap-5 flex-wrap">
-          <Stat label="Wins" value={record?.wins ?? 0} accent />
-          <Stat label="Losses" value={record?.losses ?? 0} danger />
-          <Stat label="GF" value={record?.goalsFor ?? 0} />
-          <Stat label="GA" value={record?.goalsAgainst ?? 0} />
+
+        {/* Big W-L record */}
+        <div className="mt-6 flex items-end gap-4 sm:gap-6">
+          <div className="flex items-baseline gap-2">
+            <Trophy className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <span className="font-display text-6xl sm:text-7xl stat-num leading-none text-primary">{record?.wins ?? 0}</span>
+          </div>
+          <span className="font-display text-4xl sm:text-5xl text-muted-foreground/50 leading-none pb-1">–</span>
+          <div className="flex items-baseline gap-2">
+            <span className="font-display text-6xl sm:text-7xl stat-num leading-none text-destructive">{record?.losses ?? 0}</span>
+            <XIcon className="h-6 w-6 sm:h-8 sm:w-8 text-destructive" />
+          </div>
+          <div className="ml-auto text-right hidden sm:block">
+            <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold">Record</div>
+            <div className="text-xs text-muted-foreground mt-1">Wins · Losses</div>
+          </div>
+        </div>
+
+        {/* Goals row + GD badge */}
+        <div className="mt-6 grid grid-cols-3 gap-3 sm:gap-5">
+          <IconStat icon={<Target className="h-5 w-5" />} value={record?.goalsFor ?? 0} label="Scored" tone="primary" />
+          <IconStat icon={<Shield className="h-5 w-5" />} value={record?.goalsAgainst ?? 0} label="Conceded" tone="muted" />
           <GDStat value={(record?.goalsFor ?? 0) - (record?.goalsAgainst ?? 0)} />
         </div>
       </div>
@@ -174,12 +190,9 @@ function WLDetail() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {squadAggs.map((a) => (
               <div key={a.player.id} className="surface-card p-3 flex gap-3 items-center">
-                <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} nationality={a.player.nationality} />
+                <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} />
                 <div className="min-w-0 flex-1">
-                  <div className="font-semibold truncate flex items-center gap-1.5">
-                    <Flag code={a.player.nationality} size="sm" />
-                    <span className="truncate">{a.player.name}</span>
-                  </div>
+                  <div className="font-semibold truncate">{a.player.name}</div>
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{a.player.position} · {a.player.overall}</div>
                   <div className="mt-1.5 grid grid-cols-4 gap-1 text-[10px]">
                     <Mini label="MP" v={a.matches} />
@@ -270,11 +283,15 @@ function WLDetail() {
   );
 }
 
-function Stat({ label, value, accent, danger }: { label: string; value: number; accent?: boolean; danger?: boolean }) {
+function IconStat({ icon, value, label, tone }: { icon: React.ReactNode; value: number; label: string; tone: "primary" | "muted" }) {
+  const color = tone === "primary" ? "text-primary" : "text-foreground";
   return (
-    <div className="text-center">
-      <div className={`stat-num text-4xl font-display ${accent ? "text-primary" : danger ? "text-destructive" : ""}`}>{value}</div>
-      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1">{label}</div>
+    <div className="surface-card px-3 py-3 sm:px-4 sm:py-4 flex items-center gap-3">
+      <div className={`${color} opacity-80 shrink-0`}>{icon}</div>
+      <div className="min-w-0">
+        <div className={`stat-num font-display text-2xl sm:text-3xl leading-none ${color}`}>{value}</div>
+        <div className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground mt-1 font-semibold">{label}</div>
+      </div>
     </div>
   );
 }
@@ -282,11 +299,13 @@ function Stat({ label, value, accent, danger }: { label: string; value: number; 
 function GDStat({ value }: { value: number }) {
   const positive = value >= 0;
   return (
-    <div className={`text-center px-4 py-2 rounded-lg border ${positive ? "border-primary/40 bg-primary/10" : "border-destructive/40 bg-destructive/10"}`}>
-      <div className={`stat-num text-4xl font-display ${positive ? "text-primary" : "text-destructive"}`}>
-        {positive ? "+" : ""}{value}
+    <div className={`px-3 py-3 sm:px-4 sm:py-4 rounded-lg border-2 flex items-center gap-3 ${positive ? "border-primary/60 bg-primary/15 shadow-[0_0_20px_-5px_var(--primary)]" : "border-destructive/60 bg-destructive/15"}`}>
+      <div className="min-w-0">
+        <div className={`stat-num text-2xl sm:text-3xl font-display leading-none ${positive ? "text-primary" : "text-destructive"}`}>
+          {positive ? "+" : ""}{value}
+        </div>
+        <div className="text-[9px] uppercase tracking-[0.25em] mt-1 font-bold text-foreground/80">GD</div>
       </div>
-      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1">GD</div>
     </div>
   );
 }

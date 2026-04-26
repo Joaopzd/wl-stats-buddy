@@ -4,13 +4,11 @@ import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers, store } from "@/lib/store";
 import { aggregatePlayer } from "@/lib/stats";
 import { PlayerCard } from "@/components/PlayerCard";
-import { Flag } from "@/components/Flag";
 import { Plus, Trash2, Pencil, X, Search } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import type { Player, Position, Rarity } from "@/lib/types";
 import { rarityClass, raritySwatch } from "@/lib/format";
-import { COUNTRIES, flagEmoji } from "@/lib/countries";
 
 export const Route = createFileRoute("/players")({
   head: () => ({
@@ -56,21 +54,11 @@ function PlayersPage() {
   const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"name" | "ovr" | "matches" | "goals" | "ga" | "rating">("ga");
-  const [nationFilter, setNationFilter] = useState<string>("");
 
   const aggs = useMemo(
     () => players.map((p) => aggregatePlayer(p, matches)),
     [players, matches],
   );
-
-  // Build the list of nationalities that actually appear in the squad
-  const availableNations = useMemo(() => {
-    const seen = new Set<string>();
-    for (const p of players) if (p.nationality) seen.add(p.nationality);
-    return Array.from(seen)
-      .map((code) => COUNTRIES.find((c) => c.code === code) ?? { code, name: code })
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [players]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -81,9 +69,6 @@ function PlayersPage() {
           a.player.name.toLowerCase().includes(q) ||
           a.player.position.toLowerCase().includes(q),
       );
-    }
-    if (nationFilter) {
-      list = list.filter((a) => a.player.nationality === nationFilter);
     }
     list = [...list].sort((a, b) => {
       switch (sort) {
@@ -96,7 +81,7 @@ function PlayersPage() {
       }
     });
     return list;
-  }, [aggs, search, sort, nationFilter]);
+  }, [aggs, search, sort]);
 
   return (
     <AppShell>
@@ -120,18 +105,6 @@ function PlayersPage() {
             className="w-full bg-input border border-border rounded-md pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
-        <select
-          value={nationFilter}
-          onChange={(e) => setNationFilter(e.target.value)}
-          className="bg-input border border-border rounded-md px-3 py-2 text-sm min-w-[160px]"
-        >
-          <option value="">All nationalities</option>
-          {availableNations.map((c) => (
-            <option key={c.code} value={c.code}>
-              {flagEmoji(c.code)} {c.name}
-            </option>
-          ))}
-        </select>
         <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="bg-input border border-border rounded-md px-3 py-2 text-sm">
           <option value="ga">Sort: G+A</option>
           <option value="goals">Sort: Goals</option>
@@ -168,12 +141,9 @@ function PlayersPage() {
                   <tr key={a.player.id} className="border-t border-border/40 hover:bg-secondary/30">
                     <td className="p-3">
                       <div className="flex items-center gap-3">
-                        <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} nationality={a.player.nationality} size="sm" />
+                        <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} size="sm" />
                         <div className="min-w-0">
-                          <div className="font-semibold flex items-center gap-1.5">
-                            <Flag code={a.player.nationality} size="sm" />
-                            <span className="truncate">{a.player.name}</span>
-                          </div>
+                          <div className="font-semibold truncate">{a.player.name}</div>
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <span className={`h-2 w-2 rounded-full ${raritySwatch(a.player.rarity)}`} />
                             <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{a.player.rarity}</span>
@@ -233,22 +203,12 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
   const [position, setPosition] = useState<Position>(existing?.position ?? "ST");
   const [overall, setOverall] = useState<number>(existing?.overall ?? 85);
   const [rarity, setRarity] = useState<Rarity>(existing?.rarity ?? "Gold");
-  const [nationality, setNationality] = useState<string>(existing?.nationality ?? "");
-  const [nationSearch, setNationSearch] = useState("");
-
-  const filteredCountries = useMemo(() => {
-    const q = nationSearch.trim().toLowerCase();
-    if (!q) return COUNTRIES.slice(0, 12);
-    return COUNTRIES.filter(
-      (c) => c.name.toLowerCase().includes(q) || c.code.toLowerCase() === q,
-    ).slice(0, 60);
-  }, [nationSearch]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return toast.error("Name is required");
     if (overall < 1 || overall > 99) return toast.error("Overall must be 1–99");
-    const patch = { name: name.trim(), position, overall, rarity, nationality: nationality || undefined };
+    const patch = { name: name.trim(), position, overall, rarity };
     if (existing) {
       store.updatePlayer(existing.id, patch);
       toast.success("Player updated");
@@ -284,44 +244,6 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
               <input type="number" min={1} max={99} value={overall} onChange={(e) => setOverall(parseInt(e.target.value) || 0)} className="w-full bg-input border border-border rounded-md px-3 py-2 stat-num" />
             </Field>
           </div>
-          <Field label="Nationality">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 bg-input border border-border rounded-md px-3 py-2">
-                <span className="text-xl leading-none">{flagEmoji(nationality) || "🌍"}</span>
-                <input
-                  value={nationSearch}
-                  onChange={(e) => setNationSearch(e.target.value)}
-                  placeholder={nationality ? COUNTRIES.find((c) => c.code === nationality)?.name ?? "Search countries..." : "Search countries..."}
-                  className="flex-1 bg-transparent focus:outline-none text-sm"
-                />
-                {nationality && (
-                  <button type="button" onClick={() => { setNationality(""); setNationSearch(""); }} className="text-xs text-muted-foreground hover:text-destructive">
-                    Clear
-                  </button>
-                )}
-              </div>
-              <div className="max-h-44 overflow-y-auto rounded border border-border/60 bg-background/40">
-                {filteredCountries.length === 0 ? (
-                  <div className="text-xs text-muted-foreground text-center py-3">No matches</div>
-                ) : (
-                  filteredCountries.map((c) => (
-                    <button
-                      type="button"
-                      key={c.code}
-                      onClick={() => { setNationality(c.code); setNationSearch(""); }}
-                      className={`w-full text-left flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-secondary/60 ${
-                        nationality === c.code ? "bg-primary/15 text-primary" : ""
-                      }`}
-                    >
-                      <span className="text-base leading-none">{flagEmoji(c.code)}</span>
-                      <span className="flex-1 truncate">{c.name}</span>
-                      <span className="text-[10px] text-muted-foreground font-mono">{c.code}</span>
-                    </button>
-                  ))
-                )}
-              </div>
-            </div>
-          </Field>
           <Field label="Card Rarity">
             <select
               value={rarity}

@@ -43,8 +43,6 @@ export interface Player {
   position: Position;
   overall: number;
   rarity: Rarity;
-  /** ISO alpha-2 country code (e.g. "BR", "FR"). Empty/undefined = unset. */
-  nationality?: string;
   createdAt: number;
 }
 

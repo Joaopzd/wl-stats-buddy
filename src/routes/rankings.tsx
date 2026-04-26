@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
-import { Flag } from "@/components/Flag";
 import { useMatches, usePlayers } from "@/lib/store";
 import { aggregateAllPlayers, type PlayerAgg } from "@/lib/stats";
 import { Goal, Sparkles, Wand2 } from "lucide-react";
@@ -120,7 +119,6 @@ function Leaderboard({
             return (
               <li key={a.player.id} className={`flex items-center gap-3 px-3 py-2 rounded-md transition ${rank <= 3 ? "bg-primary/5 border border-primary/20" : "bg-background/50 border border-border/40"}`}>
                 <div className={`stat-num font-display text-xl w-7 text-right shrink-0 ${medal}`}>{rank}</div>
-                <Flag code={a.player.nationality} size="sm" />
                 <div className="min-w-0 flex-1">
                   <div className="font-semibold truncate">{a.player.name}</div>
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">
