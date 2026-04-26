@@ -4,13 +4,11 @@ import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers, store } from "@/lib/store";
 import { aggregatePlayer } from "@/lib/stats";
 import { PlayerCard } from "@/components/PlayerCard";
-import { Flag } from "@/components/Flag";
 import { Plus, Trash2, Pencil, X, Search } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import type { Player, Position, Rarity } from "@/lib/types";
 import { rarityClass, raritySwatch } from "@/lib/format";
-import { COUNTRIES, flagEmoji } from "@/lib/countries";
 
 export const Route = createFileRoute("/players")({
   head: () => ({
@@ -56,21 +54,11 @@ function PlayersPage() {
   const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"name" | "ovr" | "matches" | "goals" | "ga" | "rating">("ga");
-  const [nationFilter, setNationFilter] = useState<string>("");
 
   const aggs = useMemo(
     () => players.map((p) => aggregatePlayer(p, matches)),
     [players, matches],
   );
-
-  // Build the list of nationalities that actually appear in the squad
-  const availableNations = useMemo(() => {
-    const seen = new Set<string>();
-    for (const p of players) if (p.nationality) seen.add(p.nationality);
-    return Array.from(seen)
-      .map((code) => COUNTRIES.find((c) => c.code === code) ?? { code, name: code })
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [players]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -81,9 +69,6 @@ function PlayersPage() {
           a.player.name.toLowerCase().includes(q) ||
           a.player.position.toLowerCase().includes(q),
       );
-    }
-    if (nationFilter) {
-      list = list.filter((a) => a.player.nationality === nationFilter);
     }
     list = [...list].sort((a, b) => {
       switch (sort) {
@@ -96,7 +81,7 @@ function PlayersPage() {
       }
     });
     return list;
-  }, [aggs, search, sort, nationFilter]);
+  }, [aggs, search, sort]);
 
   return (
     <AppShell>
