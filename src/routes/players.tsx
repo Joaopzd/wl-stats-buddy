@@ -203,22 +203,12 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
   const [position, setPosition] = useState<Position>(existing?.position ?? "ST");
   const [overall, setOverall] = useState<number>(existing?.overall ?? 85);
   const [rarity, setRarity] = useState<Rarity>(existing?.rarity ?? "Gold");
-  const [nationality, setNationality] = useState<string>(existing?.nationality ?? "");
-  const [nationSearch, setNationSearch] = useState("");
-
-  const filteredCountries = useMemo(() => {
-    const q = nationSearch.trim().toLowerCase();
-    if (!q) return COUNTRIES.slice(0, 12);
-    return COUNTRIES.filter(
-      (c) => c.name.toLowerCase().includes(q) || c.code.toLowerCase() === q,
-    ).slice(0, 60);
-  }, [nationSearch]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return toast.error("Name is required");
     if (overall < 1 || overall > 99) return toast.error("Overall must be 1–99");
-    const patch = { name: name.trim(), position, overall, rarity, nationality: nationality || undefined };
+    const patch = { name: name.trim(), position, overall, rarity };
     if (existing) {
       store.updatePlayer(existing.id, patch);
       toast.success("Player updated");
@@ -254,44 +244,6 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
               <input type="number" min={1} max={99} value={overall} onChange={(e) => setOverall(parseInt(e.target.value) || 0)} className="w-full bg-input border border-border rounded-md px-3 py-2 stat-num" />
             </Field>
           </div>
-          <Field label="Nationality">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 bg-input border border-border rounded-md px-3 py-2">
-                <span className="text-xl leading-none">{flagEmoji(nationality) || "🌍"}</span>
-                <input
-                  value={nationSearch}
-                  onChange={(e) => setNationSearch(e.target.value)}
-                  placeholder={nationality ? COUNTRIES.find((c) => c.code === nationality)?.name ?? "Search countries..." : "Search countries..."}
-                  className="flex-1 bg-transparent focus:outline-none text-sm"
-                />
-                {nationality && (
-                  <button type="button" onClick={() => { setNationality(""); setNationSearch(""); }} className="text-xs text-muted-foreground hover:text-destructive">
-                    Clear
-                  </button>
-                )}
-              </div>
-              <div className="max-h-44 overflow-y-auto rounded border border-border/60 bg-background/40">
-                {filteredCountries.length === 0 ? (
-                  <div className="text-xs text-muted-foreground text-center py-3">No matches</div>
-                ) : (
-                  filteredCountries.map((c) => (
-                    <button
-                      type="button"
-                      key={c.code}
-                      onClick={() => { setNationality(c.code); setNationSearch(""); }}
-                      className={`w-full text-left flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-secondary/60 ${
-                        nationality === c.code ? "bg-primary/15 text-primary" : ""
-                      }`}
-                    >
-                      <span className="text-base leading-none">{flagEmoji(c.code)}</span>
-                      <span className="flex-1 truncate">{c.name}</span>
-                      <span className="text-[10px] text-muted-foreground font-mono">{c.code}</span>
-                    </button>
-                  ))
-                )}
-              </div>
-            </div>
-          </Field>
           <Field label="Card Rarity">
             <select
               value={rarity}
