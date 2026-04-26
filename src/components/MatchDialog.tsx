@@ -5,7 +5,6 @@ import type { Match, MatchPlayerStat, Platform, PenaltyWinner, Player, WeekendLe
 import { wlLabel } from "@/lib/types";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
-import { Flag } from "./Flag";
 
 const PLATFORMS: Platform[] = ["PC", "PS5", "Xbox"];
 
@@ -152,7 +151,6 @@ export function MatchDialog({
                     <div className="flex items-center justify-between gap-3 mb-2">
                       <label className="flex items-center gap-2 cursor-pointer flex-1 min-w-0">
                         <input type="checkbox" checked={perf.played} onChange={(e) => update(p.id, { played: e.target.checked })} className="h-4 w-4 accent-[var(--primary)]" />
-                        <Flag code={p.nationality} size="sm" />
                         <span className="font-semibold truncate">{p.name}</span>
                         <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">{p.position} · {p.overall}</span>
                         <span className={`text-[9px] uppercase tracking-wider font-bold shrink-0 px-1.5 py-0.5 rounded ${isStarter ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"}`}>
