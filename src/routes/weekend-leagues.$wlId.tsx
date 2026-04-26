@@ -4,7 +4,6 @@ import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers, useWLs, store } from "@/lib/store";
 import { aggregatePlayer, bestStreak, matchIsWin, rankFromWins, wlRecord } from "@/lib/stats";
 import { PlayerCard } from "@/components/PlayerCard";
-import { Flag } from "@/components/Flag";
 import { SquadDialog } from "@/components/SquadDialog";
 import { MatchDialog } from "@/components/MatchDialog";
 import { ReportModal } from "@/components/ReportModal";
