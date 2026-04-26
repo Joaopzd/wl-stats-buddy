@@ -105,18 +105,6 @@ function PlayersPage() {
             className="w-full bg-input border border-border rounded-md pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
-        <select
-          value={nationFilter}
-          onChange={(e) => setNationFilter(e.target.value)}
-          className="bg-input border border-border rounded-md px-3 py-2 text-sm min-w-[160px]"
-        >
-          <option value="">All nationalities</option>
-          {availableNations.map((c) => (
-            <option key={c.code} value={c.code}>
-              {flagEmoji(c.code)} {c.name}
-            </option>
-          ))}
-        </select>
         <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="bg-input border border-border rounded-md px-3 py-2 text-sm">
           <option value="ga">Sort: G+A</option>
           <option value="goals">Sort: Goals</option>
@@ -153,12 +141,9 @@ function PlayersPage() {
                   <tr key={a.player.id} className="border-t border-border/40 hover:bg-secondary/30">
                     <td className="p-3">
                       <div className="flex items-center gap-3">
-                        <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} nationality={a.player.nationality} size="sm" />
+                        <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} size="sm" />
                         <div className="min-w-0">
-                          <div className="font-semibold flex items-center gap-1.5">
-                            <Flag code={a.player.nationality} size="sm" />
-                            <span className="truncate">{a.player.name}</span>
-                          </div>
+                          <div className="font-semibold truncate">{a.player.name}</div>
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <span className={`h-2 w-2 rounded-full ${raritySwatch(a.player.rarity)}`} />
                             <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{a.player.rarity}</span>
