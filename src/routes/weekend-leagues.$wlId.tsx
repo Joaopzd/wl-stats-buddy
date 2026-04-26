@@ -173,12 +173,9 @@ function WLDetail() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {squadAggs.map((a) => (
               <div key={a.player.id} className="surface-card p-3 flex gap-3 items-center">
-                <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} nationality={a.player.nationality} />
+                <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} />
                 <div className="min-w-0 flex-1">
-                  <div className="font-semibold truncate flex items-center gap-1.5">
-                    <Flag code={a.player.nationality} size="sm" />
-                    <span className="truncate">{a.player.name}</span>
-                  </div>
+                  <div className="font-semibold truncate">{a.player.name}</div>
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{a.player.position} · {a.player.overall}</div>
                   <div className="mt-1.5 grid grid-cols-4 gap-1 text-[10px]">
                     <Mini label="MP" v={a.matches} />
