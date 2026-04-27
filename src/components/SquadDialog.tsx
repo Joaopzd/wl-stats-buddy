@@ -215,19 +215,17 @@ export function SquadDialog({
           {bench.length === 0 ? (
             <div className="surface-card p-4 text-center text-muted-foreground text-xs">Empty bench</div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5">
               {bench.map((id) => {
                 const p = playersById.get(id);
                 if (!p) return null;
                 return (
-                  <div key={id} className="surface-card p-2 flex items-center gap-2">
-                    <PlayerCard name={p.name} overall={p.overall} position={p.position} rarity={p.rarity} size="sm" />
-                    <div className="min-w-0 flex-1">
-                      <div className="text-xs font-semibold truncate">{p.name}</div>
-                      <div className="text-[9px] uppercase tracking-wider text-muted-foreground">{p.position} · {p.overall}</div>
-                    </div>
-                    <button onClick={() => removeFromBench(id)} className="text-muted-foreground hover:text-destructive">
-                      <X className="h-3.5 w-3.5" />
+                  <div key={id} className="surface-card px-2 py-1.5 flex items-center gap-2">
+                    <span className="font-display text-base text-primary stat-num w-7 text-center shrink-0 leading-none">{p.overall}</span>
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{p.position}</span>
+                    <div className="text-[11px] font-semibold truncate flex-1 leading-tight">{p.name}</div>
+                    <button onClick={() => removeFromBench(id)} className="text-muted-foreground hover:text-destructive shrink-0">
+                      <X className="h-3 w-3" />
                     </button>
                   </div>
                 );
