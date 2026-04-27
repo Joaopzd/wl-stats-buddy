@@ -3,11 +3,11 @@ import { useMemo, useState, useEffect } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers, useWLs, store } from "@/lib/store";
 import { aggregatePlayer, bestStreak, matchIsWin, rankFromWins, wlRecord } from "@/lib/stats";
-import { PlayerCard } from "@/components/PlayerCard";
+
 import { SquadDialog } from "@/components/SquadDialog";
 import { MatchDialog } from "@/components/MatchDialog";
 import { ReportModal } from "@/components/ReportModal";
-import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Target, Shield } from "lucide-react";
+import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Target, Shield, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import type { Match } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
@@ -47,6 +47,7 @@ function WLDetail() {
   const [reportSeen, setReportSeen] = useState(false);
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState("");
+  const [squadExpanded, setSquadExpanded] = useState(false);
 
   const matches = useMemo(
     () => allMatches.filter((m) => m.wlId === wlId).sort((a, b) => a.index - b.index),
@@ -180,29 +181,46 @@ function WLDetail() {
         )}
       </div>
 
-      <section className="mb-10">
-        <h2 className="font-display text-2xl tracking-wider mb-4">Squad ({squad.length})</h2>
+      <section className="mb-8">
         {squad.length === 0 ? (
-          <div className="surface-card p-8 text-center text-muted-foreground text-sm">
-            No squad yet. Click <span className="text-foreground font-semibold">Add Squad</span> to pull players from your database.
-          </div>
+          <>
+            <h2 className="font-display text-2xl tracking-wider mb-3">Squad (0)</h2>
+            <div className="surface-card p-6 text-center text-muted-foreground text-sm">
+              No squad yet. Click <span className="text-foreground font-semibold">Add Squad</span> to pull players from your database.
+            </div>
+          </>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {squadAggs.map((a) => (
-              <div key={a.player.id} className="surface-card p-3 flex gap-3 items-center">
-                <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} />
-                <div className="min-w-0 flex-1">
-                  <div className="font-semibold truncate">{a.player.name}</div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{a.player.position} · {a.player.overall}</div>
-                  <div className="mt-1.5 grid grid-cols-4 gap-1 text-[10px]">
-                    <Mini label="MP" v={a.matches} />
-                    <Mini label="G" v={a.goals} highlight />
-                    <Mini label="A" v={a.assists} />
-                    <Mini label="Rt" v={a.avgRating} fixed={2} highlight={a.avgRating >= 8} dim={a.avgRating === 0} />
-                  </div>
+          <div className="surface-card overflow-hidden">
+            <button
+              onClick={() => setSquadExpanded((v) => !v)}
+              className="w-full flex items-center justify-between px-4 py-3 hover:bg-secondary/40 transition"
+              aria-expanded={squadExpanded}
+            >
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-primary" />
+                <span className="font-display text-xl tracking-wider">Squad</span>
+                <span className="text-xs text-muted-foreground font-mono">({squad.length})</span>
+              </div>
+              <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${squadExpanded ? "rotate-180" : ""}`} />
+            </button>
+            {squadExpanded && (
+              <div className="px-4 pb-4 pt-1 border-t border-border/60">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {squadAggs.map((a) => (
+                    <div key={a.player.id} className="flex items-center gap-3 px-3 py-2 rounded-md bg-background/50 border border-border/60">
+                      <span className="font-display text-xl text-primary stat-num w-9 text-center shrink-0">{a.player.overall}</span>
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground bg-secondary px-1.5 py-0.5 rounded shrink-0 w-12 text-center">{a.player.position}</span>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-semibold truncate leading-tight">{a.player.name}</div>
+                        <div className="text-[10px] text-muted-foreground font-mono mt-0.5">
+                          {a.matches} MP · {a.goals}G · {a.assists}A · {a.avgRating > 0 ? a.avgRating.toFixed(2) : "—"}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
+            )}
           </div>
         )}
       </section>
@@ -310,15 +328,6 @@ function GDStat({ value }: { value: number }) {
   );
 }
 
-function Mini({ label, v, highlight, fixed, dim }: { label: string; v: number; highlight?: boolean; fixed?: number; dim?: boolean }) {
-  const display = dim ? "—" : fixed != null ? v.toFixed(fixed) : v;
-  return (
-    <div className="bg-background/60 rounded px-1.5 py-1 text-center">
-      <div className="text-muted-foreground/70 text-[8px] uppercase tracking-wider">{label}</div>
-      <div className={`stat-num font-semibold ${dim ? "text-muted-foreground/60" : highlight ? "text-primary" : ""}`}>{display}</div>
-    </div>
-  );
-}
 
 function Tag({ children, tone }: { children: React.ReactNode; tone: "warn" | "info" | "rq" }) {
   const cls =
