@@ -7,9 +7,11 @@ import { aggregatePlayer, bestStreak, matchIsWin, rankFromWins, wlRecord } from 
 import { SquadDialog } from "@/components/SquadDialog";
 import { MatchDialog } from "@/components/MatchDialog";
 import { ReportModal } from "@/components/ReportModal";
+import { PlayerCard } from "@/components/PlayerCard";
+import { FORMATIONS, type FormationSlot } from "@/lib/formations";
 import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Target, Shield, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
-import type { Match } from "@/lib/types";
+import type { Match, Player } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
 
 export const Route = createFileRoute("/weekend-leagues/$wlId")({
