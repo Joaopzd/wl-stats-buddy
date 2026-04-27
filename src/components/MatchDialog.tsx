@@ -136,37 +136,42 @@ export function MatchDialog({
         </div>
 
         <div className="flex-1 overflow-y-auto -mx-2 px-2">
-          <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-2">Player performances</div>
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">Player performances</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono hidden sm:flex gap-3 pr-1">
+              <span className="w-9 text-center">G</span>
+              <span className="w-9 text-center">A</span>
+              <span className="w-12 text-center">Rating</span>
+            </div>
+          </div>
           {squad.length === 0 ? (
             <p className="text-sm text-muted-foreground py-8 text-center">No squad. Add players to the squad first.</p>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-1">
               {[...squad]
                 .sort((a, b) => Number(startingIdSet.has(b.id)) - Number(startingIdSet.has(a.id)))
                 .map((p) => {
                 const perf = perfs[p.id];
                 const isStarter = startingIdSet.has(p.id);
                 return (
-                  <div key={p.id} className={`p-3 rounded-md border transition ${perf.played ? "border-primary/40 bg-primary/5" : "border-border bg-card"}`}>
-                    <div className="flex items-center justify-between gap-3 mb-2">
-                      <label className="flex items-center gap-2 cursor-pointer flex-1 min-w-0">
-                        <input type="checkbox" checked={perf.played} onChange={(e) => update(p.id, { played: e.target.checked })} className="h-4 w-4 accent-[var(--primary)]" />
-                        <span className="font-semibold truncate">{p.name}</span>
-                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">{p.position} · {p.overall}</span>
-                        <span className={`text-[9px] uppercase tracking-wider font-bold shrink-0 px-1.5 py-0.5 rounded ${isStarter ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"}`}>
-                          {isStarter ? "XI" : "Bench"}
-                        </span>
-                      </label>
+                  <div key={p.id} className={`flex items-center gap-2 px-2 py-1.5 rounded-md border transition ${perf.played ? "border-primary/40 bg-primary/5" : "border-border bg-card"}`}>
+                    <input
+                      type="checkbox"
+                      checked={perf.played}
+                      onChange={(e) => update(p.id, { played: e.target.checked })}
+                      className="h-4 w-4 accent-[var(--primary)] shrink-0"
+                      aria-label={`Played: ${p.name}`}
+                    />
+                    <span className={`text-[9px] uppercase tracking-wider font-bold shrink-0 px-1.5 py-0.5 rounded w-10 text-center ${isStarter ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"}`}>
+                      {isStarter ? "XI" : "Sub"}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-semibold truncate leading-tight">{p.name}</div>
+                      <div className="text-[10px] text-muted-foreground font-mono">{p.position} · {p.overall}</div>
                     </div>
-                    {perf.played && (
-                      <div className="space-y-2">
-                        <div className="grid grid-cols-2 gap-2">
-                          <Stepper label="G" v={perf.goals} on={(v) => update(p.id, { goals: v })} accent />
-                          <Stepper label="A" v={perf.assists} on={(v) => update(p.id, { assists: v })} />
-                        </div>
-                        <RatingInput value={perf.rating} onChange={(v) => update(p.id, { rating: v })} />
-                      </div>
-                    )}
+                    <NumBox v={perf.goals} on={(v) => update(p.id, { goals: v })} disabled={!perf.played} accent />
+                    <NumBox v={perf.assists} on={(v) => update(p.id, { assists: v })} disabled={!perf.played} />
+                    <RatingBox v={perf.rating} on={(v) => update(p.id, { rating: v })} disabled={!perf.played} />
                   </div>
                 );
               })}
