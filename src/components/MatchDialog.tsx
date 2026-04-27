@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Minus, Plus, Zap, Flag as FlagIcon, AlertTriangle } from "lucide-react";
+import { X, Zap, Flag as FlagIcon, AlertTriangle } from "lucide-react";
 import { store } from "@/lib/store";
 import type { Match, MatchPlayerStat, Platform, PenaltyWinner, Player, WeekendLeague } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
