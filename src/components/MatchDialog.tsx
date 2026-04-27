@@ -215,16 +215,50 @@ function ScoreInput({ label, value, onChange, accent }: { label: string; value: 
   );
 }
 
-function Stepper({ label, v, on, accent }: { label: string; v: number; on: (v: number) => void; accent?: boolean }) {
+function NumBox({ v, on, disabled, accent }: { v: number; on: (v: number) => void; disabled?: boolean; accent?: boolean }) {
   return (
-    <div className="bg-background/60 border border-border/60 rounded-md p-1.5">
-      <div className="text-[9px] uppercase tracking-wider text-muted-foreground text-center font-semibold">{label}</div>
-      <div className="flex items-center justify-between gap-1 mt-1">
-        <button type="button" onClick={() => on(Math.max(0, v - 1))} className="h-6 w-6 rounded text-muted-foreground hover:bg-secondary grid place-items-center"><Minus className="h-3 w-3" /></button>
-        <span className={`stat-num font-semibold ${accent ? "text-primary" : ""}`}>{v}</span>
-        <button type="button" onClick={() => on(v + 1)} className="h-6 w-6 rounded text-muted-foreground hover:bg-secondary grid place-items-center"><Plus className="h-3 w-3" /></button>
-      </div>
-    </div>
+    <input
+      type="number"
+      inputMode="numeric"
+      min={0}
+      value={v}
+      disabled={disabled}
+      onFocus={(e) => e.target.select()}
+      onChange={(e) => {
+        const val = e.target.value;
+        if (val === "") return on(0);
+        on(Math.max(0, parseInt(val) || 0));
+      }}
+      className={`w-9 h-8 bg-background/80 border border-border rounded text-center stat-num text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none shrink-0 ${accent ? "text-primary" : ""}`}
+    />
+  );
+}
+
+function RatingBox({ v, on, disabled }: { v: number; on: (v: number) => void; disabled?: boolean }) {
+  const clamp = (n: number) => Math.max(0, Math.min(10, Math.round(n * 10) / 10));
+  const tone =
+    disabled ? "text-muted-foreground border-border/60 bg-background/40" :
+    v >= 8 ? "text-primary border-primary/60 bg-primary/10" :
+    v >= 6 ? "text-foreground border-border bg-background/80" :
+    v > 0 ? "text-destructive border-destructive/40 bg-destructive/5" :
+    "text-muted-foreground border-border/60 bg-background/40";
+  return (
+    <input
+      type="number"
+      inputMode="decimal"
+      min={0}
+      max={10}
+      step={0.1}
+      value={v}
+      disabled={disabled}
+      onFocus={(e) => e.target.select()}
+      onChange={(e) => {
+        const val = e.target.value;
+        if (val === "") return on(0);
+        on(clamp(parseFloat(val) || 0));
+      }}
+      className={`w-12 h-8 rounded border text-center stat-num text-sm font-semibold outline-none focus:ring-1 focus:ring-primary disabled:opacity-30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none shrink-0 ${tone}`}
+    />
   );
 }
 
