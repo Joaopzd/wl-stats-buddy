@@ -328,15 +328,6 @@ function GDStat({ value }: { value: number }) {
   );
 }
 
-function Mini({ label, v, highlight, fixed, dim }: { label: string; v: number; highlight?: boolean; fixed?: number; dim?: boolean }) {
-  const display = dim ? "—" : fixed != null ? v.toFixed(fixed) : v;
-  return (
-    <div className="bg-background/60 rounded px-1.5 py-1 text-center">
-      <div className="text-muted-foreground/70 text-[8px] uppercase tracking-wider">{label}</div>
-      <div className={`stat-num font-semibold ${dim ? "text-muted-foreground/60" : highlight ? "text-primary" : ""}`}>{display}</div>
-    </div>
-  );
-}
 
 function Tag({ children, tone }: { children: React.ReactNode; tone: "warn" | "info" | "rq" }) {
   const cls =
