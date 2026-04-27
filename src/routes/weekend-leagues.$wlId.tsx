@@ -7,9 +7,11 @@ import { aggregatePlayer, bestStreak, matchIsWin, rankFromWins, wlRecord } from 
 import { SquadDialog } from "@/components/SquadDialog";
 import { MatchDialog } from "@/components/MatchDialog";
 import { ReportModal } from "@/components/ReportModal";
+import { PlayerCard } from "@/components/PlayerCard";
+import { FORMATIONS, type FormationSlot } from "@/lib/formations";
 import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Target, Shield, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
-import type { Match } from "@/lib/types";
+import type { Match, Player } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
 
 export const Route = createFileRoute("/weekend-leagues/$wlId")({
@@ -196,29 +198,63 @@ function WLDetail() {
               className="w-full flex items-center justify-between px-4 py-3 hover:bg-secondary/40 transition"
               aria-expanded={squadExpanded}
             >
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-primary" />
+              <div className="flex items-center gap-2 min-w-0">
+                <Users className="h-4 w-4 text-primary shrink-0" />
                 <span className="font-display text-xl tracking-wider">Squad</span>
                 <span className="text-xs text-muted-foreground font-mono">({squad.length})</span>
+                {wl.formation && (
+                  <span className="px-1.5 py-0.5 rounded bg-secondary text-foreground text-[9px] font-bold uppercase tracking-wider ml-1">
+                    {wl.formation}
+                  </span>
+                )}
+                {wl.startingAssignments && (
+                  <span className="text-[10px] text-muted-foreground font-mono ml-auto sm:ml-2 shrink-0">
+                    {Object.keys(wl.startingAssignments).length}/11 · {(wl.benchPlayerIds?.length ?? 0)} bench
+                  </span>
+                )}
               </div>
-              <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${squadExpanded ? "rotate-180" : ""}`} />
+              <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform shrink-0 ${squadExpanded ? "rotate-180" : ""}`} />
             </button>
             {squadExpanded && (
-              <div className="px-4 pb-4 pt-1 border-t border-border/60">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                  {squadAggs.map((a) => (
-                    <div key={a.player.id} className="flex items-center gap-3 px-3 py-2 rounded-md bg-background/50 border border-border/60">
-                      <span className="font-display text-xl text-primary stat-num w-9 text-center shrink-0">{a.player.overall}</span>
-                      <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground bg-secondary px-1.5 py-0.5 rounded shrink-0 w-12 text-center">{a.player.position}</span>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-sm font-semibold truncate leading-tight">{a.player.name}</div>
-                        <div className="text-[10px] text-muted-foreground font-mono mt-0.5">
-                          {a.matches} MP · {a.goals}G · {a.assists}A · {a.avgRating > 0 ? a.avgRating.toFixed(2) : "—"}
+              <div className="px-4 pb-4 pt-3 border-t border-border/60 space-y-4">
+                {wl.formation && wl.startingAssignments ? (
+                  <>
+                    <LineupPitch
+                      formation={wl.formation}
+                      assignments={wl.startingAssignments}
+                      players={players}
+                    />
+                    <BenchList
+                      benchIds={wl.benchPlayerIds ?? []}
+                      players={players}
+                    />
+                  </>
+                ) : (
+                  <div className="text-center text-xs text-muted-foreground py-4">
+                    No formation set. Open <span className="text-foreground font-semibold">Edit Squad</span> to pick one.
+                  </div>
+                )}
+
+                <details className="group">
+                  <summary className="cursor-pointer text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold py-1 hover:text-foreground select-none flex items-center gap-1">
+                    <ChevronDown className="h-3 w-3 group-open:rotate-180 transition-transform" />
+                    Per-player stats
+                  </summary>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 mt-2">
+                    {squadAggs.map((a) => (
+                      <div key={a.player.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-background/50 border border-border/60">
+                        <span className="font-display text-base text-primary stat-num w-7 text-center shrink-0 leading-none">{a.player.overall}</span>
+                        <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{a.player.position}</span>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[11px] font-semibold truncate leading-tight">{a.player.name}</div>
+                          <div className="text-[9px] text-muted-foreground font-mono leading-tight">
+                            {a.matches}MP · {a.goals}G · {a.assists}A · {a.avgRating > 0 ? a.avgRating.toFixed(2) : "—"}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </details>
               </div>
             )}
           </div>
@@ -338,5 +374,86 @@ function Tag({ children, tone }: { children: React.ReactNode; tone: "warn" | "in
     <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${cls}`}>
       {children}
     </span>
+  );
+}
+
+function LineupPitch({
+  formation,
+  assignments,
+  players,
+}: {
+  formation: keyof typeof FORMATIONS;
+  assignments: Record<string, string>;
+  players: Player[];
+}) {
+  const slots: FormationSlot[] = FORMATIONS[formation].slots;
+  const playersById = new Map(players.map((p) => [p.id, p]));
+  return (
+    <div>
+      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold mb-2">
+        Starting XI · {formation}
+      </div>
+      <div
+        className="relative w-full max-w-xs mx-auto rounded-lg overflow-hidden border border-emerald-700/40"
+        style={{
+          aspectRatio: "3 / 4",
+          background:
+            "repeating-linear-gradient(0deg, oklch(0.32 0.06 145) 0 8%, oklch(0.36 0.06 145) 8% 16%)",
+        }}
+      >
+        <div className="absolute inset-1.5 border border-white/30 rounded" />
+        <div className="absolute left-1/2 top-1.5 bottom-1.5 w-px bg-white/30 -translate-x-1/2" />
+        <div className="absolute left-1/2 top-1/2 h-10 w-10 border border-white/30 rounded-full -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute left-1/2 top-1.5 -translate-x-1/2 w-1/2 h-7 border border-t-0 border-white/30" />
+        <div className="absolute left-1/2 bottom-1.5 -translate-x-1/2 w-1/2 h-7 border border-b-0 border-white/30" />
+        {slots.map((slot) => {
+          const pid = assignments[slot.id];
+          const p = pid ? playersById.get(pid) : null;
+          return (
+            <div
+              key={slot.id}
+              className="absolute -translate-x-1/2 -translate-y-1/2"
+              style={{ left: `${slot.x}%`, top: `${slot.y}%` }}
+            >
+              {p ? (
+                <PlayerCard name={p.name} overall={p.overall} position={p.position} rarity={p.rarity} size="xs" />
+              ) : (
+                <div className="h-9 w-9 rounded-full border-2 border-dashed border-white/60 bg-black/30 grid place-items-center">
+                  <span className="text-[9px] font-bold text-white tracking-wider">{slot.position}</span>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function BenchList({ benchIds, players }: { benchIds: string[]; players: Player[] }) {
+  const playersById = new Map(players.map((p) => [p.id, p]));
+  return (
+    <div>
+      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold mb-2">
+        Bench ({benchIds.length})
+      </div>
+      {benchIds.length === 0 ? (
+        <div className="surface-card p-3 text-center text-muted-foreground text-xs">Empty bench</div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5">
+          {benchIds.map((id) => {
+            const p = playersById.get(id);
+            if (!p) return null;
+            return (
+              <div key={id} className="surface-card px-2 py-1.5 flex items-center gap-2">
+                <span className="font-display text-base text-primary stat-num w-7 text-center shrink-0 leading-none">{p.overall}</span>
+                <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{p.position}</span>
+                <div className="text-[11px] font-semibold truncate flex-1 leading-tight">{p.name}</div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
