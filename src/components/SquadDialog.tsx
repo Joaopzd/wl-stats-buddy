@@ -284,19 +284,19 @@ function Pitch({
 }) {
   return (
     <div
-      className="relative w-full rounded-lg overflow-hidden border border-emerald-700/40"
+      className="relative w-full max-w-sm mx-auto rounded-lg overflow-hidden border border-emerald-700/40"
       style={{
-        aspectRatio: "2 / 3",
+        aspectRatio: "3 / 4",
         background:
           "repeating-linear-gradient(0deg, oklch(0.32 0.06 145) 0 8%, oklch(0.36 0.06 145) 8% 16%)",
       }}
     >
       {/* Pitch markings */}
-      <div className="absolute inset-2 border-2 border-white/30 rounded" />
-      <div className="absolute left-1/2 top-2 bottom-2 w-px bg-white/30 -translate-x-1/2" />
-      <div className="absolute left-1/2 top-1/2 h-16 w-16 border-2 border-white/30 rounded-full -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute left-1/2 top-2 -translate-x-1/2 w-1/2 h-12 border-2 border-t-0 border-white/30" />
-      <div className="absolute left-1/2 bottom-2 -translate-x-1/2 w-1/2 h-12 border-2 border-b-0 border-white/30" />
+      <div className="absolute inset-1.5 border border-white/30 rounded" />
+      <div className="absolute left-1/2 top-1.5 bottom-1.5 w-px bg-white/30 -translate-x-1/2" />
+      <div className="absolute left-1/2 top-1/2 h-10 w-10 border border-white/30 rounded-full -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute left-1/2 top-1.5 -translate-x-1/2 w-1/2 h-7 border border-t-0 border-white/30" />
+      <div className="absolute left-1/2 bottom-1.5 -translate-x-1/2 w-1/2 h-7 border border-b-0 border-white/30" />
 
       {slots.map((slot) => {
         const playerId = assignments[slot.id];
@@ -310,24 +310,24 @@ function Pitch({
             <button
               onClick={() => onSlotClick(slot)}
               className={`group relative grid place-items-center transition ${
-                player ? "" : "h-12 w-12 rounded-full border-2 border-dashed border-white/60 bg-black/30 hover:bg-black/50 hover:border-white"
+                player ? "" : "h-9 w-9 rounded-full border-2 border-dashed border-white/60 bg-black/30 hover:bg-black/50 hover:border-white"
               }`}
               title={slot.position}
             >
               {player ? (
                 <div className="relative">
-                  <PlayerCard name={player.name} overall={player.overall} position={player.position} rarity={player.rarity} size="sm" />
+                  <PlayerCard name={player.name} overall={player.overall} position={player.position} rarity={player.rarity} size="xs" />
                   <span
                     role="button"
                     tabIndex={0}
                     onClick={(e) => { e.stopPropagation(); onSlotClear(slot.id); }}
-                    className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-destructive text-destructive-foreground grid place-items-center opacity-0 group-hover:opacity-100 transition"
+                    className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-destructive text-destructive-foreground grid place-items-center opacity-0 group-hover:opacity-100 transition"
                   >
-                    <X className="h-2.5 w-2.5" />
+                    <X className="h-2 w-2" />
                   </span>
                 </div>
               ) : (
-                <span className="text-[10px] font-bold text-white tracking-wider">{slot.position}</span>
+                <span className="text-[9px] font-bold text-white tracking-wider">{slot.position}</span>
               )}
             </button>
           </div>
