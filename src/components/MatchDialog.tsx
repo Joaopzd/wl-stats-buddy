@@ -279,32 +279,3 @@ function FlagToggle({ active, onClick, icon, label }: { active: boolean; onClick
   );
 }
 
-function RatingInput({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  const clamp = (n: number) => Math.max(0, Math.min(10, Math.round(n * 10) / 10));
-  const tone =
-    value >= 8 ? "text-primary border-primary/60 bg-primary/10" :
-    value >= 6 ? "text-foreground border-border bg-background/60" :
-    value > 0 ? "text-destructive border-destructive/40 bg-destructive/5" :
-    "text-muted-foreground border-border/60 bg-background/40";
-  return (
-    <div className={`flex items-center gap-3 rounded-md border p-2 ${tone}`}>
-      <div className="text-[9px] uppercase tracking-[0.2em] font-semibold opacity-80">Match Rating</div>
-      <input
-        type="number"
-        inputMode="decimal"
-        min={0}
-        max={10}
-        step={0.1}
-        value={value}
-        onFocus={(e) => e.target.select()}
-        onChange={(e) => {
-          const v = e.target.value;
-          if (v === "") return onChange(0);
-          onChange(clamp(parseFloat(v) || 0));
-        }}
-        className="ml-auto w-20 h-9 bg-background/80 border border-border rounded text-center font-display text-lg outline-none focus:border-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-      />
-      <span className="text-xs opacity-60">/ 10</span>
-    </div>
-  );
-}
