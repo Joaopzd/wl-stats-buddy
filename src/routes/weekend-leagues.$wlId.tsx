@@ -262,42 +262,83 @@ function WLDetail() {
       </section>
 
       <section>
-        <h2 className="font-display text-2xl tracking-wider mb-4">Matches ({matches.length})</h2>
+        <div className="flex items-baseline justify-between mb-3">
+          <h2 className="font-display text-2xl tracking-wider">Matches ({matches.length})</h2>
+          <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Tap to edit</span>
+        </div>
         {matches.length === 0 ? (
           <div className="surface-card p-8 text-center text-muted-foreground text-sm">
             No matches yet.
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="surface-card overflow-hidden divide-y divide-border/60">
+            {/* Header row */}
+            <div className="hidden sm:grid grid-cols-[2.25rem_3.75rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-1.5 text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-bold bg-background/40">
+              <span>#</span>
+              <span className="text-center">Score</span>
+              <span>Plat</span>
+              <span>Tags</span>
+              <span className="text-right">G</span>
+              <span className="text-right">A</span>
+              <span className="text-right pr-1">Act</span>
+            </div>
             {matches.map((m) => {
               const win = matchIsWin(m);
+              const totalG = m.performances.reduce((s, p) => s + (p.goals || 0), 0);
+              const totalA = m.performances.reduce((s, p) => s + (p.assists || 0), 0);
               return (
-                <div key={m.id} className={`surface-card p-4 border-l-4 ${win ? "border-l-primary" : "border-l-destructive"}`}>
-                  <div className="flex items-center justify-between">
-                    <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Match {m.index} · {m.platform}</div>
-                    <div className="flex gap-1">
-                      <button onClick={() => { setEditingMatch(m); setMatchOpen(true); }} className="p-1 text-muted-foreground hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
-                      <button onClick={() => { if (confirm("Delete this match?")) { store.deleteMatch(m.id); toast.success("Deleted"); } }} className="p-1 text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
-                    </div>
+                <div
+                  key={m.id}
+                  className={`grid grid-cols-[2.25rem_3.75rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-2 border-l-4 hover:bg-secondary/30 transition ${win ? "border-l-primary" : "border-l-destructive"}`}
+                >
+                  <button
+                    onClick={() => { setEditingMatch(m); setMatchOpen(true); }}
+                    className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground text-left hover:text-foreground"
+                    aria-label={`Edit match ${m.index}`}
+                  >
+                    M{m.index}
+                  </button>
+                  <button
+                    onClick={() => { setEditingMatch(m); setMatchOpen(true); }}
+                    className="font-display stat-num text-base text-center leading-none"
+                    aria-label={`Match ${m.index} score`}
+                  >
+                    <span className={win ? "text-primary" : "text-foreground"}>{m.scoreFor}</span>
+                    <span className="text-muted-foreground/50 mx-1">–</span>
+                    <span className={!win ? "text-destructive" : "text-foreground"}>{m.scoreAgainst}</span>
+                  </button>
+                  <span className="text-[9px] font-mono uppercase tracking-wider text-muted-foreground bg-secondary/60 px-1 py-0.5 rounded text-center">
+                    {m.platform}
+                  </span>
+                  <div className="flex items-center gap-1 flex-wrap min-w-0">
+                    <span className={`text-[9px] font-bold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>
+                      {win ? "W" : "L"}
+                    </span>
+                    {m.extraTime && <Tag tone="warn">ET</Tag>}
+                    {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
+                    {m.rageQuit && <Tag tone="rq">RQ</Tag>}
                   </div>
-                  <div className="font-display text-4xl mt-2 stat-num">
-                    <span className={win ? "text-primary" : ""}>{m.scoreFor}</span>
-                    <span className="text-muted-foreground/50 mx-2">–</span>
-                    <span className={!win ? "text-destructive" : ""}>{m.scoreAgainst}</span>
-                  </div>
-                  <div className="mt-1 flex items-center justify-between gap-2">
-                    <div className={`text-xs font-semibold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>{win ? "Win" : "Loss"}</div>
-                    <div className="flex items-center gap-1 flex-wrap">
-                      {m.extraTime && <Tag tone="warn">ET</Tag>}
-                      {m.penalties && <Tag tone="info">PEN {m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
-                      {m.rageQuit && <Tag tone="rq">RQ</Tag>}
-                    </div>
-                  </div>
-                  <div className="mt-3 pt-3 border-t border-border/60 text-[11px] text-muted-foreground">
-                    {m.performances.filter(p => p.goals > 0 || p.assists > 0).slice(0, 3).map((p) => {
-                      const player = players.find(pl => pl.id === p.playerId);
-                      return player ? <div key={p.playerId}>⚽ {player.name.split(" ").slice(-1)[0]}: {p.goals}G {p.assists}A</div> : null;
-                    })}
+                  <span className="font-mono stat-num text-xs text-right text-foreground">
+                    {totalG}<span className="text-muted-foreground text-[8px] ml-0.5">G</span>
+                  </span>
+                  <span className="font-mono stat-num text-xs text-right text-foreground">
+                    {totalA}<span className="text-muted-foreground text-[8px] ml-0.5">A</span>
+                  </span>
+                  <div className="flex justify-end gap-0.5">
+                    <button
+                      onClick={() => { setEditingMatch(m); setMatchOpen(true); }}
+                      className="p-1 text-muted-foreground hover:text-foreground"
+                      aria-label="Edit"
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </button>
+                    <button
+                      onClick={() => { if (confirm("Delete this match?")) { store.deleteMatch(m.id); toast.success("Deleted"); } }}
+                      className="p-1 text-muted-foreground hover:text-destructive"
+                      aria-label="Delete"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
                   </div>
                 </div>
               );
