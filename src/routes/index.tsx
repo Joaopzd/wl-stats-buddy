@@ -3,8 +3,8 @@ import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { StatTile } from "@/components/StatTile";
 import { useMatches, usePlayers, useWLs } from "@/lib/store";
-import { aggregateAllPlayers, rankFromWins, wlRecord } from "@/lib/stats";
-import { Trophy, Target, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles } from "lucide-react";
+import { aggregateAllPlayers, platformRecords, rankFromWins, wlRecord } from "@/lib/stats";
+import { Trophy, Target, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, Gamepad2 } from "lucide-react";
 import { RankBadge } from "@/components/RankBadge";
 
 export const Route = createFileRoute("/")({
@@ -42,6 +42,8 @@ function Dashboard() {
     for (const m of matches) { gf += m.scoreFor; ga += m.scoreAgainst; }
     return { gf, ga };
   }, [matches]);
+
+  const platformStats = useMemo(() => platformRecords(matches), [matches]);
 
   const aggs = useMemo(() => aggregateAllPlayers(players, matches), [players, matches]);
   const mostApps = useMemo(() => [...aggs].filter(a => a.matches > 0).sort((a, b) => b.matches - a.matches)[0], [aggs]);
