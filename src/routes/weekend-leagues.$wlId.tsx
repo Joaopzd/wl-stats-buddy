@@ -221,6 +221,35 @@ function WLDetail() {
             </button>
             {squadExpanded && (
               <div className="px-4 pb-4 pt-3 border-t border-border/60 space-y-4">
+                {(() => {
+                  const mvpLeader = [...squadAggs].filter((a) => a.mvpCount > 0).sort((a, b) => b.mvpCount - a.mvpCount || b.avgRating - a.avgRating)[0];
+                  const csLeader = [...squadAggs].filter((a) => a.cleanSheets > 0).sort((a, b) => b.cleanSheets - a.cleanSheets)[0];
+                  if (!mvpLeader && !csLeader) return null;
+                  return (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {mvpLeader && (
+                        <div className="rounded-md border border-amber-400/40 bg-amber-500/10 px-3 py-2 flex items-center gap-2">
+                          <Trophy className="h-4 w-4 text-amber-300 shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <div className="text-[9px] uppercase tracking-[0.25em] text-amber-300 font-bold">Weekly MVP</div>
+                            <div className="text-xs font-semibold truncate">{mvpLeader.player.name}</div>
+                          </div>
+                          <div className="font-display stat-num text-amber-300 text-lg">{mvpLeader.mvpCount}</div>
+                        </div>
+                      )}
+                      {csLeader && (
+                        <div className="rounded-md border border-sky-400/40 bg-sky-500/10 px-3 py-2 flex items-center gap-2">
+                          <Shield className="h-4 w-4 text-sky-300 shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <div className="text-[9px] uppercase tracking-[0.25em] text-sky-300 font-bold">Clean Sheets Leader</div>
+                            <div className="text-xs font-semibold truncate">{csLeader.player.name}</div>
+                          </div>
+                          <div className="font-display stat-num text-sky-300 text-lg">{csLeader.cleanSheets}</div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
                 {wl.formation && wl.startingAssignments ? (
                   <>
                     <LineupPitch
@@ -253,6 +282,8 @@ function WLDetail() {
                           <div className="text-[11px] font-semibold truncate leading-tight">{a.player.name}</div>
                           <div className="text-[9px] text-muted-foreground font-mono leading-tight">
                             {a.matches}MP · {a.goals}G · {a.assists}A · {a.avgRating > 0 ? a.avgRating.toFixed(2) : "—"}
+                            {a.mvpCount > 0 && <span className="text-amber-300 ml-1">· {a.mvpCount}★</span>}
+                            {a.cleanSheets > 0 && <span className="text-sky-300 ml-1">· {a.cleanSheets}CS</span>}
                           </div>
                         </div>
                       </div>

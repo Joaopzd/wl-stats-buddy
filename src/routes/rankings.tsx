@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers } from "@/lib/store";
 import { aggregateAllPlayers, type PlayerAgg } from "@/lib/stats";
-import { Goal, Sparkles, Wand2 } from "lucide-react";
+import { Goal, Sparkles, Wand2, Trophy, Shield } from "lucide-react";
 
 export const Route = createFileRoute("/rankings")({
   head: () => ({
@@ -40,6 +40,14 @@ function RankingsPage() {
         .sort((a, b) => b.avgRating - a.avgRating)
         .slice(0, 10),
     [aggs, minMatchesForRating],
+  );
+  const topMvps = useMemo(
+    () => [...aggs].filter((a) => a.mvpCount > 0).sort((a, b) => b.mvpCount - a.mvpCount || b.avgRating - a.avgRating).slice(0, 10),
+    [aggs],
+  );
+  const topCleanSheets = useMemo(
+    () => [...aggs].filter((a) => a.cleanSheets > 0).sort((a, b) => b.cleanSheets - a.cleanSheets || a.goalsConceded - b.goalsConceded).slice(0, 10),
+    [aggs],
   );
 
   return (
@@ -78,6 +86,22 @@ function RankingsPage() {
           metricLabel="Avg Rating"
           empty={`Need ${minMatchesForRating} of ${totalMatches} club matches with a rating.`}
           subline={`Min ${minMatchesForRating} of ${totalMatches} club matches`}
+        />
+        <Leaderboard
+          title="Top 10 MVPs"
+          icon={<Trophy className="h-4 w-4" />}
+          rows={topMvps}
+          metric={(a) => `${a.mvpCount}`}
+          metricLabel="MVPs"
+          empty="No MVP awards yet. Highest-rated player per match earns the badge."
+        />
+        <Leaderboard
+          title="Top 10 Clean Sheets"
+          icon={<Shield className="h-4 w-4" />}
+          rows={topCleanSheets}
+          metric={(a) => `${a.cleanSheets}`}
+          metricLabel="CS"
+          empty="No clean sheets yet."
         />
       </div>
     </AppShell>

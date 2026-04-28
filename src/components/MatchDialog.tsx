@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Zap, Flag as FlagIcon, AlertTriangle } from "lucide-react";
+import { X, Zap, Flag as FlagIcon, AlertTriangle, Trophy } from "lucide-react";
 import { store } from "@/lib/store";
 import type { Match, MatchPlayerStat, Platform, PenaltyWinner, Player, WeekendLeague } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
@@ -28,6 +28,7 @@ export function MatchDialog({
   const [penalties, setPenalties] = useState<boolean>(existingMatch?.penalties ?? false);
   const [penaltyWinner, setPenaltyWinner] = useState<PenaltyWinner>(existingMatch?.penaltyWinner ?? "us");
   const [rageQuit, setRageQuit] = useState<boolean>(existingMatch?.rageQuit ?? false);
+  const [mvpId, setMvpId] = useState<string>(existingMatch?.mvpPlayerId ?? "");
 
   const startingIdSet = new Set(Object.values(wl.startingAssignments ?? {}));
   const [perfs, setPerfs] = useState<Record<string, MatchPlayerStat & { played: boolean }>>(() => {
@@ -58,11 +59,15 @@ export function MatchDialog({
       .filter((p) => p.played)
       .map(({ played, ...rest }) => rest);
 
+    const playedIds = new Set(performances.map((p) => p.playerId));
+    const finalMvpId = mvpId && playedIds.has(mvpId) ? mvpId : undefined;
+
     const flags = {
       extraTime,
       penalties,
       penaltyWinner: penalties ? penaltyWinner : undefined,
       rageQuit,
+      mvpPlayerId: finalMvpId,
     };
 
     if (existingMatch) {
@@ -133,6 +138,25 @@ export function MatchDialog({
               </div>
             </div>
           )}
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
+              <Trophy className="h-3 w-3 text-amber-300" /> MVP <span className="text-muted-foreground/60 normal-case tracking-normal">(auto-picked from highest rating if blank)</span>
+            </div>
+            <select
+              value={mvpId}
+              onChange={(e) => setMvpId(e.target.value)}
+              className="w-full bg-input border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+            >
+              <option value="">— Auto (highest rated) —</option>
+              {squad
+                .filter((p) => perfs[p.id]?.played)
+                .map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} · {p.position} · {p.overall}
+                  </option>
+                ))}
+            </select>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto -mx-2 px-2">

@@ -17,11 +17,14 @@ export function MatchDetailModal({
   const playersById = new Map(players.map((p) => [p.id, p]));
   const win = matchIsWin(match);
 
-  // MVP: highest rating > 0
-  const rated = match.performances.filter((p) => (p.rating ?? 0) > 0);
-  const mvp = rated.length
-    ? [...rated].sort((a, b) => b.rating - a.rating || (b.goals + b.assists) - (a.goals + a.assists))[0]
+  // MVP: explicit mvpPlayerId, else highest rating > 0
+  const explicitMvp = match.mvpPlayerId
+    ? match.performances.find((p) => p.playerId === match.mvpPlayerId)
     : null;
+  const rated = match.performances.filter((p) => (p.rating ?? 0) > 0);
+  const mvp = explicitMvp ?? (rated.length
+    ? [...rated].sort((a, b) => b.rating - a.rating || (b.goals + b.assists) - (a.goals + a.assists))[0]
+    : null);
   const mvpPlayer = mvp ? playersById.get(mvp.playerId) : null;
 
   const scorers = match.performances

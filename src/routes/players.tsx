@@ -53,7 +53,7 @@ function PlayersPage() {
   const [editing, setEditing] = useState<Player | null>(null);
   const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<"name" | "ovr" | "matches" | "goals" | "ga" | "rating">("ga");
+  const [sort, setSort] = useState<"name" | "ovr" | "matches" | "goals" | "ga" | "rating" | "mvp" | "cs">("ga");
 
   const aggs = useMemo(
     () => players.map((p) => aggregatePlayer(p, matches)),
@@ -78,6 +78,8 @@ function PlayersPage() {
         case "goals": return b.goals - a.goals;
         case "ga": return b.ga - a.ga;
         case "rating": return b.avgRating - a.avgRating;
+        case "mvp": return b.mvpCount - a.mvpCount;
+        case "cs": return b.cleanSheets - a.cleanSheets;
       }
     });
     return list;
@@ -110,6 +112,8 @@ function PlayersPage() {
           <option value="goals">Sort: Goals</option>
           <option value="matches">Sort: Matches</option>
           <option value="rating">Sort: Avg Rating</option>
+          <option value="mvp">Sort: MVPs</option>
+          <option value="cs">Sort: Clean Sheets</option>
           <option value="ovr">Sort: Overall</option>
           <option value="name">Sort: Name</option>
         </select>
@@ -132,6 +136,9 @@ function PlayersPage() {
                   <th className="text-right p-3 font-semibold">G</th>
                   <th className="text-right p-3 font-semibold">A</th>
                   <th className="text-right p-3 font-semibold">G/A</th>
+                  <th className="text-right p-3 font-semibold" title="MVP awards">MVP</th>
+                  <th className="text-right p-3 font-semibold" title="Clean sheets">CS</th>
+                  <th className="text-right p-3 font-semibold" title="Goals conceded while on pitch">GC</th>
                   <th className="text-right p-3 font-semibold">Rating</th>
                   <th className="p-3"></th>
                 </tr>
@@ -157,6 +164,13 @@ function PlayersPage() {
                     <td className="p-3 text-right stat-num text-primary font-semibold">{a.goals}</td>
                     <td className="p-3 text-right stat-num">{a.assists}</td>
                     <td className="p-3 text-right stat-num font-semibold">{a.ga}</td>
+                    <td className="p-3 text-right stat-num">
+                      {a.mvpCount > 0 ? <span className="text-amber-300 font-semibold">{a.mvpCount}</span> : <span className="text-muted-foreground/60">0</span>}
+                    </td>
+                    <td className="p-3 text-right stat-num">
+                      {a.cleanSheets > 0 ? <span className="text-sky-300 font-semibold">{a.cleanSheets}</span> : <span className="text-muted-foreground/60">0</span>}
+                    </td>
+                    <td className="p-3 text-right stat-num text-muted-foreground">{a.goalsConceded}</td>
                     <td className="p-3 text-right stat-num">
                       {a.avgRating > 0 ? (
                         <span className={a.avgRating >= 8 ? "text-primary font-semibold" : a.avgRating < 6 ? "text-destructive" : ""}>

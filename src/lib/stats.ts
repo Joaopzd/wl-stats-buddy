@@ -1,4 +1,4 @@
-import type { Match, Player, WeekendLeague } from "./types";
+import type { Match, Platform, Player, WeekendLeague } from "./types";
 
 export interface PlayerAgg {
   player: Player;
@@ -11,11 +11,32 @@ export interface PlayerAgg {
   avgRating: number;
   /** Number of appearances that had a rating > 0 (used for the avg). */
   ratedMatches: number;
+  /** Number of matches the player was the MVP. */
+  mvpCount: number;
+  /** Number of played matches where opponent scored 0. */
+  cleanSheets: number;
+  /** Total goals conceded across the player's appearances. */
+  goalsConceded: number;
+}
+
+/** Auto-MVP fallback: explicit mvpPlayerId, else highest rated performance. */
+export function computeMvpId(match: Match): string | null {
+  if (match.mvpPlayerId) return match.mvpPlayerId;
+  const rated = match.performances.filter((p) => (p.rating ?? 0) > 0);
+  if (!rated.length) return null;
+  const sorted = [...rated].sort(
+    (a, b) =>
+      (b.rating ?? 0) - (a.rating ?? 0) ||
+      (b.goals + b.assists) - (a.goals + a.assists) ||
+      b.goals - a.goals,
+  );
+  return sorted[0].playerId;
 }
 
 export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
   let m = 0, g = 0, a = 0;
   let ratingSum = 0, ratedMatches = 0;
+  let mvpCount = 0, cleanSheets = 0, goalsConceded = 0;
   for (const match of matches) {
     const perf = match.performances.find((p) => p.playerId === player.id);
     if (!perf) continue;
@@ -27,6 +48,9 @@ export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
       ratingSum += r;
       ratedMatches += 1;
     }
+    goalsConceded += match.scoreAgainst;
+    if (match.scoreAgainst === 0) cleanSheets += 1;
+    if (computeMvpId(match) === player.id) mvpCount += 1;
   }
   const ga = g + a;
   return {
@@ -38,11 +62,41 @@ export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
     gaPerGame: m ? ga / m : 0,
     avgRating: ratedMatches ? ratingSum / ratedMatches : 0,
     ratedMatches,
+    mvpCount,
+    cleanSheets,
+    goalsConceded,
   };
 }
 
 export function aggregateAllPlayers(players: Player[], matches: Match[]): PlayerAgg[] {
   return players.map((p) => aggregatePlayer(p, matches));
+}
+
+export interface PlatformRecord {
+  platform: Platform;
+  played: number;
+  wins: number;
+  losses: number;
+  winRate: number;
+}
+
+export function platformRecords(matches: Match[]): PlatformRecord[] {
+  const platforms: Platform[] = ["PC", "PS5", "Xbox"];
+  return platforms.map((platform) => {
+    const ms = matches.filter((m) => m.platform === platform);
+    let wins = 0, losses = 0;
+    for (const m of ms) {
+      if (matchIsWin(m)) wins += 1;
+      else losses += 1;
+    }
+    return {
+      platform,
+      played: ms.length,
+      wins,
+      losses,
+      winRate: ms.length ? wins / ms.length : 0,
+    };
+  });
 }
 
 export interface WLRecord {
