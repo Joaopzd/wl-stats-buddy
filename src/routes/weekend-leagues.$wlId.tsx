@@ -131,7 +131,8 @@ function WLDetail() {
             </div>
           )}
           <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-            <span>{record?.played}/15 matches · {rankFromWins(record?.wins ?? 0)}</span>
+            <span>{record?.played}/15 matches</span>
+            <RankBadge rank={rankFromWins(record?.wins ?? 0)} size="sm" />
             {wl.formation && (
               <span className="px-2 py-0.5 rounded-full bg-secondary text-foreground text-[10px] font-bold uppercase tracking-wider">
                 {wl.formation}
