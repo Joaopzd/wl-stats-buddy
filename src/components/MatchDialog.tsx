@@ -28,6 +28,7 @@ export function MatchDialog({
   const [penalties, setPenalties] = useState<boolean>(existingMatch?.penalties ?? false);
   const [penaltyWinner, setPenaltyWinner] = useState<PenaltyWinner>(existingMatch?.penaltyWinner ?? "us");
   const [rageQuit, setRageQuit] = useState<boolean>(existingMatch?.rageQuit ?? false);
+  const [mvpId, setMvpId] = useState<string>(existingMatch?.mvpPlayerId ?? "");
 
   const startingIdSet = new Set(Object.values(wl.startingAssignments ?? {}));
   const [perfs, setPerfs] = useState<Record<string, MatchPlayerStat & { played: boolean }>>(() => {
@@ -58,11 +59,15 @@ export function MatchDialog({
       .filter((p) => p.played)
       .map(({ played, ...rest }) => rest);
 
+    const playedIds = new Set(performances.map((p) => p.playerId));
+    const finalMvpId = mvpId && playedIds.has(mvpId) ? mvpId : undefined;
+
     const flags = {
       extraTime,
       penalties,
       penaltyWinner: penalties ? penaltyWinner : undefined,
       rageQuit,
+      mvpPlayerId: finalMvpId,
     };
 
     if (existingMatch) {
