@@ -3,6 +3,7 @@ import { Trophy, Flame, Target, Star, TrendingDown, X, LayoutGrid } from "lucide
 import type { Match, Player, WeekendLeague } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
 import { aggregatePlayer, rankFromWins, type WLRecord } from "@/lib/stats";
+import { RankBadge } from "@/components/RankBadge";
 
 export function ReportModal({
   wl,
@@ -61,9 +62,7 @@ export function ReportModal({
           <h2 className="font-display text-4xl sm:text-5xl mt-2 leading-none">{wlLabel(wl)}</h2>
           {wl.customName && <div className="text-xs text-muted-foreground mt-1">WL #{wl.number}</div>}
           <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
-            <span className="inline-block px-4 py-1 rounded-full bg-primary/15 text-primary text-xs font-semibold uppercase tracking-wider">
-              {rank}
-            </span>
+            <RankBadge rank={rank} size="lg" />
             {wl.formation && (
               <span className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-secondary text-foreground text-xs font-semibold uppercase tracking-wider">
                 <LayoutGrid className="h-3 w-3" /> {wl.formation}

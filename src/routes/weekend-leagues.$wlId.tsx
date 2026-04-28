@@ -6,7 +6,9 @@ import { aggregatePlayer, bestStreak, matchIsWin, rankFromWins, wlRecord } from 
 
 import { SquadDialog } from "@/components/SquadDialog";
 import { MatchDialog } from "@/components/MatchDialog";
+import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { ReportModal } from "@/components/ReportModal";
+import { RankBadge } from "@/components/RankBadge";
 import { PlayerCard } from "@/components/PlayerCard";
 import { FORMATIONS, type FormationSlot } from "@/lib/formations";
 import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Target, Shield, ChevronDown } from "lucide-react";
@@ -45,6 +47,7 @@ function WLDetail() {
   const [squadOpen, setSquadOpen] = useState(false);
   const [matchOpen, setMatchOpen] = useState(false);
   const [editingMatch, setEditingMatch] = useState<Match | null>(null);
+  const [viewingMatch, setViewingMatch] = useState<Match | null>(null);
   const [reportOpen, setReportOpen] = useState(false);
   const [reportSeen, setReportSeen] = useState(false);
   const [editingName, setEditingName] = useState(false);
@@ -128,7 +131,8 @@ function WLDetail() {
             </div>
           )}
           <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-            <span>{record?.played}/15 matches · {rankFromWins(record?.wins ?? 0)}</span>
+            <span>{record?.played}/15 matches</span>
+            <RankBadge rank={rankFromWins(record?.wins ?? 0)} size="sm" />
             {wl.formation && (
               <span className="px-2 py-0.5 rounded-full bg-secondary text-foreground text-[10px] font-bold uppercase tracking-wider">
                 {wl.formation}
@@ -289,24 +293,21 @@ function WLDetail() {
               return (
                 <div
                   key={m.id}
-                  className={`grid grid-cols-[2.25rem_3.75rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-2 border-l-4 hover:bg-secondary/30 transition ${win ? "border-l-primary" : "border-l-destructive"}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setViewingMatch(m)}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewingMatch(m); } }}
+                  className={`grid grid-cols-[2.25rem_3.75rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-2 border-l-4 hover:bg-secondary/30 cursor-pointer transition ${win ? "border-l-primary" : "border-l-destructive"}`}
+                  aria-label={`View match ${m.index} details`}
                 >
-                  <button
-                    onClick={() => { setEditingMatch(m); setMatchOpen(true); }}
-                    className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground text-left hover:text-foreground"
-                    aria-label={`Edit match ${m.index}`}
-                  >
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
                     M{m.index}
-                  </button>
-                  <button
-                    onClick={() => { setEditingMatch(m); setMatchOpen(true); }}
-                    className="font-display stat-num text-base text-center leading-none"
-                    aria-label={`Match ${m.index} score`}
-                  >
+                  </span>
+                  <span className="font-display stat-num text-base text-center leading-none">
                     <span className={win ? "text-primary" : "text-foreground"}>{m.scoreFor}</span>
                     <span className="text-muted-foreground/50 mx-1">–</span>
                     <span className={!win ? "text-destructive" : "text-foreground"}>{m.scoreAgainst}</span>
-                  </button>
+                  </span>
                   <span className="text-[9px] font-mono uppercase tracking-wider text-muted-foreground bg-secondary/60 px-1 py-0.5 rounded text-center">
                     {m.platform}
                   </span>
@@ -326,14 +327,14 @@ function WLDetail() {
                   </span>
                   <div className="flex justify-end gap-0.5">
                     <button
-                      onClick={() => { setEditingMatch(m); setMatchOpen(true); }}
+                      onClick={(e) => { e.stopPropagation(); setEditingMatch(m); setMatchOpen(true); }}
                       className="p-1 text-muted-foreground hover:text-foreground"
                       aria-label="Edit"
                     >
                       <Pencil className="h-3 w-3" />
                     </button>
                     <button
-                      onClick={() => { if (confirm("Delete this match?")) { store.deleteMatch(m.id); toast.success("Deleted"); } }}
+                      onClick={(e) => { e.stopPropagation(); if (confirm("Delete this match?")) { store.deleteMatch(m.id); toast.success("Deleted"); } }}
                       className="p-1 text-muted-foreground hover:text-destructive"
                       aria-label="Delete"
                     >
@@ -361,6 +362,14 @@ function WLDetail() {
           existingMatch={editingMatch}
           nextIndex={nextMatchIndex}
           onClose={() => { setMatchOpen(false); setEditingMatch(null); }}
+        />
+      )}
+      {viewingMatch && (
+        <MatchDetailModal
+          match={viewingMatch}
+          players={players}
+          onClose={() => setViewingMatch(null)}
+          onEdit={() => { setEditingMatch(viewingMatch); setViewingMatch(null); setMatchOpen(true); }}
         />
       )}
       {reportOpen && record && (

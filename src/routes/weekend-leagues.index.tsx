@@ -5,6 +5,7 @@ import { useMatches, useWLs, store } from "@/lib/store";
 import { wlRecord, rankFromWins } from "@/lib/stats";
 import { wlLabel } from "@/lib/types";
 import { Plus, ChevronRight, Trophy, Trash2 } from "lucide-react";
+import { RankBadge } from "@/components/RankBadge";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 
@@ -125,8 +126,8 @@ function WLList() {
                     <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">{r.played}/15 played</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Rank</div>
-                    <div className="text-xs font-semibold text-primary">{rankFromWins(r.wins)}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Rank</div>
+                    <RankBadge rank={rankFromWins(r.wins)} size="sm" />
                   </div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-border/60 flex items-center justify-between text-xs text-muted-foreground">
