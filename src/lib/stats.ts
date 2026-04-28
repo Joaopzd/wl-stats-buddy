@@ -83,22 +83,51 @@ export function bestStreak(matches: Match[]): number {
   return best;
 }
 
+export type RankTier = "Elite" | "Champion" | "Contender" | "Unranked";
+
 export type WLRank =
-  | "Bronze III" | "Bronze II" | "Bronze I"
-  | "Silver III" | "Silver II" | "Silver I"
-  | "Gold III" | "Gold II" | "Gold I"
-  | "Elite III" | "Elite II" | "Elite I"
-  | "Champion";
+  | "Unranked"
+  | "Contender V" | "Contender IV" | "Contender III" | "Contender II" | "Contender I"
+  | "Champion V" | "Champion IV" | "Champion III" | "Champion II" | "Champion I"
+  | "Elite V" | "Elite IV" | "Elite III" | "Elite II" | "Elite I";
 
 export function rankFromWins(wins: number): WLRank {
-  if (wins >= 14) return "Champion";
-  if (wins >= 11) return "Elite I";
-  if (wins >= 9) return "Elite II";
-  if (wins >= 7) return "Elite III";
-  if (wins >= 5) return "Gold I";
-  if (wins >= 4) return "Gold II";
-  if (wins >= 3) return "Gold III";
-  if (wins >= 2) return "Silver I";
-  if (wins >= 1) return "Silver II";
-  return "Bronze I";
+  if (wins >= 15) return "Elite I";
+  if (wins === 14) return "Elite II";
+  if (wins === 13) return "Elite III";
+  if (wins === 12) return "Elite IV";
+  if (wins === 11) return "Elite V";
+  if (wins === 10) return "Champion I";
+  if (wins === 9) return "Champion II";
+  if (wins === 8) return "Champion III";
+  if (wins === 7) return "Champion IV";
+  if (wins === 6) return "Champion V";
+  if (wins === 5) return "Contender I";
+  if (wins === 4) return "Contender II";
+  if (wins === 3) return "Contender III";
+  if (wins === 2) return "Contender IV";
+  if (wins === 1) return "Contender V";
+  return "Unranked";
+}
+
+export function rankTier(rank: WLRank): RankTier {
+  if (rank.startsWith("Elite")) return "Elite";
+  if (rank.startsWith("Champion")) return "Champion";
+  if (rank.startsWith("Contender")) return "Contender";
+  return "Unranked";
+}
+
+/** Tailwind classes for a rank badge based on its tier. */
+export function rankBadgeClasses(rank: WLRank): string {
+  const tier = rankTier(rank);
+  switch (tier) {
+    case "Elite":
+      return "bg-gradient-to-r from-purple-600/30 to-amber-400/30 text-amber-200 border-amber-400/60";
+    case "Champion":
+      return "bg-gradient-to-r from-red-600/30 to-amber-500/30 text-amber-200 border-red-500/60";
+    case "Contender":
+      return "bg-gradient-to-r from-sky-600/25 to-slate-300/25 text-sky-200 border-sky-400/50";
+    default:
+      return "bg-secondary text-muted-foreground border-border";
+  }
 }
