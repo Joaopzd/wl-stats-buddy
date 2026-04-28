@@ -253,6 +253,8 @@ function WLDetail() {
                           <div className="text-[11px] font-semibold truncate leading-tight">{a.player.name}</div>
                           <div className="text-[9px] text-muted-foreground font-mono leading-tight">
                             {a.matches}MP · {a.goals}G · {a.assists}A · {a.avgRating > 0 ? a.avgRating.toFixed(2) : "—"}
+                            {a.mvpCount > 0 && <span className="text-amber-300 ml-1">· {a.mvpCount}★</span>}
+                            {a.cleanSheets > 0 && <span className="text-sky-300 ml-1">· {a.cleanSheets}CS</span>}
                           </div>
                         </div>
                       </div>
