@@ -5,6 +5,7 @@ import { StatTile } from "@/components/StatTile";
 import { useMatches, usePlayers, useWLs } from "@/lib/store";
 import { aggregateAllPlayers, rankFromWins, wlRecord } from "@/lib/stats";
 import { Trophy, Target, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles } from "lucide-react";
+import { RankBadge } from "@/components/RankBadge";
 
 export const Route = createFileRoute("/")({
   head: () => ({
