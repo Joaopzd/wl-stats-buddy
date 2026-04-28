@@ -93,19 +93,32 @@ function Dashboard() {
       ) : (
         <>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <StatTile
-              label={lastWL ? `WL #${lastWL.number}` : "Last WL"}
-              value={lastRecord ? `${lastRecord.wins}-${lastRecord.losses}` : "—"}
-              sub={lastRecord ? `${rankFromWins(lastRecord.wins)} · ${lastRecord.played}/15` : "No WLs yet"}
-              accent
-              icon={<Trophy />}
-            />
-            <StatTile
-              label="All-time best"
-              value={bestWL ? `${bestWL.wins}W` : "—"}
-              sub={bestWL ? `${rankFromWins(bestWL.wins)} · WL #${bestWL.wl.number}` : ""}
-              icon={<Award />}
-            />
+            <div className="surface-card p-4 border-l-4 border-l-primary">
+              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+                <Trophy className="h-3.5 w-3.5" /> {lastWL ? `WL #${lastWL.number}` : "Last WL"}
+              </div>
+              <div className="font-display text-3xl stat-num mt-1 text-primary leading-none">
+                {lastRecord ? `${lastRecord.wins}-${lastRecord.losses}` : "—"}
+              </div>
+              <div className="mt-2">
+                {lastRecord
+                  ? <RankBadge rank={rankFromWins(lastRecord.wins)} size="sm" />
+                  : <span className="text-[10px] text-muted-foreground">No WLs yet</span>}
+              </div>
+            </div>
+            <div className="surface-card p-4">
+              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+                <Award className="h-3.5 w-3.5" /> All-time Best
+              </div>
+              <div className="font-display text-3xl stat-num mt-1 leading-none">
+                {bestWL ? `${bestWL.wins}W` : "—"}
+              </div>
+              <div className="mt-2">
+                {bestWL
+                  ? <RankBadge rank={rankFromWins(bestWL.wins)} size="sm" />
+                  : <span className="text-[10px] text-muted-foreground">—</span>}
+              </div>
+            </div>
             <StatTile label="Goals scored" value={totals.gf} icon={<Target />} />
             <StatTile label="Goals conceded" value={totals.ga} icon={<Shield />} />
           </div>
