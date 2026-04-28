@@ -144,6 +144,41 @@ function Dashboard() {
             );
           })()}
 
+          <div className="surface-card p-5 mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
+                <Gamepad2 className="h-3.5 w-3.5 text-primary" /> Platform Performance
+              </h3>
+              <span className="text-[10px] text-muted-foreground">Win rate by platform</span>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {platformStats.map((p) => {
+                const pct = Math.round(p.winRate * 100);
+                const tone = p.played === 0 ? "muted" : pct >= 60 ? "good" : pct >= 40 ? "ok" : "bad";
+                const color = tone === "good" ? "text-primary" : tone === "bad" ? "text-destructive" : tone === "ok" ? "text-amber-300" : "text-muted-foreground";
+                const bar = tone === "good" ? "bg-primary" : tone === "bad" ? "bg-destructive" : tone === "ok" ? "bg-amber-400" : "bg-muted-foreground/40";
+                return (
+                  <div key={p.platform} className="rounded-md border border-border/60 bg-background/40 p-3">
+                    <div className="flex items-baseline justify-between">
+                      <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground bg-secondary px-1.5 py-0.5 rounded">
+                        {p.platform}
+                      </div>
+                      <div className={`font-display stat-num text-2xl ${color}`}>
+                        {p.played === 0 ? "—" : `${pct}%`}
+                      </div>
+                    </div>
+                    <div className="mt-2 h-1.5 bg-secondary/60 rounded overflow-hidden">
+                      <div className={`h-full ${bar}`} style={{ width: `${pct}%` }} />
+                    </div>
+                    <div className="mt-1.5 text-[10px] text-muted-foreground font-mono">
+                      {p.wins}W · {p.losses}L · {p.played} matches
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           <h2 className="font-display text-2xl tracking-wider mb-4 flex items-center gap-2">
             <Star className="h-5 w-5 text-primary" /> Club Legends
           </h2>
