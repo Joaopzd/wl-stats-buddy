@@ -364,6 +364,14 @@ function WLDetail() {
           onClose={() => { setMatchOpen(false); setEditingMatch(null); }}
         />
       )}
+      {viewingMatch && (
+        <MatchDetailModal
+          match={viewingMatch}
+          players={players}
+          onClose={() => setViewingMatch(null)}
+          onEdit={() => { setEditingMatch(viewingMatch); setViewingMatch(null); setMatchOpen(true); }}
+        />
+      )}
       {reportOpen && record && (
         <ReportModal
           wl={wl}
