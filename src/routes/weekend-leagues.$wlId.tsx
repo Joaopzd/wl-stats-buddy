@@ -6,7 +6,9 @@ import { aggregatePlayer, bestStreak, matchIsWin, rankFromWins, wlRecord } from 
 
 import { SquadDialog } from "@/components/SquadDialog";
 import { MatchDialog } from "@/components/MatchDialog";
+import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { ReportModal } from "@/components/ReportModal";
+import { RankBadge } from "@/components/RankBadge";
 import { PlayerCard } from "@/components/PlayerCard";
 import { FORMATIONS, type FormationSlot } from "@/lib/formations";
 import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Target, Shield, ChevronDown } from "lucide-react";
@@ -45,6 +47,7 @@ function WLDetail() {
   const [squadOpen, setSquadOpen] = useState(false);
   const [matchOpen, setMatchOpen] = useState(false);
   const [editingMatch, setEditingMatch] = useState<Match | null>(null);
+  const [viewingMatch, setViewingMatch] = useState<Match | null>(null);
   const [reportOpen, setReportOpen] = useState(false);
   const [reportSeen, setReportSeen] = useState(false);
   const [editingName, setEditingName] = useState(false);
