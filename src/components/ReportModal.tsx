@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Trophy, Flame, Target, Star, TrendingDown, X, LayoutGrid } from "lucide-react";
+import { Trophy, Flame, Target, Star, TrendingDown, X, LayoutGrid, TrendingUp, Shield } from "lucide-react";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
 import { aggregatePlayer, rankFromWins, type WLRecord } from "@/lib/stats";
@@ -81,6 +81,46 @@ export function ReportModal({
           <SmallStat label="Total Goals" value={totalG} icon={<Target className="h-3.5 w-3.5" />} />
           <SmallStat label="Total Assists" value={totalA} icon={<Star className="h-3.5 w-3.5" />} />
         </div>
+
+        {matches.length > 0 && (() => {
+          const gfPerMatch = totalG / matches.length;
+          const gaPerMatch = record.goalsAgainst / matches.length;
+          const positive = gfPerMatch >= gaPerMatch;
+          const diff = gfPerMatch - gaPerMatch;
+          return (
+            <div className="mb-6 rounded-lg border border-border bg-secondary/30 p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-foreground flex items-center gap-1.5">
+                  {positive
+                    ? <TrendingUp className="h-3.5 w-3.5 text-primary" />
+                    : <TrendingDown className="h-3.5 w-3.5 text-destructive" />}
+                  Match Averages
+                </div>
+                <div className={`text-[10px] font-mono font-bold ${positive ? "text-primary" : "text-destructive"}`}>
+                  {positive ? "+" : ""}{diff.toFixed(2)} GD/match
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className={`rounded-md p-3 border ${positive ? "border-primary/40 bg-primary/10" : "border-border bg-background/40"}`}>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
+                    <Target className="h-3 w-3" /> Goals For / Match
+                  </div>
+                  <div className={`font-display stat-num text-3xl mt-1 ${positive ? "text-primary" : "text-foreground"}`}>
+                    {gfPerMatch.toFixed(2)}
+                  </div>
+                </div>
+                <div className={`rounded-md p-3 border ${!positive ? "border-destructive/40 bg-destructive/10" : "border-border bg-background/40"}`}>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
+                    <Shield className="h-3 w-3" /> Goals Against / Match
+                  </div>
+                  <div className={`font-display stat-num text-3xl mt-1 ${!positive ? "text-destructive" : "text-foreground"}`}>
+                    {gaPerMatch.toFixed(2)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {mvp && mvp.matches > 0 && (
           <Award
