@@ -72,6 +72,8 @@ export interface Match {
   penaltyWinner?: PenaltyWinner;
   /** Opponent rage-quit early. */
   rageQuit?: boolean;
+  /** Player designated as MVP for this match (must also have a performance entry). */
+  mvpPlayerId?: string;
   createdAt: number;
 }
 
