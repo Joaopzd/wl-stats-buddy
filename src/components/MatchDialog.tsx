@@ -108,9 +108,17 @@ export function MatchDialog({
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-          <ScoreInput label="You" value={scoreFor} onChange={setScoreFor} accent />
-          <ScoreInput label="Opponent" value={scoreAgainst} onChange={setScoreAgainst} />
+        {/* Versus header: My crest · Score · Opponent crest */}
+        <div className="mb-4 surface-card p-3 flex items-center gap-3">
+          <ClubCrest size={48} />
+          <div className="flex-1 grid grid-cols-2 gap-3">
+            <ScoreInput label="You" value={scoreFor} onChange={setScoreFor} accent />
+            <ScoreInput label="Opponent" value={scoreAgainst} onChange={setScoreAgainst} />
+          </div>
+          <OpponentCrest id={opponentCrestId} size={48} />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Platform</span>
             <div className="flex gap-1 bg-input border border-border rounded-md p-1">
@@ -121,6 +129,7 @@ export function MatchDialog({
               ))}
             </div>
           </div>
+          <CrestPicker value={opponentCrestId} onChange={setOpponentCrestId} />
         </div>
 
         {/* Match flags */}
