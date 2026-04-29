@@ -168,9 +168,17 @@ function PlayersPage() {
                       {a.mvpCount > 0 ? <span className="text-amber-300 font-semibold">{a.mvpCount}</span> : <span className="text-muted-foreground/60">0</span>}
                     </td>
                     <td className="p-3 text-right stat-num">
-                      {a.cleanSheets > 0 ? <span className="text-sky-300 font-semibold">{a.cleanSheets}</span> : <span className="text-muted-foreground/60">0</span>}
+                      {!isCleanSheetEligible(a.player.position) ? (
+                        <span className="text-muted-foreground/40">—</span>
+                      ) : a.cleanSheets > 0 ? (
+                        <span className="text-sky-300 font-semibold">{a.cleanSheets}</span>
+                      ) : (
+                        <span className="text-muted-foreground/60">0</span>
+                      )}
                     </td>
-                    <td className="p-3 text-right stat-num text-muted-foreground">{a.goalsConceded}</td>
+                    <td className="p-3 text-right stat-num text-muted-foreground">
+                      {isGoalsConcededEligible(a.player.position) ? a.goalsConceded : <span className="text-muted-foreground/40">—</span>}
+                    </td>
                     <td className="p-3 text-right stat-num">
                       {a.avgRating > 0 ? (
                         <span className={a.avgRating >= 8 ? "text-primary font-semibold" : a.avgRating < 6 ? "text-destructive" : ""}>
