@@ -310,9 +310,9 @@ function WLDetail() {
         ) : (
           <div className="surface-card overflow-hidden divide-y divide-border/60">
             {/* Header row */}
-            <div className="hidden sm:grid grid-cols-[2.25rem_3.75rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-1.5 text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-bold bg-background/40">
+            <div className="hidden sm:grid grid-cols-[2rem_7rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-1.5 text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-bold bg-background/40">
               <span>#</span>
-              <span className="text-center">Score</span>
+              <span className="text-center">Versus</span>
               <span>Plat</span>
               <span>Tags</span>
               <span className="text-right">G</span>
@@ -330,17 +330,21 @@ function WLDetail() {
                   tabIndex={0}
                   onClick={() => setViewingMatch(m)}
                   onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewingMatch(m); } }}
-                  className={`grid grid-cols-[2.25rem_3.75rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-2 border-l-4 hover:bg-secondary/30 cursor-pointer transition ${win ? "border-l-primary" : "border-l-destructive"}`}
+                  className={`grid grid-cols-[2rem_7rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-2 border-l-4 hover:bg-secondary/30 cursor-pointer transition ${win ? "border-l-primary" : "border-l-destructive"}`}
                   aria-label={`View match ${m.index} details`}
                 >
                   <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
                     M{m.index}
                   </span>
-                  <span className="font-display stat-num text-base text-center leading-none">
-                    <span className={win ? "text-primary" : "text-foreground"}>{m.scoreFor}</span>
-                    <span className="text-muted-foreground/50 mx-1">–</span>
-                    <span className={!win ? "text-destructive" : "text-foreground"}>{m.scoreAgainst}</span>
-                  </span>
+                  <div className="flex items-center justify-center gap-1.5 leading-none">
+                    <ClubCrest size={20} />
+                    <span className="font-display stat-num text-sm">
+                      <span className={win ? "text-primary" : "text-foreground"}>{m.scoreFor}</span>
+                      <span className="text-muted-foreground/50 mx-0.5">–</span>
+                      <span className={!win ? "text-destructive" : "text-foreground"}>{m.scoreAgainst}</span>
+                    </span>
+                    <OpponentCrest id={m.opponentCrestId} size={20} />
+                  </div>
                   <span className="text-[9px] font-mono uppercase tracking-wider text-muted-foreground bg-secondary/60 px-1 py-0.5 rounded text-center">
                     {m.platform}
                   </span>
