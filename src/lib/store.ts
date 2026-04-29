@@ -145,5 +145,6 @@ function useStoreSlice<T>(getter: () => T, serverFallback: T): T {
 
 export const usePlayers = () => useStoreSlice(store.getPlayers, EMPTY_PLAYERS);
 export const useWLs = () => useStoreSlice(store.getWLs, EMPTY_WLS);
+export const useMatches = () => useStoreSlice(store.getMatches, EMPTY_MATCHES);
 export const useClubCrest = () =>
   useStoreSlice<string | null>(() => store.getClubCrest(), null);
