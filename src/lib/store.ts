@@ -53,7 +53,8 @@ const cache: {
   players: Player[] | null;
   wls: WeekendLeague[] | null;
   matches: Match[] | null;
-} = { players: null, wls: null, matches: null };
+  clubCrest: string | null | undefined;
+} = { players: null, wls: null, matches: null, clubCrest: undefined };
 
 function read<T>(key: string, fallback: T): T {
   if (!isBrowser) return fallback;
