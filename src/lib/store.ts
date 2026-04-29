@@ -114,6 +114,22 @@ export const store = {
     store.setMatches(store.getMatches().map((x) => (x.id === id ? { ...x, ...patch } : x))),
   deleteMatch: (id: string) =>
     store.setMatches(store.getMatches().filter((x) => x.id !== id)),
+
+  getClubCrest: (): string | null => {
+    if (!isBrowser) return null;
+    if (cache.clubCrest === undefined) {
+      try { cache.clubCrest = localStorage.getItem(KEYS.clubCrest); }
+      catch { cache.clubCrest = null; }
+    }
+    return cache.clubCrest;
+  },
+  setClubCrest: (dataUrl: string | null) => {
+    if (!isBrowser) return;
+    if (dataUrl) localStorage.setItem(KEYS.clubCrest, dataUrl);
+    else localStorage.removeItem(KEYS.clubCrest);
+    cache.clubCrest = dataUrl;
+    listeners.forEach((l) => l());
+  },
 };
 
 // cross-tab sync
