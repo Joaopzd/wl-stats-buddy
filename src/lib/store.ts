@@ -7,6 +7,7 @@ const KEYS = {
   players: "fc26_players_v4",
   wls: "fc26_wls_v4",
   matches: "fc26_matches_v4",
+  clubCrest: "fc26_club_crest_v1",
 } as const;
 
 const LEGACY_KEYS = [
