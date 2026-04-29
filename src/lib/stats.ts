@@ -1,4 +1,16 @@
-import type { Match, Platform, Player, WeekendLeague } from "./types";
+import type { Match, Platform, Player, Position, WeekendLeague } from "./types";
+
+/** Positions eligible to earn Clean Sheet credit. */
+const CS_POSITIONS: Position[] = ["GK", "CB", "LB", "RB"];
+/** Positions that track Goals Conceded individually. */
+const GC_POSITIONS: Position[] = ["GK"];
+
+export function isCleanSheetEligible(pos: Position): boolean {
+  return CS_POSITIONS.includes(pos);
+}
+export function isGoalsConcededEligible(pos: Position): boolean {
+  return GC_POSITIONS.includes(pos);
+}
 
 export interface PlayerAgg {
   player: Player;
