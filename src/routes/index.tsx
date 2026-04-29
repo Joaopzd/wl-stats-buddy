@@ -4,7 +4,7 @@ import { AppShell } from "@/components/AppShell";
 import { StatTile } from "@/components/StatTile";
 import { useMatches, usePlayers, useWLs } from "@/lib/store";
 import { aggregateAllPlayers, platformRecords, rankFromWins, wlRecord } from "@/lib/stats";
-import { Trophy, Target, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, Gamepad2 } from "lucide-react";
+import { Trophy, Target, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, Gamepad2, Users } from "lucide-react";
 import { RankBadge } from "@/components/RankBadge";
 import { ClubCrestUploader } from "@/components/ClubCrestUploader";
 
@@ -66,28 +66,28 @@ function Dashboard() {
 
   return (
     <AppShell>
-      <section className="relative overflow-hidden rounded-2xl border border-border/60 mb-8 p-6 sm:p-10" style={{ background: "var(--gradient-hero)" }}>
-        <div className="relative z-10 max-w-2xl">
-          <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">EA FC 26 · Champs Tracker</div>
-          <h1 className="font-display text-4xl sm:text-6xl mt-2 leading-none">
-            Your Weekend League, <span className="text-gradient-primary">decoded</span>.
+      <header className="flex items-center justify-between gap-3 mb-6 pb-4 border-b border-border/60">
+        <div className="flex items-center gap-2 min-w-0">
+          <ClubCrest size={28} />
+          <h1 className="font-display text-sm sm:text-base tracking-[0.3em] uppercase truncate">
+            Champs Tracker
           </h1>
-          <p className="mt-4 text-muted-foreground text-sm sm:text-base max-w-xl">
-            Log every match, track your squad's performance, and uncover MVPs, streaks and weak links — one Champs at a time.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link to="/weekend-leagues" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90 transition shadow-[var(--shadow-neon)]">
-              <Plus className="h-4 w-4" /> New WL
-            </Link>
-            <Link to="/players" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md border border-border bg-secondary/50 text-foreground font-semibold uppercase tracking-wider text-sm hover:bg-secondary transition">
-              Manage Squad
-            </Link>
-          </div>
         </div>
-        <div className="absolute right-0 bottom-0 opacity-30 pointer-events-none hidden sm:block">
-          <Trophy className="h-64 w-64 text-primary" strokeWidth={0.6} />
+        <div className="flex items-center gap-2 shrink-0">
+          <Link
+            to="/weekend-leagues"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-[11px] hover:opacity-90 transition"
+          >
+            <Plus className="h-3.5 w-3.5" /> New WL
+          </Link>
+          <Link
+            to="/players"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-secondary/50 text-foreground font-semibold uppercase tracking-wider text-[11px] hover:bg-secondary transition"
+          >
+            <Users className="h-3.5 w-3.5" /> Squad
+          </Link>
         </div>
-      </section>
+      </header>
 
       <div className="mb-6">
         <ClubCrestUploader />
