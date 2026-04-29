@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { X, Star, Target, Sparkles, Zap, Flag as FlagIcon, AlertTriangle, Trophy, Pencil } from "lucide-react";
 import type { Match, Player } from "@/lib/types";
 import { matchIsWin } from "@/lib/stats";
+import { ClubCrest } from "./ClubCrest";
+import { OpponentCrest } from "./OpponentCrest";
 
 export function MatchDetailModal({
   match,
