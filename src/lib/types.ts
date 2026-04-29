@@ -74,6 +74,8 @@ export interface Match {
   rageQuit?: boolean;
   /** Player designated as MVP for this match (must also have a performance entry). */
   mvpPlayerId?: string;
+  /** Selected generic opponent crest id (see lib/crests). */
+  opponentCrestId?: string;
   createdAt: number;
 }
 

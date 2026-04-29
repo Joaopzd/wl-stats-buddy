@@ -5,6 +5,9 @@ import type { Match, MatchPlayerStat, Platform, PenaltyWinner, Player, WeekendLe
 import { wlLabel } from "@/lib/types";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
+import { ClubCrest } from "./ClubCrest";
+import { OpponentCrest } from "./OpponentCrest";
+import { CrestPicker } from "./CrestPicker";
 
 const PLATFORMS: Platform[] = ["PC", "PS5", "Xbox"];
 
@@ -29,6 +32,7 @@ export function MatchDialog({
   const [penaltyWinner, setPenaltyWinner] = useState<PenaltyWinner>(existingMatch?.penaltyWinner ?? "us");
   const [rageQuit, setRageQuit] = useState<boolean>(existingMatch?.rageQuit ?? false);
   const [mvpId, setMvpId] = useState<string>(existingMatch?.mvpPlayerId ?? "");
+  const [opponentCrestId, setOpponentCrestId] = useState<string | undefined>(existingMatch?.opponentCrestId);
 
   const startingIdSet = new Set(Object.values(wl.startingAssignments ?? {}));
   const [perfs, setPerfs] = useState<Record<string, MatchPlayerStat & { played: boolean }>>(() => {
@@ -68,6 +72,7 @@ export function MatchDialog({
       penaltyWinner: penalties ? penaltyWinner : undefined,
       rageQuit,
       mvpPlayerId: finalMvpId,
+      opponentCrestId,
     };
 
     if (existingMatch) {
@@ -103,9 +108,17 @@ export function MatchDialog({
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-          <ScoreInput label="You" value={scoreFor} onChange={setScoreFor} accent />
-          <ScoreInput label="Opponent" value={scoreAgainst} onChange={setScoreAgainst} />
+        {/* Versus header: My crest · Score · Opponent crest */}
+        <div className="mb-4 surface-card p-3 flex items-center gap-3">
+          <ClubCrest size={48} />
+          <div className="flex-1 grid grid-cols-2 gap-3">
+            <ScoreInput label="You" value={scoreFor} onChange={setScoreFor} accent />
+            <ScoreInput label="Opponent" value={scoreAgainst} onChange={setScoreAgainst} />
+          </div>
+          <OpponentCrest id={opponentCrestId} size={48} />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Platform</span>
             <div className="flex gap-1 bg-input border border-border rounded-md p-1">
@@ -116,6 +129,7 @@ export function MatchDialog({
               ))}
             </div>
           </div>
+          <CrestPicker value={opponentCrestId} onChange={setOpponentCrestId} />
         </div>
 
         {/* Match flags */}

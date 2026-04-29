@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { X, Star, Target, Sparkles, Zap, Flag as FlagIcon, AlertTriangle, Trophy, Pencil } from "lucide-react";
 import type { Match, Player } from "@/lib/types";
 import { matchIsWin } from "@/lib/stats";
+import { ClubCrest } from "./ClubCrest";
+import { OpponentCrest } from "./OpponentCrest";
 
 export function MatchDetailModal({
   match,
@@ -70,10 +72,14 @@ export function MatchDetailModal({
           <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold">
             Match {match.index} · {win ? "WIN" : "LOSS"}
           </div>
-          <div className="mt-2 flex items-baseline gap-3 font-display leading-none">
-            <span className={`text-6xl stat-num ${win ? "text-primary" : "text-foreground"}`}>{match.scoreFor}</span>
-            <span className="text-3xl text-muted-foreground/60">–</span>
-            <span className={`text-6xl stat-num ${!win ? "text-destructive" : "text-foreground"}`}>{match.scoreAgainst}</span>
+          <div className="mt-3 grid grid-cols-[auto_1fr_auto] items-center gap-3 sm:gap-5 font-display leading-none">
+            <ClubCrest size={56} className="justify-self-end" />
+            <div className="flex items-baseline justify-center gap-2 sm:gap-3">
+              <span className={`text-5xl sm:text-6xl stat-num ${win ? "text-primary" : "text-foreground"}`}>{match.scoreFor}</span>
+              <span className="text-2xl sm:text-3xl text-muted-foreground/60">–</span>
+              <span className={`text-5xl sm:text-6xl stat-num ${!win ? "text-destructive" : "text-foreground"}`}>{match.scoreAgainst}</span>
+            </div>
+            <OpponentCrest id={match.opponentCrestId} size={56} className="justify-self-start" />
           </div>
           <div className="mt-3 flex items-center gap-2 flex-wrap">
             <span className="text-[10px] font-mono uppercase tracking-wider bg-secondary px-2 py-0.5 rounded border border-border">

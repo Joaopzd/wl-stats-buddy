@@ -7,6 +7,7 @@ const KEYS = {
   players: "fc26_players_v4",
   wls: "fc26_wls_v4",
   matches: "fc26_matches_v4",
+  clubCrest: "fc26_club_crest_v1",
 } as const;
 
 const LEGACY_KEYS = [
@@ -52,7 +53,8 @@ const cache: {
   players: Player[] | null;
   wls: WeekendLeague[] | null;
   matches: Match[] | null;
-} = { players: null, wls: null, matches: null };
+  clubCrest: string | null | undefined;
+} = { players: null, wls: null, matches: null, clubCrest: undefined };
 
 function read<T>(key: string, fallback: T): T {
   if (!isBrowser) return fallback;
@@ -114,6 +116,22 @@ export const store = {
     store.setMatches(store.getMatches().map((x) => (x.id === id ? { ...x, ...patch } : x))),
   deleteMatch: (id: string) =>
     store.setMatches(store.getMatches().filter((x) => x.id !== id)),
+
+  getClubCrest: (): string | null => {
+    if (!isBrowser) return null;
+    if (cache.clubCrest === undefined) {
+      try { cache.clubCrest = localStorage.getItem(KEYS.clubCrest); }
+      catch { cache.clubCrest = null; }
+    }
+    return cache.clubCrest;
+  },
+  setClubCrest: (dataUrl: string | null) => {
+    if (!isBrowser) return;
+    if (dataUrl) localStorage.setItem(KEYS.clubCrest, dataUrl);
+    else localStorage.removeItem(KEYS.clubCrest);
+    cache.clubCrest = dataUrl;
+    listeners.forEach((l) => l());
+  },
 };
 
 // cross-tab sync
@@ -128,3 +146,5 @@ function useStoreSlice<T>(getter: () => T, serverFallback: T): T {
 export const usePlayers = () => useStoreSlice(store.getPlayers, EMPTY_PLAYERS);
 export const useWLs = () => useStoreSlice(store.getWLs, EMPTY_WLS);
 export const useMatches = () => useStoreSlice(store.getMatches, EMPTY_MATCHES);
+export const useClubCrest = () =>
+  useStoreSlice<string | null>(() => store.getClubCrest(), null);
