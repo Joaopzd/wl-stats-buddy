@@ -89,6 +89,11 @@ function Dashboard() {
         </div>
       </section>
 
+      <div className="mb-6">
+        <ClubCrestUploader />
+      </div>
+
+
       {empty ? (
         <div className="surface-card p-10 text-center">
           <p className="text-muted-foreground">Nothing logged yet. Start by adding players to your database, then create your first Weekend League.</p>
