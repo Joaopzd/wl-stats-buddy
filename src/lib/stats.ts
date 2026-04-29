@@ -1,4 +1,16 @@
-import type { Match, Platform, Player, WeekendLeague } from "./types";
+import type { Match, Platform, Player, Position, WeekendLeague } from "./types";
+
+/** Positions eligible to earn Clean Sheet credit. */
+const CS_POSITIONS: Position[] = ["GK", "CB", "LB", "RB"];
+/** Positions that track Goals Conceded individually. */
+const GC_POSITIONS: Position[] = ["GK"];
+
+export function isCleanSheetEligible(pos: Position): boolean {
+  return CS_POSITIONS.includes(pos);
+}
+export function isGoalsConcededEligible(pos: Position): boolean {
+  return GC_POSITIONS.includes(pos);
+}
 
 export interface PlayerAgg {
   player: Player;
@@ -48,8 +60,12 @@ export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
       ratingSum += r;
       ratedMatches += 1;
     }
-    goalsConceded += match.scoreAgainst;
-    if (match.scoreAgainst === 0) cleanSheets += 1;
+    if (isGoalsConcededEligible(player.position)) {
+      goalsConceded += match.scoreAgainst;
+    }
+    if (isCleanSheetEligible(player.position) && match.scoreAgainst === 0) {
+      cleanSheets += 1;
+    }
     if (computeMvpId(match) === player.id) mvpCount += 1;
   }
   const ga = g + a;
