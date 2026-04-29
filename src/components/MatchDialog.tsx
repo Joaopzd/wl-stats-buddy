@@ -5,6 +5,9 @@ import type { Match, MatchPlayerStat, Platform, PenaltyWinner, Player, WeekendLe
 import { wlLabel } from "@/lib/types";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
+import { ClubCrest } from "./ClubCrest";
+import { OpponentCrest } from "./OpponentCrest";
+import { CrestPicker } from "./CrestPicker";
 
 const PLATFORMS: Platform[] = ["PC", "PS5", "Xbox"];
 
@@ -29,6 +32,7 @@ export function MatchDialog({
   const [penaltyWinner, setPenaltyWinner] = useState<PenaltyWinner>(existingMatch?.penaltyWinner ?? "us");
   const [rageQuit, setRageQuit] = useState<boolean>(existingMatch?.rageQuit ?? false);
   const [mvpId, setMvpId] = useState<string>(existingMatch?.mvpPlayerId ?? "");
+  const [opponentCrestId, setOpponentCrestId] = useState<string | undefined>(existingMatch?.opponentCrestId);
 
   const startingIdSet = new Set(Object.values(wl.startingAssignments ?? {}));
   const [perfs, setPerfs] = useState<Record<string, MatchPlayerStat & { played: boolean }>>(() => {
@@ -68,6 +72,7 @@ export function MatchDialog({
       penaltyWinner: penalties ? penaltyWinner : undefined,
       rageQuit,
       mvpPlayerId: finalMvpId,
+      opponentCrestId,
     };
 
     if (existingMatch) {
