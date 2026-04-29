@@ -7,7 +7,6 @@ import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import { ClubCrest } from "./ClubCrest";
 import { OpponentCrest } from "./OpponentCrest";
-import { CrestPicker } from "./CrestPicker";
 
 const PLATFORMS: Platform[] = ["PC", "PS5", "Xbox"];
 
@@ -32,7 +31,6 @@ export function MatchDialog({
   const [penaltyWinner, setPenaltyWinner] = useState<PenaltyWinner>(existingMatch?.penaltyWinner ?? "us");
   const [rageQuit, setRageQuit] = useState<boolean>(existingMatch?.rageQuit ?? false);
   const [mvpId, setMvpId] = useState<string>(existingMatch?.mvpPlayerId ?? "");
-  const [opponentCrestId, setOpponentCrestId] = useState<string | undefined>(existingMatch?.opponentCrestId);
 
   const startingIdSet = new Set(Object.values(wl.startingAssignments ?? {}));
   const [perfs, setPerfs] = useState<Record<string, MatchPlayerStat & { played: boolean }>>(() => {
@@ -72,7 +70,6 @@ export function MatchDialog({
       penaltyWinner: penalties ? penaltyWinner : undefined,
       rageQuit,
       mvpPlayerId: finalMvpId,
-      opponentCrestId,
     };
 
     if (existingMatch) {
@@ -115,21 +112,18 @@ export function MatchDialog({
             <ScoreInput label="You" value={scoreFor} onChange={setScoreFor} accent />
             <ScoreInput label="Opponent" value={scoreAgainst} onChange={setScoreAgainst} />
           </div>
-          <OpponentCrest id={opponentCrestId} size={48} />
+          <OpponentCrest size={48} />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <div>
-            <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Platform</span>
-            <div className="flex gap-1 bg-input border border-border rounded-md p-1">
-              {PLATFORMS.map((p) => (
-                <button key={p} type="button" onClick={() => setPlatform(p)} className={`flex-1 py-2 rounded text-xs font-semibold uppercase tracking-wider transition ${platform === p ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-                  {p}
-                </button>
-              ))}
-            </div>
+        <div className="mb-4">
+          <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Platform</span>
+          <div className="flex gap-1 bg-input border border-border rounded-md p-1">
+            {PLATFORMS.map((p) => (
+              <button key={p} type="button" onClick={() => setPlatform(p)} className={`flex-1 py-2 rounded text-xs font-semibold uppercase tracking-wider transition ${platform === p ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                {p}
+              </button>
+            ))}
           </div>
-          <CrestPicker value={opponentCrestId} onChange={setOpponentCrestId} />
         </div>
 
         {/* Match flags */}
