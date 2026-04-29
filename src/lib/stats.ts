@@ -60,8 +60,12 @@ export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
       ratingSum += r;
       ratedMatches += 1;
     }
-    goalsConceded += match.scoreAgainst;
-    if (match.scoreAgainst === 0) cleanSheets += 1;
+    if (isGoalsConcededEligible(player.position)) {
+      goalsConceded += match.scoreAgainst;
+    }
+    if (isCleanSheetEligible(player.position) && match.scoreAgainst === 0) {
+      cleanSheets += 1;
+    }
     if (computeMvpId(match) === player.id) mvpCount += 1;
   }
   const ga = g + a;
