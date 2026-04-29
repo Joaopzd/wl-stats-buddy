@@ -10,6 +10,8 @@ import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { ReportModal } from "@/components/ReportModal";
 import { RankBadge } from "@/components/RankBadge";
 import { PlayerCard } from "@/components/PlayerCard";
+import { ClubCrest } from "@/components/ClubCrest";
+import { OpponentCrest } from "@/components/OpponentCrest";
 import { FORMATIONS, type FormationSlot } from "@/lib/formations";
 import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Target, Shield, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
