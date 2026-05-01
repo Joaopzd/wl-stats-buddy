@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { X, Star, Sparkles, Zap, Flag as FlagIcon, AlertTriangle, Trophy, Pencil } from "lucide-react";
+import { X, Star, Zap, Flag as FlagIcon, AlertTriangle, Trophy, Pencil } from "lucide-react";
 import type { Match, Player } from "@/lib/types";
 import { matchIsWin } from "@/lib/stats";
 import { ClubCrest } from "./ClubCrest";
