@@ -1,9 +1,8 @@
 import opponentCrestImg from "@/assets/opponent-crest.png";
 
 /**
- * Single, custom opponent crest used everywhere.
- * The `id` prop is accepted for backwards compatibility but ignored —
- * every opponent now uses the same uploaded image.
+ * Single, custom opponent crest used everywhere, rendered inside a fixed
+ * circular mask so it shares identical dimensions with ClubCrest.
  */
 export function OpponentCrest({
   id: _id,
@@ -16,12 +15,17 @@ export function OpponentCrest({
 }) {
   const px = `${size}px`;
   return (
-    <img
-      src={opponentCrestImg}
-      alt="Opponent crest"
+    <div
       style={{ width: px, height: px }}
-      className={`object-contain ${className}`}
-      draggable={false}
-    />
+      className={`inline-grid place-items-center rounded-full overflow-hidden bg-background/60 border border-border/60 shrink-0 ${className}`}
+    >
+      <img
+        src={opponentCrestImg}
+        alt="Opponent crest"
+        style={{ width: px, height: px }}
+        className="object-contain"
+        draggable={false}
+      />
+    </div>
   );
 }

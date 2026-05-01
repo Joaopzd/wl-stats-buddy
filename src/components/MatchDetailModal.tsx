@@ -80,8 +80,8 @@ export function MatchDetailModal({
             Match {match.index} · {win ? "WIN" : "LOSS"}
           </div>
           <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5 font-display leading-none">
-            <div className="flex flex-col items-center justify-self-end gap-1.5 min-w-0">
-              <ClubCrest size={56} />
+            <div className="flex flex-col items-center justify-self-center gap-1.5 min-w-0 w-full">
+              <ClubCrest size={64} />
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[8rem] text-center">
                 {clubName || "My Club"}
               </div>
@@ -91,8 +91,8 @@ export function MatchDetailModal({
               <span className="text-2xl sm:text-3xl text-muted-foreground/60">–</span>
               <span className={`text-5xl sm:text-6xl stat-num ${!win ? "text-destructive" : "text-foreground"}`}>{match.scoreAgainst}</span>
             </div>
-            <div className="flex flex-col items-center justify-self-start gap-1.5 min-w-0">
-              <OpponentCrest id={match.opponentCrestId} size={56} />
+            <div className="flex flex-col items-center justify-self-center gap-1.5 min-w-0 w-full">
+              <OpponentCrest id={match.opponentCrestId} size={64} />
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[8rem] text-center">
                 {OPPONENT_NAME}
               </div>
