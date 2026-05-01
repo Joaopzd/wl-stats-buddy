@@ -12,6 +12,7 @@ import { RankBadge } from "@/components/RankBadge";
 import { PlayerCard } from "@/components/PlayerCard";
 import { ClubCrest } from "@/components/ClubCrest";
 import { OpponentCrest } from "@/components/OpponentCrest";
+import { PlatformBadge } from "@/components/PlatformBadge";
 import { FORMATIONS, type FormationSlot } from "@/lib/formations";
 import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Target, Shield, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
@@ -345,9 +346,9 @@ function WLDetail() {
                     </span>
                     <OpponentCrest id={m.opponentCrestId} size={20} />
                   </div>
-                  <span className="text-[9px] font-mono uppercase tracking-wider text-muted-foreground bg-secondary/60 px-1 py-0.5 rounded text-center">
-                    {m.platform}
-                  </span>
+                  <div className="flex justify-center">
+                    <PlatformBadge platform={m.platform} size="xs" />
+                  </div>
                   <div className="flex items-center gap-1 flex-wrap min-w-0">
                     <span className={`text-[9px] font-bold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>
                       {win ? "W" : "L"}

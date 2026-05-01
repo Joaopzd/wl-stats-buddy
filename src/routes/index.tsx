@@ -6,8 +6,8 @@ import { useMatches, usePlayers, useWLs } from "@/lib/store";
 import { aggregateAllPlayers, platformRecords, rankFromWins, wlRecord } from "@/lib/stats";
 import { Trophy, Target, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, Gamepad2, Users } from "lucide-react";
 import { RankBadge } from "@/components/RankBadge";
-import { ClubCrestUploader } from "@/components/ClubCrestUploader";
 import { ClubCrest } from "@/components/ClubCrest";
+import { useClubName } from "@/lib/store";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -65,14 +65,19 @@ function Dashboard() {
 
   const empty = wls.length === 0 && players.length === 0;
 
+  const clubName = useClubName();
+
   return (
     <AppShell>
       <header className="flex items-center justify-between gap-3 mb-6 pb-4 border-b border-border/60">
-        <div className="flex items-center gap-2 min-w-0">
-          <ClubCrest size={28} />
-          <h1 className="font-display text-sm sm:text-base tracking-[0.3em] uppercase truncate">
-            Champs Tracker
-          </h1>
+        <div className="flex items-center gap-3 min-w-0">
+          <ClubCrest size={44} />
+          <div className="min-w-0 leading-tight">
+            <div className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground font-bold">Champs Tracker</div>
+            <h1 className="font-display text-lg sm:text-xl tracking-wider truncate">
+              {clubName || "Your Club"}
+            </h1>
+          </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <Link
@@ -89,10 +94,6 @@ function Dashboard() {
           </Link>
         </div>
       </header>
-
-      <div className="mb-6">
-        <ClubCrestUploader />
-      </div>
 
 
       {empty ? (
