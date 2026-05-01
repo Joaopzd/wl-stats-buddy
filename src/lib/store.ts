@@ -8,6 +8,7 @@ const KEYS = {
   wls: "fc26_wls_v4",
   matches: "fc26_matches_v4",
   clubCrest: "fc26_club_crest_v1",
+  clubName: "fc26_club_name_v1",
 } as const;
 
 const LEGACY_KEYS = [
@@ -54,7 +55,8 @@ const cache: {
   wls: WeekendLeague[] | null;
   matches: Match[] | null;
   clubCrest: string | null | undefined;
-} = { players: null, wls: null, matches: null, clubCrest: undefined };
+  clubName: string | null | undefined;
+} = { players: null, wls: null, matches: null, clubCrest: undefined, clubName: undefined };
 
 function read<T>(key: string, fallback: T): T {
   if (!isBrowser) return fallback;
@@ -132,6 +134,23 @@ export const store = {
     cache.clubCrest = dataUrl;
     listeners.forEach((l) => l());
   },
+
+  getClubName: (): string => {
+    if (!isBrowser) return "";
+    if (cache.clubName === undefined) {
+      try { cache.clubName = localStorage.getItem(KEYS.clubName); }
+      catch { cache.clubName = null; }
+    }
+    return cache.clubName ?? "";
+  },
+  setClubName: (name: string) => {
+    if (!isBrowser) return;
+    const trimmed = name.trim();
+    if (trimmed) localStorage.setItem(KEYS.clubName, trimmed);
+    else localStorage.removeItem(KEYS.clubName);
+    cache.clubName = trimmed || null;
+    listeners.forEach((l) => l());
+  },
 };
 
 // cross-tab sync
@@ -148,3 +167,5 @@ export const useWLs = () => useStoreSlice(store.getWLs, EMPTY_WLS);
 export const useMatches = () => useStoreSlice(store.getMatches, EMPTY_MATCHES);
 export const useClubCrest = () =>
   useStoreSlice<string | null>(() => store.getClubCrest(), null);
+export const useClubName = () =>
+  useStoreSlice<string>(() => store.getClubName(), "");
