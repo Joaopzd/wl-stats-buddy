@@ -1,9 +1,15 @@
 import { motion } from "framer-motion";
-import { X, Star, Target, Sparkles, Zap, Flag as FlagIcon, AlertTriangle, Trophy, Pencil } from "lucide-react";
+import { X, Star, Sparkles, Zap, Flag as FlagIcon, AlertTriangle, Trophy, Pencil } from "lucide-react";
 import type { Match, Player } from "@/lib/types";
 import { matchIsWin } from "@/lib/stats";
 import { ClubCrest } from "./ClubCrest";
 import { OpponentCrest } from "./OpponentCrest";
+import { PlatformBadge } from "./PlatformBadge";
+import { SoccerBall } from "./icons/SoccerBall";
+import { SoccerBoot } from "./icons/SoccerBoot";
+import { useClubName } from "@/lib/store";
+
+const OPPONENT_NAME = "Challenger FC";
 
 export function MatchDetailModal({
   match,
