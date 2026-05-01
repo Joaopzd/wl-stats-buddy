@@ -118,11 +118,20 @@ export function MatchDialog({
         <div className="mb-4">
           <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Platform</span>
           <div className="flex gap-1 bg-input border border-border rounded-md p-1">
-            {PLATFORMS.map((p) => (
-              <button key={p} type="button" onClick={() => setPlatform(p)} className={`flex-1 py-2 rounded text-xs font-semibold uppercase tracking-wider transition ${platform === p ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-                {p}
-              </button>
-            ))}
+            {PLATFORMS.map((p) => {
+              const isActive = platform === p;
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setPlatform(p)}
+                  className={`flex-1 py-2 rounded text-xs font-bold uppercase tracking-wider transition border ${isActive ? "border-black/20 shadow-inner" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+                  style={isActive ? { backgroundColor: PLATFORM_BG[p], color: PLATFORM_FG[p] } : undefined}
+                >
+                  {p}
+                </button>
+              );
+            })}
           </div>
         </div>
 
