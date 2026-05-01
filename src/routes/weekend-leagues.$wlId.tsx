@@ -345,9 +345,9 @@ function WLDetail() {
                     </span>
                     <OpponentCrest id={m.opponentCrestId} size={20} />
                   </div>
-                  <span className="text-[9px] font-mono uppercase tracking-wider text-muted-foreground bg-secondary/60 px-1 py-0.5 rounded text-center">
-                    {m.platform}
-                  </span>
+                  <div className="flex justify-center">
+                    <PlatformBadge platform={m.platform} size="xs" />
+                  </div>
                   <div className="flex items-center gap-1 flex-wrap min-w-0">
                     <span className={`text-[9px] font-bold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>
                       {win ? "W" : "L"}
