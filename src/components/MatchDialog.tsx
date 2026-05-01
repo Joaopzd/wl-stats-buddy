@@ -7,6 +7,7 @@ import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import { ClubCrest } from "./ClubCrest";
 import { OpponentCrest } from "./OpponentCrest";
+import { PLATFORM_BG, PLATFORM_FG } from "./PlatformBadge";
 
 const PLATFORMS: Platform[] = ["PC", "PS5", "Xbox"];
 
