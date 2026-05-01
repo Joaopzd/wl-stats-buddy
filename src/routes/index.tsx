@@ -169,9 +169,8 @@ function Dashboard() {
                 return (
                   <div key={p.platform} className="rounded-md border border-border/60 bg-background/40 p-3">
                     <div className="flex items-baseline justify-between">
-                      <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground bg-secondary px-1.5 py-0.5 rounded">
-                        {p.platform}
-                      </div>
+                      <PlatformBadge platform={p.platform} size="sm" />
+
                       <div className={`font-display stat-num text-2xl ${color}`}>
                         {p.played === 0 ? "—" : `${pct}%`}
                       </div>
