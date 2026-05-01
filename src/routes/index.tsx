@@ -7,6 +7,7 @@ import { aggregateAllPlayers, platformRecords, rankFromWins, wlRecord } from "@/
 import { Trophy, Target, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, Gamepad2, Users } from "lucide-react";
 import { RankBadge } from "@/components/RankBadge";
 import { ClubCrest } from "@/components/ClubCrest";
+import { PlatformBadge } from "@/components/PlatformBadge";
 import { useClubName } from "@/lib/store";
 
 export const Route = createFileRoute("/")({
