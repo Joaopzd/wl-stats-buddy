@@ -78,19 +78,29 @@ export function MatchDetailModal({
           <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold">
             Match {match.index} · {win ? "WIN" : "LOSS"}
           </div>
-          <div className="mt-3 grid grid-cols-[auto_1fr_auto] items-center gap-3 sm:gap-5 font-display leading-none">
-            <ClubCrest size={56} className="justify-self-end" />
+          <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5 font-display leading-none">
+            <div className="flex flex-col items-center justify-self-end gap-1.5 min-w-0">
+              <ClubCrest size={56} />
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[8rem] text-center">
+                {clubName || "My Club"}
+              </div>
+            </div>
             <div className="flex items-baseline justify-center gap-2 sm:gap-3">
               <span className={`text-5xl sm:text-6xl stat-num ${win ? "text-primary" : "text-foreground"}`}>{match.scoreFor}</span>
               <span className="text-2xl sm:text-3xl text-muted-foreground/60">–</span>
               <span className={`text-5xl sm:text-6xl stat-num ${!win ? "text-destructive" : "text-foreground"}`}>{match.scoreAgainst}</span>
             </div>
-            <OpponentCrest id={match.opponentCrestId} size={56} className="justify-self-start" />
+            <div className="flex flex-col items-center justify-self-start gap-1.5 min-w-0">
+              <OpponentCrest id={match.opponentCrestId} size={56} />
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[8rem] text-center">
+                {OPPONENT_NAME}
+              </div>
+            </div>
           </div>
-          <div className="mt-3 flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] font-mono uppercase tracking-wider bg-secondary px-2 py-0.5 rounded border border-border">
-              {match.platform}
-            </span>
+          <div className="mt-3 flex justify-center">
+            <PlatformBadge platform={match.platform} size="md" />
+          </div>
+          <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
             {match.extraTime && (
               <Tag tone="warn" icon={<Zap className="h-3 w-3" />}>Extra Time</Tag>
             )}
@@ -128,14 +138,14 @@ export function MatchDetailModal({
           {/* Goals & Assists summary */}
           <div className="grid sm:grid-cols-2 gap-3">
             <SummaryList
-              icon={<Target className="h-3.5 w-3.5" />}
+              icon={<SoccerBall size={14} />}
               label="Goals"
               empty="No goals"
               items={scorers.map((s) => ({ name: s.player!.name, count: s.goals }))}
               tone="primary"
             />
             <SummaryList
-              icon={<Sparkles className="h-3.5 w-3.5" />}
+              icon={<SoccerBoot size={14} />}
               label="Assists"
               empty="No assists"
               items={assisters.map((a) => ({ name: a.player!.name, count: a.assists }))}
