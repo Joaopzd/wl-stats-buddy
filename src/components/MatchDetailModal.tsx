@@ -24,6 +24,7 @@ export function MatchDetailModal({
 }) {
   const playersById = new Map(players.map((p) => [p.id, p]));
   const win = matchIsWin(match);
+  const clubName = useClubName();
 
   // MVP: explicit mvpPlayerId, else highest rating > 0
   const explicitMvp = match.mvpPlayerId
