@@ -32,7 +32,7 @@ export function MatchDialog({
   const [penalties, setPenalties] = useState<boolean>(existingMatch?.penalties ?? false);
   const [penaltyWinner, setPenaltyWinner] = useState<PenaltyWinner>(existingMatch?.penaltyWinner ?? "us");
   const [rageQuit, setRageQuit] = useState<boolean>(existingMatch?.rageQuit ?? false);
-  const [mvpId, setMvpId] = useState<string>(existingMatch?.mvpPlayerId ?? "");
+  
 
   const startingIdSet = new Set(Object.values(wl.startingAssignments ?? {}));
   const [perfs, setPerfs] = useState<Record<string, MatchPlayerStat & { played: boolean }>>(() => {
@@ -63,15 +63,22 @@ export function MatchDialog({
       .filter((p) => p.played)
       .map(({ played, ...rest }) => rest);
 
-    const playedIds = new Set(performances.map((p) => p.playerId));
-    const finalMvpId = mvpId && playedIds.has(mvpId) ? mvpId : undefined;
+    // MVP is automatically the highest-rated participant (no manual override).
+    const rated = performances.filter((p) => (p.rating ?? 0) > 0);
+    const autoMvp = rated.length
+      ? [...rated].sort(
+          (a, b) =>
+            (b.rating ?? 0) - (a.rating ?? 0) ||
+            (b.goals + b.assists) - (a.goals + a.assists),
+        )[0]
+      : null;
 
     const flags = {
       extraTime,
       penalties,
       penaltyWinner: penalties ? penaltyWinner : undefined,
       rageQuit,
-      mvpPlayerId: finalMvpId,
+      mvpPlayerId: autoMvp?.playerId,
     };
 
     if (existingMatch) {
