@@ -272,7 +272,7 @@ function NumBox({ v, on, disabled, accent }: { v: number; on: (v: number) => voi
         if (val === "") return on(0);
         on(Math.max(0, parseInt(val) || 0));
       }}
-      className={`w-9 h-8 bg-background/80 border border-border rounded text-center stat-num text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none shrink-0 ${accent ? "text-primary" : ""}`}
+      className={`w-full h-8 bg-background/80 border border-border rounded text-center stat-num text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${accent ? "text-primary" : ""}`}
     />
   );
 }
@@ -300,7 +300,7 @@ function RatingBox({ v, on, disabled }: { v: number; on: (v: number) => void; di
         if (val === "") return on(0);
         on(clamp(parseFloat(val) || 0));
       }}
-      className={`w-12 h-8 rounded border text-center stat-num text-sm font-semibold outline-none focus:ring-1 focus:ring-primary disabled:opacity-30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none shrink-0 ${tone}`}
+      className={`w-full h-8 rounded border text-center stat-num text-sm font-semibold outline-none focus:ring-1 focus:ring-primary disabled:opacity-30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${tone}`}
     />
   );
 }
