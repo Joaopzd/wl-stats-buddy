@@ -13,6 +13,7 @@ import { PlayerCard } from "@/components/PlayerCard";
 import { ClubCrest } from "@/components/ClubCrest";
 import { OpponentCrest } from "@/components/OpponentCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
+import { CREST_SIZE } from "@/lib/ui";
 import { FORMATIONS, type FormationSlot } from "@/lib/formations";
 import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Target, Shield, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
@@ -338,13 +339,13 @@ function WLDetail() {
                     M{m.index}
                   </span>
                   <div className="flex items-center justify-center gap-1.5 leading-none">
-                    <ClubCrest size={20} />
+                    <ClubCrest size={CREST_SIZE.list} />
                     <span className="font-display stat-num text-sm">
                       <span className={win ? "text-primary" : "text-foreground"}>{m.scoreFor}</span>
                       <span className="text-muted-foreground/50 mx-0.5">–</span>
                       <span className={!win ? "text-destructive" : "text-foreground"}>{m.scoreAgainst}</span>
                     </span>
-                    <OpponentCrest id={m.opponentCrestId} size={20} />
+                    <OpponentCrest id={m.opponentCrestId} size={CREST_SIZE.list} />
                   </div>
                   <div className="flex justify-center">
                     <PlatformBadge platform={m.platform} size="xs" />
