@@ -116,12 +116,12 @@ export function MatchDialog({
 
         {/* Versus header: My crest · Score · Opponent crest */}
         <div className="mb-4 surface-card p-3 flex items-center gap-3">
-          <ClubCrest size={48} />
+          <ClubCrest size={CREST_SIZE.dialog} />
           <div className="flex-1 grid grid-cols-2 gap-3">
             <ScoreInput label="You" value={scoreFor} onChange={setScoreFor} accent />
             <ScoreInput label="Opponent" value={scoreAgainst} onChange={setScoreAgainst} />
           </div>
-          <OpponentCrest size={48} />
+          <OpponentCrest size={CREST_SIZE.dialog} />
         </div>
 
         <div className="mb-4">
@@ -145,7 +145,7 @@ export function MatchDialog({
         </div>
 
         {/* Match flags */}
-        <div className="mb-5 surface-card p-3 space-y-3">
+        <div className="mb-4 surface-card p-3 space-y-3">
           <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">Match details</div>
           <div className="flex flex-wrap gap-2">
             <FlagToggle active={extraTime} onClick={() => setExtraTime((v) => !v)} icon={<Zap className="h-3.5 w-3.5" />} label="Extra Time" />
@@ -164,69 +164,62 @@ export function MatchDialog({
               </div>
             </div>
           )}
-          <div>
-            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
-              <Trophy className="h-3 w-3 text-amber-300" /> MVP <span className="text-muted-foreground/60 normal-case tracking-normal">(auto-picked from highest rating if blank)</span>
-            </div>
-            <select
-              value={mvpId}
-              onChange={(e) => setMvpId(e.target.value)}
-              className="w-full bg-input border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-            >
-              <option value="">— Auto (highest rated) —</option>
-              {squad
-                .filter((p) => perfs[p.id]?.played)
-                .map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} · {p.position} · {p.overall}
-                  </option>
-                ))}
-            </select>
-          </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto -mx-2 px-2">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">Player performances</div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono hidden sm:flex gap-3 pr-1">
-              <span className="w-9 text-center">G</span>
-              <span className="w-9 text-center">A</span>
-              <span className="w-12 text-center">Rating</span>
-            </div>
+        {/* Player performances — scrollable, aligned columns */}
+        <div className="flex-1 min-h-0 flex flex-col">
+          <div className="grid grid-cols-[1.25rem_2.25rem_minmax(0,1fr)_2.25rem_2.25rem_2.75rem] items-center gap-2 px-2 pb-1.5 text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-bold">
+            <span aria-hidden></span>
+            <span aria-hidden></span>
+            <span>Player</span>
+            <span className="text-center">G</span>
+            <span className="text-center">A</span>
+            <span className="text-center">Rating</span>
           </div>
-          {squad.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-8 text-center">No squad. Add players to the squad first.</p>
-          ) : (
-            <div className="space-y-1">
-              {[...squad]
-                .sort((a, b) => Number(startingIdSet.has(b.id)) - Number(startingIdSet.has(a.id)))
-                .map((p) => {
-                const perf = perfs[p.id];
-                const isStarter = startingIdSet.has(p.id);
-                return (
-                  <div key={p.id} className={`flex items-center gap-2 px-2 py-1.5 rounded-md border transition ${perf.played ? "border-primary/40 bg-primary/5" : "border-border bg-card"}`}>
-                    <input
-                      type="checkbox"
-                      checked={perf.played}
-                      onChange={(e) => update(p.id, { played: e.target.checked })}
-                      className="h-4 w-4 accent-[var(--primary)] shrink-0"
-                      aria-label={`Played: ${p.name}`}
-                    />
-                    <span className={`text-[9px] uppercase tracking-wider font-bold shrink-0 px-1.5 py-0.5 rounded w-10 text-center ${isStarter ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"}`}>
-                      {isStarter ? "XI" : "Sub"}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm font-semibold truncate leading-tight">{p.name}</div>
-                      <div className="text-[10px] text-muted-foreground font-mono">{p.position} · {p.overall}</div>
-                    </div>
-                    <NumBox v={perf.goals} on={(v) => update(p.id, { goals: v })} disabled={!perf.played} accent />
-                    <NumBox v={perf.assists} on={(v) => update(p.id, { assists: v })} disabled={!perf.played} />
-                    <RatingBox v={perf.rating} on={(v) => update(p.id, { rating: v })} disabled={!perf.played} />
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <div className="flex-1 min-h-0 overflow-y-auto -mx-2 px-2">
+            {squad.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-8 text-center">No squad. Add players to the squad first.</p>
+            ) : (
+              <div className="space-y-1">
+                {[...squad]
+                  .sort((a, b) => Number(startingIdSet.has(b.id)) - Number(startingIdSet.has(a.id)))
+                  .map((p) => {
+                    const perf = perfs[p.id];
+                    const isStarter = startingIdSet.has(p.id);
+                    return (
+                      <div
+                        key={p.id}
+                        className={`grid grid-cols-[1.25rem_2.25rem_minmax(0,1fr)_2.25rem_2.25rem_2.75rem] items-center gap-2 px-2 py-1.5 rounded-md border transition ${
+                          perf.played ? "border-primary/40 bg-primary/5" : "border-border bg-card"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={perf.played}
+                          onChange={(e) => update(p.id, { played: e.target.checked })}
+                          className="h-4 w-4 accent-[var(--primary)] justify-self-center"
+                          aria-label={`Played: ${p.name}`}
+                        />
+                        <span
+                          className={`text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded text-center ${
+                            isStarter ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"
+                          }`}
+                        >
+                          {isStarter ? "XI" : "Sub"}
+                        </span>
+                        <div className="min-w-0">
+                          <div className="text-sm font-semibold truncate leading-tight">{p.name}</div>
+                          <div className="text-[10px] text-muted-foreground font-mono">{p.position} · {p.overall}</div>
+                        </div>
+                        <NumBox v={perf.goals} on={(v) => update(p.id, { goals: v })} disabled={!perf.played} accent />
+                        <NumBox v={perf.assists} on={(v) => update(p.id, { assists: v })} disabled={!perf.played} />
+                        <RatingBox v={perf.rating} on={(v) => update(p.id, { rating: v })} disabled={!perf.played} />
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
         </div>
 
         {goalsMismatch && (
