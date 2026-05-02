@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Zap, Flag as FlagIcon, AlertTriangle, Trophy } from "lucide-react";
+import { X, Zap, Flag as FlagIcon, AlertTriangle } from "lucide-react";
 import { store } from "@/lib/store";
 import type { Match, MatchPlayerStat, Platform, PenaltyWinner, Player, WeekendLeague } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ClubCrest } from "./ClubCrest";
 import { OpponentCrest } from "./OpponentCrest";
 import { PLATFORM_BG, PLATFORM_FG } from "./PlatformBadge";
+import { CREST_SIZE } from "@/lib/ui";
 
 const PLATFORMS: Platform[] = ["PC", "PS5", "Xbox"];
 
