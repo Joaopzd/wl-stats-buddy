@@ -119,7 +119,7 @@ function WLList() {
                 <div className="mt-4 flex items-end justify-between">
                   <div>
                     <div className="stat-num text-2xl">
-                      <span className="text-primary">{r.wins}</span>
+                      <span className="text-foreground">{r.wins}</span>
                       <span className="text-muted-foreground/50 mx-1">·</span>
                       <span className="text-destructive">{r.losses}</span>
                     </div>

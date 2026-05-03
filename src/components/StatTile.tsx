@@ -21,7 +21,7 @@ export function StatTile({
       <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">
         {label}
       </div>
-      <div className={`mt-2 font-display text-4xl leading-none ${accent ? "text-gradient-primary" : "text-foreground"}`}>
+      <div className="mt-2 font-display text-4xl leading-none text-foreground">
         {value}
       </div>
       {sub && <div className="mt-2 text-xs text-muted-foreground">{sub}</div>}

@@ -88,9 +88,9 @@ export function MatchDetailModal({
               </div>
             </div>
             <div className="flex items-baseline justify-center gap-2 sm:gap-3">
-              <span className={`text-5xl sm:text-6xl stat-num ${win ? "text-primary" : "text-foreground"}`}>{match.scoreFor}</span>
+              <span className="text-5xl sm:text-6xl stat-num text-foreground">{match.scoreFor}</span>
               <span className="text-2xl sm:text-3xl text-muted-foreground/60">–</span>
-              <span className={`text-5xl sm:text-6xl stat-num ${!win ? "text-destructive" : "text-foreground"}`}>{match.scoreAgainst}</span>
+              <span className="text-5xl sm:text-6xl stat-num text-foreground">{match.scoreAgainst}</span>
             </div>
             <div className="flex flex-col items-center justify-self-center gap-1.5 min-w-0 w-full">
               <OpponentCrest id={match.opponentCrestId} size={CREST_SIZE.detail} />
@@ -167,7 +167,6 @@ export function MatchDetailModal({
                 {ratings.map(({ perf, player }) => {
                   const r = perf.rating ?? 0;
                   const tone =
-                    r >= 8 ? "text-primary" :
                     r >= 6 ? "text-foreground" :
                     r > 0 ? "text-destructive" :
                     "text-muted-foreground";
@@ -176,7 +175,7 @@ export function MatchDetailModal({
                       key={perf.playerId}
                       className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-background/50 border border-border/60"
                     >
-                      <span className="font-display text-base text-primary stat-num w-7 text-center shrink-0 leading-none">
+                      <span className="font-display text-base text-foreground stat-num w-7 text-center shrink-0 leading-none">
                         {player!.overall}
                       </span>
                       <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">
