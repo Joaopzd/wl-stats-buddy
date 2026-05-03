@@ -1,5 +1,7 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { LayoutDashboard, Trophy, Users, Sparkles, Shield } from "lucide-react";
+import { ClubCrest } from "./ClubCrest";
+import { AccentPicker } from "./AccentPicker";
 
 const links = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -16,14 +18,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-40 border-b border-border/60 backdrop-blur-xl bg-background/70">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="relative h-9 w-9 rounded-md bg-[var(--gradient-primary)] grid place-items-center shadow-[var(--shadow-neon)]">
-              <span className="font-display text-xl text-primary-foreground leading-none">FC</span>
+            <div className="relative h-9 w-9 rounded-md grid place-items-center shadow-[var(--shadow-neon)] overflow-hidden">
+              <ClubCrest size={36} className="!rounded-md !border-0 !bg-transparent" />
             </div>
             <div className="leading-tight">
               <div className="font-display text-xl tracking-wider">WL TRACKER</div>
               <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">EA FC 26</div>
             </div>
           </Link>
+          <div className="flex items-center gap-2">
           <nav className="hidden md:flex items-center gap-1">
             {links.map((l) => {
               const active = l.to === "/" ? loc.pathname === "/" : loc.pathname.startsWith(l.to);
