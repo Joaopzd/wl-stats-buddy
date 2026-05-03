@@ -3,7 +3,9 @@ import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers } from "@/lib/store";
 import { aggregateAllPlayers, type PlayerAgg } from "@/lib/stats";
-import { Goal, Sparkles, Wand2, Trophy, Shield } from "lucide-react";
+import { Goal, Sparkles, Wand2, Trophy, Shield, Info } from "lucide-react";
+
+const MIN_MATCHES = 9;
 
 export const Route = createFileRoute("/rankings")({
   head: () => ({
@@ -22,32 +24,34 @@ function RankingsPage() {
   const matches = useMatches();
   const aggs = useMemo(() => aggregateAllPlayers(players, matches), [players, matches]);
 
-  const totalMatches = matches.length;
-  const minMatchesForRating = Math.max(1, Math.ceil(totalMatches / 2));
-
-  const topScorers = useMemo(
-    () => [...aggs].filter((a) => a.goals > 0).sort((a, b) => b.goals - a.goals || b.gaPerGame - a.gaPerGame).slice(0, 10),
+  const eligible = useMemo(
+    () => aggs.filter((a) => a.matches >= MIN_MATCHES),
     [aggs],
   );
+
+  const topScorers = useMemo(
+    () => [...eligible].filter((a) => a.goals > 0).sort((a, b) => b.goals - a.goals || b.gaPerGame - a.gaPerGame).slice(0, 10),
+    [eligible],
+  );
   const topPlaymakers = useMemo(
-    () => [...aggs].filter((a) => a.assists > 0).sort((a, b) => b.assists - a.assists || b.gaPerGame - a.gaPerGame).slice(0, 10),
-    [aggs],
+    () => [...eligible].filter((a) => a.assists > 0).sort((a, b) => b.assists - a.assists || b.gaPerGame - a.gaPerGame).slice(0, 10),
+    [eligible],
   );
   const topRated = useMemo(
     () =>
-      [...aggs]
-        .filter((a) => a.ratedMatches >= minMatchesForRating && a.avgRating > 0)
+      [...eligible]
+        .filter((a) => a.avgRating > 0)
         .sort((a, b) => b.avgRating - a.avgRating)
         .slice(0, 10),
-    [aggs, minMatchesForRating],
+    [eligible],
   );
   const topMvps = useMemo(
-    () => [...aggs].filter((a) => a.mvpCount > 0).sort((a, b) => b.mvpCount - a.mvpCount || b.avgRating - a.avgRating).slice(0, 10),
-    [aggs],
+    () => [...eligible].filter((a) => a.mvpCount > 0).sort((a, b) => b.mvpCount - a.mvpCount || b.avgRating - a.avgRating).slice(0, 10),
+    [eligible],
   );
   const topCleanSheets = useMemo(
-    () => [...aggs].filter((a) => a.cleanSheets > 0).sort((a, b) => b.cleanSheets - a.cleanSheets || a.goalsConceded - b.goalsConceded).slice(0, 10),
-    [aggs],
+    () => [...eligible].filter((a) => a.cleanSheets > 0).sort((a, b) => b.cleanSheets - a.cleanSheets || a.goalsConceded - b.goalsConceded).slice(0, 10),
+    [eligible],
   );
 
   return (
@@ -58,6 +62,10 @@ function RankingsPage() {
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Career-wide leaderboards across all your Weekend Leagues.
+        </p>
+        <p className="mt-2 inline-flex items-center gap-1.5 text-[11px] text-muted-foreground bg-secondary/40 border border-border/50 rounded-md px-2 py-1">
+          <Info className="h-3 w-3 text-primary" />
+          Only players with {MIN_MATCHES}+ matches are eligible for the All-Time Rankings.
         </p>
       </div>
 
@@ -84,8 +92,8 @@ function RankingsPage() {
           rows={topRated}
           metric={(a) => a.avgRating.toFixed(2)}
           metricLabel="Avg Rating"
-          empty={`Need ${minMatchesForRating} of ${totalMatches} club matches with a rating.`}
-          subline={`Min ${minMatchesForRating} of ${totalMatches} club matches`}
+          empty={`Need ${MIN_MATCHES}+ matches with a rating.`}
+          subline={`Min ${MIN_MATCHES} matches`}
         />
         <Leaderboard
           title="Top 10 MVPs"
