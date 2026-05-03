@@ -149,11 +149,11 @@ function WLDetail() {
         <div className="mt-6 flex items-end gap-4 sm:gap-6">
           <div className="flex items-baseline gap-2">
             <Trophy className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-            <span className="font-display text-6xl sm:text-7xl stat-num leading-none text-primary">{record?.wins ?? 0}</span>
+            <span className="font-display text-6xl sm:text-7xl stat-num leading-none text-foreground">{record?.wins ?? 0}</span>
           </div>
           <span className="font-display text-4xl sm:text-5xl text-muted-foreground/50 leading-none pb-1">–</span>
           <div className="flex items-baseline gap-2">
-            <span className="font-display text-6xl sm:text-7xl stat-num leading-none text-destructive">{record?.losses ?? 0}</span>
+            <span className="font-display text-6xl sm:text-7xl stat-num leading-none text-foreground">{record?.losses ?? 0}</span>
             <XIcon className="h-6 w-6 sm:h-8 sm:w-8 text-destructive" />
           </div>
           <div className="ml-auto text-right hidden sm:block">
@@ -280,7 +280,7 @@ function WLDetail() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 mt-2">
                     {squadAggs.map((a) => (
                       <div key={a.player.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-background/50 border border-border/60">
-                        <span className="font-display text-base text-primary stat-num w-7 text-center shrink-0 leading-none">{a.player.overall}</span>
+                        <span className="font-display text-base text-foreground stat-num w-7 text-center shrink-0 leading-none">{a.player.overall}</span>
                         <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{a.player.position}</span>
                         <div className="min-w-0 flex-1">
                           <div className="text-[11px] font-semibold truncate leading-tight">{a.player.name}</div>
@@ -341,7 +341,7 @@ function WLDetail() {
                   <div className="flex items-center justify-center gap-1.5 leading-none">
                     <ClubCrest size={CREST_SIZE.list} />
                     <span className="font-display stat-num text-sm">
-                      <span className={win ? "text-primary" : "text-foreground"}>{m.scoreFor}</span>
+                      <span className="text-foreground">{m.scoreFor}</span>
                       <span className="text-muted-foreground/50 mx-0.5">–</span>
                       <span className={!win ? "text-destructive" : "text-foreground"}>{m.scoreAgainst}</span>
                     </span>
@@ -427,12 +427,12 @@ function WLDetail() {
 }
 
 function IconStat({ icon, value, label, tone }: { icon: React.ReactNode; value: number; label: string; tone: "primary" | "muted" }) {
-  const color = tone === "primary" ? "text-primary" : "text-foreground";
+  const iconColor = tone === "primary" ? "text-primary" : "text-muted-foreground";
   return (
     <div className="surface-card px-3 py-3 sm:px-4 sm:py-4 flex items-center gap-3">
-      <div className={`${color} opacity-80 shrink-0`}>{icon}</div>
+      <div className={`${iconColor} shrink-0`}>{icon}</div>
       <div className="min-w-0">
-        <div className={`stat-num font-display text-2xl sm:text-3xl leading-none ${color}`}>{value}</div>
+        <div className="stat-num font-display text-2xl sm:text-3xl leading-none text-foreground">{value}</div>
         <div className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground mt-1 font-semibold">{label}</div>
       </div>
     </div>
@@ -442,9 +442,9 @@ function IconStat({ icon, value, label, tone }: { icon: React.ReactNode; value: 
 function GDStat({ value }: { value: number }) {
   const positive = value >= 0;
   return (
-    <div className={`px-3 py-3 sm:px-4 sm:py-4 rounded-lg border-2 flex items-center gap-3 ${positive ? "border-primary/60 bg-primary/15 shadow-[0_0_20px_-5px_var(--primary)]" : "border-destructive/60 bg-destructive/15"}`}>
+    <div className={`surface-card px-3 py-3 sm:px-4 sm:py-4 flex items-center gap-3 ${positive ? "border-primary/40 shadow-[0_0_20px_-8px_var(--primary)]" : "border-destructive/40"}`}>
       <div className="min-w-0">
-        <div className={`stat-num text-2xl sm:text-3xl font-display leading-none ${positive ? "text-primary" : "text-destructive"}`}>
+        <div className="stat-num text-2xl sm:text-3xl font-display leading-none text-foreground">
           {positive ? "+" : ""}{value}
         </div>
         <div className="text-[9px] uppercase tracking-[0.25em] mt-1 font-bold text-foreground/80">GD</div>
@@ -535,7 +535,7 @@ function BenchList({ benchIds, players }: { benchIds: string[]; players: Player[
             if (!p) return null;
             return (
               <div key={id} className="surface-card px-2 py-1.5 flex items-center gap-2">
-                <span className="font-display text-base text-primary stat-num w-7 text-center shrink-0 leading-none">{p.overall}</span>
+                <span className="font-display text-base text-foreground stat-num w-7 text-center shrink-0 leading-none">{p.overall}</span>
                 <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{p.position}</span>
                 <div className="text-[11px] font-semibold truncate flex-1 leading-tight">{p.name}</div>
               </div>

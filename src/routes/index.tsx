@@ -108,7 +108,7 @@ function Dashboard() {
               <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
                 <Trophy className="h-3.5 w-3.5" /> {lastWL ? `WL #${lastWL.number}` : "Last WL"}
               </div>
-              <div className="font-display text-3xl stat-num mt-1 text-primary leading-none">
+              <div className="font-display text-3xl stat-num mt-1 text-foreground leading-none">
                 {lastRecord ? `${lastRecord.wins}-${lastRecord.losses}` : "—"}
               </div>
               <div className="mt-2">
@@ -221,12 +221,12 @@ function Dashboard() {
 }
 
 function RatedCard({ agg, rank }: { agg: ReturnType<typeof aggregateAllPlayers>[number]; rank: number }) {
-  const medal = rank === 1 ? "text-primary" : rank === 2 ? "text-foreground" : "text-muted-foreground";
+  const medal = rank === 1 ? "text-primary" : "text-muted-foreground";
   return (
     <div className={`surface-card p-5 border-l-4 ${rank === 1 ? "border-l-primary" : "border-l-border"}`}>
       <div className="flex items-baseline justify-between">
         <div className={`font-display text-3xl ${medal}`}>#{rank}</div>
-        <div className="font-display text-4xl stat-num text-primary">{agg.avgRating.toFixed(2)}</div>
+        <div className="font-display text-4xl stat-num text-foreground">{agg.avgRating.toFixed(2)}</div>
       </div>
       <div className="mt-2 font-display text-xl truncate">{agg.player.name}</div>
       <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -257,7 +257,7 @@ function LegendCard({
         <>
           <div className="mt-2 font-display text-2xl truncate">{agg.player.name}</div>
           <div className="text-xs text-muted-foreground">{agg.player.position} · {agg.player.overall} OVR · {agg.player.rarity}</div>
-          <div className="mt-3 stat-num text-primary text-lg">{metric(agg)}</div>
+          <div className="mt-3 stat-num text-foreground text-lg font-semibold">{metric(agg)}</div>
           {sub && <div className="text-[10px] text-muted-foreground mt-1">{sub}</div>}
         </>
       ) : (
