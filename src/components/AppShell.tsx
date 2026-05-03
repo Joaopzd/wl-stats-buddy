@@ -47,6 +47,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
+            <AccentPicker />
+          </div>
         </div>
         <nav className="md:hidden flex items-center gap-1 px-3 pb-2 overflow-x-auto">
           {links.map((l) => {
