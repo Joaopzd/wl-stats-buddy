@@ -560,3 +560,74 @@ function BenchList({ benchIds, players }: { benchIds: string[]; players: Player[
     </div>
   );
 }
+
+function MatchTimeline({
+  matches,
+  players,
+  onJump,
+}: {
+  matches: Match[];
+  players: Player[];
+  onJump: (m: Match) => void;
+}) {
+  const playersById = new Map(players.map((p) => [p.id, p]));
+  return (
+    <div className="surface-card p-3 overflow-x-auto">
+      <ol className="flex items-stretch gap-2 min-w-max">
+        {matches.map((m, i) => {
+          const win = matchIsWin(m);
+          const totalG = m.performances.reduce((s, p) => s + (p.goals || 0), 0);
+          const totalA = m.performances.reduce((s, p) => s + (p.assists || 0), 0);
+          const topScorer = [...m.performances]
+            .filter((p) => p.goals > 0)
+            .sort((a, b) => b.goals - a.goals)[0];
+          const topName = topScorer ? playersById.get(topScorer.playerId)?.name : null;
+          return (
+            <li key={m.id} className="flex items-center gap-2">
+              <button
+                onClick={() => onJump(m)}
+                className={`relative w-32 shrink-0 rounded-md border bg-background/50 p-2 text-left transition hover:bg-secondary/40 ${
+                  win
+                    ? "border-primary/50 shadow-[0_0_14px_-8px_var(--primary)]"
+                    : "border-destructive/50"
+                }`}
+                aria-label={`Jump to match ${m.index}`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[9px] font-mono uppercase tracking-wider text-muted-foreground">
+                    M{m.index}
+                  </span>
+                  <span className={`text-[9px] font-bold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>
+                    {win ? "W" : "L"}
+                  </span>
+                </div>
+                <div className="font-display stat-num text-lg leading-none text-foreground text-center">
+                  {m.scoreFor}<span className="text-muted-foreground/50 mx-0.5">–</span>{m.scoreAgainst}
+                </div>
+                <div className="mt-1.5 flex justify-center">
+                  <PlatformBadge platform={m.platform} size="xs" />
+                </div>
+                <div className="mt-1.5 flex flex-wrap justify-center gap-1">
+                  {m.extraTime && <Tag tone="warn">ET</Tag>}
+                  {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
+                  {m.rageQuit && <Tag tone="rq">RQ</Tag>}
+                </div>
+                <div className="mt-1.5 text-[9px] font-mono text-muted-foreground text-center tabular-nums">
+                  {totalG}G · {totalA}A
+                </div>
+                {topName && (
+                  <div className="mt-0.5 text-[9px] text-muted-foreground text-center truncate" title={topName}>
+                    ★ {topName}
+                  </div>
+                )}
+              </button>
+              {i < matches.length - 1 && (
+                <div className="h-px w-3 bg-border shrink-0" aria-hidden />
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
