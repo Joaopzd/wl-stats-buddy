@@ -54,15 +54,14 @@ function Dashboard() {
   const topAssist = useMemo(() => [...aggs].sort((a, b) => b.assists - a.assists)[0], [aggs]);
   const topGAperGame = useMemo(() => [...aggs].filter(a => a.matches >= 3).sort((a, b) => b.gaPerGame - a.gaPerGame)[0], [aggs]);
 
-  // Top Rated: must have played >= 50% of total club matches.
-  const totalClubMatches = matches.length;
-  const ratingMinMatches = Math.max(1, Math.ceil(totalClubMatches / 2));
+  // Top Rated: must have played at least 9 club matches.
+  const RATING_MIN_MATCHES = 9;
   const topRated = useMemo(() => {
     return [...aggs]
-      .filter((a) => a.ratedMatches >= ratingMinMatches && a.avgRating > 0)
+      .filter((a) => a.matches >= RATING_MIN_MATCHES && a.avgRating > 0)
       .sort((a, b) => b.avgRating - a.avgRating)
       .slice(0, 3);
-  }, [aggs, ratingMinMatches]);
+  }, [aggs]);
 
   const empty = wls.length === 0 && players.length === 0;
 
@@ -201,7 +200,7 @@ function Dashboard() {
             <Sparkles className="h-5 w-5 text-primary" /> Top Rated Players
           </h2>
           <p className="text-xs text-muted-foreground mb-4">
-            Career average match rating · must have played at least {ratingMinMatches} of {totalClubMatches} club matches (50%).
+            Career average match rating · must have played at least 9 club matches.
           </p>
           {topRated.length === 0 ? (
             <div className="surface-card p-6 text-sm text-muted-foreground text-center">
