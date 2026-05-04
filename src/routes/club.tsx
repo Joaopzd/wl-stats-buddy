@@ -182,6 +182,8 @@ function ClubPage() {
           Most-used player: <span className="text-foreground font-semibold">{topAgg.player.name}</span> · {topAgg.matches} apps
         </div>
       )}
+
+      <BestXI players={players} matches={matches} wls={wls} />
     </AppShell>
   );
 }
