@@ -7,6 +7,7 @@ import { RankBadge } from "@/components/RankBadge";
 import { useClubName, useMatches, usePlayers, useWLs, store } from "@/lib/store";
 import { aggregatePlayer, matchIsWin, rankFromWins, wlRecord, isCleanSheetEligible } from "@/lib/stats";
 import { Pencil, Check, X, Trophy, Target, Shield, Sparkles, Users, Award, Medal } from "lucide-react";
+import { BestXI } from "@/components/BestXI";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/club")({
