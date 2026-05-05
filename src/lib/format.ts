@@ -1,124 +1,185 @@
+import type { CSSProperties } from "react";
 import type { Rarity } from "./types";
 
-// Card visuals — bespoke palette per the user's brief.
-// Format: gradient base + accent text/border that reads as "details" (gold/silver/etc.).
-export const rarityClass = (r: Rarity): string => {
+/** Visual style for a player card. Combines tailwind classes with optional inline style for bespoke palettes. */
+export interface RarityVisual {
+  className: string;
+  style?: CSSProperties;
+}
+
+/**
+ * Bespoke palette per the user's brief.
+ * Each "specials" rarity uses solid `Principal` background + `Borda` border, with
+ * automatic text color (white for dark backgrounds, dark for light).
+ */
+export const rarityVisual = (r: Rarity): RarityVisual => {
   switch (r) {
-    // ===== Standard =====
+    // ===== Standard (kept) =====
     case "Gold":
-      return "bg-gradient-to-br from-amber-300 to-yellow-600 text-zinc-900";
+      return { className: "bg-gradient-to-br from-amber-300 to-yellow-600 text-zinc-900" };
     case "Silver":
-      return "bg-gradient-to-br from-zinc-200 to-zinc-400 text-zinc-900";
+      return { className: "bg-gradient-to-br from-zinc-200 to-zinc-400 text-zinc-900" };
     case "Bronze":
-      return "bg-gradient-to-br from-amber-700 to-yellow-900 text-amber-50";
+      return { className: "bg-gradient-to-br from-amber-700 to-yellow-900 text-amber-50" };
 
-    // ===== Promos / Specials (per user spec) =====
-    // TOTW: Black with yellow details
+    // ===== Kept promos =====
     case "TOTW":
-      return "bg-gradient-to-br from-zinc-950 to-black text-yellow-300 border border-yellow-300/80";
-    // Cornerstone: Light brown and silver
-    case "Cornerstone":
-      return "bg-gradient-to-br from-amber-200 to-amber-400 text-zinc-200 border border-zinc-200/90";
-    // Winter Wildcards: Light green with gold details
-    case "Winter Wildcards":
-      return "bg-gradient-to-br from-emerald-300 to-lime-400 text-amber-700 border border-amber-400";
-    // TOTY: Dark blue with gold details
-    case "TOTY":
-      return "bg-gradient-to-br from-blue-950 to-blue-800 text-amber-300 border border-amber-300";
-    // TOTS: Dark blue with light blue details
-    case "TOTS":
-      return "bg-gradient-to-br from-blue-950 to-blue-900 text-sky-300 border border-sky-300/80";
-    // Ratings Reload: Brown with silver details
-    case "Ratings Reload":
-      return "bg-gradient-to-br from-amber-900 to-stone-800 text-zinc-200 border border-zinc-300/80";
-    // Ultimate Scream: Red with silver details
-    case "Ultimate Scream":
-      return "bg-gradient-to-br from-red-700 to-red-900 text-zinc-200 border border-zinc-200/80";
-    // FoF Captains: keeping the previous red/gold direction
-    case "FoF Captains":
-      return "bg-gradient-to-br from-red-600 to-rose-900 text-amber-200 border border-amber-300/60";
-    // FC Pro Live: Purple with silver details
-    case "FC Pro Live":
-      return "bg-gradient-to-br from-purple-700 to-purple-950 text-zinc-200 border border-zinc-200/80";
-    // Thunderstruck: kept (indigo + electric yellow)
-    case "Thunderstruck":
-      return "bg-gradient-to-br from-indigo-950 to-yellow-400 text-yellow-100 border border-yellow-300/70";
-    // Joga Bonito: Light green with yellow details
-    case "Joga Bonito":
-      return "bg-gradient-to-br from-emerald-300 to-green-400 text-yellow-300 border border-yellow-300/80";
-    case "Unbreakables":
-      return "bg-gradient-to-br from-slate-800 to-slate-500 text-cyan-200 border border-cyan-300/60";
-    case "Time Warp":
-      return "bg-gradient-to-br from-violet-700 via-fuchsia-500 to-cyan-300 text-white";
-    case "Future Stars":
-      return "bg-gradient-to-br from-sky-300 to-indigo-700 text-white border border-sky-200/70";
-    case "Knockout Royalty":
-      return "bg-gradient-to-br from-purple-800 to-amber-400 text-amber-100 border border-amber-300/70";
-    case "UEFA Primetime":
-      return "bg-gradient-to-br from-blue-950 to-blue-600 text-amber-300 border border-amber-300/60";
-    case "UEFA RTTF":
-      return "bg-gradient-to-br from-blue-900 to-emerald-400 text-white border border-emerald-200/60";
-    case "FUT Birthday":
-      return "bg-gradient-to-br from-pink-400 via-fuchsia-500 to-purple-600 text-white border border-pink-200/60";
-    case "Fantasy FC":
-      return "bg-gradient-to-br from-emerald-400 to-teal-700 text-white border border-emerald-200/60";
-    case "FoF Answer the Call":
-      return "bg-gradient-to-br from-rose-700 to-amber-400 text-amber-50 border border-amber-300/60";
+      return { className: "bg-gradient-to-br from-zinc-950 to-black text-yellow-300 border border-yellow-300/80" };
     case "Path to Glory":
-      return "bg-gradient-to-br from-cyan-400 to-blue-700 text-white border border-cyan-200/60";
+      return { className: "bg-gradient-to-br from-cyan-400 to-blue-700 text-white border border-cyan-200/60" };
+
+    // ===== Solid palettes from the brief =====
+    case "Cornerstone":
+      return solid("#723325", "#766B80");
+    case "Winter Wildcards":
+      return solid("#71BEB7", "#E5D265");
+    case "TOTY":
+      return solid("#163293", "#E7DB87");
+    case "TOTS":
+      return solid("#7B9FEB", "#DCC392");
+    case "Ratings Reload":
+      return solid("#B35F37", "#A28252");
+    case "Ultimate Scream":
+      return solid("#9B3C08", "#F5DBF0");
+    case "FoF Captains":
+      return solid("#CF3570", "#68BAB2");
+    case "FC Pro Live":
+      return solid("#9B9DAB", "#485776");
+    case "Thunderstruck":
+      return solid("#151626", "#FCEDC2");
+    case "Unbreakables":
+      return solid("#9B3C08", "#F5DBF0");
+    case "Time Warp":
+      return solid("#422E5E", "#ED84BB");
+    case "Future Stars":
+      return solid("#33257C", "#EBCF84");
+    case "Knockout Royalty":
+      return solid("#46020C", "#E8D297");
+    case "FUT Birthday":
+      return solid("#D85AFB", "#EA13F4");
+    case "Fantasy FC":
+      return solid("#EFCBDA", "#634FC7");
+    case "FoF Answer the Call":
+      return solid("#72A2DC", "#25E3D6");
     case "Trophy Titans":
-      return "bg-gradient-to-br from-amber-500 via-orange-600 to-rose-700 text-amber-50 border border-amber-200/60";
+      return solid("#26292B", "#C2CBCF");
 
-    // Evo: White with light green details
+    // ===== Special gradients =====
+    case "Joga Bonito":
+      return {
+        className: "border-2",
+        style: {
+          background: "linear-gradient(135deg, #01E606 0%, #006465 100%)",
+          borderColor: "#FFCE04",
+          color: "#FFFFFF",
+        },
+      };
+    case "UEFA Primetime":
+    case "UEFA RTTF":
+      return {
+        className: "border-2",
+        style: {
+          background: "linear-gradient(135deg, #000FA3 0%, #C23503 50%, #1BC145 100%)",
+          borderColor: "#000C02",
+          color: "#FFFFFF",
+        },
+      };
     case "Evo":
-      return "bg-gradient-to-br from-white to-zinc-100 text-emerald-500 border border-emerald-400/80";
+      return {
+        className: "border-2",
+        style: {
+          background: "#FDFCF3",
+          borderColor: "#9C183D",
+          boxShadow: "inset 0 0 0 1px #248D84",
+          color: "#1a1a1a",
+        },
+      };
 
-    // ===== Legends =====
-    // Icon Base: White
+    // ===== Legends (kept) =====
     case "Icon Base":
-      return "bg-gradient-to-br from-white to-zinc-200 text-zinc-900 border border-amber-300/70";
-    // Hero Base: Purple
+      return { className: "bg-gradient-to-br from-white to-zinc-200 text-zinc-900 border border-amber-300/70" };
     case "Hero Base":
-      return "bg-gradient-to-br from-purple-600 to-purple-900 text-amber-200 border border-amber-300/70";
+      return { className: "bg-gradient-to-br from-purple-600 to-purple-900 text-amber-200 border border-amber-300/70" };
 
     default:
-      return "bg-muted text-foreground";
+      return { className: "bg-muted text-foreground" };
   }
 };
 
+/** Backwards-compat helper: returns just the className portion. */
+export const rarityClass = (r: Rarity): string => rarityVisual(r).className;
+
+/** Build a solid-background visual with auto text contrast. */
+function solid(bg: string, border: string): RarityVisual {
+  return {
+    className: "border-2",
+    style: {
+      background: bg,
+      borderColor: border,
+      color: pickTextColor(bg),
+    },
+  };
+}
+
+/** Pick black or white text based on hex luminance. */
+function pickTextColor(hex: string): string {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return lum > 0.6 ? "#1a1a1a" : "#FFFFFF";
+}
+
 // Small swatch used in pickers & lists.
 export const raritySwatch = (r: Rarity): string => {
+  const hexMap: Partial<Record<Rarity, string>> = {
+    Cornerstone: "#723325",
+    "Winter Wildcards": "#71BEB7",
+    TOTY: "#163293",
+    TOTS: "#7B9FEB",
+    "Ratings Reload": "#B35F37",
+    "Ultimate Scream": "#9B3C08",
+    "FoF Captains": "#CF3570",
+    "FC Pro Live": "#9B9DAB",
+    Thunderstruck: "#151626",
+    Unbreakables: "#9B3C08",
+    "Time Warp": "#422E5E",
+    "Future Stars": "#33257C",
+    "Knockout Royalty": "#46020C",
+    "FUT Birthday": "#D85AFB",
+    "Fantasy FC": "#EFCBDA",
+    "FoF Answer the Call": "#72A2DC",
+    "Trophy Titans": "#26292B",
+    "Joga Bonito": "#01E606",
+    "UEFA Primetime": "#000FA3",
+    "UEFA RTTF": "#1BC145",
+    Evo: "#FDFCF3",
+  };
+  if (hexMap[r]) {
+    // Rendered via inline style elsewhere; return a neutral utility for layout fallback.
+    return "bg-secondary";
+  }
   switch (r) {
     case "Gold": return "bg-amber-400";
     case "Silver": return "bg-zinc-300";
     case "Bronze": return "bg-amber-800";
     case "TOTW": return "bg-black ring-1 ring-yellow-300";
-    case "Cornerstone": return "bg-amber-300 ring-1 ring-zinc-200";
-    case "Winter Wildcards": return "bg-emerald-300 ring-1 ring-amber-400";
-    case "TOTY": return "bg-blue-950 ring-1 ring-amber-300";
-    case "TOTS": return "bg-blue-900 ring-1 ring-sky-300";
-    case "Ratings Reload": return "bg-amber-900 ring-1 ring-zinc-300";
-    case "Ultimate Scream": return "bg-red-700 ring-1 ring-zinc-200";
-    case "FoF Captains": return "bg-red-600";
-    case "FC Pro Live": return "bg-purple-700 ring-1 ring-zinc-200";
-    case "Thunderstruck": return "bg-yellow-400";
-    case "Joga Bonito": return "bg-emerald-300 ring-1 ring-yellow-300";
-    case "Unbreakables": return "bg-slate-500";
-    case "Time Warp": return "bg-violet-500";
-    case "Future Stars": return "bg-sky-400";
-    case "Knockout Royalty": return "bg-purple-700";
-    case "UEFA Primetime": return "bg-blue-700";
-    case "UEFA RTTF": return "bg-emerald-400";
-    case "FUT Birthday": return "bg-pink-400";
-    case "Fantasy FC": return "bg-emerald-500";
-    case "FoF Answer the Call": return "bg-rose-600";
     case "Path to Glory": return "bg-cyan-500";
-    case "Trophy Titans": return "bg-orange-600";
-    case "Evo": return "bg-white ring-1 ring-emerald-400";
     case "Icon Base": return "bg-white ring-1 ring-amber-400";
     case "Hero Base": return "bg-purple-700 ring-1 ring-amber-300";
     default: return "bg-muted";
   }
+};
+
+/** Inline style swatch helper for the bespoke palettes (used by pickers). */
+export const raritySwatchStyle = (r: Rarity): CSSProperties | undefined => {
+  const v = rarityVisual(r);
+  if (!v.style) return undefined;
+  return {
+    background: v.style.background,
+    borderColor: v.style.borderColor,
+  };
 };
 
 export const fmt = (n: number, digits = 0) => n.toFixed(digits);
