@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers, useWLs, store } from "@/lib/store";
 import { aggregatePlayer, bestStreak, matchIsWin, rankFromWins, wlRecord } from "@/lib/stats";
@@ -9,6 +9,7 @@ import { MatchDialog } from "@/components/MatchDialog";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { ReportModal } from "@/components/ReportModal";
 import { RankBadge } from "@/components/RankBadge";
+import { LossStreakAlert } from "@/components/LossStreakAlert";
 import { PlayerCard } from "@/components/PlayerCard";
 import { ClubCrest } from "@/components/ClubCrest";
 import { OpponentCrest } from "@/components/OpponentCrest";
@@ -57,6 +58,8 @@ function WLDetail() {
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState("");
   const [squadExpanded, setSquadExpanded] = useState(false);
+  const [lossAlertOpen, setLossAlertOpen] = useState(false);
+  const lossAlertShownAtRef = useRef<string | null>(null);
 
   const matches = useMemo(
     () => allMatches.filter((m) => m.wlId === wlId).sort((a, b) => a.index - b.index),
@@ -79,6 +82,24 @@ function WLDetail() {
       setReportSeen(true);
     }
   }, [matches.length, reportSeen, wl?.closed]);
+
+  // Loss-streak alert: trigger once per fresh L-L streak (resets after a win).
+  useEffect(() => {
+    if (matches.length < 2) return;
+    const last = matches[matches.length - 1];
+    const prev = matches[matches.length - 2];
+    const lastIsLoss = !matchIsWin(last);
+    const prevIsLoss = !matchIsWin(prev);
+    if (lastIsLoss && prevIsLoss) {
+      if (lossAlertShownAtRef.current !== last.id) {
+        lossAlertShownAtRef.current = last.id;
+        setLossAlertOpen(true);
+      }
+    } else if (!lastIsLoss) {
+      // Reset the marker after a win so a future L-L re-triggers the alert.
+      lossAlertShownAtRef.current = null;
+    }
+  }, [matches]);
 
   if (!wl) {
     return (
@@ -436,6 +457,7 @@ function WLDetail() {
           onBackToList={() => { store.updateWL(wl.id, { closed: true }); navigate({ to: "/weekend-leagues" }); }}
         />
       )}
+      {lossAlertOpen && <LossStreakAlert onClose={() => setLossAlertOpen(false)} />}
     </AppShell>
   );
 }
@@ -571,63 +593,98 @@ function MatchTimeline({
   onJump: (m: Match) => void;
 }) {
   const playersById = new Map(players.map((p) => [p.id, p]));
+
+  // Compute cumulative wins after each match to derive the rank progression.
+  let cumWins = 0;
+  let prevRank = rankFromWins(0);
+  const enriched = matches.map((m) => {
+    const win = matchIsWin(m);
+    if (win) cumWins += 1;
+    const rank = rankFromWins(cumWins);
+    const rankedUp = rank !== prevRank && win;
+    // Wins still needed to reach the next tier from this point.
+    // Each additional win bumps to the next rank until Elite I (15 wins).
+    const winsToNext = cumWins >= 15 ? 0 : 1;
+    const nextRank = cumWins >= 15 ? null : rankFromWins(cumWins + 1);
+    prevRank = rank;
+    return { match: m, win, rank, rankedUp, winsToNext, nextRank };
+  });
+
   return (
-    <div className="surface-card p-3 overflow-x-auto">
-      <ol className="flex items-stretch gap-2 min-w-max">
-        {matches.map((m, i) => {
-          const win = matchIsWin(m);
-          const totalG = m.performances.reduce((s, p) => s + (p.goals || 0), 0);
-          const totalA = m.performances.reduce((s, p) => s + (p.assists || 0), 0);
-          const topScorer = [...m.performances]
-            .filter((p) => p.goals > 0)
-            .sort((a, b) => b.goals - a.goals)[0];
-          const topName = topScorer ? playersById.get(topScorer.playerId)?.name : null;
-          return (
-            <li key={m.id} className="flex items-center gap-2">
-              <button
-                onClick={() => onJump(m)}
-                className={`relative w-32 shrink-0 rounded-md border bg-background/50 p-2 text-left transition hover:bg-secondary/40 ${
-                  win
-                    ? "border-primary/50 shadow-[0_0_14px_-8px_var(--primary)]"
-                    : "border-destructive/50"
-                }`}
-                aria-label={`Jump to match ${m.index}`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[9px] font-mono uppercase tracking-wider text-muted-foreground">
-                    M{m.index}
-                  </span>
-                  <span className={`text-[9px] font-bold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>
-                    {win ? "W" : "L"}
-                  </span>
-                </div>
-                <div className="font-display stat-num text-lg leading-none text-foreground text-center">
-                  {m.scoreFor}<span className="text-muted-foreground/50 mx-0.5">–</span>{m.scoreAgainst}
-                </div>
-                <div className="mt-1.5 flex justify-center">
-                  <PlatformBadge platform={m.platform} size="xs" />
-                </div>
-                <div className="mt-1.5 flex flex-wrap justify-center gap-1">
-                  {m.extraTime && <Tag tone="warn">ET</Tag>}
-                  {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
-                  {m.rageQuit && <Tag tone="rq">RQ</Tag>}
-                </div>
-                <div className="mt-1.5 text-[9px] font-mono text-muted-foreground text-center tabular-nums">
-                  {totalG}G · {totalA}A
-                </div>
-                {topName && (
-                  <div className="mt-0.5 text-[9px] text-muted-foreground text-center truncate" title={topName}>
-                    ★ {topName}
+    <div className="surface-card p-3">
+      <div className="scroll-accent overflow-x-auto pb-2">
+        <ol className="flex items-stretch gap-2 min-w-max">
+          {enriched.map(({ match: m, win, rank, rankedUp, winsToNext, nextRank }, i) => {
+            const totalG = m.performances.reduce((s, p) => s + (p.goals || 0), 0);
+            const totalA = m.performances.reduce((s, p) => s + (p.assists || 0), 0);
+            const topScorer = [...m.performances]
+              .filter((p) => p.goals > 0)
+              .sort((a, b) => b.goals - a.goals)[0];
+            const topName = topScorer ? playersById.get(topScorer.playerId)?.name : null;
+            const tooltip = nextRank
+              ? `Need ${winsToNext} more win${winsToNext === 1 ? "" : "s"} for ${nextRank}`
+              : "Max rank reached";
+            return (
+              <li key={m.id} className="flex items-center gap-2">
+                <div className="flex flex-col items-stretch gap-1.5">
+                  <button
+                    onClick={() => onJump(m)}
+                    title={tooltip}
+                    className={`relative w-32 shrink-0 rounded-md border bg-background/50 p-2 text-left transition hover:bg-secondary/40 ${
+                      win
+                        ? "border-primary/50 shadow-[0_0_14px_-8px_var(--primary)]"
+                        : "border-destructive/50"
+                    }`}
+                    aria-label={`Jump to match ${m.index}. ${tooltip}`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[9px] font-mono uppercase tracking-wider text-muted-foreground">
+                        M{m.index}
+                      </span>
+                      <span className={`text-[9px] font-bold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>
+                        {win ? "W" : "L"}
+                      </span>
+                    </div>
+                    <div className="font-display stat-num text-lg leading-none text-foreground text-center">
+                      {m.scoreFor}<span className="text-muted-foreground/50 mx-0.5">–</span>{m.scoreAgainst}
+                    </div>
+                    <div className="mt-1.5 flex justify-center">
+                      <PlatformBadge platform={m.platform} size="xs" />
+                    </div>
+                    <div className="mt-1.5 flex flex-wrap justify-center gap-1">
+                      {m.extraTime && <Tag tone="warn">ET</Tag>}
+                      {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
+                      {m.rageQuit && <Tag tone="rq">RQ</Tag>}
+                    </div>
+                    <div className="mt-1.5 text-[9px] font-mono text-muted-foreground text-center tabular-nums">
+                      {totalG}G · {totalA}A
+                    </div>
+                    {topName && (
+                      <div className="mt-0.5 text-[9px] text-muted-foreground text-center truncate" title={topName}>
+                        ★ {topName}
+                      </div>
+                    )}
+                  </button>
+                  {/* Cumulative rank label after this match */}
+                  <div
+                    className={`mx-auto px-2 py-0.5 rounded-full border text-[9px] font-bold uppercase tracking-wider text-center truncate max-w-[8rem] ${
+                      rankedUp
+                        ? "border-primary text-primary bg-primary/10 shadow-[0_0_10px_-4px_var(--primary)]"
+                        : "border-border/60 text-muted-foreground bg-background/40"
+                    }`}
+                    title={rankedUp ? `Rank up! → ${rank}` : `Rank: ${rank}`}
+                  >
+                    {rank}
                   </div>
+                </div>
+                {i < enriched.length - 1 && (
+                  <div className="h-px w-3 bg-border shrink-0" aria-hidden />
                 )}
-              </button>
-              {i < matches.length - 1 && (
-                <div className="h-px w-3 bg-border shrink-0" aria-hidden />
-              )}
-            </li>
-          );
-        })}
-      </ol>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
     </div>
   );
 }

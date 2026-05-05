@@ -160,4 +160,36 @@
       oklch(0.26 0.11 145) 80px
     );
   }
+
+  /* Minimalist accent-color scrollbar; auto-hides until interaction. */
+  .scroll-accent {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.3s ease;
+  }
+  .scroll-accent:hover,
+  .scroll-accent:focus-within,
+  .scroll-accent:active {
+    scrollbar-color: color-mix(in oklab, var(--primary) 70%, transparent) transparent;
+  }
+  .scroll-accent::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+  .scroll-accent::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scroll-accent::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 9999px;
+    transition: background 0.25s ease, box-shadow 0.25s ease;
+  }
+  .scroll-accent:hover::-webkit-scrollbar-thumb,
+  .scroll-accent:focus-within::-webkit-scrollbar-thumb,
+  .scroll-accent:active::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--primary) 70%, transparent);
+    box-shadow: 0 0 8px color-mix(in oklab, var(--primary) 60%, transparent);
+  }
 }
