@@ -58,6 +58,8 @@ function WLDetail() {
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState("");
   const [squadExpanded, setSquadExpanded] = useState(false);
+  const [lossAlertOpen, setLossAlertOpen] = useState(false);
+  const lossAlertShownAtRef = useRef<string | null>(null);
 
   const matches = useMemo(
     () => allMatches.filter((m) => m.wlId === wlId).sort((a, b) => a.index - b.index),
@@ -80,6 +82,24 @@ function WLDetail() {
       setReportSeen(true);
     }
   }, [matches.length, reportSeen, wl?.closed]);
+
+  // Loss-streak alert: trigger once per fresh L-L streak (resets after a win).
+  useEffect(() => {
+    if (matches.length < 2) return;
+    const last = matches[matches.length - 1];
+    const prev = matches[matches.length - 2];
+    const lastIsLoss = !matchIsWin(last);
+    const prevIsLoss = !matchIsWin(prev);
+    if (lastIsLoss && prevIsLoss) {
+      if (lossAlertShownAtRef.current !== last.id) {
+        lossAlertShownAtRef.current = last.id;
+        setLossAlertOpen(true);
+      }
+    } else if (!lastIsLoss) {
+      // Reset the marker after a win so a future L-L re-triggers the alert.
+      lossAlertShownAtRef.current = null;
+    }
+  }, [matches]);
 
   if (!wl) {
     return (
