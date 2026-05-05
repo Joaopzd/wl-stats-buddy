@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers, useWLs, store } from "@/lib/store";
 import { aggregatePlayer, bestStreak, matchIsWin, rankFromWins, wlRecord } from "@/lib/stats";
@@ -9,6 +9,7 @@ import { MatchDialog } from "@/components/MatchDialog";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { ReportModal } from "@/components/ReportModal";
 import { RankBadge } from "@/components/RankBadge";
+import { LossStreakAlert } from "@/components/LossStreakAlert";
 import { PlayerCard } from "@/components/PlayerCard";
 import { ClubCrest } from "@/components/ClubCrest";
 import { OpponentCrest } from "@/components/OpponentCrest";
