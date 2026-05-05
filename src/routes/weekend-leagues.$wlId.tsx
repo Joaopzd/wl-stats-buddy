@@ -457,6 +457,7 @@ function WLDetail() {
           onBackToList={() => { store.updateWL(wl.id, { closed: true }); navigate({ to: "/weekend-leagues" }); }}
         />
       )}
+      {lossAlertOpen && <LossStreakAlert onClose={() => setLossAlertOpen(false)} />}
     </AppShell>
   );
 }
