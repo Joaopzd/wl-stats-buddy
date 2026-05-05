@@ -1,5 +1,5 @@
 import type { Rarity } from "@/lib/types";
-import { rarityClass } from "@/lib/format";
+import { rarityVisual } from "@/lib/format";
 
 export function PlayerCard({
   name,
@@ -20,9 +20,11 @@ export function PlayerCard({
       : size === "sm"
         ? "w-12 h-16 text-[10px]"
         : "w-16 h-22 text-xs";
+  const v = rarityVisual(rarity);
   return (
     <div
-      className={`${sizes} ${rarityClass(rarity)} rounded-md p-1 flex flex-col items-center justify-between font-display shadow-md shrink-0 relative`}
+      className={`${sizes} ${v.className} rounded-md p-1 flex flex-col items-center justify-between font-display shadow-md shrink-0 relative`}
+      style={v.style}
       title={`${name} · ${rarity}`}
     >
       <div className="flex items-baseline gap-0.5 leading-none">

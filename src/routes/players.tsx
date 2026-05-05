@@ -8,7 +8,7 @@ import { Plus, Trash2, Pencil, X, Search } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import type { Player, Position, Rarity } from "@/lib/types";
-import { rarityClass, raritySwatch } from "@/lib/format";
+import { rarityVisual, raritySwatch, raritySwatchStyle } from "@/lib/format";
 
 export const Route = createFileRoute("/players")({
   head: () => ({
@@ -281,9 +281,17 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
               ))}
             </select>
             <div className="mt-3">
-              <div className={`inline-block px-3 py-2 rounded-md font-display text-sm tracking-wider ${rarityClass(rarity)}`}>
-                PREVIEW · {rarity}
-              </div>
+              {(() => {
+                const v = rarityVisual(rarity);
+                return (
+                  <div
+                    className={`inline-block px-3 py-2 rounded-md font-display text-sm tracking-wider ${v.className}`}
+                    style={v.style}
+                  >
+                    PREVIEW · {rarity}
+                  </div>
+                );
+              })()}
             </div>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {ALL_RARITIES.map((r) => (
@@ -293,7 +301,8 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
                   onClick={() => setRarity(r)}
                   title={r}
                   aria-label={r}
-                  className={`h-5 w-5 rounded-full ${raritySwatch(r)} transition ${
+                  style={raritySwatchStyle(r)}
+                  className={`h-5 w-5 rounded-full border ${raritySwatch(r)} transition ${
                     rarity === r ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : "opacity-80 hover:opacity-100"
                   }`}
                 />
