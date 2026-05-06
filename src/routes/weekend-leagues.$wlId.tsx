@@ -484,6 +484,31 @@ function GDStat({ value }: { value: number }) {
   );
 }
 
+function InlineStat({ icon, value, label, tone }: { icon: React.ReactNode; value: number; label: string; tone: "primary" | "muted" }) {
+  const iconColor = tone === "primary" ? "text-primary" : "text-muted-foreground";
+  return (
+    <div className="flex items-center gap-2 flex-1 min-w-0 px-1">
+      <div className={`${iconColor} shrink-0`}>{icon}</div>
+      <div className="min-w-0 flex items-baseline gap-1.5">
+        <span className="stat-num font-display text-lg leading-none text-foreground">{value}</span>
+        <span className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground font-semibold">{label}</span>
+      </div>
+    </div>
+  );
+}
+
+function InlineGD({ value }: { value: number }) {
+  const positive = value >= 0;
+  return (
+    <div className={`flex items-center gap-1.5 px-2 rounded ${positive ? "text-foreground" : "text-destructive"}`}>
+      <span className="text-[9px] uppercase tracking-[0.2em] font-bold text-muted-foreground">GD</span>
+      <span className="stat-num font-display text-lg leading-none">
+        {positive ? "+" : ""}{value}
+      </span>
+    </div>
+  );
+}
+
 
 function Tag({ children, tone }: { children: React.ReactNode; tone: "warn" | "info" | "rq" }) {
   const cls =
