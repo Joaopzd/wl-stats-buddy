@@ -7,10 +7,8 @@ import { OpponentCrest } from "./OpponentCrest";
 import { PlatformBadge } from "./PlatformBadge";
 import { SoccerBall } from "./icons/SoccerBall";
 import { SoccerBoot } from "./icons/SoccerBoot";
-import { useClubName } from "@/lib/store";
+import { useClubName, useOpponentName } from "@/lib/store";
 import { CREST_SIZE } from "@/lib/ui";
-
-const OPPONENT_NAME = "Challenger FC";
 
 export function MatchDetailModal({
   match,
@@ -26,6 +24,7 @@ export function MatchDetailModal({
   const playersById = new Map(players.map((p) => [p.id, p]));
   const win = matchIsWin(match);
   const clubName = useClubName();
+  const opponentName = useOpponentName();
 
   // MVP: explicit mvpPlayerId, else highest rating > 0
   const explicitMvp = match.mvpPlayerId
@@ -95,7 +94,7 @@ export function MatchDetailModal({
             <div className="flex flex-col items-center justify-self-center gap-1.5 min-w-0 w-full">
               <OpponentCrest id={match.opponentCrestId} size={CREST_SIZE.detail} />
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[8rem] text-center">
-                {OPPONENT_NAME}
+                {opponentName}
               </div>
             </div>
           </div>
