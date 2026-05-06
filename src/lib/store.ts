@@ -9,6 +9,8 @@ const KEYS = {
   matches: "fc26_matches_v4",
   clubCrest: "fc26_club_crest_v1",
   clubName: "fc26_club_name_v1",
+  opponentCrest: "fc26_opponent_crest_v1",
+  opponentName: "fc26_opponent_name_v1",
 } as const;
 
 const LEGACY_KEYS = [
@@ -56,7 +58,9 @@ const cache: {
   matches: Match[] | null;
   clubCrest: string | null | undefined;
   clubName: string | null | undefined;
-} = { players: null, wls: null, matches: null, clubCrest: undefined, clubName: undefined };
+  opponentCrest: string | null | undefined;
+  opponentName: string | null | undefined;
+} = { players: null, wls: null, matches: null, clubCrest: undefined, clubName: undefined, opponentCrest: undefined, opponentName: undefined };
 
 function read<T>(key: string, fallback: T): T {
   if (!isBrowser) return fallback;
@@ -151,6 +155,39 @@ export const store = {
     cache.clubName = trimmed || null;
     listeners.forEach((l) => l());
   },
+
+  getOpponentCrest: (): string | null => {
+    if (!isBrowser) return null;
+    if (cache.opponentCrest === undefined) {
+      try { cache.opponentCrest = localStorage.getItem(KEYS.opponentCrest); }
+      catch { cache.opponentCrest = null; }
+    }
+    return cache.opponentCrest;
+  },
+  setOpponentCrest: (dataUrl: string | null) => {
+    if (!isBrowser) return;
+    if (dataUrl) localStorage.setItem(KEYS.opponentCrest, dataUrl);
+    else localStorage.removeItem(KEYS.opponentCrest);
+    cache.opponentCrest = dataUrl;
+    listeners.forEach((l) => l());
+  },
+
+  getOpponentName: (): string => {
+    if (!isBrowser) return "Challenger FC";
+    if (cache.opponentName === undefined) {
+      try { cache.opponentName = localStorage.getItem(KEYS.opponentName); }
+      catch { cache.opponentName = null; }
+    }
+    return cache.opponentName ?? "Challenger FC";
+  },
+  setOpponentName: (name: string) => {
+    if (!isBrowser) return;
+    const trimmed = name.trim();
+    if (trimmed) localStorage.setItem(KEYS.opponentName, trimmed);
+    else localStorage.removeItem(KEYS.opponentName);
+    cache.opponentName = trimmed || null;
+    listeners.forEach((l) => l());
+  },
 };
 
 // cross-tab sync
@@ -169,3 +206,7 @@ export const useClubCrest = () =>
   useStoreSlice<string | null>(() => store.getClubCrest(), null);
 export const useClubName = () =>
   useStoreSlice<string>(() => store.getClubName(), "");
+export const useOpponentCrest = () =>
+  useStoreSlice<string | null>(() => store.getOpponentCrest(), null);
+export const useOpponentName = () =>
+  useStoreSlice<string>(() => store.getOpponentName(), "Challenger FC");
