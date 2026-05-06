@@ -128,88 +128,83 @@ function WLDetail() {
         <ArrowLeft className="h-4 w-4" /> All Weekend Leagues
       </Link>
 
-      <div className="surface-glow p-5 sm:p-8 mb-6">
-        <div className="min-w-0">
-          <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">Weekend League · #{wl.number}</div>
-          {editingName ? (
-            <div className="mt-2 flex items-center gap-2">
-              <input
-                value={nameDraft}
-                onChange={(e) => setNameDraft(e.target.value)}
-                autoFocus
-                onKeyDown={(e) => { if (e.key === "Enter") saveName(); if (e.key === "Escape") setEditingName(false); }}
-                placeholder="Custom name..."
-                className="bg-input border border-border rounded-md px-3 py-2 font-display text-2xl focus:outline-none focus:ring-2 focus:ring-primary min-w-0 flex-1 max-w-md"
-              />
-              <button onClick={saveName} className="p-2 rounded-md bg-primary text-primary-foreground"><Check className="h-4 w-4" /></button>
-            </div>
-          ) : (
-            <div className="mt-1 flex items-center gap-2">
-              <h1 className="font-display text-3xl sm:text-5xl leading-none truncate">{label}</h1>
-              <button
-                onClick={() => { setNameDraft(wl.customName ?? ""); setEditingName(true); }}
-                className="p-1.5 text-muted-foreground hover:text-primary"
-                aria-label="Edit WL name"
-              >
-                <PencilIcon className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-          <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-            <span>{record?.played}/15 matches</span>
-            <RankBadge rank={rankFromWins(record?.wins ?? 0)} size="sm" />
-            {wl.formation && (
-              <span className="px-2 py-0.5 rounded-full bg-secondary text-foreground text-[10px] font-bold uppercase tracking-wider">
-                {wl.formation}
-              </span>
+      <div className="surface-glow p-3 sm:p-4 mb-6 space-y-3">
+        {/* Title row */}
+        <div className="flex items-start justify-between gap-3 min-w-0">
+          <div className="min-w-0 flex-1">
+            <div className="text-[9px] uppercase tracking-[0.25em] text-primary font-bold">WL · #{wl.number}</div>
+            {editingName ? (
+              <div className="mt-1 flex items-center gap-2">
+                <input
+                  value={nameDraft}
+                  onChange={(e) => setNameDraft(e.target.value)}
+                  autoFocus
+                  onKeyDown={(e) => { if (e.key === "Enter") saveName(); if (e.key === "Escape") setEditingName(false); }}
+                  placeholder="Custom name..."
+                  className="bg-input border border-border rounded-md px-2 py-1 font-display text-lg focus:outline-none focus:ring-2 focus:ring-primary min-w-0 flex-1 max-w-md"
+                />
+                <button onClick={saveName} className="p-1.5 rounded-md bg-primary text-primary-foreground"><Check className="h-3.5 w-3.5" /></button>
+              </div>
+            ) : (
+              <div className="mt-0.5 flex items-center gap-1.5 flex-wrap">
+                <h1 className="font-display text-xl sm:text-2xl leading-none truncate font-normal">{label}</h1>
+                <button
+                  onClick={() => { setNameDraft(wl.customName ?? ""); setEditingName(true); }}
+                  className="p-1 text-muted-foreground hover:text-primary"
+                  aria-label="Edit WL name"
+                >
+                  <PencilIcon className="h-3 w-3" />
+                </button>
+                <span className="text-[10px] text-muted-foreground font-mono ml-1">{record?.played}/15</span>
+                <RankBadge rank={rankFromWins(record?.wins ?? 0)} size="sm" />
+                {wl.formation && (
+                  <span className="px-1.5 py-0.5 rounded bg-secondary text-foreground text-[9px] font-bold uppercase tracking-wider">
+                    {wl.formation}
+                  </span>
+                )}
+              </div>
             )}
           </div>
-        </div>
-
-        {/* Big W-L record */}
-        <div className="mt-6 flex items-end gap-4 sm:gap-6">
-          <div className="flex items-baseline gap-2">
-            <Trophy className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-            <span className="font-display text-6xl sm:text-7xl stat-num leading-none text-foreground">{record?.wins ?? 0}</span>
-          </div>
-          <span className="font-display text-4xl sm:text-5xl text-muted-foreground/50 leading-none pb-1">–</span>
-          <div className="flex items-baseline gap-2">
-            <span className="font-display text-6xl sm:text-7xl stat-num leading-none text-foreground">{record?.losses ?? 0}</span>
-            <XIcon className="h-6 w-6 sm:h-8 sm:w-8 text-destructive" />
-          </div>
-          <div className="ml-auto text-right hidden sm:block">
-            <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold">Record</div>
-            <div className="text-xs text-muted-foreground mt-1">Wins · Losses</div>
+          {/* Compact W-L */}
+          <div className="flex items-baseline gap-1.5 shrink-0">
+            <Trophy className="h-4 w-4 text-primary self-center" />
+            <span className="font-display text-3xl sm:text-4xl stat-num leading-none text-foreground">{record?.wins ?? 0}</span>
+            <span className="font-display text-2xl text-muted-foreground/50 leading-none">–</span>
+            <span className="font-display text-3xl sm:text-4xl stat-num leading-none text-foreground">{record?.losses ?? 0}</span>
+            <XIcon className="h-4 w-4 text-destructive self-center" />
           </div>
         </div>
 
-        {/* Goals row + GD badge */}
-        <div className="mt-6 grid grid-cols-3 gap-3 sm:gap-5">
-          <IconStat icon={<Target className="h-5 w-5" />} value={record?.goalsFor ?? 0} label="Scored" tone="primary" />
-          <IconStat icon={<Shield className="h-5 w-5" />} value={record?.goalsAgainst ?? 0} label="Conceded" tone="muted" />
-          <GDStat value={(record?.goalsFor ?? 0) - (record?.goalsAgainst ?? 0)} />
+        {/* Horizontal stat row */}
+        <div className="flex items-stretch gap-2 rounded-md border border-border/60 bg-background/40 px-2 py-1.5">
+          <InlineStat icon={<Target className="h-3.5 w-3.5" />} value={record?.goalsFor ?? 0} label="Scored" tone="primary" />
+          <div className="w-px bg-border/60" />
+          <InlineStat icon={<Shield className="h-3.5 w-3.5" />} value={record?.goalsAgainst ?? 0} label="Conceded" tone="muted" />
+          <div className="w-px bg-border/60" />
+          <InlineGD value={(record?.goalsFor ?? 0) - (record?.goalsAgainst ?? 0)} />
         </div>
-      </div>
 
-      <div className="flex flex-wrap gap-3 mb-8">
-        <button
-          onClick={() => setSquadOpen(true)}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md border border-border bg-secondary/60 text-foreground font-semibold uppercase tracking-wider text-sm hover:bg-secondary"
-        >
-          <Users className="h-4 w-4" /> {squad.length ? "Edit Squad" : "Add Squad"}
-        </button>
-        <button
-          onClick={() => { setEditingMatch(null); setMatchOpen(true); }}
-          disabled={squad.length === 0 || matches.length >= 15}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-[var(--shadow-neon)]"
-        >
-          <Plus className="h-4 w-4" /> Add Match {nextMatchIndex <= 15 && `· ${nextMatchIndex}/15`}
-        </button>
-        {matches.length >= 15 && (
-          <button onClick={() => setReportOpen(true)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md border border-primary/50 text-primary font-semibold uppercase tracking-wider text-sm hover:bg-primary/10">
-            View Report
+        {/* Compact action row */}
+        <div className="flex flex-wrap gap-1.5">
+          <button
+            onClick={() => setSquadOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-secondary/60 text-foreground font-semibold uppercase tracking-wider text-[11px] hover:bg-secondary"
+          >
+            <Users className="h-3 w-3" /> {squad.length ? "Edit Squad" : "Add Squad"}
           </button>
-        )}
+          <button
+            onClick={() => { setEditingMatch(null); setMatchOpen(true); }}
+            disabled={squad.length === 0 || matches.length >= 15}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-[11px] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-[var(--shadow-neon)]"
+          >
+            <Plus className="h-3 w-3" /> Add Match {nextMatchIndex <= 15 && `· ${nextMatchIndex}/15`}
+          </button>
+          {matches.length >= 15 && (
+            <button onClick={() => setReportOpen(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-primary/50 text-primary font-semibold uppercase tracking-wider text-[11px] hover:bg-primary/10">
+              View Report
+            </button>
+          )}
+        </div>
       </div>
 
       <section className="mb-8">
@@ -485,6 +480,31 @@ function GDStat({ value }: { value: number }) {
         </div>
         <div className="text-[9px] uppercase tracking-[0.25em] mt-1 font-bold text-foreground/80">GD</div>
       </div>
+    </div>
+  );
+}
+
+function InlineStat({ icon, value, label, tone }: { icon: React.ReactNode; value: number; label: string; tone: "primary" | "muted" }) {
+  const iconColor = tone === "primary" ? "text-primary" : "text-muted-foreground";
+  return (
+    <div className="flex items-center gap-2 flex-1 min-w-0 px-1">
+      <div className={`${iconColor} shrink-0`}>{icon}</div>
+      <div className="min-w-0 flex items-baseline gap-1.5">
+        <span className="stat-num font-display text-lg leading-none text-foreground">{value}</span>
+        <span className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground font-semibold">{label}</span>
+      </div>
+    </div>
+  );
+}
+
+function InlineGD({ value }: { value: number }) {
+  const positive = value >= 0;
+  return (
+    <div className={`flex items-center gap-1.5 px-2 rounded ${positive ? "text-foreground" : "text-destructive"}`}>
+      <span className="text-[9px] uppercase tracking-[0.2em] font-bold text-muted-foreground">GD</span>
+      <span className="stat-num font-display text-lg leading-none">
+        {positive ? "+" : ""}{value}
+      </span>
     </div>
   );
 }
