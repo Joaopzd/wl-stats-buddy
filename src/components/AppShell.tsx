@@ -1,7 +1,7 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { LayoutDashboard, Trophy, Users, Sparkles, Shield } from "lucide-react";
 import { ClubCrest } from "./ClubCrest";
-import { AccentPicker } from "./AccentPicker";
+import { SettingsMenu } from "./SettingsMenu";
 
 const links = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -47,7 +47,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
-            <AccentPicker />
+            <SettingsMenu />
           </div>
         </div>
         <nav className="md:hidden flex items-center gap-1 px-3 pb-2 overflow-x-auto">
