@@ -128,13 +128,13 @@ function WLDetail() {
         <ArrowLeft className="h-4 w-4" /> All Weekend Leagues
       </Link>
 
-      <div className="surface-glow p-3 sm:p-4 mb-6 space-y-3">
-        {/* Title row */}
-        <div className="flex items-start justify-between gap-3 min-w-0">
+      <div className="surface-glow p-5 sm:p-6 mb-6 space-y-4">
+        {/* Title row: left identity / right record */}
+        <div className="flex items-start justify-between gap-4 min-w-0">
           <div className="min-w-0 flex-1">
-            <div className="text-[9px] uppercase tracking-[0.25em] text-primary font-bold">WL · #{wl.number}</div>
+            <div className="text-[10px] uppercase tracking-[0.25em] text-primary font-bold">WL · #{wl.number}</div>
             {editingName ? (
-              <div className="mt-1 flex items-center gap-2">
+              <div className="mt-1.5 flex items-center gap-2">
                 <input
                   value={nameDraft}
                   onChange={(e) => setNameDraft(e.target.value)}
@@ -146,37 +146,41 @@ function WLDetail() {
                 <button onClick={saveName} className="p-1.5 rounded-md bg-primary text-primary-foreground"><Check className="h-3.5 w-3.5" /></button>
               </div>
             ) : (
-              <div className="mt-0.5 flex items-center gap-1.5 flex-wrap">
-                <h1 className="font-display text-xl sm:text-2xl leading-none truncate font-normal">{label}</h1>
-                <button
-                  onClick={() => { setNameDraft(wl.customName ?? ""); setEditingName(true); }}
-                  className="p-1 text-muted-foreground hover:text-primary"
-                  aria-label="Edit WL name"
-                >
-                  <PencilIcon className="h-3 w-3" />
-                </button>
-                <span className="text-[10px] text-muted-foreground font-mono ml-1">{record?.played}/15</span>
-                <RankBadge rank={rankFromWins(record?.wins ?? 0)} size="sm" />
-                {wl.formation && (
-                  <span className="px-1.5 py-0.5 rounded bg-secondary text-foreground text-[9px] font-bold uppercase tracking-wider">
-                    {wl.formation}
-                  </span>
-                )}
-              </div>
+              <>
+                <div className="mt-1 flex items-center gap-1.5 min-w-0">
+                  <h1 className="font-display text-2xl sm:text-3xl leading-none truncate font-normal">{label}</h1>
+                  <button
+                    onClick={() => { setNameDraft(wl.customName ?? ""); setEditingName(true); }}
+                    className="p-1 text-muted-foreground hover:text-primary shrink-0"
+                    aria-label="Edit WL name"
+                  >
+                    <PencilIcon className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <div className="mt-2 flex items-center gap-2 flex-wrap">
+                  <RankBadge rank={rankFromWins(record?.wins ?? 0)} size="sm" />
+                  {wl.formation && (
+                    <span className="px-2 py-0.5 rounded bg-secondary text-foreground text-[10px] font-bold uppercase tracking-wider">
+                      {wl.formation}
+                    </span>
+                  )}
+                  <span className="text-[10px] text-muted-foreground font-mono">{record?.played}/15</span>
+                </div>
+              </>
             )}
           </div>
-          {/* Compact W-L */}
-          <div className="flex items-baseline gap-1.5 shrink-0">
-            <Trophy className="h-4 w-4 text-primary self-center" />
-            <span className="font-display text-3xl sm:text-4xl stat-num leading-none text-foreground">{record?.wins ?? 0}</span>
-            <span className="font-display text-2xl text-muted-foreground/50 leading-none">–</span>
-            <span className="font-display text-3xl sm:text-4xl stat-num leading-none text-foreground">{record?.losses ?? 0}</span>
-            <XIcon className="h-4 w-4 text-destructive self-center" />
+          {/* Match record */}
+          <div className="flex items-baseline gap-2 shrink-0">
+            <Trophy className="h-5 w-5 text-primary self-center" />
+            <span className="font-display text-4xl sm:text-5xl stat-num leading-none text-foreground">{record?.wins ?? 0}</span>
+            <span className="font-display text-3xl text-muted-foreground/50 leading-none">–</span>
+            <span className="font-display text-4xl sm:text-5xl stat-num leading-none text-foreground">{record?.losses ?? 0}</span>
+            <XIcon className="h-5 w-5 text-destructive self-center" />
           </div>
         </div>
 
-        {/* Horizontal stat row */}
-        <div className="flex items-stretch gap-2 rounded-md border border-border/60 bg-background/40 px-2 py-1.5">
+        {/* Middle belt: stats */}
+        <div className="flex items-stretch gap-2 rounded-md border border-border/60 bg-background/40 px-3 py-2">
           <InlineStat icon={<Target className="h-3.5 w-3.5" />} value={record?.goalsFor ?? 0} label="Scored" tone="primary" />
           <div className="w-px bg-border/60" />
           <InlineStat icon={<Shield className="h-3.5 w-3.5" />} value={record?.goalsAgainst ?? 0} label="Conceded" tone="muted" />
@@ -184,23 +188,23 @@ function WLDetail() {
           <InlineGD value={(record?.goalsFor ?? 0) - (record?.goalsAgainst ?? 0)} />
         </div>
 
-        {/* Compact action row */}
-        <div className="flex flex-wrap gap-1.5">
+        {/* Action row */}
+        <div className="flex flex-wrap gap-3">
           <button
             onClick={() => setSquadOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-secondary/60 text-foreground font-semibold uppercase tracking-wider text-[11px] hover:bg-secondary"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md border border-border bg-secondary/60 text-foreground font-semibold uppercase tracking-wider text-[11px] hover:bg-secondary"
           >
-            <Users className="h-3 w-3" /> {squad.length ? "Edit Squad" : "Add Squad"}
+            <Users className="h-3.5 w-3.5" /> {squad.length ? "Edit Squad" : "Add Squad"}
           </button>
           <button
             onClick={() => { setEditingMatch(null); setMatchOpen(true); }}
             disabled={squad.length === 0 || matches.length >= 15}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-[11px] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-[var(--shadow-neon)]"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-[11px] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-[var(--shadow-neon)]"
           >
-            <Plus className="h-3 w-3" /> Add Match {nextMatchIndex <= 15 && `· ${nextMatchIndex}/15`}
+            <Plus className="h-3.5 w-3.5" /> Add Match {nextMatchIndex <= 15 && `· ${nextMatchIndex}/15`}
           </button>
           {matches.length >= 15 && (
-            <button onClick={() => setReportOpen(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-primary/50 text-primary font-semibold uppercase tracking-wider text-[11px] hover:bg-primary/10">
+            <button onClick={() => setReportOpen(true)} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md border border-primary/50 text-primary font-semibold uppercase tracking-wider text-[11px] hover:bg-primary/10">
               View Report
             </button>
           )}
