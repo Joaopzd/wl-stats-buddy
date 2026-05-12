@@ -16,10 +16,12 @@ import { OpponentCrest } from "@/components/OpponentCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
 import { CREST_SIZE } from "@/lib/ui";
 import { FORMATIONS, type FormationSlot } from "@/lib/formations";
-import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Target, Shield, ChevronDown } from "lucide-react";
+import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Target, Shield, ChevronDown, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import type { Match, Player } from "@/lib/types";
+import { v4 as uuid } from "uuid";
+import type { Match, Player, Position, Rarity } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
+import { rarityVisual } from "@/lib/format";
 
 export const Route = createFileRoute("/weekend-leagues/$wlId")({
   head: () => ({
