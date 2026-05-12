@@ -131,88 +131,153 @@ function WLDetail() {
         <ArrowLeft className="h-4 w-4" /> All Weekend Leagues
       </Link>
 
-      <div className="surface-glow p-5 sm:p-6 mb-6 space-y-4">
-        {/* Title row: left identity / right record */}
-        <div className="flex items-start justify-between gap-4 min-w-0">
-          <div className="min-w-0 flex-1">
-            <div className="text-[10px] uppercase tracking-[0.25em] text-primary font-bold">WL · #{wl.number}</div>
-            {editingName ? (
-              <div className="mt-1.5 flex items-center gap-2">
-                <input
-                  value={nameDraft}
-                  onChange={(e) => setNameDraft(e.target.value)}
-                  autoFocus
-                  onKeyDown={(e) => { if (e.key === "Enter") saveName(); if (e.key === "Escape") setEditingName(false); }}
-                  placeholder="Custom name..."
-                  className="bg-input border border-border rounded-md px-2 py-1 font-display text-lg focus:outline-none focus:ring-2 focus:ring-primary min-w-0 flex-1 max-w-md"
-                />
-                <button onClick={saveName} className="p-1.5 rounded-md bg-primary text-primary-foreground"><Check className="h-3.5 w-3.5" /></button>
-              </div>
-            ) : (
-              <>
-                <div className="mt-1 flex items-center gap-1.5 min-w-0">
-                  <h1 className="font-display text-2xl sm:text-3xl leading-none truncate font-normal">{label}</h1>
-                  <button
-                    onClick={() => { setNameDraft(wl.customName ?? ""); setEditingName(true); }}
-                    className="p-1 text-muted-foreground hover:text-primary shrink-0"
-                    aria-label="Edit WL name"
-                  >
-                    <PencilIcon className="h-3.5 w-3.5" />
-                  </button>
+      {(() => {
+        const wins = record?.wins ?? 0;
+        const maxPicks = wins >= 13 ? 3 : wins >= 9 ? 2 : 0;
+        const usedPicks = wl.playerPickIds?.length ?? 0;
+        const canAddPick = maxPicks > 0 && usedPicks < maxPicks;
+        const gd = (record?.goalsFor ?? 0) - (record?.goalsAgainst ?? 0);
+        const gdPositive = gd >= 0;
+
+        return (
+          <div className="surface-glow overflow-hidden mb-6">
+            {/* Top: identity + record */}
+            <div className="px-5 sm:px-7 pt-5 pb-4 flex items-start justify-between gap-5">
+              <div className="min-w-0 flex-1">
+                <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold mb-2">
+                  Weekend League · #{wl.number}
                 </div>
-                <div className="mt-2 flex items-center gap-2 flex-wrap">
-                  <RankBadge rank={rankFromWins(record?.wins ?? 0)} size="sm" />
+                {editingName ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      value={nameDraft}
+                      onChange={(e) => setNameDraft(e.target.value)}
+                      autoFocus
+                      onKeyDown={(e) => { if (e.key === "Enter") saveName(); if (e.key === "Escape") setEditingName(false); }}
+                      placeholder="Custom name..."
+                      className="bg-input border border-border rounded-md px-2 py-1 font-display text-xl focus:outline-none focus:ring-2 focus:ring-primary min-w-0 flex-1 max-w-md"
+                    />
+                    <button onClick={saveName} className="p-1.5 rounded-md bg-primary text-primary-foreground"><Check className="h-3.5 w-3.5" /></button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 min-w-0">
+                    <h1 className="font-display text-2xl sm:text-3xl leading-tight truncate">{label}</h1>
+                    <button
+                      onClick={() => { setNameDraft(wl.customName ?? ""); setEditingName(true); }}
+                      className="p-1 text-muted-foreground hover:text-primary shrink-0"
+                      aria-label="Edit WL name"
+                    >
+                      <PencilIcon className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                )}
+                <div className="mt-2.5 flex items-center gap-2 flex-wrap">
+                  <RankBadge rank={rankFromWins(wins)} size="sm" />
                   {wl.formation && (
                     <span className="px-2 py-0.5 rounded bg-secondary text-foreground text-[10px] font-bold uppercase tracking-wider">
                       {wl.formation}
                     </span>
                   )}
-                  <span className="text-[10px] text-muted-foreground font-mono">{record?.played}/15</span>
+                  <span className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">
+                    {record?.played ?? 0}/15 Played
+                  </span>
                 </div>
-              </>
+              </div>
+
+              {/* Record */}
+              <div className="shrink-0 text-right">
+                <div className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground font-bold mb-1 flex items-center justify-end gap-1">
+                  <Trophy className="h-3 w-3 text-primary" /> Record
+                </div>
+                <div className="flex items-baseline gap-1.5 justify-end leading-none">
+                  <span className="font-display text-5xl sm:text-6xl stat-num text-primary">{wins}</span>
+                  <span className="font-display text-3xl text-muted-foreground/40">–</span>
+                  <span className="font-display text-5xl sm:text-6xl stat-num text-destructive/90">{record?.losses ?? 0}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Middle: stats belt */}
+            <div className="grid grid-cols-3 border-y border-border/60 bg-background/40">
+              <BeltStat
+                icon={<Target className="h-4 w-4" />}
+                value={record?.goalsFor ?? 0}
+                label="Scored"
+                tone="primary"
+              />
+              <BeltStat
+                icon={<Shield className="h-4 w-4" />}
+                value={record?.goalsAgainst ?? 0}
+                label="Conceded"
+                tone="muted"
+                divided
+              />
+              <BeltStat
+                icon={null}
+                value={gd}
+                label="Goal Diff"
+                tone={gdPositive ? "primary" : "danger"}
+                divided
+                signed
+              />
+            </div>
+
+            {/* Bottom: action row */}
+            <div className="px-4 sm:px-5 py-3 flex flex-wrap items-center gap-2.5">
+              <button
+                onClick={() => setSquadOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-border bg-secondary/60 text-foreground font-semibold uppercase tracking-wider text-[11px] hover:bg-secondary transition"
+              >
+                <Users className="h-3.5 w-3.5" /> {squad.length ? "Edit Squad" : "Add Squad"}
+              </button>
+              <button
+                onClick={() => { setEditingMatch(null); setMatchOpen(true); }}
+                disabled={squad.length === 0 || matches.length >= 15}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-[11px] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-[var(--shadow-neon)] transition"
+              >
+                <Plus className="h-3.5 w-3.5" /> Add Match{nextMatchIndex <= 15 && ` · ${nextMatchIndex}/15`}
+              </button>
+              {matches.length >= 15 && (
+                <button onClick={() => setReportOpen(true)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-primary/50 text-primary font-semibold uppercase tracking-wider text-[11px] hover:bg-primary/10 transition">
+                  View Report
+                </button>
+              )}
+              {canAddPick && (
+                <button
+                  onClick={() => setPickOpen(true)}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md font-semibold uppercase tracking-wider text-[11px] transition border-2 ml-auto"
+                  style={{ background: "#CB332B", borderColor: "#FFF475", color: "#FFFFFF", boxShadow: "0 0 14px -4px #FFF475" }}
+                  title={`Add Player Pick (${usedPicks}/${maxPicks})`}
+                >
+                  <Sparkles className="h-3.5 w-3.5" /> Add Player Pick · {usedPicks}/{maxPicks}
+                </button>
+              )}
+            </div>
+
+            {/* Picks summary */}
+            {(wl.playerPickIds?.length ?? 0) > 0 && (
+              <div className="border-t border-border/60 px-4 sm:px-5 py-3 bg-background/30">
+                <div className="text-[9px] uppercase tracking-[0.3em] font-bold mb-2 flex items-center gap-1.5" style={{ color: "#FFF475" }}>
+                  <Sparkles className="h-3 w-3" /> Red Picks · {wl.playerPickIds!.length}/{maxPicks || wl.playerPickIds!.length}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {wl.playerPickIds!.map((pid) => {
+                    const p = players.find((x) => x.id === pid);
+                    if (!p) return null;
+                    return (
+                      <div key={pid} className="flex items-center gap-2 rounded-md border-2 px-2 py-1.5" style={{ background: "#CB332B", borderColor: "#FFF475", color: "#FFFFFF" }}>
+                        <span className="font-display stat-num text-base leading-none">{p.overall}</span>
+                        <span className="text-[9px] font-mono uppercase tracking-wider opacity-80 bg-black/20 px-1 py-0.5 rounded">{p.position}</span>
+                        <span className="text-xs font-semibold truncate max-w-[10rem]">{p.name}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             )}
           </div>
-          {/* Match record */}
-          <div className="flex items-baseline gap-2 shrink-0">
-            <Trophy className="h-5 w-5 text-primary self-center" />
-            <span className="font-display text-4xl sm:text-5xl stat-num leading-none text-foreground">{record?.wins ?? 0}</span>
-            <span className="font-display text-3xl text-muted-foreground/50 leading-none">–</span>
-            <span className="font-display text-4xl sm:text-5xl stat-num leading-none text-foreground">{record?.losses ?? 0}</span>
-            <XIcon className="h-5 w-5 text-destructive self-center" />
-          </div>
-        </div>
-
-        {/* Middle belt: stats */}
-        <div className="flex items-stretch gap-2 rounded-md border border-border/60 bg-background/40 px-3 py-2">
-          <InlineStat icon={<Target className="h-3.5 w-3.5" />} value={record?.goalsFor ?? 0} label="Scored" tone="primary" />
-          <div className="w-px bg-border/60" />
-          <InlineStat icon={<Shield className="h-3.5 w-3.5" />} value={record?.goalsAgainst ?? 0} label="Conceded" tone="muted" />
-          <div className="w-px bg-border/60" />
-          <InlineGD value={(record?.goalsFor ?? 0) - (record?.goalsAgainst ?? 0)} />
-        </div>
-
-        {/* Action row */}
-        <div className="flex flex-wrap gap-3">
-          <button
-            onClick={() => setSquadOpen(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md border border-border bg-secondary/60 text-foreground font-semibold uppercase tracking-wider text-[11px] hover:bg-secondary"
-          >
-            <Users className="h-3.5 w-3.5" /> {squad.length ? "Edit Squad" : "Add Squad"}
-          </button>
-          <button
-            onClick={() => { setEditingMatch(null); setMatchOpen(true); }}
-            disabled={squad.length === 0 || matches.length >= 15}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-[11px] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-[var(--shadow-neon)]"
-          >
-            <Plus className="h-3.5 w-3.5" /> Add Match {nextMatchIndex <= 15 && `· ${nextMatchIndex}/15`}
-          </button>
-          {matches.length >= 15 && (
-            <button onClick={() => setReportOpen(true)} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md border border-primary/50 text-primary font-semibold uppercase tracking-wider text-[11px] hover:bg-primary/10">
-              View Report
-            </button>
-          )}
-        </div>
-      </div>
+        );
+      })()}
 
       <section className="mb-8">
         {squad.length === 0 ? (
