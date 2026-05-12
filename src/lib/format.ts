@@ -94,6 +94,15 @@ export const rarityVisual = (r: Rarity): RarityVisual => {
           color: "#1a1a1a",
         },
       };
+    case "FUT Champions TOTS":
+      return {
+        className: "border-2 shadow-[0_0_18px_-6px_#FFF475]",
+        style: {
+          background: "#CB332B",
+          borderColor: "#FFF475",
+          color: "#FFFFFF",
+        },
+      };
 
     // ===== Legends (kept) =====
     case "Icon Base":
