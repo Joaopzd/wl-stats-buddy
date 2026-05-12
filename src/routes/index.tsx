@@ -188,6 +188,8 @@ function Dashboard() {
             </div>
           </div>
 
+          {topRated[0] && <MVPCard agg={topRated[0]} />}
+
           <h2 className="font-display text-2xl tracking-wider mb-4 flex items-center gap-2">
             <Star className="h-5 w-5 text-primary" /> Club Legends
           </h2>
@@ -218,6 +220,36 @@ function Dashboard() {
         </>
       )}
     </AppShell>
+  );
+}
+
+function MVPCard({ agg }: { agg: ReturnType<typeof aggregateAllPlayers>[number] }) {
+  return (
+    <div
+      className="surface-card p-5 mb-8 border-l-4 border-l-primary relative overflow-hidden"
+      style={{ boxShadow: "0 0 22px -10px color-mix(in oklab, var(--primary) 45%, transparent)" }}
+    >
+      <Crown className="absolute -right-3 -top-3 h-24 w-24 text-primary/10 pointer-events-none" />
+      <div className="flex items-center gap-4">
+        <div className="h-14 w-14 rounded-md grid place-items-center bg-primary/15 text-primary border border-primary/30">
+          <Crown className="h-7 w-7" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">MVP of the Week</span>
+            <span className="px-1.5 py-0.5 rounded bg-primary/20 text-primary text-[9px] font-bold uppercase tracking-wider border border-primary/30">MVP</span>
+          </div>
+          <div className="font-display text-2xl truncate mt-0.5">{agg.player.name}</div>
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            {agg.player.position} · {agg.player.overall} OVR · {agg.player.rarity}
+          </div>
+        </div>
+        <div className="text-right shrink-0">
+          <div className="font-display stat-num text-4xl text-primary leading-none">{agg.avgRating.toFixed(2)}</div>
+          <div className="text-[10px] text-muted-foreground mt-1">Avg · {agg.ratedMatches} rated apps</div>
+        </div>
+      </div>
+    </div>
   );
 }
 
