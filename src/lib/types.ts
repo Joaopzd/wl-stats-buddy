@@ -96,6 +96,8 @@ export interface WeekendLeague {
   startingAssignments?: Record<string, string>;
   /** Bench player IDs (subset of squadPlayerIds, not in startingAssignments). */
   benchPlayerIds?: string[];
+  /** Player IDs added via the end-of-WL Player Pick (Red Pick) flow. */
+  playerPickIds?: string[];
 }
 
 /** Convenience: render the user-facing label for a WL. */
