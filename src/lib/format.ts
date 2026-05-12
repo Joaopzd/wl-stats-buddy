@@ -94,6 +94,15 @@ export const rarityVisual = (r: Rarity): RarityVisual => {
           color: "#1a1a1a",
         },
       };
+    case "FUT Champions TOTS":
+      return {
+        className: "border-2 shadow-[0_0_18px_-6px_#FFF475]",
+        style: {
+          background: "#CB332B",
+          borderColor: "#FFF475",
+          color: "#FFFFFF",
+        },
+      };
 
     // ===== Legends (kept) =====
     case "Icon Base":
@@ -155,6 +164,7 @@ export const raritySwatch = (r: Rarity): string => {
     "UEFA Primetime": "#000FA3",
     "UEFA RTTF": "#1BC145",
     Evo: "#FDFCF3",
+    "FUT Champions TOTS": "#CB332B",
   };
   if (hexMap[r]) {
     // Rendered via inline style elsewhere; return a neutral utility for layout fallback.
