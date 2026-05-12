@@ -6,7 +6,7 @@ import { useMatches, usePlayers, useWLs } from "@/lib/store";
 import { aggregateAllPlayers, platformRecords, rankFromWins, wlRecord } from "@/lib/stats";
 import { Trophy, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, Gamepad2, Users, Crown } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
-import { SoccerBoot } from "@/components/icons/SoccerBoot";
+
 import { RankBadge } from "@/components/RankBadge";
 import { ClubCrest } from "@/components/ClubCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
