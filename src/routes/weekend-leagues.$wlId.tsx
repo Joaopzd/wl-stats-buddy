@@ -802,3 +802,147 @@ function MatchTimeline({
     </div>
   );
 }
+
+function BeltStat({
+  icon,
+  value,
+  label,
+  tone,
+  divided,
+  signed,
+}: {
+  icon: React.ReactNode;
+  value: number;
+  label: string;
+  tone: "primary" | "muted" | "danger";
+  divided?: boolean;
+  signed?: boolean;
+}) {
+  const valueColor =
+    tone === "primary" ? "text-primary" : tone === "danger" ? "text-destructive" : "text-foreground";
+  const iconColor = tone === "primary" ? "text-primary" : tone === "danger" ? "text-destructive" : "text-muted-foreground";
+  const display = signed && value >= 0 ? `+${value}` : `${value}`;
+  return (
+    <div className={`px-4 sm:px-5 py-3 flex items-center justify-center gap-3 ${divided ? "border-l border-border/60" : ""}`}>
+      {icon && <span className={`shrink-0 ${iconColor}`}>{icon}</span>}
+      <div className="flex flex-col items-start leading-none">
+        <span className={`font-display stat-num text-2xl sm:text-3xl ${valueColor}`}>{display}</span>
+        <span className="text-[9px] uppercase tracking-[0.25em] text-muted-foreground font-bold mt-1">{label}</span>
+      </div>
+    </div>
+  );
+}
+
+const PICK_POSITIONS: Position[] = [
+  "GK",
+  "LB", "CB", "RB",
+  "CDM", "CM", "LM", "RM", "CAM",
+  "LW", "RW", "ST",
+];
+
+function PlayerPickDialog({
+  onClose,
+  onSubmit,
+}: {
+  onClose: () => void;
+  onSubmit: (name: string, position: Position, overall: number) => void;
+}) {
+  const [name, setName] = useState("");
+  const [position, setPosition] = useState<Position>("ST");
+  const [overall, setOverall] = useState(95);
+  const v = rarityVisual("FUT Champions TOTS" as Rarity);
+
+  const submit = () => {
+    if (!name.trim()) { toast.error("Name required"); return; }
+    if (overall < 1 || overall > 99) { toast.error("OVR must be 1–99"); return; }
+    onSubmit(name, position, overall);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4" onClick={onClose}>
+      <div
+        className="w-full max-w-md surface-card p-5 space-y-4 border-2"
+        style={{ borderColor: "#FFF475", boxShadow: "0 0 28px -6px #FFF475" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4" style={{ color: "#FFF475" }} />
+            <h2 className="font-display text-xl tracking-wider">Add Player Pick</h2>
+          </div>
+          <button onClick={onClose} className="p-1 text-muted-foreground hover:text-foreground" aria-label="Close">
+            <XIcon className="h-4 w-4" />
+          </button>
+        </div>
+        <p className="text-[11px] text-muted-foreground -mt-2">
+          Awarded as <span className="font-semibold" style={{ color: "#FFF475" }}>FUT Champions TOTS</span>. Saved to your squad and Player Database.
+        </p>
+
+        <div className="space-y-3">
+          <label className="block">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Name</span>
+            <input
+              autoFocus
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+              className="mt-1 w-full bg-input border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="Player name"
+            />
+          </label>
+
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Position</span>
+              <select
+                value={position}
+                onChange={(e) => setPosition(e.target.value as Position)}
+                className="mt-1 w-full bg-input border border-border rounded-md px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                {PICK_POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </label>
+            <label className="block">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Overall</span>
+              <input
+                type="number"
+                min={1}
+                max={99}
+                value={overall}
+                onChange={(e) => setOverall(parseInt(e.target.value || "0", 10))}
+                className="mt-1 w-full bg-input border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary stat-num"
+              />
+            </label>
+          </div>
+
+          {/* Live preview */}
+          <div className="flex items-center justify-center pt-1">
+            <div
+              className={`w-20 h-28 rounded-md p-2 flex flex-col items-center justify-between font-display ${v.className}`}
+              style={v.style}
+            >
+              <span className="text-xl leading-none">{overall || "—"}</span>
+              <span className="text-[10px] leading-none">{position}</span>
+              <span className="text-[9px] uppercase tracking-tight truncate max-w-full">
+                {name.trim() ? name.trim().split(" ").slice(-1)[0] : "Name"}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-2 pt-1">
+          <button onClick={onClose} className="px-3 py-2 rounded-md border border-border bg-secondary/60 text-[11px] font-semibold uppercase tracking-wider hover:bg-secondary">
+            Cancel
+          </button>
+          <button
+            onClick={submit}
+            className="px-4 py-2 rounded-md text-[11px] font-semibold uppercase tracking-wider border-2"
+            style={{ background: "#CB332B", borderColor: "#FFF475", color: "#FFFFFF" }}
+          >
+            Add Pick
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
