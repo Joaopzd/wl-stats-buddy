@@ -525,6 +525,28 @@ function WLDetail() {
         />
       )}
       {lossAlertOpen && <LossStreakAlert onClose={() => setLossAlertOpen(false)} />}
+      {pickOpen && (
+        <PlayerPickDialog
+          onClose={() => setPickOpen(false)}
+          onSubmit={(name, position, overall) => {
+            const newPlayer: Player = {
+              id: uuid(),
+              name: name.trim(),
+              position,
+              overall,
+              rarity: "FUT Champions TOTS",
+              createdAt: Date.now(),
+            };
+            store.addPlayer(newPlayer);
+            store.updateWL(wl.id, {
+              squadPlayerIds: [...wl.squadPlayerIds, newPlayer.id],
+              playerPickIds: [...(wl.playerPickIds ?? []), newPlayer.id],
+            });
+            setPickOpen(false);
+            toast.success(`Red Pick added: ${newPlayer.name}`);
+          }}
+        />
+      )}
     </AppShell>
   );
 }
