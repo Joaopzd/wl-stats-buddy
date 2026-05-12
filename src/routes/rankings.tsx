@@ -3,7 +3,9 @@ import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers } from "@/lib/store";
 import { aggregateAllPlayers, type PlayerAgg } from "@/lib/stats";
-import { Goal, Sparkles, Wand2, Trophy, Shield, Info } from "lucide-react";
+import { Sparkles, Trophy, Shield, Info } from "lucide-react";
+import { SoccerBall } from "@/components/icons/SoccerBall";
+import { SoccerBoot } from "@/components/icons/SoccerBoot";
 
 const MIN_MATCHES = 9;
 
@@ -72,7 +74,7 @@ function RankingsPage() {
       <div className="grid lg:grid-cols-3 gap-6">
         <Leaderboard
           title="Top 10 Scorers"
-          icon={<Goal className="h-4 w-4" />}
+          icon={<SoccerBall size={14} />}
           rows={topScorers}
           metric={(a) => `${a.goals}`}
           metricLabel="Goals"
@@ -80,7 +82,7 @@ function RankingsPage() {
         />
         <Leaderboard
           title="Top 10 Playmakers"
-          icon={<Wand2 className="h-4 w-4" />}
+          icon={<SoccerBoot size={14} />}
           rows={topPlaymakers}
           metric={(a) => `${a.assists}`}
           metricLabel="Assists"

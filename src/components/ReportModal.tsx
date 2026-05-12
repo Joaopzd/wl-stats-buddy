@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
-import { Trophy, Flame, Target, Star, TrendingDown, X, LayoutGrid, TrendingUp, Shield } from "lucide-react";
+import { Trophy, Flame, Star, TrendingDown, X, LayoutGrid, TrendingUp, Shield, Crown } from "lucide-react";
+import { SoccerBall } from "./icons/SoccerBall";
+import { SoccerBoot } from "./icons/SoccerBoot";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
 import { aggregatePlayer, rankFromWins, type WLRecord } from "@/lib/stats";
@@ -78,8 +80,8 @@ export function ReportModal({
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <SmallStat label="Total Goals" value={totalG} icon={<Target className="h-3.5 w-3.5" />} />
-          <SmallStat label="Total Assists" value={totalA} icon={<Star className="h-3.5 w-3.5" />} />
+          <SmallStat label="Total Goals" value={totalG} icon={<SoccerBall size={14} />} />
+          <SmallStat label="Total Assists" value={totalA} icon={<SoccerBoot size={14} />} />
         </div>
 
         {matches.length > 0 && (() => {
@@ -103,7 +105,7 @@ export function ReportModal({
               <div className="grid grid-cols-2 gap-3">
                 <div className={`rounded-md p-3 border ${positive ? "border-primary/40 bg-primary/10" : "border-border bg-background/40"}`}>
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
-                    <Target className="h-3 w-3" /> Goals For / Match
+                    <SoccerBall size={12} /> Goals For / Match
                   </div>
                   <div className={`font-display stat-num text-3xl mt-1 ${positive ? "text-primary" : "text-foreground"}`}>
                     {gfPerMatch.toFixed(2)}
@@ -144,9 +146,8 @@ export function ReportModal({
           />
         )}
 
-        {wl.startingAssignments && Object.keys(wl.startingAssignments).length > 0 && (
-          <StartingXI wl={wl} aggs={aggs} />
-        )}
+        <SquadPerformance aggs={aggs} />
+
 
         <div className="flex gap-3 mt-6">
           <button onClick={onClose} className="flex-1 px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90">
@@ -201,14 +202,11 @@ function Award({ type, color, icon, name, sub, stat }: { type: string; color: "p
   );
 }
 
-function StartingXI({ wl, aggs }: { wl: WeekendLeague; aggs: ReturnType<typeof aggregatePlayer>[] }) {
-  const slots = wl.startingAssignments ?? {};
-  const aggsById = new Map(aggs.map((a) => [a.player.id, a]));
-  const rows = Object.entries(slots).map(([slotId, playerId]) => {
-    const a = aggsById.get(playerId);
-    return { slotId, agg: a };
-  }).filter((r) => r.agg);
-
+function SquadPerformance({ aggs }: { aggs: ReturnType<typeof aggregatePlayer>[] }) {
+  const rows = [...aggs]
+    .filter((a) => a.matches > 0)
+    .sort((a, b) => b.avgRating - a.avgRating || (b.goals + b.assists) - (a.goals + a.assists));
+  if (rows.length === 0) return null;
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -217,21 +215,37 @@ function StartingXI({ wl, aggs }: { wl: WeekendLeague; aggs: ReturnType<typeof a
       className="mt-4 p-4 rounded-lg border border-border bg-secondary/30"
     >
       <div className="flex items-center justify-between mb-3">
-        <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-foreground">Starting XI · Avg Ratings</div>
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{wl.formation}</div>
+        <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-foreground flex items-center gap-1.5">
+          <Crown className="h-3.5 w-3.5 text-primary" /> Squad Performance · Sorted by Rating
+        </div>
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{rows.length} players</div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-        {rows.map(({ slotId, agg }) => {
-          if (!agg) return null;
-          const r = agg.avgRating;
+      <div className="grid grid-cols-12 gap-2 px-2 pb-1.5 text-[9px] uppercase tracking-wider text-muted-foreground font-bold border-b border-border/50">
+        <div className="col-span-5">Player</div>
+        <div className="col-span-1 text-center">OVR</div>
+        <div className="col-span-1 text-center">Pos</div>
+        <div className="col-span-1 text-center">G</div>
+        <div className="col-span-1 text-center">A</div>
+        <div className="col-span-1 text-center">MP</div>
+        <div className="col-span-2 text-right">Avg</div>
+      </div>
+      <div className="divide-y divide-border/30">
+        {rows.map((a, i) => {
+          const r = a.avgRating;
           const tone = r >= 8 ? "text-primary" : r >= 6 ? "text-foreground" : r > 0 ? "text-destructive" : "text-muted-foreground";
           return (
-            <div key={slotId} className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded bg-background/40 text-xs">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold w-10 shrink-0">{slotId.replace(/\d+$/, "")}</span>
-                <span className="font-semibold truncate">{agg.player.name}</span>
+            <div key={a.player.id} className="grid grid-cols-12 gap-2 items-center px-2 py-1.5 text-xs">
+              <div className="col-span-5 flex items-center gap-2 min-w-0">
+                <span className="text-[9px] font-mono text-muted-foreground w-4 shrink-0">{i + 1}</span>
+                <span className="font-semibold truncate">{a.player.name}</span>
+                {i === 0 && <Crown className="h-3 w-3 text-primary shrink-0" />}
               </div>
-              <div className={`stat-num font-display text-base ${tone}`}>
+              <div className="col-span-1 text-center stat-num text-foreground">{a.player.overall}</div>
+              <div className="col-span-1 text-center text-[10px] font-mono text-muted-foreground uppercase">{a.player.position}</div>
+              <div className="col-span-1 text-center stat-num">{a.goals}</div>
+              <div className="col-span-1 text-center stat-num">{a.assists}</div>
+              <div className="col-span-1 text-center stat-num text-muted-foreground">{a.matches}</div>
+              <div className={`col-span-2 text-right font-display stat-num text-base ${tone}`}>
                 {r > 0 ? r.toFixed(2) : "—"}
               </div>
             </div>

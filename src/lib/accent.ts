@@ -15,38 +15,39 @@ export interface AccentDef {
   swatch: string;
 }
 
+// Midnight Stealth palette — muted, low-saturation accents for reduced eye strain.
 export const ACCENTS: Record<AccentKey, AccentDef> = {
   green: {
     key: "green",
-    label: "Neon Green",
-    primary: "oklch(0.86 0.24 155)",
-    secondary: "oklch(0.72 0.18 200)",
-    primaryForeground: "oklch(0.12 0.04 250)",
-    swatch: "#39ff8a",
+    label: "Muted Emerald",
+    primary: "oklch(0.69 0.14 162)",
+    secondary: "oklch(0.58 0.10 195)",
+    primaryForeground: "oklch(0.16 0.03 257)",
+    swatch: "#10B981",
   },
   blue: {
     key: "blue",
-    label: "Neon Blue",
-    primary: "oklch(0.74 0.20 240)",
-    secondary: "oklch(0.66 0.20 265)",
-    primaryForeground: "oklch(0.12 0.04 250)",
-    swatch: "#3aa6ff",
+    label: "Slate Indigo",
+    primary: "oklch(0.62 0.18 277)",
+    secondary: "oklch(0.55 0.14 260)",
+    primaryForeground: "oklch(0.98 0.005 247)",
+    swatch: "#6366F1",
   },
   red: {
     key: "red",
-    label: "Neon Red",
-    primary: "oklch(0.68 0.24 22)",
-    secondary: "oklch(0.62 0.22 8)",
-    primaryForeground: "oklch(0.98 0.01 0)",
-    swatch: "#ff4d4d",
+    label: "Deep Crimson",
+    primary: "oklch(0.52 0.18 27)",
+    secondary: "oklch(0.45 0.14 18)",
+    primaryForeground: "oklch(0.98 0.005 247)",
+    swatch: "#B91C1C",
   },
   white: {
     key: "white",
-    label: "Neon White",
-    primary: "oklch(0.97 0.01 230)",
-    secondary: "oklch(0.85 0.02 230)",
-    primaryForeground: "oklch(0.12 0.04 250)",
-    swatch: "#f5f7ff",
+    label: "Soft Ghost",
+    primary: "oklch(0.94 0.008 247)",
+    secondary: "oklch(0.80 0.015 247)",
+    primaryForeground: "oklch(0.16 0.03 257)",
+    swatch: "#F8FAFC",
   },
 };
 
