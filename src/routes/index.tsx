@@ -4,7 +4,9 @@ import { AppShell } from "@/components/AppShell";
 import { StatTile } from "@/components/StatTile";
 import { useMatches, usePlayers, useWLs } from "@/lib/store";
 import { aggregateAllPlayers, platformRecords, rankFromWins, wlRecord } from "@/lib/stats";
-import { Trophy, Target, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, Gamepad2, Users } from "lucide-react";
+import { Trophy, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, Gamepad2, Users, Crown } from "lucide-react";
+import { SoccerBall } from "@/components/icons/SoccerBall";
+import { SoccerBoot } from "@/components/icons/SoccerBoot";
 import { RankBadge } from "@/components/RankBadge";
 import { ClubCrest } from "@/components/ClubCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
@@ -129,7 +131,7 @@ function Dashboard() {
                   : <span className="text-[10px] text-muted-foreground">—</span>}
               </div>
             </div>
-            <StatTile label="Goals scored" value={totals.gf} icon={<Target />} />
+            <StatTile label="Goals scored" value={totals.gf} icon={<SoccerBall size={56} strokeWidth={1.2} />} />
             <StatTile label="Goals conceded" value={totals.ga} icon={<Shield />} />
           </div>
 

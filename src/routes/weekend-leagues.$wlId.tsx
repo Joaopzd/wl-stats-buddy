@@ -16,7 +16,8 @@ import { OpponentCrest } from "@/components/OpponentCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
 import { CREST_SIZE } from "@/lib/ui";
 import { FORMATIONS, type FormationSlot } from "@/lib/formations";
-import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Target, Shield, ChevronDown, Sparkles } from "lucide-react";
+import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Shield, ChevronDown, Sparkles } from "lucide-react";
+import { SoccerBall } from "@/components/icons/SoccerBall";
 import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
 import type { Match, Player, Position, Rarity } from "@/lib/types";
@@ -200,7 +201,7 @@ function WLDetail() {
             {/* Middle: stats belt */}
             <div className="grid grid-cols-3 border-y border-border/60 bg-background/40">
               <BeltStat
-                icon={<Target className="h-4 w-4" />}
+                icon={<SoccerBall size={16} />}
                 value={record?.goalsFor ?? 0}
                 label="Scored"
                 tone="primary"

@@ -6,7 +6,9 @@ import { ClubCrestUploader } from "@/components/ClubCrestUploader";
 import { RankBadge } from "@/components/RankBadge";
 import { useClubName, useMatches, usePlayers, useWLs, store } from "@/lib/store";
 import { aggregatePlayer, matchIsWin, rankFromWins, wlRecord, isCleanSheetEligible } from "@/lib/stats";
-import { Pencil, Check, X, Trophy, Target, Shield, Sparkles, Users, Award, Medal } from "lucide-react";
+import { Pencil, Check, X, Trophy, Shield, Users, Award, Medal } from "lucide-react";
+import { SoccerBall } from "@/components/icons/SoccerBall";
+import { SoccerBoot } from "@/components/icons/SoccerBoot";
 import { BestXI } from "@/components/BestXI";
 import { toast } from "sonner";
 
@@ -155,9 +157,9 @@ function ClubPage() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-        <Tile label="Goals Scored" value={stats.gf} icon={<Target className="h-3.5 w-3.5" />} />
+        <Tile label="Goals Scored" value={stats.gf} icon={<SoccerBall size={14} />} />
         <Tile label="Goals Conceded" value={stats.ga} icon={<Shield className="h-3.5 w-3.5" />} />
-        <Tile label="Total Assists" value={stats.totalAssists} icon={<Sparkles className="h-3.5 w-3.5" />} />
+        <Tile label="Total Assists" value={stats.totalAssists} icon={<SoccerBoot size={14} />} />
         <Tile label="Clean Sheets" value={stats.cleanSheets} icon={<Shield className="h-3.5 w-3.5" />} />
       </div>
 

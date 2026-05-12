@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
-import { Trophy, Flame, Target, Star, TrendingDown, X, LayoutGrid, TrendingUp, Shield } from "lucide-react";
+import { Trophy, Flame, Star, TrendingDown, X, LayoutGrid, TrendingUp, Shield, Crown } from "lucide-react";
+import { SoccerBall } from "./icons/SoccerBall";
+import { SoccerBoot } from "./icons/SoccerBoot";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
 import { aggregatePlayer, rankFromWins, type WLRecord } from "@/lib/stats";
@@ -78,8 +80,8 @@ export function ReportModal({
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <SmallStat label="Total Goals" value={totalG} icon={<Target className="h-3.5 w-3.5" />} />
-          <SmallStat label="Total Assists" value={totalA} icon={<Star className="h-3.5 w-3.5" />} />
+          <SmallStat label="Total Goals" value={totalG} icon={<SoccerBall size={14} />} />
+          <SmallStat label="Total Assists" value={totalA} icon={<SoccerBoot size={14} />} />
         </div>
 
         {matches.length > 0 && (() => {
@@ -103,7 +105,7 @@ export function ReportModal({
               <div className="grid grid-cols-2 gap-3">
                 <div className={`rounded-md p-3 border ${positive ? "border-primary/40 bg-primary/10" : "border-border bg-background/40"}`}>
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
-                    <Target className="h-3 w-3" /> Goals For / Match
+                    <SoccerBall size={12} /> Goals For / Match
                   </div>
                   <div className={`font-display stat-num text-3xl mt-1 ${positive ? "text-primary" : "text-foreground"}`}>
                     {gfPerMatch.toFixed(2)}
