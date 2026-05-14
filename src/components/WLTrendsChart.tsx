@@ -21,6 +21,43 @@ interface Props {
   matches: Match[];
 }
 
+interface TrendDatum {
+  name: string;
+  wins: number;
+  losses: number;
+  gf: number;
+  ga: number;
+  gd: number;
+}
+
+function TrendTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: TrendDatum }> }) {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload;
+  const gdPositive = d.gd >= 0;
+  return (
+    <div
+      className="rounded-md border border-border/70 bg-popover/95 backdrop-blur px-3 py-2 shadow-xl text-xs"
+      style={{ color: "#F8FAFC", minWidth: 160 }}
+    >
+      <div className="font-display tracking-wider text-sm mb-1.5 text-foreground">{d.name}</div>
+      <div className="grid grid-cols-2 gap-x-3 gap-y-1 font-mono">
+        <span className="text-muted-foreground">Wins</span>
+        <span className="text-right text-primary font-semibold">{d.wins}</span>
+        <span className="text-muted-foreground">Losses</span>
+        <span className="text-right text-destructive font-semibold">{d.losses}</span>
+        <span className="text-muted-foreground">Scored</span>
+        <span className="text-right">{d.gf}</span>
+        <span className="text-muted-foreground">Conceded</span>
+        <span className="text-right">{d.ga}</span>
+        <span className="text-muted-foreground">GD</span>
+        <span className={`text-right font-semibold ${gdPositive ? "text-primary" : "text-destructive"}`}>
+          {gdPositive ? "+" : ""}{d.gd}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export function WLTrendsChart({ wls, matches }: Props) {
   const data = useMemo(() => {
     return [...wls]
