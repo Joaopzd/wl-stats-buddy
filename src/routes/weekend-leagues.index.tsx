@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { useMatches, useWLs, store } from "@/lib/store";
+import { useMatches, useWLs, store, usePlayers } from "@/lib/store";
 import { wlRecord, rankFromWins } from "@/lib/stats";
 import { wlLabel } from "@/lib/types";
-import { Plus, ChevronRight, Trophy, Trash2 } from "lucide-react";
+import { Plus, ChevronRight, Trophy, Trash2, ClipboardList } from "lucide-react";
 import { RankBadge } from "@/components/RankBadge";
+import { CoachBriefingDialog } from "@/components/CoachBriefingDialog";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 
