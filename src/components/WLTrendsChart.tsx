@@ -21,6 +21,43 @@ interface Props {
   matches: Match[];
 }
 
+interface TrendDatum {
+  name: string;
+  wins: number;
+  losses: number;
+  gf: number;
+  ga: number;
+  gd: number;
+}
+
+function TrendTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: TrendDatum }> }) {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload;
+  const gdPositive = d.gd >= 0;
+  return (
+    <div
+      className="rounded-md border border-border/70 bg-popover/95 backdrop-blur px-3 py-2 shadow-xl text-xs"
+      style={{ color: "#F8FAFC", minWidth: 160 }}
+    >
+      <div className="font-display tracking-wider text-sm mb-1.5 text-foreground">{d.name}</div>
+      <div className="grid grid-cols-2 gap-x-3 gap-y-1 font-mono">
+        <span className="text-muted-foreground">Wins</span>
+        <span className="text-right text-primary font-semibold">{d.wins}</span>
+        <span className="text-muted-foreground">Losses</span>
+        <span className="text-right text-destructive font-semibold">{d.losses}</span>
+        <span className="text-muted-foreground">Scored</span>
+        <span className="text-right">{d.gf}</span>
+        <span className="text-muted-foreground">Conceded</span>
+        <span className="text-right">{d.ga}</span>
+        <span className="text-muted-foreground">GD</span>
+        <span className={`text-right font-semibold ${gdPositive ? "text-primary" : "text-destructive"}`}>
+          {gdPositive ? "+" : ""}{d.gd}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export function WLTrendsChart({ wls, matches }: Props) {
   const data = useMemo(() => {
     return [...wls]
@@ -62,16 +99,7 @@ export function WLTrendsChart({ wls, matches }: Props) {
                 <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} stroke="var(--border)" />
                 <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} stroke="var(--border)" allowDecimals={false} />
-                <Tooltip
-                  contentStyle={{
-                    background: "var(--popover)",
-                    border: "1px solid var(--border)",
-                    borderRadius: 8,
-                    color: "var(--foreground)",
-                    fontSize: 12,
-                  }}
-                  cursor={{ fill: "var(--secondary)", opacity: 0.4 }}
-                />
+                <Tooltip content={<TrendTooltip />} cursor={{ fill: "var(--secondary)", opacity: 0.4 }} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
                 <Bar dataKey="wins" name="Wins" fill="var(--primary)" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="losses" name="Losses" fill="var(--destructive)" radius={[3, 3, 0, 0]} />
@@ -90,16 +118,7 @@ export function WLTrendsChart({ wls, matches }: Props) {
                 <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} stroke="var(--border)" />
                 <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} stroke="var(--border)" />
-                <Tooltip
-                  contentStyle={{
-                    background: "var(--popover)",
-                    border: "1px solid var(--border)",
-                    borderRadius: 8,
-                    color: "var(--foreground)",
-                    fontSize: 12,
-                  }}
-                  cursor={{ stroke: "var(--accent)", strokeWidth: 1 }}
-                />
+                <Tooltip content={<TrendTooltip />} cursor={{ stroke: "var(--accent)", strokeWidth: 1 }} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
                 <ReferenceLine y={0} stroke="var(--border)" />
                 <Line type="monotone" dataKey="gf" name="Scored" stroke="var(--primary)" strokeWidth={2} dot={{ r: 3 }} />

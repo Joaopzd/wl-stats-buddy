@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { useMatches, useWLs, store } from "@/lib/store";
+import { useMatches, useWLs, store, usePlayers } from "@/lib/store";
 import { wlRecord, rankFromWins } from "@/lib/stats";
 import { wlLabel } from "@/lib/types";
-import { Plus, ChevronRight, Trophy, Trash2 } from "lucide-react";
+import { Plus, ChevronRight, Trophy, Trash2, ClipboardList } from "lucide-react";
 import { RankBadge } from "@/components/RankBadge";
+import { CoachBriefingDialog } from "@/components/CoachBriefingDialog";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 
@@ -24,9 +25,11 @@ export const Route = createFileRoute("/weekend-leagues/")({
 function WLList() {
   const wls = useWLs();
   const matches = useMatches();
+  const players = usePlayers();
   const [creating, setCreating] = useState(false);
   const [num, setNum] = useState("");
   const [name, setName] = useState("");
+  const [briefingOpen, setBriefingOpen] = useState(false);
 
   const sorted = [...wls].sort((a, b) => b.number - a.number);
   const nextNum = (Math.max(0, ...wls.map((w) => w.number)) + 1).toString();
@@ -55,10 +58,23 @@ function WLList() {
           <h1 className="font-display text-4xl tracking-wider">Weekend Leagues</h1>
           <p className="text-sm text-muted-foreground mt-1">{wls.length} sessions logged</p>
         </div>
-        <button onClick={() => { setNum(nextNum); setName(""); setCreating(true); }} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90 transition shadow-[var(--shadow-neon)]">
-          <Plus className="h-4 w-4" /> New WL
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setBriefingOpen(true)} className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-md border border-border bg-secondary/50 text-foreground font-semibold uppercase tracking-wider text-xs hover:bg-secondary transition">
+            <ClipboardList className="h-4 w-4 text-primary" /> Coach's Briefing
+          </button>
+          <button onClick={() => { setNum(nextNum); setName(""); setCreating(true); }} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90 transition shadow-[var(--shadow-neon)]">
+            <Plus className="h-4 w-4" /> New WL
+          </button>
+        </div>
       </div>
+
+      <CoachBriefingDialog
+        open={briefingOpen}
+        onOpenChange={setBriefingOpen}
+        wls={wls}
+        matches={matches}
+        players={players}
+      />
 
       {creating && (
         <div className="surface-glow p-5 mb-6 grid sm:grid-cols-[140px_1fr_auto_auto] gap-3 items-end">

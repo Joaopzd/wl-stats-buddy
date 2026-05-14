@@ -8,6 +8,7 @@ import { Trophy, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, 
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 import { WLTrendsChart } from "@/components/WLTrendsChart";
+import { AICoach } from "@/components/AICoach";
 
 import { RankBadge } from "@/components/RankBadge";
 import { ClubCrest } from "@/components/ClubCrest";
@@ -68,20 +69,30 @@ function Dashboard() {
       .slice(0, 3);
   }, [aggs]);
 
-  // MVP of the Week: best player in the most recent WL (min 3 rated apps).
+  // MVP of the Week: best player in the most recent WL.
+  // Prefer rated apps; fall back to top G+A contributor when no ratings logged.
   const wlMVP = useMemo(() => {
     if (!lastWL) return null;
     const wlMatches = matches.filter((m) => m.wlId === lastWL.id);
     if (wlMatches.length === 0) return null;
-    const wlAggs = players
+    const all = players
       .map((p) => aggregatePlayer(p, wlMatches))
-      .filter((a) => a.matches >= 3 && a.avgRating > 0)
-      .sort(
+      .filter((a) => a.matches >= 1);
+    if (all.length === 0) return null;
+    const rated = all.filter((a) => a.ratedMatches >= 1 && a.avgRating > 0);
+    if (rated.length > 0) {
+      return rated.sort(
         (a, b) =>
           b.avgRating - a.avgRating ||
           (b.goals + b.assists) - (a.goals + a.assists),
-      );
-    return wlAggs[0] ?? null;
+      )[0];
+    }
+    // Fallback: best contributor by goals + assists
+    return all.sort(
+      (a, b) =>
+        (b.goals + b.assists) - (a.goals + a.assists) ||
+        b.matches - a.matches,
+    )[0];
   }, [lastWL, matches, players]);
 
   const empty = wls.length === 0 && players.length === 0;
@@ -209,6 +220,8 @@ function Dashboard() {
 
           {wlMVP && lastWL && <MVPCard agg={wlMVP} wlNumber={lastWL.number} />}
 
+          <AICoach wls={wls} matches={matches} players={players} />
+
           <WLTrendsChart wls={wls} matches={matches} />
 
           <h2 className="font-display text-2xl tracking-wider mb-4 flex items-center gap-2">
@@ -288,8 +301,17 @@ function MVPCard({
           </div>
         </div>
         <div className="text-right shrink-0">
-          <div className="font-display stat-num text-4xl text-primary leading-none">{agg.avgRating.toFixed(2)}</div>
-          <div className="text-[10px] text-muted-foreground mt-1">Avg · {agg.ratedMatches} rated</div>
+          {agg.ratedMatches > 0 ? (
+            <>
+              <div className="font-display stat-num text-4xl text-primary leading-none">{agg.avgRating.toFixed(2)}</div>
+              <div className="text-[10px] text-muted-foreground mt-1">Avg · {agg.ratedMatches} rated</div>
+            </>
+          ) : (
+            <>
+              <div className="font-display stat-num text-4xl text-primary leading-none">{agg.goals + agg.assists}</div>
+              <div className="text-[10px] text-muted-foreground mt-1">G+A · no ratings yet</div>
+            </>
+          )}
         </div>
       </div>
     </div>
