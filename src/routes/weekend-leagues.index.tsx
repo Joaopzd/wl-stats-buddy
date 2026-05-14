@@ -58,10 +58,23 @@ function WLList() {
           <h1 className="font-display text-4xl tracking-wider">Weekend Leagues</h1>
           <p className="text-sm text-muted-foreground mt-1">{wls.length} sessions logged</p>
         </div>
-        <button onClick={() => { setNum(nextNum); setName(""); setCreating(true); }} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90 transition shadow-[var(--shadow-neon)]">
-          <Plus className="h-4 w-4" /> New WL
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setBriefingOpen(true)} className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-md border border-border bg-secondary/50 text-foreground font-semibold uppercase tracking-wider text-xs hover:bg-secondary transition">
+            <ClipboardList className="h-4 w-4 text-primary" /> Coach's Briefing
+          </button>
+          <button onClick={() => { setNum(nextNum); setName(""); setCreating(true); }} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90 transition shadow-[var(--shadow-neon)]">
+            <Plus className="h-4 w-4" /> New WL
+          </button>
+        </div>
       </div>
+
+      <CoachBriefingDialog
+        open={briefingOpen}
+        onOpenChange={setBriefingOpen}
+        wls={wls}
+        matches={matches}
+        players={players}
+      />
 
       {creating && (
         <div className="surface-glow p-5 mb-6 grid sm:grid-cols-[140px_1fr_auto_auto] gap-3 items-end">
