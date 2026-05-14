@@ -68,20 +68,30 @@ function Dashboard() {
       .slice(0, 3);
   }, [aggs]);
 
-  // MVP of the Week: best player in the most recent WL (min 3 rated apps).
+  // MVP of the Week: best player in the most recent WL.
+  // Prefer rated apps; fall back to top G+A contributor when no ratings logged.
   const wlMVP = useMemo(() => {
     if (!lastWL) return null;
     const wlMatches = matches.filter((m) => m.wlId === lastWL.id);
     if (wlMatches.length === 0) return null;
-    const wlAggs = players
+    const all = players
       .map((p) => aggregatePlayer(p, wlMatches))
-      .filter((a) => a.matches >= 3 && a.avgRating > 0)
-      .sort(
+      .filter((a) => a.matches >= 1);
+    if (all.length === 0) return null;
+    const rated = all.filter((a) => a.ratedMatches >= 1 && a.avgRating > 0);
+    if (rated.length > 0) {
+      return rated.sort(
         (a, b) =>
           b.avgRating - a.avgRating ||
           (b.goals + b.assists) - (a.goals + a.assists),
-      );
-    return wlAggs[0] ?? null;
+      )[0];
+    }
+    // Fallback: best contributor by goals + assists
+    return all.sort(
+      (a, b) =>
+        (b.goals + b.assists) - (a.goals + a.assists) ||
+        b.matches - a.matches,
+    )[0];
   }, [lastWL, matches, players]);
 
   const empty = wls.length === 0 && players.length === 0;
