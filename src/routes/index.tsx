@@ -68,6 +68,22 @@ function Dashboard() {
       .slice(0, 3);
   }, [aggs]);
 
+  // MVP of the Week: best player in the most recent WL (min 3 rated apps).
+  const wlMVP = useMemo(() => {
+    if (!lastWL) return null;
+    const wlMatches = matches.filter((m) => m.wlId === lastWL.id);
+    if (wlMatches.length === 0) return null;
+    const wlAggs = players
+      .map((p) => aggregatePlayer(p, wlMatches))
+      .filter((a) => a.matches >= 3 && a.avgRating > 0)
+      .sort(
+        (a, b) =>
+          b.avgRating - a.avgRating ||
+          (b.goals + b.assists) - (a.goals + a.assists),
+      );
+    return wlAggs[0] ?? null;
+  }, [lastWL, matches, players]);
+
   const empty = wls.length === 0 && players.length === 0;
 
   const clubName = useClubName();
@@ -191,7 +207,9 @@ function Dashboard() {
             </div>
           </div>
 
-          {topRated[0] && <MVPCard agg={topRated[0]} />}
+          {wlMVP && lastWL && <MVPCard agg={wlMVP} wlNumber={lastWL.number} />}
+
+          <WLTrendsChart wls={wls} matches={matches} />
 
           <h2 className="font-display text-2xl tracking-wider mb-4 flex items-center gap-2">
             <Star className="h-5 w-5 text-primary" /> Club Legends
