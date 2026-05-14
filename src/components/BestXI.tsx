@@ -302,3 +302,22 @@ export function BestXI({
     </section>
   );
 }
+
+/** Compact win-rate progress bar used in BestXI hover cards. */
+function WinRateBar({ pct }: { pct: number }) {
+  const width = Math.max(0, Math.min(100, pct));
+  return (
+    <div className="mt-2">
+      <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+        <span>Club Win Rate</span>
+        <span className="font-mono text-foreground">{Math.round(width)}%</span>
+      </div>
+      <div className="mt-1 h-1.5 w-full bg-secondary/60 rounded overflow-hidden">
+        <div
+          className="h-full bg-primary"
+          style={{ width: `${width}%` }}
+        />
+      </div>
+    </div>
+  );
+}
