@@ -208,6 +208,10 @@ export function BestXI({
                     <dl className="grid grid-cols-2 gap-y-1 text-xs">
                       <dt className="text-muted-foreground">Games</dt>
                       <dd className="font-mono text-right">{agg.matches}</dd>
+                      <dt className="text-muted-foreground">Win Rate</dt>
+                      <dd className="font-mono text-right text-primary">
+                        {Math.round(agg.winRate * 100)}%
+                      </dd>
                       <dt className="text-muted-foreground">Goals</dt>
                       <dd className="font-mono text-right">{agg.goals}</dd>
                       <dt className="text-muted-foreground">Assists</dt>
@@ -219,6 +223,7 @@ export function BestXI({
                         {agg.avgRating.toFixed(2)}
                       </dd>
                     </dl>
+                    <WinRateBar pct={agg.winRate * 100} />
                   </HoverCardContent>
                 </HoverCard>
               ) : (
@@ -271,6 +276,10 @@ export function BestXI({
                     <dl className="grid grid-cols-2 gap-y-1 text-xs">
                       <dt className="text-muted-foreground">Games</dt>
                       <dd className="font-mono text-right">{a.matches}</dd>
+                      <dt className="text-muted-foreground">Win Rate</dt>
+                      <dd className="font-mono text-right text-primary">
+                        {Math.round(a.winRate * 100)}%
+                      </dd>
                       <dt className="text-muted-foreground">Goals</dt>
                       <dd className="font-mono text-right">{a.goals}</dd>
                       <dt className="text-muted-foreground">Assists</dt>
@@ -282,6 +291,7 @@ export function BestXI({
                         {a.avgRating.toFixed(2)}
                       </dd>
                     </dl>
+                    <WinRateBar pct={a.winRate * 100} />
                   </HoverCardContent>
                 </HoverCard>
               ))}
@@ -290,5 +300,24 @@ export function BestXI({
         </div>
       </div>
     </section>
+  );
+}
+
+/** Compact win-rate progress bar used in BestXI hover cards. */
+function WinRateBar({ pct }: { pct: number }) {
+  const width = Math.max(0, Math.min(100, pct));
+  return (
+    <div className="mt-2">
+      <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+        <span>Club Win Rate</span>
+        <span className="font-mono text-foreground">{Math.round(width)}%</span>
+      </div>
+      <div className="mt-1 h-1.5 w-full bg-secondary/60 rounded overflow-hidden">
+        <div
+          className="h-full bg-primary"
+          style={{ width: `${width}%` }}
+        />
+      </div>
+    </div>
   );
 }
