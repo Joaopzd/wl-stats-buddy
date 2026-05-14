@@ -220,6 +220,8 @@ function Dashboard() {
 
           {wlMVP && lastWL && <MVPCard agg={wlMVP} wlNumber={lastWL.number} />}
 
+          <AICoach wls={wls} matches={matches} players={players} />
+
           <WLTrendsChart wls={wls} matches={matches} />
 
           <h2 className="font-display text-2xl tracking-wider mb-4 flex items-center gap-2">
