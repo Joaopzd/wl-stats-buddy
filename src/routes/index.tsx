@@ -3,14 +3,17 @@ import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { StatTile } from "@/components/StatTile";
 import { useMatches, usePlayers, useWLs } from "@/lib/store";
-import { aggregateAllPlayers, platformRecords, rankFromWins, wlRecord } from "@/lib/stats";
+import { aggregateAllPlayers, aggregatePlayer, platformRecords, rankFromWins, wlRecord } from "@/lib/stats";
 import { Trophy, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, Gamepad2, Users, Crown } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
+import { SoccerBoot } from "@/components/icons/SoccerBoot";
+import { WLTrendsChart } from "@/components/WLTrendsChart";
 
 import { RankBadge } from "@/components/RankBadge";
 import { ClubCrest } from "@/components/ClubCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
 import { useClubName } from "@/lib/store";
+import type { Match } from "@/lib/types";
 
 export const Route = createFileRoute("/")({
   head: () => ({
