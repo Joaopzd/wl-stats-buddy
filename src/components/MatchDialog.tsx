@@ -41,7 +41,17 @@ export function MatchDialog({
       const isStarter = startingIdSet.has(p.id);
       init[p.id] = existing
         ? { ...existing, rating: existing.rating ?? 0, played: true }
-        : { playerId: p.id, goals: 0, assists: 0, rating: 0, played: isStarter };
+        : {
+            playerId: p.id,
+            goals: 0,
+            assists: 0,
+            rating: 0,
+            // When editing an existing match, only players with a saved
+            // performance entry above are pre-checked. Without this, every
+            // starter would silently re-select itself even if the user had
+            // previously deselected them for that match.
+            played: existingMatch ? false : isStarter,
+          };
     }
     return init;
   });

@@ -29,6 +29,10 @@ export interface PlayerAgg {
   cleanSheets: number;
   /** Total goals conceded across the player's appearances. */
   goalsConceded: number;
+  /** Matches won while this player was on the pitch. */
+  wins: number;
+  /** wins / matches (0–1). 0 if no matches. */
+  winRate: number;
 }
 
 /** Auto-MVP fallback: explicit mvpPlayerId, else highest rated performance. */
@@ -46,7 +50,7 @@ export function computeMvpId(match: Match): string | null {
 }
 
 export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
-  let m = 0, g = 0, a = 0;
+  let m = 0, g = 0, a = 0, wins = 0;
   let ratingSum = 0, ratedMatches = 0;
   let mvpCount = 0, cleanSheets = 0, goalsConceded = 0;
   for (const match of matches) {
@@ -55,6 +59,7 @@ export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
     m += 1;
     g += perf.goals;
     a += perf.assists;
+    if (matchIsWin(match)) wins += 1;
     const r = perf.rating ?? 0;
     if (r > 0) {
       ratingSum += r;
@@ -81,6 +86,8 @@ export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
     mvpCount,
     cleanSheets,
     goalsConceded,
+    wins,
+    winRate: m ? wins / m : 0,
   };
 }
 
