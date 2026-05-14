@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { Settings, Check, Upload, Trash2 } from "lucide-react";
-import { ACCENTS, setAccent, useAccent, type AccentKey } from "@/lib/accent";
+import { THEMES, setTheme, useTheme, type ThemeKey } from "@/lib/theme";
 import { store, useOpponentCrest, useOpponentName } from "@/lib/store";
 import { OpponentCrest } from "./OpponentCrest";
 import { toast } from "sonner";
 
 /** Settings gear that opens accent picker + opponent identity config. */
 export function SettingsMenu() {
-  const accent = useAccent();
+  const theme = useTheme();
   const opponentName = useOpponentName();
   const opponentCrest = useOpponentCrest();
   const [open, setOpen] = useState(false);
@@ -67,33 +67,38 @@ export function SettingsMenu() {
           role="menu"
           className="absolute right-0 mt-2 w-72 rounded-lg border border-border bg-popover shadow-[var(--shadow-card)] p-3 z-50 max-h-[80vh] overflow-y-auto"
         >
-          {/* Accent */}
+          {/* Theme */}
           <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">
-            Accent Color
+            Theme Palette
           </div>
           <ul className="space-y-1">
-            {(Object.keys(ACCENTS) as AccentKey[]).map((k) => {
-              const a = ACCENTS[k];
-              const active = k === accent;
+            {(Object.keys(THEMES) as ThemeKey[]).map((k) => {
+              const t = THEMES[k];
+              const active = k === theme;
               return (
                 <li key={k}>
                   <button
                     type="button"
-                    onClick={() => setAccent(k)}
+                    onClick={() => setTheme(k)}
                     className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-md text-sm transition ${
                       active ? "bg-secondary/80 text-foreground" : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
                     }`}
                   >
                     <span
                       aria-hidden
-                      className="h-5 w-5 rounded-full border border-border/70 shrink-0"
-                      style={{
-                        background: a.swatch,
-                        boxShadow: `0 0 12px ${a.swatch}80, 0 0 0 1px ${a.swatch}40`,
-                      }}
-                    />
-                    <span className="flex-1 text-left font-semibold">{a.label}</span>
-                    {active && <Check className="h-4 w-4 text-primary" />}
+                      className="h-6 w-10 rounded border border-border/70 shrink-0 overflow-hidden flex"
+                    >
+                      {t.swatches.map((c, i) => (
+                        <span key={i} className="flex-1" style={{ background: c }} />
+                      ))}
+                    </span>
+                    <span className="flex-1 text-left min-w-0">
+                      <span className="block font-semibold truncate leading-tight">{t.label}</span>
+                      <span className="block text-[10px] text-muted-foreground truncate leading-tight">
+                        {t.description}
+                      </span>
+                    </span>
+                    {active && <Check className="h-4 w-4 text-primary shrink-0" />}
                   </button>
                 </li>
               );
