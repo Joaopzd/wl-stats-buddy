@@ -13,7 +13,7 @@ import { RankBadge } from "@/components/RankBadge";
 import { ClubCrest } from "@/components/ClubCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
 import { useClubName } from "@/lib/store";
-import type { Match } from "@/lib/types";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
