@@ -25,9 +25,11 @@ export const Route = createFileRoute("/weekend-leagues/")({
 function WLList() {
   const wls = useWLs();
   const matches = useMatches();
+  const players = usePlayers();
   const [creating, setCreating] = useState(false);
   const [num, setNum] = useState("");
   const [name, setName] = useState("");
+  const [briefingOpen, setBriefingOpen] = useState(false);
 
   const sorted = [...wls].sort((a, b) => b.number - a.number);
   const nextNum = (Math.max(0, ...wls.map((w) => w.number)) + 1).toString();
