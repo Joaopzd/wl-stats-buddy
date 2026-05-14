@@ -301,8 +301,17 @@ function MVPCard({
           </div>
         </div>
         <div className="text-right shrink-0">
-          <div className="font-display stat-num text-4xl text-primary leading-none">{agg.avgRating.toFixed(2)}</div>
-          <div className="text-[10px] text-muted-foreground mt-1">Avg · {agg.ratedMatches} rated</div>
+          {agg.ratedMatches > 0 ? (
+            <>
+              <div className="font-display stat-num text-4xl text-primary leading-none">{agg.avgRating.toFixed(2)}</div>
+              <div className="text-[10px] text-muted-foreground mt-1">Avg · {agg.ratedMatches} rated</div>
+            </>
+          ) : (
+            <>
+              <div className="font-display stat-num text-4xl text-primary leading-none">{agg.goals + agg.assists}</div>
+              <div className="text-[10px] text-muted-foreground mt-1">G+A · no ratings yet</div>
+            </>
+          )}
         </div>
       </div>
     </div>
