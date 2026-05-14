@@ -118,16 +118,7 @@ export function WLTrendsChart({ wls, matches }: Props) {
                 <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} stroke="var(--border)" />
                 <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} stroke="var(--border)" />
-                <Tooltip
-                  contentStyle={{
-                    background: "var(--popover)",
-                    border: "1px solid var(--border)",
-                    borderRadius: 8,
-                    color: "var(--foreground)",
-                    fontSize: 12,
-                  }}
-                  cursor={{ stroke: "var(--accent)", strokeWidth: 1 }}
-                />
+                <Tooltip content={<TrendTooltip />} cursor={{ stroke: "var(--accent)", strokeWidth: 1 }} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
                 <ReferenceLine y={0} stroke="var(--border)" />
                 <Line type="monotone" dataKey="gf" name="Scored" stroke="var(--primary)" strokeWidth={2} dot={{ r: 3 }} />
