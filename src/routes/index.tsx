@@ -8,6 +8,7 @@ import { Trophy, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, 
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 import { WLTrendsChart } from "@/components/WLTrendsChart";
+import { AICoach } from "@/components/AICoach";
 
 import { RankBadge } from "@/components/RankBadge";
 import { ClubCrest } from "@/components/ClubCrest";
