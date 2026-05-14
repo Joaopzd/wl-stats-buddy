@@ -99,16 +99,7 @@ export function WLTrendsChart({ wls, matches }: Props) {
                 <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} stroke="var(--border)" />
                 <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} stroke="var(--border)" allowDecimals={false} />
-                <Tooltip
-                  contentStyle={{
-                    background: "var(--popover)",
-                    border: "1px solid var(--border)",
-                    borderRadius: 8,
-                    color: "var(--foreground)",
-                    fontSize: 12,
-                  }}
-                  cursor={{ fill: "var(--secondary)", opacity: 0.4 }}
-                />
+                <Tooltip content={<TrendTooltip />} cursor={{ fill: "var(--secondary)", opacity: 0.4 }} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
                 <Bar dataKey="wins" name="Wins" fill="var(--primary)" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="losses" name="Losses" fill="var(--destructive)" radius={[3, 3, 0, 0]} />
