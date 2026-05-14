@@ -244,7 +244,13 @@ function Dashboard() {
   );
 }
 
-function MVPCard({ agg }: { agg: ReturnType<typeof aggregateAllPlayers>[number] }) {
+function MVPCard({
+  agg,
+  wlNumber,
+}: {
+  agg: ReturnType<typeof aggregateAllPlayers>[number];
+  wlNumber: number;
+}) {
   return (
     <div
       className="surface-card p-5 mb-8 border-l-4 border-l-primary relative overflow-hidden"
@@ -258,16 +264,32 @@ function MVPCard({ agg }: { agg: ReturnType<typeof aggregateAllPlayers>[number] 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">MVP of the Week</span>
-            <span className="px-1.5 py-0.5 rounded bg-primary/20 text-primary text-[9px] font-bold uppercase tracking-wider border border-primary/30">MVP</span>
+            <span className="px-1.5 py-0.5 rounded bg-primary/20 text-primary text-[9px] font-bold uppercase tracking-wider border border-primary/30">
+              WL #{wlNumber}
+            </span>
           </div>
           <div className="font-display text-2xl truncate mt-0.5">{agg.player.name}</div>
           <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
             {agg.player.position} · {agg.player.overall} OVR · {agg.player.rarity}
           </div>
+          {/* Mini Player-of-the-Match stat row */}
+          <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px]">
+            <span className="inline-flex items-center gap-1 text-foreground font-semibold">
+              <SoccerBall size={13} className="text-primary" /> {agg.goals}
+              <span className="text-muted-foreground font-normal">G</span>
+            </span>
+            <span className="inline-flex items-center gap-1 text-foreground font-semibold">
+              <SoccerBoot size={13} className="text-accent" /> {agg.assists}
+              <span className="text-muted-foreground font-normal">A</span>
+            </span>
+            <span className="inline-flex items-center gap-1 text-muted-foreground">
+              <Trophy className="h-3 w-3" /> {agg.matches} apps
+            </span>
+          </div>
         </div>
         <div className="text-right shrink-0">
           <div className="font-display stat-num text-4xl text-primary leading-none">{agg.avgRating.toFixed(2)}</div>
-          <div className="text-[10px] text-muted-foreground mt-1">Avg · {agg.ratedMatches} rated apps</div>
+          <div className="text-[10px] text-muted-foreground mt-1">Avg · {agg.ratedMatches} rated</div>
         </div>
       </div>
     </div>
