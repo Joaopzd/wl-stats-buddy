@@ -279,8 +279,9 @@ function MVPCard({
               className="absolute inset-0 w-full h-full object-cover"
               onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
             />
-          ) : null}
-          <Crown className="h-7 w-7 relative" />
+          ) : (
+            <Crown className="h-7 w-7" />
+          )}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
