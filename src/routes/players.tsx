@@ -52,10 +52,12 @@ const ALL_RARITIES: Rarity[] = RARITY_GROUPS.flatMap((g) => g.items);
 function PlayersPage() {
   const players = usePlayers();
   const matches = useMatches();
+  const wls = useWLs();
   const [editing, setEditing] = useState<Player | null>(null);
   const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"name" | "ovr" | "matches" | "goals" | "ga" | "rating" | "mvp" | "cs">("ga");
+  const [detailPlayer, setDetailPlayer] = useState<Player | null>(null);
 
   const aggs = useMemo(
     () => players.map((p) => aggregatePlayer(p, matches)),
