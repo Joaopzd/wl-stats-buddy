@@ -9,6 +9,7 @@ import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import type { Player, Position, Rarity } from "@/lib/types";
 import { rarityVisual, raritySwatch, raritySwatchStyle } from "@/lib/format";
+import { compressImageToDataURL } from "@/lib/imageCompress";
 
 export const Route = createFileRoute("/players")({
   head: () => ({
@@ -330,19 +331,18 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (!file) return;
-                        if (file.size > 2 * 1024 * 1024) {
-                          toast.error("Image must be under 2MB");
-                          return;
-                        }
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                          setImageUrl(String(reader.result || ""));
+                        try {
+                          const dataUrl = await compressImageToDataURL(file);
+                          setImageUrl(dataUrl);
                           setPreviewBroken(false);
-                        };
-                        reader.readAsDataURL(file);
+                        } catch {
+                          toast.error("Could not process that image");
+                        } finally {
+                          e.target.value = "";
+                        }
                       }}
                     />
                     {imageUrl ? "Replace Image" : "Upload Image"}
