@@ -351,10 +351,12 @@ function WLDetail() {
                       formation={wl.formation}
                       assignments={wl.startingAssignments}
                       players={players}
+                      onPick={setDetailPlayer}
                     />
                     <BenchList
                       benchIds={wl.benchPlayerIds ?? []}
                       players={players}
+                      onPick={setDetailPlayer}
                     />
                   </>
                 ) : (
