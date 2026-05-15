@@ -193,6 +193,7 @@ export function BestXI({
                         overall={agg.player.overall}
                         position={agg.player.position}
                         rarity={agg.player.rarity}
+                        imageUrl={agg.player.imageUrl}
                         size="xs"
                       />
                     </button>

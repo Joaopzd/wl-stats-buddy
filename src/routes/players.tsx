@@ -148,7 +148,7 @@ function PlayersPage() {
                   <tr key={a.player.id} className="border-t border-border/40 hover:bg-secondary/30">
                     <td className="p-3">
                       <div className="flex items-center gap-3">
-                        <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} size="sm" />
+                        <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} imageUrl={a.player.imageUrl} size="sm" />
                         <div className="min-w-0">
                           <div className="font-semibold truncate">{a.player.name}</div>
                           <div className="flex items-center gap-1.5 mt-0.5">
@@ -225,12 +225,24 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
   const [position, setPosition] = useState<Position>(existing?.position ?? "ST");
   const [overall, setOverall] = useState<number>(existing?.overall ?? 85);
   const [rarity, setRarity] = useState<Rarity>(existing?.rarity ?? "Gold");
+  const [imageUrl, setImageUrl] = useState<string>(existing?.imageUrl ?? "");
+  const [previewBroken, setPreviewBroken] = useState(false);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return toast.error("Name is required");
     if (overall < 1 || overall > 99) return toast.error("Overall must be 1–99");
-    const patch = { name: name.trim(), position, overall, rarity };
+    const trimmedUrl = imageUrl.trim();
+    if (trimmedUrl && !/^https?:\/\//i.test(trimmedUrl)) {
+      return toast.error("Image URL must start with http(s)://");
+    }
+    const patch = {
+      name: name.trim(),
+      position,
+      overall,
+      rarity,
+      imageUrl: trimmedUrl || undefined,
+    };
     if (existing) {
       store.updatePlayer(existing.id, patch);
       toast.success("Player updated");
@@ -308,6 +320,33 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
                 />
               ))}
             </div>
+          </Field>
+          <Field label="Card Image URL (optional)">
+            <div className="flex items-start gap-3">
+              <input
+                value={imageUrl}
+                onChange={(e) => { setImageUrl(e.target.value); setPreviewBroken(false); }}
+                placeholder="https://… (Futbin, EA, etc.)"
+                className="flex-1 bg-input border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <div className="shrink-0 h-14 w-11 rounded-md border border-border bg-secondary/40 overflow-hidden grid place-items-center">
+                {imageUrl.trim() && !previewBroken ? (
+                  <img
+                    src={imageUrl.trim()}
+                    alt="preview"
+                    className="w-full h-full object-cover"
+                    onError={() => setPreviewBroken(true)}
+                  />
+                ) : (
+                  <span className="text-[9px] text-muted-foreground uppercase tracking-wider text-center px-1">
+                    {previewBroken ? "Broken" : "Preview"}
+                  </span>
+                )}
+              </div>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1.5">
+              Leave empty to use the rarity card. Broken links automatically fall back.
+            </p>
           </Field>
         </div>
         <div className="flex gap-3 mt-6">

@@ -271,8 +271,17 @@ function MVPCard({
     >
       <Crown className="absolute -right-3 -top-3 h-24 w-24 text-primary/10 pointer-events-none" />
       <div className="flex items-center gap-4">
-        <div className="h-14 w-14 rounded-md grid place-items-center bg-primary/15 text-primary border border-primary/30">
-          <Crown className="h-7 w-7" />
+        <div className="h-14 w-14 rounded-md grid place-items-center bg-primary/15 text-primary border border-primary/30 overflow-hidden relative">
+          {agg.player.imageUrl ? (
+            <img
+              src={agg.player.imageUrl}
+              alt={agg.player.name}
+              className="absolute inset-0 w-full h-full object-cover"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+            />
+          ) : (
+            <Crown className="h-7 w-7" />
+          )}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">

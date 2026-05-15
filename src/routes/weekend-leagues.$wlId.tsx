@@ -656,7 +656,7 @@ function LineupPitch({
               style={{ left: `${slot.x}%`, top: `${slot.y}%` }}
             >
               {p ? (
-                <PlayerCard name={p.name} overall={p.overall} position={p.position} rarity={p.rarity} size="xs" />
+                <PlayerCard name={p.name} overall={p.overall} position={p.position} rarity={p.rarity} imageUrl={p.imageUrl} size="xs" />
               ) : (
                 <div className="h-9 w-9 rounded-full border-2 border-dashed border-white/60 bg-black/30 grid place-items-center">
                   <span className="text-[9px] font-bold text-white tracking-wider">{slot.position}</span>

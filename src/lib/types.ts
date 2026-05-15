@@ -44,6 +44,8 @@ export interface Player {
   position: Position;
   overall: number;
   rarity: Rarity;
+  /** Optional direct URL to a player card image (e.g. Futbin / EA). Falls back to the rarity card when empty or broken. */
+  imageUrl?: string;
   createdAt: number;
 }
 
