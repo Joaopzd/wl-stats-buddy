@@ -321,14 +321,49 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
               ))}
             </div>
           </Field>
-          <Field label="Card Image URL (optional)">
+          <Field label="Card Image (optional)">
             <div className="flex items-start gap-3">
-              <input
-                value={imageUrl}
-                onChange={(e) => { setImageUrl(e.target.value); setPreviewBroken(false); }}
-                placeholder="https://… (Futbin, EA, etc.)"
-                className="flex-1 bg-input border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              />
+              <div className="flex-1 space-y-2">
+                <div className="flex gap-2">
+                  <label className="flex-1 cursor-pointer inline-flex items-center justify-center gap-2 px-3 py-2 rounded-md border border-border bg-input hover:bg-secondary/60 text-xs uppercase tracking-wider font-semibold">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        if (file.size > 2 * 1024 * 1024) {
+                          toast.error("Image must be under 2MB");
+                          return;
+                        }
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setImageUrl(String(reader.result || ""));
+                          setPreviewBroken(false);
+                        };
+                        reader.readAsDataURL(file);
+                      }}
+                    />
+                    {imageUrl ? "Replace Image" : "Upload Image"}
+                  </label>
+                  {imageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => { setImageUrl(""); setPreviewBroken(false); }}
+                      className="px-3 py-2 rounded-md border border-border text-muted-foreground hover:text-destructive text-xs uppercase tracking-wider"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                <input
+                  value={imageUrl.startsWith("data:") ? "" : imageUrl}
+                  onChange={(e) => { setImageUrl(e.target.value); setPreviewBroken(false); }}
+                  placeholder="…or paste an image URL"
+                  className="w-full bg-input border border-border rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
               <div className="shrink-0 h-14 w-11 rounded-md border border-border bg-secondary/40 overflow-hidden grid place-items-center">
                 {imageUrl.trim() && !previewBroken ? (
                   <img
@@ -345,7 +380,7 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
               </div>
             </div>
             <p className="text-[10px] text-muted-foreground mt-1.5">
-              Leave empty to use the rarity card. Broken links automatically fall back.
+              Upload from your device (max 2MB) or paste a URL. Empty falls back to the rarity card.
             </p>
           </Field>
         </div>
