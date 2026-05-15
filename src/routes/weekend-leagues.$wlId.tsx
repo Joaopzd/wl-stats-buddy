@@ -625,10 +625,12 @@ function LineupPitch({
   formation,
   assignments,
   players,
+  onPick,
 }: {
   formation: keyof typeof FORMATIONS;
   assignments: Record<string, string>;
   players: Player[];
+  onPick?: (p: Player) => void;
 }) {
   const slots: FormationSlot[] = FORMATIONS[formation].slots;
   const playersById = new Map(players.map((p) => [p.id, p]));
@@ -638,7 +640,7 @@ function LineupPitch({
         Starting XI · {formation}
       </div>
       <div
-        className="relative w-full max-w-xs mx-auto rounded-lg overflow-hidden border border-emerald-700/40"
+        className="relative w-full max-w-sm mx-auto rounded-lg overflow-hidden border border-emerald-700/40"
         style={{
           aspectRatio: "3 / 4",
           background:
@@ -660,7 +662,14 @@ function LineupPitch({
               style={{ left: `${slot.x}%`, top: `${slot.y}%` }}
             >
               {p ? (
-                <PlayerCard name={p.name} overall={p.overall} position={p.position} rarity={p.rarity} imageUrl={p.imageUrl} size="xs" />
+                <button
+                  type="button"
+                  onClick={() => onPick?.(p)}
+                  className="block transition hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md"
+                  aria-label={`View ${p.name}`}
+                >
+                  <PlayerCard name={p.name} overall={p.overall} position={p.position} rarity={p.rarity} imageUrl={p.imageUrl} size="sm" />
+                </button>
               ) : (
                 <div className="h-9 w-9 rounded-full border-2 border-dashed border-white/60 bg-black/30 grid place-items-center">
                   <span className="text-[9px] font-bold text-white tracking-wider">{slot.position}</span>
@@ -674,7 +683,7 @@ function LineupPitch({
   );
 }
 
-function BenchList({ benchIds, players }: { benchIds: string[]; players: Player[] }) {
+function BenchList({ benchIds, players, onPick }: { benchIds: string[]; players: Player[]; onPick?: (p: Player) => void }) {
   const playersById = new Map(players.map((p) => [p.id, p]));
   return (
     <div>
@@ -689,11 +698,18 @@ function BenchList({ benchIds, players }: { benchIds: string[]; players: Player[
             const p = playersById.get(id);
             if (!p) return null;
             return (
-              <div key={id} className="surface-card px-2 py-1.5 flex items-center gap-2">
-                <span className="font-display text-base text-foreground stat-num w-7 text-center shrink-0 leading-none">{p.overall}</span>
-                <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{p.position}</span>
-                <div className="text-[11px] font-semibold truncate flex-1 leading-tight">{p.name}</div>
-              </div>
+              <button
+                key={id}
+                type="button"
+                onClick={() => onPick?.(p)}
+                className="surface-card px-2 py-1.5 flex items-center gap-2 text-left hover:border-primary/60 transition"
+              >
+                <PlayerCard name={p.name} overall={p.overall} position={p.position} rarity={p.rarity} imageUrl={p.imageUrl} size="xs" />
+                <div className="min-w-0 flex-1">
+                  <div className="text-[11px] font-semibold truncate leading-tight">{p.name}</div>
+                  <div className="text-[9px] text-muted-foreground font-mono leading-tight">{p.overall} · {p.position}</div>
+                </div>
+              </button>
             );
           })}
         </div>
