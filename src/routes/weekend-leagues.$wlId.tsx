@@ -64,6 +64,7 @@ function WLDetail() {
   const [squadExpanded, setSquadExpanded] = useState(false);
   const [lossAlertOpen, setLossAlertOpen] = useState(false);
   const [pickOpen, setPickOpen] = useState(false);
+  const [detailPlayer, setDetailPlayer] = useState<Player | null>(null);
   const lossAlertShownAtRef = useRef<string | null>(null);
 
   const matches = useMemo(
