@@ -9,6 +9,7 @@ import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import type { Player, Position, Rarity } from "@/lib/types";
 import { rarityVisual, raritySwatch, raritySwatchStyle } from "@/lib/format";
+import { compressImageToDataURL } from "@/lib/imageCompress";
 
 export const Route = createFileRoute("/players")({
   head: () => ({
