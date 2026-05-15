@@ -148,7 +148,7 @@ function PlayersPage() {
                   <tr key={a.player.id} className="border-t border-border/40 hover:bg-secondary/30">
                     <td className="p-3">
                       <div className="flex items-center gap-3">
-                        <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} size="sm" />
+                        <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} imageUrl={a.player.imageUrl} size="sm" />
                         <div className="min-w-0">
                           <div className="font-semibold truncate">{a.player.name}</div>
                           <div className="flex items-center gap-1.5 mt-0.5">
