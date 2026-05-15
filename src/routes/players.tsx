@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { useMatches, usePlayers, store } from "@/lib/store";
+import { useMatches, usePlayers, useWLs, store } from "@/lib/store";
 import { aggregatePlayer, isCleanSheetEligible, isGoalsConcededEligible } from "@/lib/stats";
 import { PlayerCard } from "@/components/PlayerCard";
+import { PlayerDetailModal } from "@/components/PlayerDetailModal";
 import { Plus, Trash2, Pencil, X, Search } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
@@ -51,10 +52,12 @@ const ALL_RARITIES: Rarity[] = RARITY_GROUPS.flatMap((g) => g.items);
 function PlayersPage() {
   const players = usePlayers();
   const matches = useMatches();
+  const wls = useWLs();
   const [editing, setEditing] = useState<Player | null>(null);
   const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"name" | "ovr" | "matches" | "goals" | "ga" | "rating" | "mvp" | "cs">("ga");
+  const [detailPlayer, setDetailPlayer] = useState<Player | null>(null);
 
   const aggs = useMemo(
     () => players.map((p) => aggregatePlayer(p, matches)),
@@ -146,7 +149,7 @@ function PlayersPage() {
               </thead>
               <tbody>
                 {filtered.map((a) => (
-                  <tr key={a.player.id} className="border-t border-border/40 hover:bg-secondary/30">
+                  <tr key={a.player.id} onClick={() => setDetailPlayer(a.player)} className="border-t border-border/40 hover:bg-secondary/30 cursor-pointer">
                     <td className="p-3">
                       <div className="flex items-center gap-3">
                         <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} imageUrl={a.player.imageUrl} size="sm" />
@@ -190,9 +193,10 @@ function PlayersPage() {
                       )}
                     </td>
                     <td className="p-3 text-right whitespace-nowrap">
-                      <button onClick={() => setEditing(a.player)} className="p-1.5 text-muted-foreground hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); setEditing(a.player); }} className="p-1.5 text-muted-foreground hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
                       <button
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           if (confirm(`Delete ${a.player.name}? Their match stats will remain in matches.`)) {
                             store.deletePlayer(a.player.id);
                             toast.success("Deleted");
@@ -215,6 +219,15 @@ function PlayersPage() {
         <PlayerForm
           existing={editing}
           onClose={() => { setCreating(false); setEditing(null); }}
+        />
+      )}
+
+      {detailPlayer && (
+        <PlayerDetailModal
+          player={detailPlayer}
+          matches={matches}
+          wls={wls}
+          onClose={() => setDetailPlayer(null)}
         />
       )}
     </AppShell>
