@@ -530,6 +530,14 @@ function WLDetail() {
         />
       )}
       {lossAlertOpen && <LossStreakAlert onClose={() => setLossAlertOpen(false)} />}
+      {detailPlayer && (
+        <PlayerDetailModal
+          player={detailPlayer}
+          matches={allMatches}
+          wls={wls}
+          onClose={() => setDetailPlayer(null)}
+        />
+      )}
       {pickOpen && (
         <PlayerPickDialog
           onClose={() => setPickOpen(false)}
