@@ -233,8 +233,8 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
     if (!name.trim()) return toast.error("Name is required");
     if (overall < 1 || overall > 99) return toast.error("Overall must be 1–99");
     const trimmedUrl = imageUrl.trim();
-    if (trimmedUrl && !/^https?:\/\//i.test(trimmedUrl)) {
-      return toast.error("Image URL must start with http(s)://");
+    if (trimmedUrl && !/^(https?:\/\/|data:image\/)/i.test(trimmedUrl)) {
+      return toast.error("Image must be an http(s) URL or uploaded file");
     }
     const patch = {
       name: name.trim(),
