@@ -225,12 +225,24 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
   const [position, setPosition] = useState<Position>(existing?.position ?? "ST");
   const [overall, setOverall] = useState<number>(existing?.overall ?? 85);
   const [rarity, setRarity] = useState<Rarity>(existing?.rarity ?? "Gold");
+  const [imageUrl, setImageUrl] = useState<string>(existing?.imageUrl ?? "");
+  const [previewBroken, setPreviewBroken] = useState(false);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return toast.error("Name is required");
     if (overall < 1 || overall > 99) return toast.error("Overall must be 1–99");
-    const patch = { name: name.trim(), position, overall, rarity };
+    const trimmedUrl = imageUrl.trim();
+    if (trimmedUrl && !/^https?:\/\//i.test(trimmedUrl)) {
+      return toast.error("Image URL must start with http(s)://");
+    }
+    const patch = {
+      name: name.trim(),
+      position,
+      overall,
+      rarity,
+      imageUrl: trimmedUrl || undefined,
+    };
     if (existing) {
       store.updatePlayer(existing.id, patch);
       toast.success("Player updated");
