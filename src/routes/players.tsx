@@ -221,6 +221,15 @@ function PlayersPage() {
           onClose={() => { setCreating(false); setEditing(null); }}
         />
       )}
+
+      {detailPlayer && (
+        <PlayerDetailModal
+          player={detailPlayer}
+          matches={matches}
+          wls={wls}
+          onClose={() => setDetailPlayer(null)}
+        />
+      )}
     </AppShell>
   );
 }
