@@ -11,6 +11,7 @@ import { ReportModal } from "@/components/ReportModal";
 import { RankBadge } from "@/components/RankBadge";
 import { LossStreakAlert } from "@/components/LossStreakAlert";
 import { PlayerCard } from "@/components/PlayerCard";
+import { PlayerDetailModal } from "@/components/PlayerDetailModal";
 import { ClubCrest } from "@/components/ClubCrest";
 import { OpponentCrest } from "@/components/OpponentCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
