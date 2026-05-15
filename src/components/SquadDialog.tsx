@@ -314,7 +314,7 @@ function Pitch({
             >
               {player ? (
                 <div className="relative">
-                  <PlayerCard name={player.name} overall={player.overall} position={player.position} rarity={player.rarity} size="xs" />
+                  <PlayerCard name={player.name} overall={player.overall} position={player.position} rarity={player.rarity} imageUrl={player.imageUrl} size="xs" />
                   <span
                     role="button"
                     tabIndex={0}
