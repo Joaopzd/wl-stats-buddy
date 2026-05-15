@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { useMatches, usePlayers, store } from "@/lib/store";
+import { useMatches, usePlayers, useWLs, store } from "@/lib/store";
 import { aggregatePlayer, isCleanSheetEligible, isGoalsConcededEligible } from "@/lib/stats";
 import { PlayerCard } from "@/components/PlayerCard";
+import { PlayerDetailModal } from "@/components/PlayerDetailModal";
 import { Plus, Trash2, Pencil, X, Search } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
