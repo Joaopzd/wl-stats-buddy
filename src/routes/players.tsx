@@ -321,6 +321,33 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
               ))}
             </div>
           </Field>
+          <Field label="Card Image URL (optional)">
+            <div className="flex items-start gap-3">
+              <input
+                value={imageUrl}
+                onChange={(e) => { setImageUrl(e.target.value); setPreviewBroken(false); }}
+                placeholder="https://… (Futbin, EA, etc.)"
+                className="flex-1 bg-input border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <div className="shrink-0 h-14 w-11 rounded-md border border-border bg-secondary/40 overflow-hidden grid place-items-center">
+                {imageUrl.trim() && !previewBroken ? (
+                  <img
+                    src={imageUrl.trim()}
+                    alt="preview"
+                    className="w-full h-full object-cover"
+                    onError={() => setPreviewBroken(true)}
+                  />
+                ) : (
+                  <span className="text-[9px] text-muted-foreground uppercase tracking-wider text-center px-1">
+                    {previewBroken ? "Broken" : "Preview"}
+                  </span>
+                )}
+              </div>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1.5">
+              Leave empty to use the rarity card. Broken links automatically fall back.
+            </p>
+          </Field>
         </div>
         <div className="flex gap-3 mt-6">
           <button type="submit" className="flex-1 px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90">
