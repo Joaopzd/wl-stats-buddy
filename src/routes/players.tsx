@@ -149,7 +149,7 @@ function PlayersPage() {
               </thead>
               <tbody>
                 {filtered.map((a) => (
-                  <tr key={a.player.id} className="border-t border-border/40 hover:bg-secondary/30">
+                  <tr key={a.player.id} onClick={() => setDetailPlayer(a.player)} className="border-t border-border/40 hover:bg-secondary/30 cursor-pointer">
                     <td className="p-3">
                       <div className="flex items-center gap-3">
                         <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} imageUrl={a.player.imageUrl} size="sm" />
@@ -193,9 +193,10 @@ function PlayersPage() {
                       )}
                     </td>
                     <td className="p-3 text-right whitespace-nowrap">
-                      <button onClick={() => setEditing(a.player)} className="p-1.5 text-muted-foreground hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); setEditing(a.player); }} className="p-1.5 text-muted-foreground hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
                       <button
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           if (confirm(`Delete ${a.player.name}? Their match stats will remain in matches.`)) {
                             store.deletePlayer(a.player.id);
                             toast.success("Deleted");
