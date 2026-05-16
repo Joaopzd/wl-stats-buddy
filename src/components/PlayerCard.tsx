@@ -17,16 +17,17 @@ export function PlayerCard({
   imageUrl?: string;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
 }) {
+  // Strict 3:4 aspect ratio across all sizes to match real player cards.
   const sizes =
     size === "xs"
       ? "w-9 h-12 text-[8px]"
       : size === "sm"
         ? "w-12 h-16 text-[10px]"
         : size === "md"
-          ? "w-16 h-22 text-xs"
+          ? "w-18 h-24 text-xs"
           : size === "lg"
             ? "w-24 h-32 text-sm"
-            : "w-40 h-56 text-base";
+            : "w-48 h-64 text-base";
   const v = rarityVisual(rarity);
 
   const [broken, setBroken] = useState(false);
