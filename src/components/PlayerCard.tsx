@@ -47,9 +47,11 @@ export function PlayerCard({
           src={imageUrl}
           alt={name}
           loading="lazy"
+          decoding="async"
           onLoad={() => setLoaded(true)}
           onError={() => setBroken(true)}
-          className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-200 ${loaded ? "opacity-100" : "opacity-0"}`}
+          style={{ imageRendering: "auto" }}
+          className={`absolute inset-0 w-full h-full object-contain object-center transition-opacity duration-200 ${loaded ? "opacity-100" : "opacity-0"}`}
         />
       )}
       {(!showImage || !loaded) && (
