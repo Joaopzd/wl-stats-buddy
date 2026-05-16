@@ -72,7 +72,7 @@ export function PlayerDetailModal({
               position={player.position}
               rarity={player.rarity}
               imageUrl={player.imageUrl}
-              size="xl"
+              size="lg"
             />
           </div>
 
