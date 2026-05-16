@@ -54,12 +54,12 @@ export function PlayerCard({
       {(!showImage || !loaded) && (
         <>
           <div className="flex items-baseline gap-0.5 leading-none">
-            <span className={size === "xs" ? "text-xs" : "text-base"}>{overall}</span>
+            <span className={size === "xs" ? "text-xs" : size === "lg" ? "text-2xl" : size === "xl" ? "text-4xl" : "text-base"}>{overall}</span>
           </div>
-          <div className="leading-none opacity-90">
+          <div className={`leading-none opacity-90 ${size === "lg" ? "text-base" : size === "xl" ? "text-xl" : ""}`}>
             <span>{position}</span>
           </div>
-          <div className={`${size === "xs" ? "text-[7px]" : "text-[8px]"} truncate max-w-full uppercase tracking-tight`}>
+          <div className={`${size === "xs" ? "text-[7px]" : size === "lg" ? "text-xs" : size === "xl" ? "text-sm" : "text-[8px]"} truncate max-w-full uppercase tracking-tight`}>
             {name.split(" ").slice(-1)[0]}
           </div>
         </>
