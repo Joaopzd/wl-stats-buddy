@@ -15,14 +15,18 @@ export function PlayerCard({
   position: string;
   rarity: Rarity;
   imageUrl?: string;
-  size?: "xs" | "sm" | "md";
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
 }) {
   const sizes =
     size === "xs"
       ? "w-9 h-12 text-[8px]"
       : size === "sm"
         ? "w-12 h-16 text-[10px]"
-        : "w-16 h-22 text-xs";
+        : size === "md"
+          ? "w-16 h-22 text-xs"
+          : size === "lg"
+            ? "w-24 h-32 text-sm"
+            : "w-40 h-56 text-base";
   const v = rarityVisual(rarity);
 
   const [broken, setBroken] = useState(false);
@@ -50,12 +54,12 @@ export function PlayerCard({
       {(!showImage || !loaded) && (
         <>
           <div className="flex items-baseline gap-0.5 leading-none">
-            <span className={size === "xs" ? "text-xs" : "text-base"}>{overall}</span>
+            <span className={size === "xs" ? "text-xs" : size === "lg" ? "text-2xl" : size === "xl" ? "text-4xl" : "text-base"}>{overall}</span>
           </div>
-          <div className="leading-none opacity-90">
+          <div className={`leading-none opacity-90 ${size === "lg" ? "text-base" : size === "xl" ? "text-xl" : ""}`}>
             <span>{position}</span>
           </div>
-          <div className={`${size === "xs" ? "text-[7px]" : "text-[8px]"} truncate max-w-full uppercase tracking-tight`}>
+          <div className={`${size === "xs" ? "text-[7px]" : size === "lg" ? "text-xs" : size === "xl" ? "text-sm" : "text-[8px]"} truncate max-w-full uppercase tracking-tight`}>
             {name.split(" ").slice(-1)[0]}
           </div>
         </>

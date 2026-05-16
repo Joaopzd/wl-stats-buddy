@@ -66,16 +66,14 @@ export function PlayerDetailModal({
         <div className="p-5 grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-5">
           {/* Card image — full size */}
           <div className="flex justify-center sm:block">
-            <div className="scale-[1.6] origin-top mt-4 sm:mt-2">
-              <PlayerCard
-                name={player.name}
-                overall={player.overall}
-                position={player.position}
-                rarity={player.rarity}
-                imageUrl={player.imageUrl}
-                size="md"
-              />
-            </div>
+            <PlayerCard
+              name={player.name}
+              overall={player.overall}
+              position={player.position}
+              rarity={player.rarity}
+              imageUrl={player.imageUrl}
+              size="xl"
+            />
           </div>
 
           {/* Info */}
