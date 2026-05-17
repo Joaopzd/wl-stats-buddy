@@ -77,9 +77,9 @@ async function loadAll() {
     supabase.from("matches").select("*").order("created_at"),
     supabase.from("settings").select("*").eq("user_id", userId).maybeSingle(),
   ]);
-  state.players = ((p.data ?? []) as Array<{ data: Player }>).map((r) => r.data);
-  state.wls = ((w.data ?? []) as Array<{ data: WeekendLeague }>).map((r) => r.data);
-  state.matches = ((m.data ?? []) as Array<{ data: Match }>).map((r) => r.data);
+  state.players = ((p.data ?? []) as unknown as Array<{ data: Player }>).map((r) => r.data);
+  state.wls = ((w.data ?? []) as unknown as Array<{ data: WeekendLeague }>).map((r) => r.data);
+  state.matches = ((m.data ?? []) as unknown as Array<{ data: Match }>).map((r) => r.data);
   if (s.data) {
     state.clubName = s.data.club_name ?? "";
     state.opponentName = s.data.opponent_name ?? DEFAULT_OPPONENT;
