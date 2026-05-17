@@ -14,7 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      matches: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          updated_at: string
+          user_id: string
+          wl_id: string
+        }
+        Insert: {
+          created_at?: string
+          data: Json
+          id: string
+          updated_at?: string
+          user_id: string
+          wl_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          user_id?: string
+          wl_id?: string
+        }
+        Relationships: []
+      }
+      players: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          image_path: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data: Json
+          id: string
+          image_path?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          image_path?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      settings: {
+        Row: {
+          club_crest_path: string | null
+          club_name: string | null
+          opponent_crest_path: string | null
+          opponent_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          club_crest_path?: string | null
+          club_name?: string | null
+          opponent_crest_path?: string | null
+          opponent_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          club_crest_path?: string | null
+          club_name?: string | null
+          opponent_crest_path?: string | null
+          opponent_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      weekend_leagues: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          number: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data: Json
+          id: string
+          number: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          number?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
