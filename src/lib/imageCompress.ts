@@ -50,7 +50,7 @@ export async function compressImageToDataURL(
     quality -= 0.1;
     out = canvas.toDataURL("image/jpeg", quality);
   }
-  while (sizeOf(out) > maxBytes && (canvas.width > 320 || canvas.height > 320)) {
+  while (sizeOf(out) > maxBytes && (canvas.width > 160 || canvas.height > 160)) {
     canvas.width = Math.round(canvas.width * 0.8);
     canvas.height = Math.round(canvas.height * 0.8);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
