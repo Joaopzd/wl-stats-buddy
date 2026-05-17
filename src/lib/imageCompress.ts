@@ -8,8 +8,9 @@
  */
 export async function compressImageToDataURL(
   file: File,
-  maxBytes = 2 * 1024 * 1024,
-  maxDimension = 1024,
+  // Keep well under the ~5MB localStorage budget so dozens of player cards fit.
+  maxBytes = 220 * 1024,
+  maxDimension = 512,
 ): Promise<string> {
   const dataUrl = await readAsDataURL(file);
   const img = await loadImage(dataUrl);
