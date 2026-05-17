@@ -1,5 +1,9 @@
 import { Outlet, createRootRoute, HeadContent, Scripts, Link } from "@tanstack/react-router";
-import { Toaster } from "sonner";
+import { Toaster, toast } from "sonner";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { store } from "@/lib/store";
+import { migrateLocalToCloud } from "@/lib/migrate";
 
 import appCss from "../styles.css?url";
 
