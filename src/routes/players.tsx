@@ -258,11 +258,19 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
       imageUrl: trimmedUrl || undefined,
     };
     if (existing) {
-      store.updatePlayer(existing.id, patch);
-      toast.success("Player updated");
+      try {
+        store.updatePlayer(existing.id, patch);
+        toast.success("Player updated");
+      } catch (e) {
+        return toast.error(e instanceof Error ? e.message : "Falha ao salvar");
+      }
     } else {
-      store.addPlayer({ id: uuid(), createdAt: Date.now(), ...patch });
-      toast.success("Player added");
+      try {
+        store.addPlayer({ id: uuid(), createdAt: Date.now(), ...patch });
+        toast.success("Player added");
+      } catch (e) {
+        return toast.error(e instanceof Error ? e.message : "Falha ao salvar");
+      }
     }
     onClose();
   };
