@@ -258,11 +258,19 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
       imageUrl: trimmedUrl || undefined,
     };
     if (existing) {
-      store.updatePlayer(existing.id, patch);
-      toast.success("Player updated");
+      try {
+        store.updatePlayer(existing.id, patch);
+        toast.success("Player updated");
+      } catch (e) {
+        return toast.error(e instanceof Error ? e.message : "Falha ao salvar");
+      }
     } else {
-      store.addPlayer({ id: uuid(), createdAt: Date.now(), ...patch });
-      toast.success("Player added");
+      try {
+        store.addPlayer({ id: uuid(), createdAt: Date.now(), ...patch });
+        toast.success("Player added");
+      } catch (e) {
+        return toast.error(e instanceof Error ? e.message : "Falha ao salvar");
+      }
     }
     onClose();
   };
@@ -393,7 +401,7 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
               </div>
             </div>
             <p className="text-[10px] text-muted-foreground mt-1.5">
-              Upload from your device (max 2MB) or paste a URL. Empty falls back to the rarity card.
+              Envie do seu dispositivo (a imagem é comprimida automaticamente) ou cole uma URL. Vazio mostra o card da raridade.
             </p>
           </Field>
         </div>

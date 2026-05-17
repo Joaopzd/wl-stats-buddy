@@ -8,8 +8,9 @@
  */
 export async function compressImageToDataURL(
   file: File,
-  maxBytes = 2 * 1024 * 1024,
-  maxDimension = 1024,
+  // Keep well under the ~5MB localStorage budget so dozens of player cards fit.
+  maxBytes = 220 * 1024,
+  maxDimension = 512,
 ): Promise<string> {
   const dataUrl = await readAsDataURL(file);
   const img = await loadImage(dataUrl);
@@ -32,7 +33,7 @@ export async function compressImageToDataURL(
   if (hasAlpha) {
     // Keep PNG to preserve transparency. Downscale until under budget.
     let out = canvas.toDataURL("image/png");
-    while (sizeOf(out) > maxBytes && (canvas.width > 256 || canvas.height > 256)) {
+    while (sizeOf(out) > maxBytes && (canvas.width > 128 || canvas.height > 128)) {
       canvas.width = Math.round(canvas.width * 0.8);
       canvas.height = Math.round(canvas.height * 0.8);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -49,7 +50,7 @@ export async function compressImageToDataURL(
     quality -= 0.1;
     out = canvas.toDataURL("image/jpeg", quality);
   }
-  while (sizeOf(out) > maxBytes && (canvas.width > 320 || canvas.height > 320)) {
+  while (sizeOf(out) > maxBytes && (canvas.width > 160 || canvas.height > 160)) {
     canvas.width = Math.round(canvas.width * 0.8);
     canvas.height = Math.round(canvas.height * 0.8);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
