@@ -169,7 +169,7 @@ export const store = {
         if (!userId) throw new Error("Not signed in");
         let finalNext = next;
         const payload: { data: never; image_path?: string | null } = {
-          data: next as unknown,
+          data: next as unknown as never,
         };
         if (patch.imageUrl?.startsWith("data:")) {
           const r = await maybeUploadImage(patch.imageUrl, `${userId}/players/${id}`);
