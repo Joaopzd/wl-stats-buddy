@@ -33,7 +33,7 @@ export async function compressImageToDataURL(
   if (hasAlpha) {
     // Keep PNG to preserve transparency. Downscale until under budget.
     let out = canvas.toDataURL("image/png");
-    while (sizeOf(out) > maxBytes && (canvas.width > 256 || canvas.height > 256)) {
+    while (sizeOf(out) > maxBytes && (canvas.width > 128 || canvas.height > 128)) {
       canvas.width = Math.round(canvas.width * 0.8);
       canvas.height = Math.round(canvas.height * 0.8);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
