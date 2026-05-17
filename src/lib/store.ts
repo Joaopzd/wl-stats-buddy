@@ -147,7 +147,7 @@ export const store = {
         const { error } = await supabase.from("players").insert({
           id: p.id,
           user_id: userId,
-          data: next as unknown as Record<string, unknown>,
+          data: next as unknown as never,
           image_path: imagePath,
         });
         if (error) throw new Error(error.message);
@@ -168,13 +168,13 @@ export const store = {
       try {
         if (!userId) throw new Error("Not signed in");
         let finalNext = next;
-        const payload: { data: unknown; image_path?: string | null } = {
+        const payload: { data: never; image_path?: string | null } = {
           data: next as unknown,
         };
         if (patch.imageUrl?.startsWith("data:")) {
           const r = await maybeUploadImage(patch.imageUrl, `${userId}/players/${id}`);
           finalNext = { ...next, imageUrl: r.url ?? undefined };
-          payload.data = finalNext as unknown;
+          payload.data = finalNext as unknown as never;
           payload.image_path = r.path;
           state.players = state.players.map((x) => (x.id === id ? finalNext : x));
           emit();
@@ -225,7 +225,7 @@ export const store = {
           id: w.id,
           user_id: userId,
           number: w.number,
-          data: w as unknown as Record<string, unknown>,
+          data: w as unknown as never,
         });
         if (error) throw new Error(error.message);
       } catch (e) {
@@ -243,7 +243,7 @@ export const store = {
     emit();
     (async () => {
       try {
-        const payload: { data: unknown; number?: number } = { data: next as unknown };
+        const payload: { data: never; number?: number } = { data: next as unknown as never };
         if (patch.number !== undefined) payload.number = patch.number;
         const { error } = await supabase.from("weekend_leagues").update(payload).eq("id", id);
         if (error) throw new Error(error.message);
@@ -292,7 +292,7 @@ export const store = {
           id: m.id,
           user_id: userId,
           wl_id: m.wlId,
-          data: m as unknown as Record<string, unknown>,
+          data: m as unknown as never,
         });
         if (error) throw new Error(error.message);
       } catch (e) {
@@ -312,7 +312,7 @@ export const store = {
       try {
         const { error } = await supabase
           .from("matches")
-          .update({ data: next as unknown as Record<string, unknown> })
+          .update({ data: next as unknown as never })
           .eq("id", id);
         if (error) throw new Error(error.message);
       } catch (e) {
