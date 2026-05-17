@@ -74,7 +74,16 @@ function read<T>(key: string, fallback: T): T {
 
 function write<T>(key: string, value: T) {
   if (!isBrowser) return;
-  localStorage.setItem(key, JSON.stringify(value));
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (err) {
+    if (err instanceof DOMException && /quota/i.test(err.name)) {
+      throw new Error(
+        "Armazenamento local cheio. Remova ou troque imagens de cartas antigas antes de adicionar mais.",
+      );
+    }
+    throw err;
+  }
   emit();
 }
 
