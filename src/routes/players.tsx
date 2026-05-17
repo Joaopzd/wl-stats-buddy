@@ -401,7 +401,7 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
               </div>
             </div>
             <p className="text-[10px] text-muted-foreground mt-1.5">
-              Upload from your device (max 2MB) or paste a URL. Empty falls back to the rarity card.
+              Envie do seu dispositivo (a imagem é comprimida automaticamente) ou cole uma URL. Vazio mostra o card da raridade.
             </p>
           </Field>
         </div>
