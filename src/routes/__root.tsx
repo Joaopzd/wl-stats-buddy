@@ -68,6 +68,36 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        let { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          const { data, error } = await supabase.auth.signInAnonymously();
+          if (error) throw error;
+          session = data.session;
+        }
+        if (cancelled || !session?.user) return;
+        const uid = session.user.id;
+        await store.init(uid);
+        try {
+          const res = await migrateLocalToCloud(uid);
+          if (res.migrated && res.counts) {
+            const { players, wls, matches } = res.counts;
+            toast.success(`Dados migrados para a nuvem (${players} jogadores, ${wls} WLs, ${matches} partidas)`);
+            await store.init(uid); // reload fresh from cloud
+          }
+        } catch (e) {
+          toast.error("Falha na migração: " + (e instanceof Error ? e.message : String(e)));
+        }
+      } catch (e) {
+        toast.error("Falha ao conectar: " + (e instanceof Error ? e.message : String(e)));
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
   return (
     <>
       <Outlet />
