@@ -69,28 +69,38 @@ function Dashboard() {
       .slice(0, 3);
   }, [aggs]);
 
-  // MVP of the Week: best player in the most recent WL.
-  // Prefer rated apps; fall back to top G+A contributor when no ratings logged.
+  // MVP of the Week: blends performance quality (rating) with availability
+  // (matches played). A great rating in 1 game shouldn't beat a strong run
+  // across the whole WL. Score = avgRating × sqrt(matches / totalMatches),
+  // which rewards both factors with diminishing returns on participation.
   const wlMVP = useMemo(() => {
     if (!lastWL) return null;
     const wlMatches = matches.filter((m) => m.wlId === lastWL.id);
-    if (wlMatches.length === 0) return null;
+    const totalMatches = wlMatches.length;
+    if (totalMatches === 0) return null;
     const all = players
       .map((p) => aggregatePlayer(p, wlMatches))
       .filter((a) => a.matches >= 1);
     if (all.length === 0) return null;
     const rated = all.filter((a) => a.ratedMatches >= 1 && a.avgRating > 0);
     if (rated.length > 0) {
-      return rated.sort(
-        (a, b) =>
-          b.avgRating - a.avgRating ||
-          (b.goals + b.assists) - (a.goals + a.assists),
-      )[0];
+      const scored = rated.map((a) => ({
+        a,
+        score: a.avgRating * Math.sqrt(a.matches / totalMatches),
+      }));
+      scored.sort(
+        (x, y) =>
+          y.score - x.score ||
+          y.a.matches - x.a.matches ||
+          (y.a.goals + y.a.assists) - (x.a.goals + x.a.assists),
+      );
+      return scored[0].a;
     }
-    // Fallback: best contributor by goals + assists
+    // Fallback: contribution weighted by participation
     return all.sort(
       (a, b) =>
-        (b.goals + b.assists) - (a.goals + a.assists) ||
+        (b.goals + b.assists) * Math.sqrt(b.matches / totalMatches) -
+          (a.goals + a.assists) * Math.sqrt(a.matches / totalMatches) ||
         b.matches - a.matches,
     )[0];
   }, [lastWL, matches, players]);
