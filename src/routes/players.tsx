@@ -57,7 +57,7 @@ function PlayersPage() {
   const [editing, setEditing] = useState<Player | null>(null);
   const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState("");
-  type SortKey = "name" | "ovr" | "matches" | "goals" | "assists" | "ga" | "rating" | "mvp" | "cs" | "gc" | "pos";
+  type SortKey = "name" | "ovr" | "matches" | "goals" | "assists" | "ga" | "rating" | "mvp" | "cs" | "gc" | "pos" | "subApps" | "subImpact";
   const [sort, setSort] = useState<SortKey>("ga");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [posFilter, setPosFilter] = useState<string>("");
