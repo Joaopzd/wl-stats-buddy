@@ -40,12 +40,19 @@ export function MatchDialog({
       const existing = existingMatch?.performances.find((x) => x.playerId === p.id);
       const isStarter = startingIdSet.has(p.id);
       init[p.id] = existing
-        ? { ...existing, rating: existing.rating ?? 0, played: true }
+        ? {
+            ...existing,
+            rating: existing.rating ?? 0,
+            // Legacy matches saved before role existed → infer from WL lineup.
+            role: existing.role ?? (isStarter ? "starter" : "sub"),
+            played: true,
+          }
         : {
             playerId: p.id,
             goals: 0,
             assists: 0,
             rating: 0,
+            role: isStarter ? "starter" : "sub",
             // When editing an existing match, only players with a saved
             // performance entry above are pre-checked. Without this, every
             // starter would silently re-select itself even if the user had
@@ -59,6 +66,7 @@ export function MatchDialog({
   const update = (id: string, patch: Partial<typeof perfs[string]>) => {
     setPerfs((s) => ({ ...s, [id]: { ...s[id], ...patch } }));
   };
+
 
   const save = () => {
     if (scoreFor < 0 || scoreAgainst < 0) return toast.error("Scores can't be negative");
