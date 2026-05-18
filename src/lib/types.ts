@@ -1,3 +1,5 @@
+export type PlayerRole = "starter" | "sub";
+
 export type Position =
   | "GK"
   | "LB" | "CB" | "RB"
