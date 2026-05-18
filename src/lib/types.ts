@@ -57,6 +57,8 @@ export interface MatchPlayerStat {
   assists: number;
   /** Match rating 0–10, one decimal. 0 = no rating recorded yet. */
   rating: number;
+  /** Whether the player was a starter or came off the bench. Defaults to "starter" for legacy matches. */
+  role?: PlayerRole;
 }
 
 export type PenaltyWinner = "us" | "them";
