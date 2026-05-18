@@ -184,18 +184,39 @@ function PlayersPage() {
             <table className="w-full text-sm">
               <thead className="bg-secondary/60 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
                 <tr>
-                  <th className="text-left p-3 font-semibold">Player</th>
-                  <th className="text-left p-3 font-semibold hidden sm:table-cell">Pos</th>
-                  <th className="text-left p-3 font-semibold hidden sm:table-cell">OVR</th>
-                  <th className="text-right p-3 font-semibold">MP</th>
-                  <th className="text-right p-3 font-semibold">G</th>
-                  <th className="text-right p-3 font-semibold">A</th>
-                  <th className="text-right p-3 font-semibold">G/A</th>
-                  <th className="text-right p-3 font-semibold" title="MVP awards">MVP</th>
-                  <th className="text-right p-3 font-semibold" title="Clean sheets">CS</th>
-                  <th className="text-right p-3 font-semibold" title="Goals conceded while on pitch">GC</th>
-                  <th className="text-right p-3 font-semibold">Rating</th>
+                  <th className="text-left p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("name")}>Player{sortIndicator("name")}</th>
+                  <th className="text-left p-3 font-semibold hidden sm:table-cell cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("pos")}>Pos{sortIndicator("pos")}</th>
+                  <th className="text-left p-3 font-semibold hidden sm:table-cell cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("ovr")}>OVR{sortIndicator("ovr")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("matches")}>MP{sortIndicator("matches")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("goals")}>G{sortIndicator("goals")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("assists")}>A{sortIndicator("assists")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("ga")}>G/A{sortIndicator("ga")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("mvp")} title="MVP awards">MVP{sortIndicator("mvp")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("cs")} title="Clean sheets">CS{sortIndicator("cs")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("gc")} title="Goals conceded">GC{sortIndicator("gc")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("rating")}>Rating{sortIndicator("rating")}</th>
                   <th className="p-3"></th>
+                </tr>
+                <tr className="bg-secondary/30">
+                  <th className="p-2"></th>
+                  <th className="p-2 hidden sm:table-cell">
+                    <select value={posFilter} onChange={(e) => setPosFilter(e.target.value)} className="w-full bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal">
+                      <option value="">All</option>
+                      {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                  </th>
+                  <th className="p-2 hidden sm:table-cell">
+                    <input type="number" value={minOvr} onChange={(e) => setMinOvr(e.target.value)} placeholder="≥" className="w-14 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" />
+                  </th>
+                  <th className="p-2"><input type="number" value={minMatches} onChange={(e) => setMinMatches(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minGoals} onChange={(e) => setMinGoals(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minAssists} onChange={(e) => setMinAssists(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minGA} onChange={(e) => setMinGA(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minMvp} onChange={(e) => setMinMvp(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minCs} onChange={(e) => setMinCs(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"></th>
+                  <th className="p-2"><input type="number" step="0.1" value={minRating} onChange={(e) => setMinRating(e.target.value)} placeholder="≥" className="w-14 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"></th>
                 </tr>
               </thead>
               <tbody>
