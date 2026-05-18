@@ -153,17 +153,22 @@ function PlayersPage() {
             className="w-full bg-input border border-border rounded-md pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
-        <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="bg-input border border-border rounded-md px-3 py-2 text-sm">
-          <option value="ga">Sort: G+A</option>
-          <option value="goals">Sort: Goals</option>
-          <option value="matches">Sort: Matches</option>
-          <option value="rating">Sort: Avg Rating</option>
-          <option value="mvp">Sort: MVPs</option>
-          <option value="cs">Sort: Clean Sheets</option>
-          <option value="ovr">Sort: Overall</option>
-          <option value="name">Sort: Name</option>
-        </select>
+        <button
+          type="button"
+          onClick={() => {
+            setPosFilter(""); setRarityFilter(""); setMinOvr(""); setMinMatches("");
+            setMinGoals(""); setMinAssists(""); setMinGA(""); setMinMvp("");
+            setMinCs(""); setMinRating(""); setSearch("");
+          }}
+          className="px-3 py-2 rounded-md border border-border text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground"
+        >
+          Limpar filtros
+        </button>
       </div>
+      <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
+        Clique nos cabeçalhos para ordenar · Use os campos para filtrar
+      </p>
+
 
       {loading ? (
         <div className="surface-card p-12 text-center text-muted-foreground animate-pulse">
