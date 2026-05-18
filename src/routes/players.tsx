@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { useMatches, usePlayers, useWLs, store } from "@/lib/store";
+import { useMatches, usePlayers, useWLs, useStoreLoading, store } from "@/lib/store";
 import { aggregatePlayer, isCleanSheetEligible, isGoalsConcededEligible } from "@/lib/stats";
 import { PlayerCard } from "@/components/PlayerCard";
 import { PlayerDetailModal } from "@/components/PlayerDetailModal";
@@ -53,6 +53,7 @@ function PlayersPage() {
   const players = usePlayers();
   const matches = useMatches();
   const wls = useWLs();
+  const loading = useStoreLoading();
   const [editing, setEditing] = useState<Player | null>(null);
   const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState("");
@@ -123,7 +124,11 @@ function PlayersPage() {
         </select>
       </div>
 
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="surface-card p-12 text-center text-muted-foreground animate-pulse">
+          Carregando dados da nuvem…
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="surface-card p-12 text-center text-muted-foreground">
           {players.length === 0 ? "No players yet. Add your first player to start tracking." : "No players match your filters."}
         </div>
