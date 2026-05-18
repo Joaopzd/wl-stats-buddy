@@ -94,20 +94,42 @@ function PlayersPage() {
           a.player.position.toLowerCase().includes(q),
       );
     }
+    if (posFilter) list = list.filter((a) => a.player.position === posFilter);
+    if (rarityFilter) list = list.filter((a) => a.player.rarity === rarityFilter);
+    const checks: [string, (a: typeof aggs[number]) => number][] = [
+      [minOvr, (a) => a.player.overall],
+      [minMatches, (a) => a.matches],
+      [minGoals, (a) => a.goals],
+      [minAssists, (a) => a.assists],
+      [minGA, (a) => a.ga],
+      [minMvp, (a) => a.mvpCount],
+      [minCs, (a) => a.cleanSheets],
+      [minRating, (a) => a.avgRating],
+    ];
+    for (const [v, get] of checks) {
+      const n = numFilter(v);
+      if (n !== null) list = list.filter((a) => get(a) >= n);
+    }
+    const dir = sortDir === "asc" ? 1 : -1;
     list = [...list].sort((a, b) => {
+      let r = 0;
       switch (sort) {
-        case "name": return a.player.name.localeCompare(b.player.name);
-        case "ovr": return b.player.overall - a.player.overall;
-        case "matches": return b.matches - a.matches;
-        case "goals": return b.goals - a.goals;
-        case "ga": return b.ga - a.ga;
-        case "rating": return b.avgRating - a.avgRating;
-        case "mvp": return b.mvpCount - a.mvpCount;
-        case "cs": return b.cleanSheets - a.cleanSheets;
+        case "name": r = a.player.name.localeCompare(b.player.name); break;
+        case "pos": r = a.player.position.localeCompare(b.player.position); break;
+        case "ovr": r = a.player.overall - b.player.overall; break;
+        case "matches": r = a.matches - b.matches; break;
+        case "goals": r = a.goals - b.goals; break;
+        case "assists": r = a.assists - b.assists; break;
+        case "ga": r = a.ga - b.ga; break;
+        case "rating": r = a.avgRating - b.avgRating; break;
+        case "mvp": r = a.mvpCount - b.mvpCount; break;
+        case "cs": r = a.cleanSheets - b.cleanSheets; break;
+        case "gc": r = a.goalsConceded - b.goalsConceded; break;
       }
+      return r * dir;
     });
     return list;
-  }, [aggs, search, sort]);
+  }, [aggs, search, sort, sortDir, posFilter, rarityFilter, minOvr, minMatches, minGoals, minAssists, minGA, minMvp, minCs, minRating]);
 
   return (
     <AppShell>
