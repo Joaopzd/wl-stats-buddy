@@ -57,8 +57,27 @@ function PlayersPage() {
   const [editing, setEditing] = useState<Player | null>(null);
   const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<"name" | "ovr" | "matches" | "goals" | "ga" | "rating" | "mvp" | "cs">("ga");
+  type SortKey = "name" | "ovr" | "matches" | "goals" | "assists" | "ga" | "rating" | "mvp" | "cs" | "gc" | "pos";
+  const [sort, setSort] = useState<SortKey>("ga");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [posFilter, setPosFilter] = useState<string>("");
+  const [rarityFilter, setRarityFilter] = useState<string>("");
+  const [minOvr, setMinOvr] = useState<string>("");
+  const [minMatches, setMinMatches] = useState<string>("");
+  const [minGoals, setMinGoals] = useState<string>("");
+  const [minAssists, setMinAssists] = useState<string>("");
+  const [minGA, setMinGA] = useState<string>("");
+  const [minMvp, setMinMvp] = useState<string>("");
+  const [minCs, setMinCs] = useState<string>("");
+  const [minRating, setMinRating] = useState<string>("");
   const [detailPlayer, setDetailPlayer] = useState<Player | null>(null);
+
+  const toggleSort = (key: SortKey) => {
+    if (sort === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSort(key); setSortDir(key === "name" || key === "pos" ? "asc" : "desc"); }
+  };
+  const sortIndicator = (key: SortKey) => sort === key ? (sortDir === "asc" ? " ▲" : " ▼") : "";
+  const numFilter = (v: string) => { const n = parseFloat(v); return isNaN(n) ? null : n; };
 
   const aggs = useMemo(
     () => players.map((p) => aggregatePlayer(p, matches)),
@@ -75,20 +94,42 @@ function PlayersPage() {
           a.player.position.toLowerCase().includes(q),
       );
     }
+    if (posFilter) list = list.filter((a) => a.player.position === posFilter);
+    if (rarityFilter) list = list.filter((a) => a.player.rarity === rarityFilter);
+    const checks: [string, (a: typeof aggs[number]) => number][] = [
+      [minOvr, (a) => a.player.overall],
+      [minMatches, (a) => a.matches],
+      [minGoals, (a) => a.goals],
+      [minAssists, (a) => a.assists],
+      [minGA, (a) => a.ga],
+      [minMvp, (a) => a.mvpCount],
+      [minCs, (a) => a.cleanSheets],
+      [minRating, (a) => a.avgRating],
+    ];
+    for (const [v, get] of checks) {
+      const n = numFilter(v);
+      if (n !== null) list = list.filter((a) => get(a) >= n);
+    }
+    const dir = sortDir === "asc" ? 1 : -1;
     list = [...list].sort((a, b) => {
+      let r = 0;
       switch (sort) {
-        case "name": return a.player.name.localeCompare(b.player.name);
-        case "ovr": return b.player.overall - a.player.overall;
-        case "matches": return b.matches - a.matches;
-        case "goals": return b.goals - a.goals;
-        case "ga": return b.ga - a.ga;
-        case "rating": return b.avgRating - a.avgRating;
-        case "mvp": return b.mvpCount - a.mvpCount;
-        case "cs": return b.cleanSheets - a.cleanSheets;
+        case "name": r = a.player.name.localeCompare(b.player.name); break;
+        case "pos": r = a.player.position.localeCompare(b.player.position); break;
+        case "ovr": r = a.player.overall - b.player.overall; break;
+        case "matches": r = a.matches - b.matches; break;
+        case "goals": r = a.goals - b.goals; break;
+        case "assists": r = a.assists - b.assists; break;
+        case "ga": r = a.ga - b.ga; break;
+        case "rating": r = a.avgRating - b.avgRating; break;
+        case "mvp": r = a.mvpCount - b.mvpCount; break;
+        case "cs": r = a.cleanSheets - b.cleanSheets; break;
+        case "gc": r = a.goalsConceded - b.goalsConceded; break;
       }
+      return r * dir;
     });
     return list;
-  }, [aggs, search, sort]);
+  }, [aggs, search, sort, sortDir, posFilter, rarityFilter, minOvr, minMatches, minGoals, minAssists, minGA, minMvp, minCs, minRating]);
 
   return (
     <AppShell>
@@ -112,17 +153,22 @@ function PlayersPage() {
             className="w-full bg-input border border-border rounded-md pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
-        <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="bg-input border border-border rounded-md px-3 py-2 text-sm">
-          <option value="ga">Sort: G+A</option>
-          <option value="goals">Sort: Goals</option>
-          <option value="matches">Sort: Matches</option>
-          <option value="rating">Sort: Avg Rating</option>
-          <option value="mvp">Sort: MVPs</option>
-          <option value="cs">Sort: Clean Sheets</option>
-          <option value="ovr">Sort: Overall</option>
-          <option value="name">Sort: Name</option>
-        </select>
+        <button
+          type="button"
+          onClick={() => {
+            setPosFilter(""); setRarityFilter(""); setMinOvr(""); setMinMatches("");
+            setMinGoals(""); setMinAssists(""); setMinGA(""); setMinMvp("");
+            setMinCs(""); setMinRating(""); setSearch("");
+          }}
+          className="px-3 py-2 rounded-md border border-border text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground"
+        >
+          Limpar filtros
+        </button>
       </div>
+      <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
+        Clique nos cabeçalhos para ordenar · Use os campos para filtrar
+      </p>
+
 
       {loading ? (
         <div className="surface-card p-12 text-center text-muted-foreground animate-pulse">
@@ -138,18 +184,39 @@ function PlayersPage() {
             <table className="w-full text-sm">
               <thead className="bg-secondary/60 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
                 <tr>
-                  <th className="text-left p-3 font-semibold">Player</th>
-                  <th className="text-left p-3 font-semibold hidden sm:table-cell">Pos</th>
-                  <th className="text-left p-3 font-semibold hidden sm:table-cell">OVR</th>
-                  <th className="text-right p-3 font-semibold">MP</th>
-                  <th className="text-right p-3 font-semibold">G</th>
-                  <th className="text-right p-3 font-semibold">A</th>
-                  <th className="text-right p-3 font-semibold">G/A</th>
-                  <th className="text-right p-3 font-semibold" title="MVP awards">MVP</th>
-                  <th className="text-right p-3 font-semibold" title="Clean sheets">CS</th>
-                  <th className="text-right p-3 font-semibold" title="Goals conceded while on pitch">GC</th>
-                  <th className="text-right p-3 font-semibold">Rating</th>
+                  <th className="text-left p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("name")}>Player{sortIndicator("name")}</th>
+                  <th className="text-left p-3 font-semibold hidden sm:table-cell cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("pos")}>Pos{sortIndicator("pos")}</th>
+                  <th className="text-left p-3 font-semibold hidden sm:table-cell cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("ovr")}>OVR{sortIndicator("ovr")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("matches")}>MP{sortIndicator("matches")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("goals")}>G{sortIndicator("goals")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("assists")}>A{sortIndicator("assists")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("ga")}>G/A{sortIndicator("ga")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("mvp")} title="MVP awards">MVP{sortIndicator("mvp")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("cs")} title="Clean sheets">CS{sortIndicator("cs")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("gc")} title="Goals conceded">GC{sortIndicator("gc")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("rating")}>Rating{sortIndicator("rating")}</th>
                   <th className="p-3"></th>
+                </tr>
+                <tr className="bg-secondary/30">
+                  <th className="p-2"></th>
+                  <th className="p-2 hidden sm:table-cell">
+                    <select value={posFilter} onChange={(e) => setPosFilter(e.target.value)} className="w-full bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal">
+                      <option value="">All</option>
+                      {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                  </th>
+                  <th className="p-2 hidden sm:table-cell">
+                    <input type="number" value={minOvr} onChange={(e) => setMinOvr(e.target.value)} placeholder="≥" className="w-14 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" />
+                  </th>
+                  <th className="p-2"><input type="number" value={minMatches} onChange={(e) => setMinMatches(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minGoals} onChange={(e) => setMinGoals(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minAssists} onChange={(e) => setMinAssists(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minGA} onChange={(e) => setMinGA(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minMvp} onChange={(e) => setMinMvp(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minCs} onChange={(e) => setMinCs(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"></th>
+                  <th className="p-2"><input type="number" step="0.1" value={minRating} onChange={(e) => setMinRating(e.target.value)} placeholder="≥" className="w-14 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"></th>
                 </tr>
               </thead>
               <tbody>
