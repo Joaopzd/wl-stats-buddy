@@ -57,8 +57,27 @@ function PlayersPage() {
   const [editing, setEditing] = useState<Player | null>(null);
   const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<"name" | "ovr" | "matches" | "goals" | "ga" | "rating" | "mvp" | "cs">("ga");
+  type SortKey = "name" | "ovr" | "matches" | "goals" | "assists" | "ga" | "rating" | "mvp" | "cs" | "gc" | "pos";
+  const [sort, setSort] = useState<SortKey>("ga");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [posFilter, setPosFilter] = useState<string>("");
+  const [rarityFilter, setRarityFilter] = useState<string>("");
+  const [minOvr, setMinOvr] = useState<string>("");
+  const [minMatches, setMinMatches] = useState<string>("");
+  const [minGoals, setMinGoals] = useState<string>("");
+  const [minAssists, setMinAssists] = useState<string>("");
+  const [minGA, setMinGA] = useState<string>("");
+  const [minMvp, setMinMvp] = useState<string>("");
+  const [minCs, setMinCs] = useState<string>("");
+  const [minRating, setMinRating] = useState<string>("");
   const [detailPlayer, setDetailPlayer] = useState<Player | null>(null);
+
+  const toggleSort = (key: SortKey) => {
+    if (sort === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSort(key); setSortDir(key === "name" || key === "pos" ? "asc" : "desc"); }
+  };
+  const sortIndicator = (key: SortKey) => sort === key ? (sortDir === "asc" ? " ▲" : " ▼") : "";
+  const numFilter = (v: string) => { const n = parseFloat(v); return isNaN(n) ? null : n; };
 
   const aggs = useMemo(
     () => players.map((p) => aggregatePlayer(p, matches)),
