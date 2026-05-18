@@ -125,11 +125,14 @@ function PlayersPage() {
         case "mvp": r = a.mvpCount - b.mvpCount; break;
         case "cs": r = a.cleanSheets - b.cleanSheets; break;
         case "gc": r = a.goalsConceded - b.goalsConceded; break;
+        case "subApps": r = a.subMatches - b.subMatches; break;
+        case "subImpact": r = a.subImpact - b.subImpact; break;
       }
       return r * dir;
     });
     return list;
   }, [aggs, search, sort, sortDir, posFilter, rarityFilter, minOvr, minMatches, minGoals, minAssists, minGA, minMvp, minCs, minRating]);
+
 
   return (
     <AppShell>
