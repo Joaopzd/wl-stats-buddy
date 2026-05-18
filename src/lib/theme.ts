@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 
-export type ThemeKey = "midnight-stealth" | "gt-racing" | "off-white-copper";
+export type ThemeKey = "midnight-stealth" | "gt-racing" | "off-white-copper" | "cyber-neon" | "sahara-dusk";
 
 export interface ThemeDef {
   key: ThemeKey;
@@ -128,6 +128,80 @@ export const THEMES: Record<ThemeKey, ThemeDef> = {
       "--gradient-hero":
         "radial-gradient(ellipse at top, oklch(0.55 0.13 50 / 0.10), transparent 60%), linear-gradient(180deg, oklch(0.97 0.010 80), oklch(0.93 0.012 80))",
       "--pitch-line": "oklch(0.22 0.015 60 / 0.30)",
+    },
+  },
+  "cyber-neon": {
+    key: "cyber-neon",
+    label: "Cyber Neon",
+    description: "Deep violet · neon cyan",
+    swatches: ["#0B0420", "#22D3EE", "#F472B6"],
+    bodyBg:
+      "radial-gradient(ellipse 70% 50% at 50% -10%, oklch(0.78 0.16 200 / 0.10), transparent), radial-gradient(ellipse 60% 40% at 85% 100%, oklch(0.70 0.22 340 / 0.08), transparent)",
+    vars: {
+      "--background": "oklch(0.16 0.05 295)",
+      "--foreground": "oklch(0.94 0.015 260)",
+      "--card": "oklch(0.20 0.06 295)",
+      "--card-foreground": "oklch(0.94 0.015 260)",
+      "--popover": "oklch(0.19 0.06 295)",
+      "--popover-foreground": "oklch(0.94 0.015 260)",
+      "--primary": "oklch(0.78 0.16 200)",
+      "--primary-foreground": "oklch(0.16 0.05 295)",
+      "--secondary": "oklch(0.24 0.06 295)",
+      "--secondary-foreground": "oklch(0.94 0.015 260)",
+      "--muted": "oklch(0.24 0.05 295)",
+      "--muted-foreground": "oklch(0.70 0.04 280)",
+      "--accent": "oklch(0.70 0.22 340)",
+      "--accent-foreground": "oklch(0.16 0.05 295)",
+      "--destructive": "oklch(0.62 0.22 18)",
+      "--destructive-foreground": "oklch(0.98 0.005 260)",
+      "--success": "oklch(0.78 0.16 162)",
+      "--success-foreground": "oklch(0.16 0.05 295)",
+      "--border": "oklch(0.34 0.06 295 / 0.6)",
+      "--input": "oklch(0.22 0.05 295)",
+      "--ring": "oklch(0.78 0.16 200)",
+      "--gradient-primary":
+        "linear-gradient(135deg, oklch(0.78 0.16 200), oklch(0.70 0.22 340))",
+      "--gradient-card":
+        "linear-gradient(160deg, oklch(0.22 0.06 295), oklch(0.17 0.05 295))",
+      "--gradient-hero":
+        "radial-gradient(ellipse at top, oklch(0.78 0.16 200 / 0.16), transparent 60%), linear-gradient(180deg, oklch(0.20 0.06 295), oklch(0.14 0.05 295))",
+    },
+  },
+  "sahara-dusk": {
+    key: "sahara-dusk",
+    label: "Sahara Dusk",
+    description: "Warm sand · burnt sienna",
+    swatches: ["#2A1F18", "#E08B4A", "#F5E4CC"],
+    bodyBg:
+      "radial-gradient(ellipse 70% 45% at 50% -10%, oklch(0.70 0.14 55 / 0.10), transparent), radial-gradient(ellipse 55% 35% at 85% 100%, oklch(0.55 0.16 35 / 0.07), transparent)",
+    vars: {
+      "--background": "oklch(0.20 0.025 55)",
+      "--foreground": "oklch(0.94 0.018 80)",
+      "--card": "oklch(0.24 0.028 55)",
+      "--card-foreground": "oklch(0.94 0.018 80)",
+      "--popover": "oklch(0.22 0.028 55)",
+      "--popover-foreground": "oklch(0.94 0.018 80)",
+      "--primary": "oklch(0.70 0.14 55)",
+      "--primary-foreground": "oklch(0.18 0.025 55)",
+      "--secondary": "oklch(0.28 0.028 55)",
+      "--secondary-foreground": "oklch(0.94 0.018 80)",
+      "--muted": "oklch(0.28 0.025 55)",
+      "--muted-foreground": "oklch(0.70 0.025 70)",
+      "--accent": "oklch(0.60 0.16 35)",
+      "--accent-foreground": "oklch(0.98 0.005 80)",
+      "--destructive": "oklch(0.55 0.20 25)",
+      "--destructive-foreground": "oklch(0.98 0.005 80)",
+      "--success": "oklch(0.65 0.14 145)",
+      "--success-foreground": "oklch(0.18 0.025 55)",
+      "--border": "oklch(0.36 0.028 55 / 0.6)",
+      "--input": "oklch(0.26 0.028 55)",
+      "--ring": "oklch(0.70 0.14 55)",
+      "--gradient-primary":
+        "linear-gradient(135deg, oklch(0.70 0.14 55), oklch(0.60 0.16 35))",
+      "--gradient-card":
+        "linear-gradient(160deg, oklch(0.25 0.028 55), oklch(0.20 0.025 55))",
+      "--gradient-hero":
+        "radial-gradient(ellipse at top, oklch(0.70 0.14 55 / 0.14), transparent 60%), linear-gradient(180deg, oklch(0.22 0.028 55), oklch(0.17 0.025 55))",
     },
   },
 };
