@@ -198,6 +198,8 @@ function PlayersPage() {
                   <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("cs")} title="Clean sheets">CS{sortIndicator("cs")}</th>
                   <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("gc")} title="Goals conceded">GC{sortIndicator("gc")}</th>
                   <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("rating")}>Rating{sortIndicator("rating")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("subApps")} title="Substitute appearances">Sub{sortIndicator("subApps")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("subImpact")} title="Super-Sub Impact Index: (G+A per sub appearance) × √apps × rating weight">Impact{sortIndicator("subImpact")}</th>
                   <th className="p-3"></th>
                 </tr>
                 <tr className="bg-secondary/30">
@@ -220,7 +222,10 @@ function PlayersPage() {
                   <th className="p-2"></th>
                   <th className="p-2"><input type="number" step="0.1" value={minRating} onChange={(e) => setMinRating(e.target.value)} placeholder="≥" className="w-14 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
                   <th className="p-2"></th>
+                  <th className="p-2"></th>
+                  <th className="p-2"></th>
                 </tr>
+
               </thead>
               <tbody>
                 {filtered.map((a) => (
