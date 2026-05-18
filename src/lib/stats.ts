@@ -33,6 +33,15 @@ export interface PlayerAgg {
   wins: number;
   /** wins / matches (0–1). 0 if no matches. */
   winRate: number;
+  /** Substitute appearances. */
+  subMatches: number;
+  subGoals: number;
+  subAssists: number;
+  subGA: number;
+  /** Average rating across rated sub appearances. */
+  subAvgRating: number;
+  /** Composite "Super Sub" index: rewards G+A per sub appearance, volume, and rating. */
+  subImpact: number;
 }
 
 /** Auto-MVP fallback: explicit mvpPlayerId, else highest rated performance. */
@@ -49,10 +58,19 @@ export function computeMvpId(match: Match): string | null {
   return sorted[0].playerId;
 }
 
+/** Super-sub impact: (G+A per sub appearance) × √subMatches × rating weight. */
+export function computeSubImpact(subGA: number, subMatches: number, subAvgRating: number): number {
+  if (subMatches <= 0) return 0;
+  const perGame = subGA / subMatches;
+  const ratingWeight = (subAvgRating > 0 ? subAvgRating : 6) / 6;
+  return perGame * Math.sqrt(subMatches) * ratingWeight;
+}
+
 export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
   let m = 0, g = 0, a = 0, wins = 0;
   let ratingSum = 0, ratedMatches = 0;
   let mvpCount = 0, cleanSheets = 0, goalsConceded = 0;
+  let subM = 0, subG = 0, subA = 0, subRatingSum = 0, subRated = 0;
   for (const match of matches) {
     const perf = match.performances.find((p) => p.playerId === player.id);
     if (!perf) continue;
@@ -72,8 +90,16 @@ export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
       cleanSheets += 1;
     }
     if (computeMvpId(match) === player.id) mvpCount += 1;
+    if (perf.role === "sub") {
+      subM += 1;
+      subG += perf.goals;
+      subA += perf.assists;
+      if (r > 0) { subRatingSum += r; subRated += 1; }
+    }
   }
   const ga = g + a;
+  const subGA = subG + subA;
+  const subAvgRating = subRated ? subRatingSum / subRated : 0;
   return {
     player,
     matches: m,
@@ -88,6 +114,12 @@ export function aggregatePlayer(player: Player, matches: Match[]): PlayerAgg {
     goalsConceded,
     wins,
     winRate: m ? wins / m : 0,
+    subMatches: subM,
+    subGoals: subG,
+    subAssists: subA,
+    subGA,
+    subAvgRating,
+    subImpact: computeSubImpact(subGA, subM, subAvgRating),
   };
 }
 

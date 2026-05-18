@@ -57,7 +57,7 @@ function PlayersPage() {
   const [editing, setEditing] = useState<Player | null>(null);
   const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState("");
-  type SortKey = "name" | "ovr" | "matches" | "goals" | "assists" | "ga" | "rating" | "mvp" | "cs" | "gc" | "pos";
+  type SortKey = "name" | "ovr" | "matches" | "goals" | "assists" | "ga" | "rating" | "mvp" | "cs" | "gc" | "pos" | "subApps" | "subImpact";
   const [sort, setSort] = useState<SortKey>("ga");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [posFilter, setPosFilter] = useState<string>("");
@@ -125,11 +125,14 @@ function PlayersPage() {
         case "mvp": r = a.mvpCount - b.mvpCount; break;
         case "cs": r = a.cleanSheets - b.cleanSheets; break;
         case "gc": r = a.goalsConceded - b.goalsConceded; break;
+        case "subApps": r = a.subMatches - b.subMatches; break;
+        case "subImpact": r = a.subImpact - b.subImpact; break;
       }
       return r * dir;
     });
     return list;
   }, [aggs, search, sort, sortDir, posFilter, rarityFilter, minOvr, minMatches, minGoals, minAssists, minGA, minMvp, minCs, minRating]);
+
 
   return (
     <AppShell>
@@ -195,6 +198,8 @@ function PlayersPage() {
                   <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("cs")} title="Clean sheets">CS{sortIndicator("cs")}</th>
                   <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("gc")} title="Goals conceded">GC{sortIndicator("gc")}</th>
                   <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("rating")}>Rating{sortIndicator("rating")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("subApps")} title="Substitute appearances">Sub{sortIndicator("subApps")}</th>
+                  <th className="text-right p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("subImpact")} title="Super-Sub Impact Index: (G+A per sub appearance) × √apps × rating weight">Impact{sortIndicator("subImpact")}</th>
                   <th className="p-3"></th>
                 </tr>
                 <tr className="bg-secondary/30">
@@ -217,7 +222,10 @@ function PlayersPage() {
                   <th className="p-2"></th>
                   <th className="p-2"><input type="number" step="0.1" value={minRating} onChange={(e) => setMinRating(e.target.value)} placeholder="≥" className="w-14 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
                   <th className="p-2"></th>
+                  <th className="p-2"></th>
+                  <th className="p-2"></th>
                 </tr>
+
               </thead>
               <tbody>
                 {filtered.map((a) => (
@@ -264,7 +272,26 @@ function PlayersPage() {
                         <span className="text-muted-foreground/60">—</span>
                       )}
                     </td>
+                    <td className="p-3 text-right stat-num">
+                      {a.subMatches > 0 ? (
+                        <span title={`${a.subGoals}G / ${a.subAssists}A · avg ${a.subAvgRating.toFixed(2)}`}>
+                          {a.subMatches}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground/60">0</span>
+                      )}
+                    </td>
+                    <td className="p-3 text-right stat-num">
+                      {a.subMatches > 0 ? (
+                        <span className={a.subImpact >= 1.5 ? "text-accent font-semibold" : a.subImpact >= 0.75 ? "text-foreground" : "text-muted-foreground"}>
+                          {a.subImpact.toFixed(2)}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground/40">—</span>
+                      )}
+                    </td>
                     <td className="p-3 text-right whitespace-nowrap">
+
                       <button onClick={(e) => { e.stopPropagation(); setEditing(a.player); }} className="p-1.5 text-muted-foreground hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
                       <button
                         onClick={(e) => {

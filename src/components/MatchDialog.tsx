@@ -40,12 +40,19 @@ export function MatchDialog({
       const existing = existingMatch?.performances.find((x) => x.playerId === p.id);
       const isStarter = startingIdSet.has(p.id);
       init[p.id] = existing
-        ? { ...existing, rating: existing.rating ?? 0, played: true }
+        ? {
+            ...existing,
+            rating: existing.rating ?? 0,
+            // Legacy matches saved before role existed → infer from WL lineup.
+            role: existing.role ?? (isStarter ? "starter" : "sub"),
+            played: true,
+          }
         : {
             playerId: p.id,
             goals: 0,
             assists: 0,
             rating: 0,
+            role: isStarter ? "starter" : "sub",
             // When editing an existing match, only players with a saved
             // performance entry above are pre-checked. Without this, every
             // starter would silently re-select itself even if the user had
@@ -59,6 +66,7 @@ export function MatchDialog({
   const update = (id: string, patch: Partial<typeof perfs[string]>) => {
     setPerfs((s) => ({ ...s, [id]: { ...s[id], ...patch } }));
   };
+
 
   const save = () => {
     if (scoreFor < 0 || scoreAgainst < 0) return toast.error("Scores can't be negative");
@@ -208,7 +216,7 @@ export function MatchDialog({
                     .sort((a, b) => Number(startingIdSet.has(b.id)) - Number(startingIdSet.has(a.id)))
                     .map((p) => {
                       const perf = perfs[p.id];
-                      const isStarter = startingIdSet.has(p.id);
+                      const isSub = perf.role === "sub";
                       return (
                         <div
                           key={p.id}
@@ -223,13 +231,19 @@ export function MatchDialog({
                             className="h-4 w-4 accent-[var(--primary)] justify-self-center"
                             aria-label={`Played: ${p.name}`}
                           />
-                          <span
-                            className={`text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded text-center ${
-                              isStarter ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"
+                          <button
+                            type="button"
+                            onClick={() => update(p.id, { role: isSub ? "starter" : "sub" })}
+                            disabled={!perf.played}
+                            title={isSub ? "Came off the bench — click to mark as starter" : "Started the match — click to mark as substitute"}
+                            className={`text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded text-center transition disabled:opacity-50 ${
+                              isSub
+                                ? "bg-accent/20 text-accent border border-accent/50 hover:bg-accent/30"
+                                : "bg-primary/20 text-primary border border-primary/50 hover:bg-primary/30"
                             }`}
                           >
-                            {isStarter ? "XI" : "Sub"}
-                          </span>
+                            {isSub ? "Sub" : "XI"}
+                          </button>
                           <div className="min-w-0">
                             <div className="text-sm font-semibold truncate leading-tight">{p.name}</div>
                             <div className="text-[10px] text-muted-foreground font-mono">{p.position} · {p.overall}</div>
@@ -240,6 +254,7 @@ export function MatchDialog({
                         </div>
                       );
                     })}
+
                 </div>
               )}
             </div>
