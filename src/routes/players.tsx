@@ -272,7 +272,26 @@ function PlayersPage() {
                         <span className="text-muted-foreground/60">—</span>
                       )}
                     </td>
+                    <td className="p-3 text-right stat-num">
+                      {a.subMatches > 0 ? (
+                        <span title={`${a.subGoals}G / ${a.subAssists}A · avg ${a.subAvgRating.toFixed(2)}`}>
+                          {a.subMatches}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground/60">0</span>
+                      )}
+                    </td>
+                    <td className="p-3 text-right stat-num">
+                      {a.subMatches > 0 ? (
+                        <span className={a.subImpact >= 1.5 ? "text-accent font-semibold" : a.subImpact >= 0.75 ? "text-foreground" : "text-muted-foreground"}>
+                          {a.subImpact.toFixed(2)}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground/40">—</span>
+                      )}
+                    </td>
                     <td className="p-3 text-right whitespace-nowrap">
+
                       <button onClick={(e) => { e.stopPropagation(); setEditing(a.player); }} className="p-1.5 text-muted-foreground hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
                       <button
                         onClick={(e) => {
