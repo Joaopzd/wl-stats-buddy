@@ -238,7 +238,8 @@ export const store = {
           user_id: userId,
           number: w.number,
           data: w as unknown as never,
-        });
+          session_type: w.sessionType ?? "WL",
+        } as never);
         if (error) throw new Error(error.message);
       } catch (e) {
         state.wls = state.wls.filter((x) => x.id !== w.id);
