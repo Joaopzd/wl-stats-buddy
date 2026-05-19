@@ -23,12 +23,14 @@ const state = {
   players: EMPTY_PLAYERS as Player[],
   wls: EMPTY_WLS as WeekendLeague[],
   matches: EMPTY_MATCHES as Match[],
+  labNotes: {} as Record<string, string>,
   clubCrest: null as string | null,
   clubName: "",
   opponentCrest: null as string | null,
   opponentName: DEFAULT_OPPONENT,
   loading: true,
 };
+const EMPTY_LAB_NOTES: Record<string, string> = {};
 
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
