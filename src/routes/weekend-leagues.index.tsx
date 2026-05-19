@@ -23,7 +23,7 @@ export const Route = createFileRoute("/weekend-leagues/")({
 });
 
 function WLList() {
-  const wls = useWLs();
+  const wls = onlyWL(useWLs());
   const matches = useMatches();
   const players = usePlayers();
   const [creating, setCreating] = useState(false);
