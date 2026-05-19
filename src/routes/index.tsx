@@ -29,9 +29,12 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
-  const wls = useWLs();
-  const matches = useMatches();
+  const allWls = useWLs();
+  const allMatches = useMatches();
   const players = usePlayers();
+  // Strict isolation: PZD Lab data never affects the main dashboard.
+  const wls = useMemo(() => onlyWL(allWls), [allWls]);
+  const matches = useMemo(() => onlyWL(allMatches), [allMatches]);
 
   const sortedWLs = useMemo(() => [...wls].sort((a, b) => b.number - a.number), [wls]);
   const lastWL = sortedWLs[0];
