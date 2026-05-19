@@ -206,3 +206,19 @@ function Tile({ label, value, icon, accent, danger }: { label: string; value: nu
     </div>
   );
 }
+
+function WinRateTile({ wins, played }: { wins: number; played: number }) {
+  const pct = played ? (wins / played) * 100 : 0;
+  const tone = played === 0 ? "" : pct >= 60 ? "text-primary" : pct >= 40 ? "text-amber-300" : "text-destructive";
+  return (
+    <div className="surface-card p-4">
+      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+        <Trophy className="h-3.5 w-3.5" /> Win Rate
+      </div>
+      <div className={`font-display text-3xl stat-num mt-1 leading-none ${tone}`}>
+        {played ? `${pct.toFixed(1)}%` : "—"}
+      </div>
+      <div className="text-[10px] text-muted-foreground mt-1 font-mono">{wins}W / {played} MP</div>
+    </div>
+  );
+}
