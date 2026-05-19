@@ -1,58 +1,52 @@
-# Migração LocalStorage → Supabase (Lovable Cloud)
+# Plano de Implementação
 
-## 1. Habilitar Lovable Cloud
-Provisiona Postgres + Auth + Storage. Sem alterações visíveis para você.
+Trabalho dividido em 3 blocos. Posso entregar tudo em sequência, mas confirmo antes de começar.
 
-## 2. Schema (migration SQL)
+## Bloco A — Sub Impact & Win Rates (rápido, UI apenas)
 
-Tabelas, todas com `user_id uuid not null default auth.uid()` e RLS `user_id = auth.uid()`:
+1. **Club Legends (`src/routes/rankings.tsx`)**: adicionar nova categoria "Sub Impact" usando `computeSubImpact` já existente em `stats.ts`. Top N substitutos por impacto.
+2. **Report final de WL (`src/components/ReportModal.tsx`)**: incluir seção/linha "Best Sub Impact" com o jogador de maior impacto naquela WL.
+3. **Detalhes da carta (`src/components/PlayerDetailModal.tsx`)**:
+   - Adicionar **Sub Impact** ao `StatGrid` (carreira e última WL).
+   - Adicionar **Win Rate %** = wins / matches.
+4. **Aba Club (`src/routes/club.tsx`)**: card com **Win Rate do clube** = somatório de matches vencidas / total de matches (todas as WLs, excluindo LAB — ver Bloco C).
 
-- **players**: `id, user_id, name, ovr, position, rarity, card_image_path (storage path), created_at`
-- **weekend_leagues**: `id, user_id, number, custom_name, formation, squad_player_ids uuid[], created_at`
-- **matches**: `id, user_id, wl_id (fk), goals_for, goals_against, et, penalties, rage_quit, rating, played_at, opponent_name, player_stats jsonb` (gols/assists por jogador)
-- **settings**: `user_id pk, club_name, club_crest_path, opponent_name, opponent_crest_path`
+## Bloco B — Migração de Schema para isolamento LAB
 
-Bucket Storage **`crests`** (público) para cartas, escudos de clube e adversário. Path: `{user_id}/players/{playerId}.{ext}`, `{user_id}/club.{ext}`, `{user_id}/opponent.{ext}`. RLS permite ao dono escrever/deletar; leitura pública.
+Adicionar coluna `session_type text default 'WL'` nas tabelas `weekend_leagues` e `matches`. Valores: `'WL'` ou `'LAB'`. Index parcial para acelerar filtros.
 
-## 3. Auth anônimo automático
-- Habilitar provider "Anonymous" no Supabase Auth.
-- No bootstrap (`__root.tsx`): se não houver sessão, chamar `supabase.auth.signInAnonymously()`. Sessão persiste no `localStorage` do Supabase (chave dele), não nos nossos blobs.
+```sql
+ALTER TABLE public.weekend_leagues ADD COLUMN session_type text NOT NULL DEFAULT 'WL';
+ALTER TABLE public.matches ADD COLUMN session_type text NOT NULL DEFAULT 'WL';
+CREATE INDEX idx_matches_session_type ON public.matches(user_id, session_type);
+CREATE INDEX idx_wls_session_type ON public.weekend_leagues(user_id, session_type);
+```
 
-## 4. Migração automática
-Helper `migrateLocalToCloud()` roda 1× após login:
-1. Lê `fc26_players_v4`, `fc26_wls_v4`, `fc26_matches_v4`, crests e nomes.
-2. Para cada imagem base64: converte para Blob → upload no bucket → guarda o path.
-3. Insert em lote nas tabelas.
-4. Marca flag `fc26_migrated_v1` e remove as chaves antigas (libera quota).
-5. Mostra toast: "Dados migrados para a nuvem".
+No store local (`src/lib/store.ts`) e nos tipos (`src/lib/types.ts`), adicionar `sessionType: "WL" | "LAB"` em `WeekendLeague` e `Match` (default `"WL"`).
 
-## 5. Refator do store
-Substituir `src/lib/store.ts` por hooks baseados em **TanStack Query** (já no projeto):
-- `usePlayers()`, `useWLs()`, `useMatches()`, `useSettings()` → `useQuery` no Supabase.
-- Mutations: `useAddPlayer`, `useUpdatePlayer`, `useDeletePlayer`, idem WL/match/settings — invalidam queries.
-- Upload de imagem usa Supabase Storage; componentes recebem URL pública via `supabase.storage.from('crests').getPublicUrl(path)`.
-- Compressão (`imageCompress.ts`) fica mais leve (até ~1MB, sem agressividade) já que não há mais limite de 5MB do browser.
+**Regra estrita**: criar helper `filterWL(matches)` e `filterWLs(wls)` em `stats.ts`. Todas as agregações de Dashboard / MVP da Semana / Club Legends / Best XI / Club Win Rate passam por esse filtro. Apenas a aba PZD Lab vê dados `LAB`.
 
-## 6. Loading states
-- Skeletons (`<Skeleton />` já existe) nas listas de jogadores, WLs e matches enquanto `isLoading`.
-- `PlayerCard`, `OpponentCrest`, `ClubCrest` mostram skeleton enquanto a URL não chega.
+## Bloco C — Nova aba PZD Lab
 
-## 7. Componentes afetados
-Todos que usam `useWLs/usePlayers/useMatches/useClubCrest/useOpponentCrest/useClubName/useOpponentName` e os `store.add/update/delete*`:
-- `src/routes/index.tsx`, `players.tsx`, `weekend-leagues.index.tsx`, `weekend-leagues.$wlId.tsx`, `rankings.tsx`, `club.tsx`
-- `src/components/`: `SettingsMenu`, `ClubCrest`, `OpponentCrest`, `ClubCrestUploader`, `CrestPicker`, `MatchDialog`, `SquadDialog`, `PlayerDetailModal`, `MatchDetailModal`, `CoachBriefingDialog`, `BestXI`, `WLTrendsChart`, `LossStreakAlert`, `AICoach`, `RankBadge` consumers, etc.
+1. **Nav (`src/components/AppShell.tsx`)**: adicionar link "PZD Lab" com ícone `FlaskConical`.
+2. **Rota nova `src/routes/pzd-lab.tsx`**:
+   - Botão "Add Test Match" abre dialog simplificado.
+   - Campos: Match Type (`Rivals Test` / `Friendly` / `Qualifiers`), Formation (texto livre ou dropdown das formações existentes), Result/Score, e por jogador: G, A, Rating.
+   - Lista de test matches recentes, mini-leaderboard isolado (top jogadores por avg rating + G+A apenas dos LAB matches).
+3. **Lab Notes por jogador**: nova tabela ou JSON. Mais simples: tabela `player_lab_notes (user_id, player_id, notes text, updated_at)` com RLS. Editor inline na seção PZD Lab do jogador.
+4. **Reuso**: criar `LabMatchDialog` derivado de `MatchDialog` mas sem WL/squad — apenas escolhe jogadores avulsos do roster, marca starter/sub se quiser, salva com `sessionType: "LAB"` e `wlId` = um WL "virtual" LAB por usuário (criado automaticamente, `sessionType: "LAB"`, `number: 0`).
 
-Mantém a mesma API conceitual (mesmos nomes de hooks) — só ficam `async` e retornam `{ data, isLoading }`.
+## Detalhes técnicos
 
-## Escopo / fora do escopo
-- Mantém o visual atual; só adiciona skeletons.
-- Sem multi-usuário/compartilhamento — sessão anônima por dispositivo. Se você limpar o navegador, perde acesso (posso adicionar export/login depois se quiser).
+- **Filtro central**: em `aggregatePlayer`, `aggregateWL`, e nos seletores do Dashboard, aplicar `matches.filter(m => (m.sessionType ?? "WL") === "WL")` antes de qualquer cálculo. Mesmo para `wls`.
+- **Migração de dados**: registros antigos ficam `'WL'` por causa do `DEFAULT`. Sem perda.
+- **Win rate do clube**: derivar de matches WL. `wins = matches.filter(m => m.scoreFor > m.scoreAgainst || (m.penalties && m.penaltyWinner === 'us')).length`.
+- **Sub Impact em rankings**: filtrar jogadores com `subMatches >= 2` para evitar ruído de amostra única.
 
-## Ordem de execução
-1. Enable Cloud + migration SQL + bucket + RLS
-2. Helpers: `supabaseStorage.ts`, `migrate.ts`, novo `store.ts` com queries
-3. Refator componentes (lote por lote) + skeletons
-4. Bootstrap anon-login + auto-migração no `__root.tsx`
-5. Testar fluxo completo
+## Confirmar antes de codar
 
-Posso começar?
+Vou:
+1. Rodar a migração SQL acima (pede sua aprovação).
+2. Editar ~10 arquivos (rankings, ReportModal, PlayerDetailModal, club, store, types, stats, AppShell) + criar 2 novos (rota pzd-lab + LabMatchDialog).
+
+Posso seguir? Ou prefere fatiar em entregas menores (ex: Bloco A primeiro, depois B+C)?

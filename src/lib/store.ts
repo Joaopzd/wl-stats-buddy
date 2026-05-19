@@ -23,12 +23,14 @@ const state = {
   players: EMPTY_PLAYERS as Player[],
   wls: EMPTY_WLS as WeekendLeague[],
   matches: EMPTY_MATCHES as Match[],
+  labNotes: {} as Record<string, string>,
   clubCrest: null as string | null,
   clubName: "",
   opponentCrest: null as string | null,
   opponentName: DEFAULT_OPPONENT,
   loading: true,
 };
+const EMPTY_LAB_NOTES: Record<string, string> = {};
 
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
@@ -71,15 +73,25 @@ async function maybeUploadImage(
 
 async function loadAll() {
   if (!userId) return;
-  const [p, w, m, s] = await Promise.all([
+  const [p, w, m, s, ln] = await Promise.all([
     supabase.from("players").select("*").order("created_at"),
     supabase.from("weekend_leagues").select("*").order("number"),
     supabase.from("matches").select("*").order("created_at"),
     supabase.from("settings").select("*").eq("user_id", userId).maybeSingle(),
+    supabase.from("player_lab_notes").select("player_id, notes"),
   ]);
   state.players = ((p.data ?? []) as unknown as Array<{ data: Player }>).map((r) => r.data);
-  state.wls = ((w.data ?? []) as unknown as Array<{ data: WeekendLeague }>).map((r) => r.data);
-  state.matches = ((m.data ?? []) as unknown as Array<{ data: Match }>).map((r) => r.data);
+  state.wls = ((w.data ?? []) as unknown as Array<{ data: WeekendLeague; session_type: string }>).map(
+    (r) => ({ ...r.data, sessionType: (r.session_type as "WL" | "LAB") ?? r.data.sessionType ?? "WL" }),
+  );
+  state.matches = ((m.data ?? []) as unknown as Array<{ data: Match; session_type: string }>).map(
+    (r) => ({ ...r.data, sessionType: (r.session_type as "WL" | "LAB") ?? r.data.sessionType ?? "WL" }),
+  );
+  const notes: Record<string, string> = {};
+  for (const row of (ln.data ?? []) as Array<{ player_id: string; notes: string }>) {
+    notes[row.player_id] = row.notes ?? "";
+  }
+  state.labNotes = notes;
   if (s.data) {
     state.clubName = s.data.club_name ?? "";
     state.opponentName = s.data.opponent_name ?? DEFAULT_OPPONENT;
@@ -226,7 +238,8 @@ export const store = {
           user_id: userId,
           number: w.number,
           data: w as unknown as never,
-        });
+          session_type: w.sessionType ?? "WL",
+        } as never);
         if (error) throw new Error(error.message);
       } catch (e) {
         state.wls = state.wls.filter((x) => x.id !== w.id);
@@ -293,7 +306,8 @@ export const store = {
           user_id: userId,
           wl_id: m.wlId,
           data: m as unknown as never,
-        });
+          session_type: m.sessionType ?? "WL",
+        } as never);
         if (error) throw new Error(error.message);
       } catch (e) {
         state.matches = state.matches.filter((x) => x.id !== m.id);
@@ -417,6 +431,29 @@ export const store = {
       reportError("Falha ao salvar nome do adversário", e);
     });
   },
+
+
+  // ----- PZD Lab notes ---------------------------------------------
+  getLabNotes: () => state.labNotes,
+  getLabNote: (playerId: string) => state.labNotes[playerId] ?? "",
+  setLabNote(playerId: string, notes: string) {
+    const prev = state.labNotes[playerId] ?? "";
+    state.labNotes = { ...state.labNotes, [playerId]: notes };
+    emit();
+    (async () => {
+      try {
+        if (!userId) throw new Error("Not signed in");
+        const { error } = await supabase
+          .from("player_lab_notes")
+          .upsert({ user_id: userId, player_id: playerId, notes }, { onConflict: "user_id,player_id" });
+        if (error) throw new Error(error.message);
+      } catch (e) {
+        state.labNotes = { ...state.labNotes, [playerId]: prev };
+        emit();
+        reportError("Falha ao salvar anotação", e);
+      }
+    })();
+  },
 };
 
 // ----- React hooks (stable empty fallback for SSR) ---------------------
@@ -427,6 +464,7 @@ function useSlice<T>(getter: () => T, server: T): T {
 export const usePlayers = () => useSlice(store.getPlayers, EMPTY_PLAYERS);
 export const useWLs = () => useSlice(store.getWLs, EMPTY_WLS);
 export const useMatches = () => useSlice(store.getMatches, EMPTY_MATCHES);
+export const useLabNotes = () => useSlice(store.getLabNotes, EMPTY_LAB_NOTES);
 export const useClubCrest = () => useSlice<string | null>(store.getClubCrest, null);
 export const useClubName = () => useSlice<string>(store.getClubName, "");
 export const useOpponentCrest = () => useSlice<string | null>(store.getOpponentCrest, null);

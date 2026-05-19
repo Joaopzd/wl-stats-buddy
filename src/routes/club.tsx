@@ -5,7 +5,7 @@ import { ClubCrest } from "@/components/ClubCrest";
 import { ClubCrestUploader } from "@/components/ClubCrestUploader";
 import { RankBadge } from "@/components/RankBadge";
 import { useClubName, useMatches, usePlayers, useWLs, store } from "@/lib/store";
-import { aggregatePlayer, matchIsWin, rankFromWins, wlRecord, isCleanSheetEligible } from "@/lib/stats";
+import { aggregatePlayer, matchIsWin, onlyWL, rankFromWins, wlRecord, isCleanSheetEligible } from "@/lib/stats";
 import { Pencil, Check, X, Trophy, Shield, Users, Award, Medal } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
@@ -25,8 +25,11 @@ export const Route = createFileRoute("/club")({
 function ClubPage() {
   const clubName = useClubName();
   const players = usePlayers();
-  const matches = useMatches();
-  const wls = useWLs();
+  const allMatches = useMatches();
+  const allWls = useWLs();
+  // PZD Lab data is strictly excluded from the club Hall of Fame.
+  const matches = useMemo(() => onlyWL(allMatches), [allMatches]);
+  const wls = useMemo(() => onlyWL(allWls), [allWls]);
 
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState(clubName);
@@ -149,10 +152,11 @@ function ClubPage() {
       </h2>
       <p className="text-xs text-muted-foreground mb-4">Lifetime totals across every Weekend League recorded.</p>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
         <Tile label="Matches Played" value={stats.played} icon={<Trophy className="h-3.5 w-3.5" />} />
         <Tile label="Wins" value={stats.wins} icon={<Award className="h-3.5 w-3.5" />} accent />
         <Tile label="Losses" value={stats.losses} icon={<X className="h-3.5 w-3.5" />} danger />
+        <WinRateTile wins={stats.wins} played={stats.played} />
         <Tile label="Unique Players" value={stats.uniquePlayers} icon={<Users className="h-3.5 w-3.5" />} />
       </div>
 
@@ -199,6 +203,22 @@ function Tile({ label, value, icon, accent, danger }: { label: string; value: nu
       <div className={`font-display text-3xl stat-num mt-1 leading-none ${accent ? "text-primary" : danger ? "text-destructive" : ""}`}>
         {value}
       </div>
+    </div>
+  );
+}
+
+function WinRateTile({ wins, played }: { wins: number; played: number }) {
+  const pct = played ? (wins / played) * 100 : 0;
+  const tone = played === 0 ? "" : pct >= 60 ? "text-primary" : pct >= 40 ? "text-amber-300" : "text-destructive";
+  return (
+    <div className="surface-card p-4">
+      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+        <Trophy className="h-3.5 w-3.5" /> Win Rate
+      </div>
+      <div className={`font-display text-3xl stat-num mt-1 leading-none ${tone}`}>
+        {played ? `${pct.toFixed(1)}%` : "—"}
+      </div>
+      <div className="text-[10px] text-muted-foreground mt-1 font-mono">{wins}W / {played} MP</div>
     </div>
   );
 }

@@ -12,6 +12,22 @@ export function isGoalsConcededEligible(pos: Position): boolean {
   return GC_POSITIONS.includes(pos);
 }
 
+/** Keep only official WL data — strips PZD Lab test bench matches. */
+export function onlyWL<T extends { sessionType?: "WL" | "LAB" }>(rows: T[]): T[] {
+  return rows.filter((r) => (r.sessionType ?? "WL") === "WL");
+}
+/** Keep only LAB (PZD Lab) data. */
+export function onlyLab<T extends { sessionType?: "WL" | "LAB" }>(rows: T[]): T[] {
+  return rows.filter((r) => r.sessionType === "LAB");
+}
+
+/** Club-wide win rate across the given matches. */
+export function clubWinRate(matches: Match[]): { wins: number; played: number; rate: number } {
+  let wins = 0;
+  for (const m of matches) if (matchIsWin(m)) wins += 1;
+  return { wins, played: matches.length, rate: matches.length ? wins / matches.length : 0 };
+}
+
 export interface PlayerAgg {
   player: Player;
   matches: number;

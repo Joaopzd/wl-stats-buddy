@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers } from "@/lib/store";
-import { aggregateAllPlayers, type PlayerAgg } from "@/lib/stats";
-import { Sparkles, Trophy, Shield, Info } from "lucide-react";
+import { aggregateAllPlayers, onlyWL, type PlayerAgg } from "@/lib/stats";
+import { Sparkles, Trophy, Shield, Info, Zap } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 
@@ -23,7 +23,9 @@ export const Route = createFileRoute("/rankings")({
 
 function RankingsPage() {
   const players = usePlayers();
-  const matches = useMatches();
+  const allMatches = useMatches();
+  // PZD Lab matches are excluded from career leaderboards.
+  const matches = useMemo(() => onlyWL(allMatches), [allMatches]);
   const aggs = useMemo(() => aggregateAllPlayers(players, matches), [players, matches]);
 
   const eligible = useMemo(
@@ -55,6 +57,16 @@ function RankingsPage() {
     () => [...eligible].filter((a) => a.cleanSheets > 0).sort((a, b) => b.cleanSheets - a.cleanSheets || a.goalsConceded - b.goalsConceded).slice(0, 10),
     [eligible],
   );
+  // Super Subs: separate eligibility — at least 2 sub appearances is enough.
+  const topSubs = useMemo(
+    () =>
+      [...aggs]
+        .filter((a) => a.subMatches >= 2 && a.subImpact > 0)
+        .sort((a, b) => b.subImpact - a.subImpact)
+        .slice(0, 10),
+    [aggs],
+  );
+
 
   return (
     <AppShell>
@@ -113,6 +125,16 @@ function RankingsPage() {
           metricLabel="CS"
           empty="No clean sheets yet."
         />
+        <Leaderboard
+          title="Top 10 Super Subs"
+          icon={<Zap className="h-4 w-4" />}
+          rows={topSubs}
+          metric={(a) => a.subImpact.toFixed(2)}
+          metricLabel="Impact"
+          empty="No substitute appearances yet. Mark players as Sub when logging matches."
+          subline="Min 2 sub appearances · (G+A/app) × √apps × rating"
+        />
+
       </div>
     </AppShell>
   );

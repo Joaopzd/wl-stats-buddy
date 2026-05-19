@@ -172,6 +172,11 @@ function StatGrid({
         accent={agg.avgRating >= 8}
       />
       <Stat
+        label="Win %"
+        value={agg.matches > 0 ? `${(agg.winRate * 100).toFixed(0)}%` : "—"}
+        accent={agg.winRate >= 0.6}
+      />
+      <Stat
         label="MVP"
         value={agg.mvpCount}
         icon={<Trophy className="h-3 w-3 text-amber-300" />}
@@ -181,6 +186,12 @@ function StatGrid({
         value={agg.wins}
         icon={<Star className="h-3 w-3 text-primary" />}
       />
+      <Stat
+        label="Sub Impact"
+        value={agg.subMatches > 0 ? agg.subImpact.toFixed(2) : "—"}
+        accent={agg.subImpact >= 1.5}
+      />
+
       {isCleanSheetEligible(player.position) && (
         <Stat
           label="CS"

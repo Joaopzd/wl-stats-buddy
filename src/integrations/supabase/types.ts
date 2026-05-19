@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           data: Json
           id: string
+          session_type: string
           updated_at: string
           user_id: string
           wl_id: string
@@ -27,6 +28,7 @@ export type Database = {
           created_at?: string
           data: Json
           id: string
+          session_type?: string
           updated_at?: string
           user_id: string
           wl_id: string
@@ -35,9 +37,31 @@ export type Database = {
           created_at?: string
           data?: Json
           id?: string
+          session_type?: string
           updated_at?: string
           user_id?: string
           wl_id?: string
+        }
+        Relationships: []
+      }
+      player_lab_notes: {
+        Row: {
+          notes: string
+          player_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          notes?: string
+          player_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          notes?: string
+          player_id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -101,6 +125,7 @@ export type Database = {
           data: Json
           id: string
           number: number
+          session_type: string
           updated_at: string
           user_id: string
         }
@@ -109,6 +134,7 @@ export type Database = {
           data: Json
           id: string
           number: number
+          session_type?: string
           updated_at?: string
           user_id: string
         }
@@ -117,6 +143,7 @@ export type Database = {
           data?: Json
           id?: string
           number?: number
+          session_type?: string
           updated_at?: string
           user_id?: string
         }
