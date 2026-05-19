@@ -1,5 +1,9 @@
 export type PlayerRole = "starter" | "sub";
 
+export type SessionType = "WL" | "LAB";
+
+export type LabMatchType = "Rivals Test" | "Friendly" | "Qualifiers";
+
 export type Position =
   | "GK"
   | "LB" | "CB" | "RB"
