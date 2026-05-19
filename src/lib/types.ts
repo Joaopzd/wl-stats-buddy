@@ -106,6 +106,8 @@ export interface WeekendLeague {
   squadPlayerIds: string[];
   createdAt: number;
   closed?: boolean;
+  /** "WL" = official, "LAB" = PZD Lab placeholder WL. Defaults to "WL". */
+  sessionType?: SessionType;
   /** Tactical formation chosen for this WL. Optional for legacy WLs. */
   formation?: FormationName;
   /** Map slot id (e.g. "ST1") → playerId. Starting 11. */
