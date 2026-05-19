@@ -73,15 +73,25 @@ async function maybeUploadImage(
 
 async function loadAll() {
   if (!userId) return;
-  const [p, w, m, s] = await Promise.all([
+  const [p, w, m, s, ln] = await Promise.all([
     supabase.from("players").select("*").order("created_at"),
     supabase.from("weekend_leagues").select("*").order("number"),
     supabase.from("matches").select("*").order("created_at"),
     supabase.from("settings").select("*").eq("user_id", userId).maybeSingle(),
+    supabase.from("player_lab_notes").select("player_id, notes"),
   ]);
   state.players = ((p.data ?? []) as unknown as Array<{ data: Player }>).map((r) => r.data);
-  state.wls = ((w.data ?? []) as unknown as Array<{ data: WeekendLeague }>).map((r) => r.data);
-  state.matches = ((m.data ?? []) as unknown as Array<{ data: Match }>).map((r) => r.data);
+  state.wls = ((w.data ?? []) as unknown as Array<{ data: WeekendLeague; session_type: string }>).map(
+    (r) => ({ ...r.data, sessionType: (r.session_type as "WL" | "LAB") ?? r.data.sessionType ?? "WL" }),
+  );
+  state.matches = ((m.data ?? []) as unknown as Array<{ data: Match; session_type: string }>).map(
+    (r) => ({ ...r.data, sessionType: (r.session_type as "WL" | "LAB") ?? r.data.sessionType ?? "WL" }),
+  );
+  const notes: Record<string, string> = {};
+  for (const row of (ln.data ?? []) as Array<{ player_id: string; notes: string }>) {
+    notes[row.player_id] = row.notes ?? "";
+  }
+  state.labNotes = notes;
   if (s.data) {
     state.clubName = s.data.club_name ?? "";
     state.opponentName = s.data.opponent_name ?? DEFAULT_OPPONENT;
