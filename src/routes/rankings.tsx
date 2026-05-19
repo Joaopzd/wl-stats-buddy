@@ -125,6 +125,16 @@ function RankingsPage() {
           metricLabel="CS"
           empty="No clean sheets yet."
         />
+        <Leaderboard
+          title="Top 10 Super Subs"
+          icon={<Zap className="h-4 w-4" />}
+          rows={topSubs}
+          metric={(a) => a.subImpact.toFixed(2)}
+          metricLabel="Impact"
+          empty="No substitute appearances yet. Mark players as Sub when logging matches."
+          subline="Min 2 sub appearances · (G+A/app) × √apps × rating"
+        />
+
       </div>
     </AppShell>
   );
