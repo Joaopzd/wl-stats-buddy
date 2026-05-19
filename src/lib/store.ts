@@ -419,17 +419,26 @@ export const store = {
     })();
   },
 
-  getOpponentName: () => state.opponentName,
-  setOpponentName(name: string) {
-    const prev = state.opponentName;
-    const trimmed = name.trim() || DEFAULT_OPPONENT;
-    state.opponentName = trimmed;
+  // ----- PZD Lab notes ---------------------------------------------
+  getLabNotes: () => state.labNotes,
+  getLabNote: (playerId: string) => state.labNotes[playerId] ?? "",
+  setLabNote(playerId: string, notes: string) {
+    const prev = state.labNotes[playerId] ?? "";
+    state.labNotes = { ...state.labNotes, [playerId]: notes };
     emit();
-    upsertSettings({ opponent_name: trimmed }).catch((e) => {
-      state.opponentName = prev;
-      emit();
-      reportError("Falha ao salvar nome do adversário", e);
-    });
+    (async () => {
+      try {
+        if (!userId) throw new Error("Not signed in");
+        const { error } = await supabase
+          .from("player_lab_notes")
+          .upsert({ user_id: userId, player_id: playerId, notes }, { onConflict: "user_id,player_id" });
+        if (error) throw new Error(error.message);
+      } catch (e) {
+        state.labNotes = { ...state.labNotes, [playerId]: prev };
+        emit();
+        reportError("Falha ao salvar anotação", e);
+      }
+    })();
   },
 };
 
@@ -441,6 +450,7 @@ function useSlice<T>(getter: () => T, server: T): T {
 export const usePlayers = () => useSlice(store.getPlayers, EMPTY_PLAYERS);
 export const useWLs = () => useSlice(store.getWLs, EMPTY_WLS);
 export const useMatches = () => useSlice(store.getMatches, EMPTY_MATCHES);
+export const useLabNotes = () => useSlice(store.getLabNotes, EMPTY_LAB_NOTES);
 export const useClubCrest = () => useSlice<string | null>(store.getClubCrest, null);
 export const useClubName = () => useSlice<string>(store.getClubName, "");
 export const useOpponentCrest = () => useSlice<string | null>(store.getOpponentCrest, null);
