@@ -419,6 +419,20 @@ export const store = {
     })();
   },
 
+  getOpponentName: () => state.opponentName,
+  setOpponentName(name: string) {
+    const prev = state.opponentName;
+    const trimmed = name.trim() || DEFAULT_OPPONENT;
+    state.opponentName = trimmed;
+    emit();
+    upsertSettings({ opponent_name: trimmed }).catch((e) => {
+      state.opponentName = prev;
+      emit();
+      reportError("Falha ao salvar nome do adversário", e);
+    });
+  },
+
+
   // ----- PZD Lab notes ---------------------------------------------
   getLabNotes: () => state.labNotes,
   getLabNote: (playerId: string) => state.labNotes[playerId] ?? "",
