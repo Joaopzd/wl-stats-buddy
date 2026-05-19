@@ -23,7 +23,9 @@ export const Route = createFileRoute("/rankings")({
 
 function RankingsPage() {
   const players = usePlayers();
-  const matches = useMatches();
+  const allMatches = useMatches();
+  // PZD Lab matches are excluded from career leaderboards.
+  const matches = useMemo(() => onlyWL(allMatches), [allMatches]);
   const aggs = useMemo(() => aggregateAllPlayers(players, matches), [players, matches]);
 
   const eligible = useMemo(
