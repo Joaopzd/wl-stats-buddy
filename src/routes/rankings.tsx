@@ -57,6 +57,16 @@ function RankingsPage() {
     () => [...eligible].filter((a) => a.cleanSheets > 0).sort((a, b) => b.cleanSheets - a.cleanSheets || a.goalsConceded - b.goalsConceded).slice(0, 10),
     [eligible],
   );
+  // Super Subs: separate eligibility — at least 2 sub appearances is enough.
+  const topSubs = useMemo(
+    () =>
+      [...aggs]
+        .filter((a) => a.subMatches >= 2 && a.subImpact > 0)
+        .sort((a, b) => b.subImpact - a.subImpact)
+        .slice(0, 10),
+    [aggs],
+  );
+
 
   return (
     <AppShell>
