@@ -87,6 +87,12 @@ export interface Match {
   mvpPlayerId?: string;
   /** Selected generic opponent crest id (see lib/crests). */
   opponentCrestId?: string;
+  /** "WL" = official Weekend League data, "LAB" = PZD Lab test bench. Defaults to "WL". */
+  sessionType?: SessionType;
+  /** For LAB matches only: the kind of test match. */
+  labMatchType?: LabMatchType;
+  /** For LAB matches only: the experimental formation tested (free text). */
+  labFormation?: string;
   createdAt: number;
 }
 
