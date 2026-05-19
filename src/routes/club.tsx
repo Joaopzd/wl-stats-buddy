@@ -152,10 +152,11 @@ function ClubPage() {
       </h2>
       <p className="text-xs text-muted-foreground mb-4">Lifetime totals across every Weekend League recorded.</p>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
         <Tile label="Matches Played" value={stats.played} icon={<Trophy className="h-3.5 w-3.5" />} />
         <Tile label="Wins" value={stats.wins} icon={<Award className="h-3.5 w-3.5" />} accent />
         <Tile label="Losses" value={stats.losses} icon={<X className="h-3.5 w-3.5" />} danger />
+        <WinRateTile wins={stats.wins} played={stats.played} />
         <Tile label="Unique Players" value={stats.uniquePlayers} icon={<Users className="h-3.5 w-3.5" />} />
       </div>
 
