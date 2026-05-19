@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers } from "@/lib/store";
-import { aggregateAllPlayers, type PlayerAgg } from "@/lib/stats";
-import { Sparkles, Trophy, Shield, Info } from "lucide-react";
+import { aggregateAllPlayers, onlyWL, type PlayerAgg } from "@/lib/stats";
+import { Sparkles, Trophy, Shield, Info, Zap } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 
