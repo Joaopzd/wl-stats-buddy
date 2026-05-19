@@ -5,7 +5,7 @@ import { ClubCrest } from "@/components/ClubCrest";
 import { ClubCrestUploader } from "@/components/ClubCrestUploader";
 import { RankBadge } from "@/components/RankBadge";
 import { useClubName, useMatches, usePlayers, useWLs, store } from "@/lib/store";
-import { aggregatePlayer, matchIsWin, rankFromWins, wlRecord, isCleanSheetEligible } from "@/lib/stats";
+import { aggregatePlayer, matchIsWin, onlyWL, rankFromWins, wlRecord, isCleanSheetEligible } from "@/lib/stats";
 import { Pencil, Check, X, Trophy, Shield, Users, Award, Medal } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
