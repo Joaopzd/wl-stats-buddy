@@ -25,8 +25,11 @@ export const Route = createFileRoute("/club")({
 function ClubPage() {
   const clubName = useClubName();
   const players = usePlayers();
-  const matches = useMatches();
-  const wls = useWLs();
+  const allMatches = useMatches();
+  const allWls = useWLs();
+  // PZD Lab data is strictly excluded from the club Hall of Fame.
+  const matches = useMemo(() => onlyWL(allMatches), [allMatches]);
+  const wls = useMemo(() => onlyWL(allWls), [allWls]);
 
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState(clubName);
