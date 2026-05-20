@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers, useWLs, useStoreLoading, store } from "@/lib/store";
 import { aggregatePlayer, isCleanSheetEligible, isGoalsConcededEligible } from "@/lib/stats";
+import { RatingDisplay } from "@/components/RatingDisplay";
 import { PlayerCard } from "@/components/PlayerCard";
 import { PlayerDetailModal } from "@/components/PlayerDetailModal";
 import { Plus, Trash2, Pencil, X, Search } from "lucide-react";
@@ -264,13 +265,11 @@ function PlayersPage() {
                       {isGoalsConcededEligible(a.player.position) ? a.goalsConceded : <span className="text-muted-foreground/40">—</span>}
                     </td>
                     <td className="p-3 text-right stat-num">
-                      {a.avgRating > 0 ? (
-                        <span className={a.avgRating >= 8 ? "text-primary font-semibold" : a.avgRating < 6 ? "text-destructive" : ""}>
-                          {a.avgRating.toFixed(2)}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground/60">—</span>
-                      )}
+                      <RatingDisplay
+                        matches={a.matches}
+                        ratedMatches={a.ratedMatches}
+                        avgRating={a.avgRating}
+                      />
                     </td>
                     <td className="p-3 text-right stat-num">
                       {a.subMatches > 0 ? (

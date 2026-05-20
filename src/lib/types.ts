@@ -1,9 +1,5 @@
 export type PlayerRole = "starter" | "sub";
 
-export type SessionType = "WL" | "LAB";
-
-export type LabMatchType = "Rivals Test" | "Friendly" | "Qualifiers";
-
 export type Position =
   | "GK"
   | "LB" | "CB" | "RB"
@@ -87,12 +83,6 @@ export interface Match {
   mvpPlayerId?: string;
   /** Selected generic opponent crest id (see lib/crests). */
   opponentCrestId?: string;
-  /** "WL" = official Weekend League data, "LAB" = PZD Lab test bench. Defaults to "WL". */
-  sessionType?: SessionType;
-  /** For LAB matches only: the kind of test match. */
-  labMatchType?: LabMatchType;
-  /** For LAB matches only: the experimental formation tested (free text). */
-  labFormation?: string;
   createdAt: number;
 }
 
@@ -106,8 +96,6 @@ export interface WeekendLeague {
   squadPlayerIds: string[];
   createdAt: number;
   closed?: boolean;
-  /** "WL" = official, "LAB" = PZD Lab placeholder WL. Defaults to "WL". */
-  sessionType?: SessionType;
   /** Tactical formation chosen for this WL. Optional for legacy WLs. */
   formation?: FormationName;
   /** Map slot id (e.g. "ST1") → playerId. Starting 11. */

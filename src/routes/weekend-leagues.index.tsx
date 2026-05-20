@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, useWLs, store, usePlayers } from "@/lib/store";
-import { wlRecord, rankFromWins, onlyWL } from "@/lib/stats";
+import { wlRecord, rankFromWins } from "@/lib/stats";
 import { wlLabel } from "@/lib/types";
 import { Plus, ChevronRight, Trophy, Trash2, ClipboardList } from "lucide-react";
 import { RankBadge } from "@/components/RankBadge";
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/weekend-leagues/")({
 });
 
 function WLList() {
-  const wls = onlyWL(useWLs());
+  const wls = useWLs();
   const matches = useMatches();
   const players = usePlayers();
   const [creating, setCreating] = useState(false);

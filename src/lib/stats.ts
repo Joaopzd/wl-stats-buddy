@@ -12,13 +12,16 @@ export function isGoalsConcededEligible(pos: Position): boolean {
   return GC_POSITIONS.includes(pos);
 }
 
-/** Keep only official WL data — strips PZD Lab test bench matches. */
-export function onlyWL<T extends { sessionType?: "WL" | "LAB" }>(rows: T[]): T[] {
-  return rows.filter((r) => (r.sessionType ?? "WL") === "WL");
-}
-/** Keep only LAB (PZD Lab) data. */
-export function onlyLab<T extends { sessionType?: "WL" | "LAB" }>(rows: T[]): T[] {
-  return rows.filter((r) => r.sessionType === "LAB");
+/** Performance tiers based on average rating with a sample-size guard. */
+export type PerformanceStatus = "ok" | "caution" | "critical" | "insufficient";
+/** Minimum matches before underperformance warnings apply. */
+export const UNDERPERFORM_MIN_MATCHES = 9;
+export function performanceStatus(agg: { matches: number; avgRating: number; ratedMatches: number }): PerformanceStatus {
+  if (agg.matches < UNDERPERFORM_MIN_MATCHES) return "insufficient";
+  if (agg.ratedMatches === 0 || agg.avgRating <= 0) return "insufficient";
+  if (agg.avgRating < 6.0) return "critical";
+  if (agg.avgRating < 6.5) return "caution";
+  return "ok";
 }
 
 /** Club-wide win rate across the given matches. */

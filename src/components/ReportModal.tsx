@@ -4,7 +4,9 @@ import { SoccerBall } from "./icons/SoccerBall";
 import { SoccerBoot } from "./icons/SoccerBoot";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
-import { aggregatePlayer, rankFromWins, type WLRecord } from "@/lib/stats";
+import { aggregatePlayer, performanceStatus, rankFromWins, type WLRecord } from "@/lib/stats";
+import { RatingDisplay } from "@/components/RatingDisplay";
+import { AlertTriangle } from "lucide-react";
 import { RankBadge } from "@/components/RankBadge";
 
 export function ReportModal({
@@ -231,22 +233,28 @@ function SquadPerformance({ aggs }: { aggs: ReturnType<typeof aggregatePlayer>[]
       </div>
       <div className="divide-y divide-border/30">
         {rows.map((a, i) => {
-          const r = a.avgRating;
-          const tone = r >= 8 ? "text-primary" : r >= 6 ? "text-foreground" : r > 0 ? "text-destructive" : "text-muted-foreground";
+          const status = performanceStatus(a);
+          const rowCls =
+            status === "critical"
+              ? "bg-warn-critical/5"
+              : status === "caution"
+                ? "bg-warn-caution/5"
+                : "";
           return (
-            <div key={a.player.id} className="grid grid-cols-12 gap-2 items-center px-2 py-1.5 text-xs">
+            <div key={a.player.id} className={`grid grid-cols-12 gap-2 items-center px-2 py-1.5 text-xs ${rowCls}`}>
               <div className="col-span-5 flex items-center gap-2 min-w-0">
                 <span className="text-[9px] font-mono text-muted-foreground w-4 shrink-0">{i + 1}</span>
                 <span className="font-semibold truncate">{a.player.name}</span>
                 {i === 0 && <Crown className="h-3 w-3 text-primary shrink-0" />}
+                {status === "critical" && <AlertTriangle className="h-3 w-3 text-warn-critical shrink-0" />}
               </div>
               <div className="col-span-1 text-center stat-num text-foreground">{a.player.overall}</div>
               <div className="col-span-1 text-center text-[10px] font-mono text-muted-foreground uppercase">{a.player.position}</div>
               <div className="col-span-1 text-center stat-num">{a.goals}</div>
               <div className="col-span-1 text-center stat-num">{a.assists}</div>
               <div className="col-span-1 text-center stat-num text-muted-foreground">{a.matches}</div>
-              <div className={`col-span-2 text-right font-display stat-num text-base ${tone}`}>
-                {r > 0 ? r.toFixed(2) : "—"}
+              <div className="col-span-2 text-right font-display stat-num text-base">
+                <RatingDisplay matches={a.matches} ratedMatches={a.ratedMatches} avgRating={a.avgRating} size="md" />
               </div>
             </div>
           );

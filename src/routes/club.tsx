@@ -5,7 +5,7 @@ import { ClubCrest } from "@/components/ClubCrest";
 import { ClubCrestUploader } from "@/components/ClubCrestUploader";
 import { RankBadge } from "@/components/RankBadge";
 import { useClubName, useMatches, usePlayers, useWLs, store } from "@/lib/store";
-import { aggregatePlayer, matchIsWin, onlyWL, rankFromWins, wlRecord, isCleanSheetEligible } from "@/lib/stats";
+import { aggregatePlayer, matchIsWin, rankFromWins, wlRecord, isCleanSheetEligible } from "@/lib/stats";
 import { Pencil, Check, X, Trophy, Shield, Users, Award, Medal } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
@@ -25,11 +25,8 @@ export const Route = createFileRoute("/club")({
 function ClubPage() {
   const clubName = useClubName();
   const players = usePlayers();
-  const allMatches = useMatches();
-  const allWls = useWLs();
-  // PZD Lab data is strictly excluded from the club Hall of Fame.
-  const matches = useMemo(() => onlyWL(allMatches), [allMatches]);
-  const wls = useMemo(() => onlyWL(allWls), [allWls]);
+  const matches = useMatches();
+  const wls = useWLs();
 
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState(clubName);
