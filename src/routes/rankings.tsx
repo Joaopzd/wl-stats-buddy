@@ -3,7 +3,8 @@ import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers } from "@/lib/store";
 import { aggregateAllPlayers, performanceStatus, type PlayerAgg } from "@/lib/stats";
-import { Sparkles, Trophy, Shield, Info, Zap } from "lucide-react";
+import { RatingDisplay } from "@/components/RatingDisplay";
+import { Sparkles, Trophy, Shield, Info, Zap, AlertTriangle } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 
@@ -102,10 +103,10 @@ function RankingsPage() {
           title="Top 10 Performance"
           icon={<Sparkles className="h-4 w-4" />}
           rows={topRated}
-          metric={(a) => a.avgRating.toFixed(2)}
+          metric={(a) => <RatingDisplay matches={a.matches} ratedMatches={a.ratedMatches} avgRating={a.avgRating} />}
           metricLabel="Avg Rating"
           empty={`Need ${MIN_MATCHES}+ matches with a rating.`}
-          subline={`Min ${MIN_MATCHES} matches`}
+          subline={`Min ${MIN_MATCHES} matches · ⚠ flags Avg < 6.0`}
         />
         <Leaderboard
           title="Top 10 MVPs"
@@ -144,7 +145,7 @@ function Leaderboard({
   title: string;
   icon: React.ReactNode;
   rows: PlayerAgg[];
-  metric: (a: PlayerAgg) => string;
+  metric: (a: PlayerAgg) => React.ReactNode;
   metricLabel: string;
   empty: string;
   subline?: string;
@@ -170,11 +171,23 @@ function Leaderboard({
               rank === 2 ? "text-zinc-300" :
               rank === 3 ? "text-amber-700" :
               "text-muted-foreground";
+            const status = performanceStatus(a);
+            const rowAlert =
+              status === "critical"
+                ? "border-warn-critical/60 bg-warn-critical/5"
+                : status === "caution"
+                  ? "border-warn-caution/50 bg-warn-caution/5"
+                  : rank <= 3
+                    ? "bg-primary/5 border-primary/20"
+                    : "bg-background/50 border-border/40";
             return (
-              <li key={a.player.id} className={`flex items-center gap-3 px-3 py-2 rounded-md transition ${rank <= 3 ? "bg-primary/5 border border-primary/20" : "bg-background/50 border border-border/40"}`}>
+              <li key={a.player.id} className={`flex items-center gap-3 px-3 py-2 rounded-md transition border ${rowAlert}`}>
                 <div className={`stat-num font-display text-xl w-7 text-right shrink-0 ${medal}`}>{rank}</div>
                 <div className="min-w-0 flex-1">
-                  <div className="font-semibold truncate">{a.player.name}</div>
+                  <div className="font-semibold truncate flex items-center gap-1.5">
+                    {status === "critical" && <AlertTriangle className="h-3 w-3 text-warn-critical shrink-0" />}
+                    {a.player.name}
+                  </div>
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">
                     {a.player.position} · {a.player.overall} · {a.matches} apps
                   </div>
