@@ -3,6 +3,7 @@ import { X, Trophy, Shield, Star } from "lucide-react";
 import { PlayerCard } from "@/components/PlayerCard";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
+import { RatingDisplay } from "@/components/RatingDisplay";
 import {
   aggregatePlayer,
   isCleanSheetEligible,
@@ -168,7 +169,7 @@ function StatGrid({
       <Stat label="A" value={agg.assists} icon={<SoccerBoot className="h-3 w-3" />} />
       <Stat
         label="Rating"
-        value={agg.avgRating > 0 ? agg.avgRating.toFixed(2) : "—"}
+        value={<RatingDisplay matches={agg.matches} ratedMatches={agg.ratedMatches} avgRating={agg.avgRating} size="md" />}
         accent={agg.avgRating >= 8}
       />
       <Stat
@@ -213,7 +214,7 @@ function Stat({
   accent,
 }: {
   label: string;
-  value: number | string;
+  value: number | string | React.ReactNode;
   icon?: React.ReactNode;
   accent?: boolean;
 }) {
