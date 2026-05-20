@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { StatTile } from "@/components/StatTile";
 import { useMatches, usePlayers, useWLs } from "@/lib/store";
-import { aggregateAllPlayers, aggregatePlayer, onlyWL, platformRecords, rankFromWins, wlRecord } from "@/lib/stats";
+import { aggregateAllPlayers, aggregatePlayer, performanceStatus, platformRecords, rankFromWins, UNDERPERFORM_MIN_MATCHES, wlRecord } from "@/lib/stats";
 import { Trophy, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, Gamepad2, Users, Crown } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
@@ -29,12 +29,9 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
-  const allWls = useWLs();
-  const allMatches = useMatches();
+  const wls = useWLs();
+  const matches = useMatches();
   const players = usePlayers();
-  // Strict isolation: PZD Lab data never affects the main dashboard.
-  const wls = useMemo(() => onlyWL(allWls), [allWls]);
-  const matches = useMemo(() => onlyWL(allMatches), [allMatches]);
 
   const sortedWLs = useMemo(() => [...wls].sort((a, b) => b.number - a.number), [wls]);
   const lastWL = sortedWLs[0];

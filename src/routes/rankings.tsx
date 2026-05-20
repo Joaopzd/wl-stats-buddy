@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers } from "@/lib/store";
-import { aggregateAllPlayers, onlyWL, type PlayerAgg } from "@/lib/stats";
+import { aggregateAllPlayers, performanceStatus, type PlayerAgg } from "@/lib/stats";
 import { Sparkles, Trophy, Shield, Info, Zap } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
@@ -23,9 +23,7 @@ export const Route = createFileRoute("/rankings")({
 
 function RankingsPage() {
   const players = usePlayers();
-  const allMatches = useMatches();
-  // PZD Lab matches are excluded from career leaderboards.
-  const matches = useMemo(() => onlyWL(allMatches), [allMatches]);
+  const matches = useMatches();
   const aggs = useMemo(() => aggregateAllPlayers(players, matches), [players, matches]);
 
   const eligible = useMemo(
