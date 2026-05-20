@@ -40,6 +40,8 @@
   --color-ring: var(--ring);
   --color-pitch: var(--pitch);
   --color-pitch-line: var(--pitch-line);
+  --color-warn-critical: var(--warn-critical);
+  --color-warn-caution: var(--warn-caution);
 
   /* Glow intensity reduced ~60% for the Midnight Stealth aesthetic. */
   --shadow-glow: 0 0 0 1px color-mix(in oklab, var(--primary) 16%, transparent), 0 6px 22px -10px color-mix(in oklab, var(--primary) 20%, transparent);
@@ -83,6 +85,10 @@
   --border: oklch(0.32 0.03 257 / 0.55);
   --input: oklch(0.26 0.03 257);
   --ring: oklch(0.69 0.14 162);
+
+  /* Underperforming Warning System tokens (dark theme defaults) */
+  --warn-critical: oklch(0.65 0.20 27); /* legible crimson on dark */
+  --warn-caution: oklch(0.78 0.14 75); /* amber */
 
   --pitch: oklch(0.30 0.09 150);
   --pitch-line: oklch(0.92 0.013 247 / 0.35);
