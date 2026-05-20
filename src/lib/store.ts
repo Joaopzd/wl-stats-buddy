@@ -226,7 +226,6 @@ export const store = {
           user_id: userId,
           number: w.number,
           data: w as unknown as never,
-          session_type: w.sessionType ?? "WL",
         } as never);
         if (error) throw new Error(error.message);
       } catch (e) {
@@ -294,7 +293,6 @@ export const store = {
           user_id: userId,
           wl_id: m.wlId,
           data: m as unknown as never,
-          session_type: m.sessionType ?? "WL",
         } as never);
         if (error) throw new Error(error.message);
       } catch (e) {
@@ -420,28 +418,6 @@ export const store = {
     });
   },
 
-
-  // ----- PZD Lab notes ---------------------------------------------
-  getLabNotes: () => state.labNotes,
-  getLabNote: (playerId: string) => state.labNotes[playerId] ?? "",
-  setLabNote(playerId: string, notes: string) {
-    const prev = state.labNotes[playerId] ?? "";
-    state.labNotes = { ...state.labNotes, [playerId]: notes };
-    emit();
-    (async () => {
-      try {
-        if (!userId) throw new Error("Not signed in");
-        const { error } = await supabase
-          .from("player_lab_notes")
-          .upsert({ user_id: userId, player_id: playerId, notes }, { onConflict: "user_id,player_id" });
-        if (error) throw new Error(error.message);
-      } catch (e) {
-        state.labNotes = { ...state.labNotes, [playerId]: prev };
-        emit();
-        reportError("Falha ao salvar anotação", e);
-      }
-    })();
-  },
 };
 
 // ----- React hooks (stable empty fallback for SSR) ---------------------
@@ -452,7 +428,7 @@ function useSlice<T>(getter: () => T, server: T): T {
 export const usePlayers = () => useSlice(store.getPlayers, EMPTY_PLAYERS);
 export const useWLs = () => useSlice(store.getWLs, EMPTY_WLS);
 export const useMatches = () => useSlice(store.getMatches, EMPTY_MATCHES);
-export const useLabNotes = () => useSlice(store.getLabNotes, EMPTY_LAB_NOTES);
+
 export const useClubCrest = () => useSlice<string | null>(store.getClubCrest, null);
 export const useClubName = () => useSlice<string>(store.getClubName, "");
 export const useOpponentCrest = () => useSlice<string | null>(store.getOpponentCrest, null);
