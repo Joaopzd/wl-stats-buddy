@@ -106,7 +106,8 @@ function Dashboard() {
   }, [lastWL, matches, players]);
 
   const empty = wls.length === 0 && players.length === 0;
-  // Squad Alerts: starters with 9+ matches who are statistically underperforming.
+  // Squad Alerts: starters with 9+ matches who are statistically underperforming
+  // (avg rating below 6.5 — covers both "caution" and "critical" tiers).
   const squadAlerts = useMemo(() => {
     const starterIds = new Set<string>();
     for (const wl of wls) {
@@ -115,7 +116,10 @@ function Dashboard() {
     }
     return aggs
       .filter((a) => starterIds.has(a.player.id))
-      .filter((a) => performanceStatus(a) === "critical")
+      .filter((a) => {
+        const s = performanceStatus(a);
+        return s === "critical" || s === "caution";
+      })
       .sort((x, y) => x.avgRating - y.avgRating);
   }, [aggs, wls]);
 
