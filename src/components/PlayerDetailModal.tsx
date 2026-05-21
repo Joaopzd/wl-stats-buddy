@@ -1,13 +1,15 @@
 import { useMemo } from "react";
-import { X, Trophy, Shield, Star } from "lucide-react";
+import { X, Trophy, Shield, Star, AlertTriangle } from "lucide-react";
 import { PlayerCard } from "@/components/PlayerCard";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 import { RatingDisplay } from "@/components/RatingDisplay";
 import {
   aggregatePlayer,
+  eyeTestMismatch,
   isCleanSheetEligible,
   isGoalsConcededEligible,
+  managerRatingAggregate,
 } from "@/lib/stats";
 import { wlLabel } from "@/lib/types";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
