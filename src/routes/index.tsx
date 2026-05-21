@@ -106,7 +106,8 @@ function Dashboard() {
   }, [lastWL, matches, players]);
 
   const empty = wls.length === 0 && players.length === 0;
-  // Squad Alerts: starters with 9+ matches who are statistically underperforming.
+  // Squad Alerts: starters with 9+ matches who are statistically underperforming
+  // (avg rating below 6.5 — covers both "caution" and "critical" tiers).
   const squadAlerts = useMemo(() => {
     const starterIds = new Set<string>();
     for (const wl of wls) {
@@ -115,7 +116,10 @@ function Dashboard() {
     }
     return aggs
       .filter((a) => starterIds.has(a.player.id))
-      .filter((a) => performanceStatus(a) === "critical")
+      .filter((a) => {
+        const s = performanceStatus(a);
+        return s === "critical" || s === "caution";
+      })
       .sort((x, y) => x.avgRating - y.avgRating);
   }, [aggs, wls]);
 
@@ -245,6 +249,38 @@ function Dashboard() {
           <AICoach wls={wls} matches={matches} players={players} />
 
           <WLTrendsChart wls={wls} matches={matches} />
+
+          {squadAlerts.length > 0 && (
+            <div className="surface-card p-5 mb-8 border-l-4 border-l-warn-caution">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[10px] uppercase tracking-[0.3em] text-warn-caution font-bold flex items-center gap-2">
+                  <AlertTriangle className="h-3.5 w-3.5" /> Squad Alerts
+                </h3>
+                <span className="text-[10px] text-muted-foreground">
+                  Starters · avg rating below 6.5 (min. {UNDERPERFORM_MIN_MATCHES} apps)
+                </span>
+              </div>
+              <div className="divide-y divide-border/40">
+                {squadAlerts.map((a) => {
+                  const critical = performanceStatus(a) === "critical";
+                  return (
+                    <div key={a.player.id} className="flex items-center justify-between py-2 text-sm">
+                      <div className="flex items-center gap-2 min-w-0">
+                        {critical && <AlertTriangle className="h-3.5 w-3.5 text-warn-critical shrink-0" />}
+                        <span className="font-semibold truncate">{a.player.name}</span>
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">
+                          {a.player.position} · {a.matches} apps
+                        </span>
+                      </div>
+                      <span className={`font-display stat-num text-lg ${critical ? "text-warn-critical" : "text-warn-caution"}`}>
+                        {a.avgRating.toFixed(2)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           <h2 className="font-display text-2xl tracking-wider mb-4 flex items-center gap-2">
             <Star className="h-5 w-5 text-primary" /> Club Legends

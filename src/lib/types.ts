@@ -104,6 +104,8 @@ export interface WeekendLeague {
   benchPlayerIds?: string[];
   /** Player IDs added via the end-of-WL Player Pick (Red Pick) flow. */
   playerPickIds?: string[];
+  /** Subjective post-WL manager rating per player (0–10, 0.5 increments). */
+  managerRatings?: Record<string, number>;
 }
 
 /** Convenience: render the user-facing label for a WL. */
