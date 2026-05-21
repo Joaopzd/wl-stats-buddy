@@ -24,6 +24,39 @@ export function performanceStatus(agg: { matches: number; avgRating: number; rat
   return "ok";
 }
 
+/** Career manager-rating aggregate across all WLs that scored this player. */
+export function managerRatingAggregate(
+  playerId: string,
+  wls: WeekendLeague[],
+): { avg: number; count: number } {
+  let sum = 0, count = 0;
+  for (const wl of wls) {
+    const r = wl.managerRatings?.[playerId];
+    if (typeof r === "number" && r > 0) { sum += r; count += 1; }
+  }
+  return { avg: count ? sum / count : 0, count };
+}
+
+/**
+ * Eye-test warning: player looks good on paper (system rating ≥ 7.0 with the
+ * usual 9-match sample) but the manager rated them below 6.0 across at least
+ * 3 WLs. Surfaces tactical mismatches the automated stats miss.
+ */
+export function eyeTestMismatch(
+  systemAvg: number,
+  matches: number,
+  managerAvg: number,
+  managerCount: number,
+): boolean {
+  return (
+    matches >= UNDERPERFORM_MIN_MATCHES &&
+    systemAvg >= 7.0 &&
+    managerCount >= 3 &&
+    managerAvg > 0 &&
+    managerAvg < 6.0
+  );
+}
+
 /** Club-wide win rate across the given matches. */
 export function clubWinRate(matches: Match[]): { wins: number; played: number; rate: number } {
   let wins = 0;
