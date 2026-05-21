@@ -179,9 +179,13 @@ function Section({
 function StatGrid({
   agg,
   player,
+  managerAvg,
+  managerCount,
 }: {
   agg: ReturnType<typeof aggregatePlayer>;
   player: Player;
+  managerAvg: number;
+  managerCount: number;
 }) {
   return (
     <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
@@ -189,9 +193,14 @@ function StatGrid({
       <Stat label="G" value={agg.goals} icon={<SoccerBall className="h-3 w-3" />} accent />
       <Stat label="A" value={agg.assists} icon={<SoccerBoot className="h-3 w-3" />} />
       <Stat
-        label="Rating"
+        label="System"
         value={<RatingDisplay matches={agg.matches} ratedMatches={agg.ratedMatches} avgRating={agg.avgRating} size="md" />}
         accent={agg.avgRating >= 8}
+      />
+      <Stat
+        label="Manager"
+        value={managerCount > 0 ? managerAvg.toFixed(2) : "—"}
+        accent={managerAvg >= 8}
       />
       <Stat
         label="Win %"
