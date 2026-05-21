@@ -45,6 +45,13 @@ export function PlayerDetailModal({
     [player, lastWL],
   );
 
+  const managerCareer = useMemo(() => managerRatingAggregate(player.id, wls), [player.id, wls]);
+  const managerLast = useMemo(() => {
+    if (!lastWL) return { avg: 0, count: 0 };
+    return managerRatingAggregate(player.id, [lastWL.wl]);
+  }, [player.id, lastWL]);
+  const eyeTest = eyeTestMismatch(career.avgRating, career.matches, managerCareer.avg, managerCareer.count);
+
   return (
     <div
       className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm grid place-items-center p-4"
@@ -87,8 +94,20 @@ export function PlayerDetailModal({
               <Meta label="Rarity" value={player.rarity} small />
             </div>
 
+            {eyeTest && (
+              <div className="rounded-md border border-warn-caution/50 bg-warn-caution/10 px-3 py-2 flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 text-warn-caution shrink-0 mt-0.5" />
+                <div className="text-[11px] leading-tight">
+                  <div className="font-bold uppercase tracking-wider text-warn-caution">Eye-test mismatch</div>
+                  <div className="text-muted-foreground">
+                    Strong system rating ({career.avgRating.toFixed(2)}) but Manager Rating is low ({managerCareer.avg.toFixed(2)}).
+                  </div>
+                </div>
+              </div>
+            )}
+
             <Section title="Career — All WLs">
-              <StatGrid agg={career} player={player} />
+              <StatGrid agg={career} player={player} managerAvg={managerCareer.avg} managerCount={managerCareer.count} />
             </Section>
 
             <Section
@@ -99,7 +118,7 @@ export function PlayerDetailModal({
               }
             >
               {lastAgg && lastAgg.matches > 0 ? (
-                <StatGrid agg={lastAgg} player={player} />
+                <StatGrid agg={lastAgg} player={player} managerAvg={managerLast.avg} managerCount={managerLast.count} />
               ) : (
                 <div className="text-xs text-muted-foreground italic">
                   Hasn't played a match yet.
