@@ -8,6 +8,10 @@ import { aggregatePlayer, performanceStatus, rankFromWins, type WLRecord } from 
 import { RatingDisplay } from "@/components/RatingDisplay";
 import { AlertTriangle } from "lucide-react";
 import { RankBadge } from "@/components/RankBadge";
+import { store } from "@/lib/store";
+
+/** 0, 0.5, 1.0 … 10.0 — values offered in the Manager Rating dropdown. */
+const MANAGER_RATING_OPTIONS = Array.from({ length: 21 }, (_, i) => i * 0.5);
 
 export function ReportModal({
   wl,
@@ -148,7 +152,7 @@ export function ReportModal({
           />
         )}
 
-        <SquadPerformance aggs={aggs} />
+        <SquadPerformance aggs={aggs} wl={wl} />
 
 
         <div className="flex gap-3 mt-6">
@@ -204,11 +208,26 @@ function Award({ type, color, icon, name, sub, stat }: { type: string; color: "p
   );
 }
 
-function SquadPerformance({ aggs }: { aggs: ReturnType<typeof aggregatePlayer>[] }) {
+function SquadPerformance({
+  aggs,
+  wl,
+}: {
+  aggs: ReturnType<typeof aggregatePlayer>[];
+  wl: WeekendLeague;
+}) {
   const rows = [...aggs]
     .filter((a) => a.matches > 0)
     .sort((a, b) => b.avgRating - a.avgRating || (b.goals + b.assists) - (a.goals + a.assists));
   if (rows.length === 0) return null;
+  const ratings = wl.managerRatings ?? {};
+
+  const setRating = (playerId: string, value: number) => {
+    const next = { ...(wl.managerRatings ?? {}) };
+    if (value <= 0) delete next[playerId];
+    else next[playerId] = value;
+    store.updateWL(wl.id, { managerRatings: next });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -223,13 +242,13 @@ function SquadPerformance({ aggs }: { aggs: ReturnType<typeof aggregatePlayer>[]
         <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{rows.length} players</div>
       </div>
       <div className="grid grid-cols-12 gap-2 px-2 pb-1.5 text-[9px] uppercase tracking-wider text-muted-foreground font-bold border-b border-border/50">
-        <div className="col-span-5">Player</div>
-        <div className="col-span-1 text-center">OVR</div>
+        <div className="col-span-4">Player</div>
         <div className="col-span-1 text-center">Pos</div>
         <div className="col-span-1 text-center">G</div>
         <div className="col-span-1 text-center">A</div>
         <div className="col-span-1 text-center">MP</div>
-        <div className="col-span-2 text-right">Avg</div>
+        <div className="col-span-2 text-right">System</div>
+        <div className="col-span-2 text-right">Manager</div>
       </div>
       <div className="divide-y divide-border/30">
         {rows.map((a, i) => {
@@ -240,15 +259,15 @@ function SquadPerformance({ aggs }: { aggs: ReturnType<typeof aggregatePlayer>[]
               : status === "caution"
                 ? "bg-warn-caution/5"
                 : "";
+          const mgr = ratings[a.player.id] ?? 0;
           return (
             <div key={a.player.id} className={`grid grid-cols-12 gap-2 items-center px-2 py-1.5 text-xs ${rowCls}`}>
-              <div className="col-span-5 flex items-center gap-2 min-w-0">
+              <div className="col-span-4 flex items-center gap-2 min-w-0">
                 <span className="text-[9px] font-mono text-muted-foreground w-4 shrink-0">{i + 1}</span>
                 <span className="font-semibold truncate">{a.player.name}</span>
                 {i === 0 && <Crown className="h-3 w-3 text-primary shrink-0" />}
                 {status === "critical" && <AlertTriangle className="h-3 w-3 text-warn-critical shrink-0" />}
               </div>
-              <div className="col-span-1 text-center stat-num text-foreground">{a.player.overall}</div>
               <div className="col-span-1 text-center text-[10px] font-mono text-muted-foreground uppercase">{a.player.position}</div>
               <div className="col-span-1 text-center stat-num">{a.goals}</div>
               <div className="col-span-1 text-center stat-num">{a.assists}</div>
@@ -256,9 +275,25 @@ function SquadPerformance({ aggs }: { aggs: ReturnType<typeof aggregatePlayer>[]
               <div className="col-span-2 text-right font-display stat-num text-base">
                 <RatingDisplay matches={a.matches} ratedMatches={a.ratedMatches} avgRating={a.avgRating} size="md" />
               </div>
+              <div className="col-span-2 flex justify-end">
+                <select
+                  value={mgr}
+                  onChange={(e) => setRating(a.player.id, parseFloat(e.target.value))}
+                  className="h-7 px-1.5 rounded border border-border bg-background/60 text-foreground text-xs font-semibold font-display stat-num focus:outline-none focus:ring-1 focus:ring-primary"
+                  aria-label={`Manager rating for ${a.player.name}`}
+                >
+                  <option value={0}>—</option>
+                  {MANAGER_RATING_OPTIONS.filter((v) => v > 0).map((v) => (
+                    <option key={v} value={v}>{v.toFixed(1)}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           );
         })}
+      </div>
+      <div className="mt-2 text-[10px] text-muted-foreground italic">
+        Manager Rating is your subjective tactical review. Saved automatically.
       </div>
     </motion.div>
   );
