@@ -1,5 +1,11 @@
 import { useMemo } from "react";
-import { X, Trophy, Shield, Star, AlertTriangle } from "lucide-react";
+import { X, Trophy, Shield, Star, AlertTriangle, Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { PlayerCard } from "@/components/PlayerCard";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
