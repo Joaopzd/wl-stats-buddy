@@ -275,7 +275,7 @@ function SquadPerformance({
               <div className="col-span-2 text-right font-display stat-num text-base">
                 <RatingDisplay matches={a.matches} ratedMatches={a.ratedMatches} avgRating={a.avgRating} size="md" />
               </div>
-              <div className="col-span-2 flex justify-end">
+              <div className="col-span-2 flex justify-end items-center gap-1">
                 <select
                   value={mgr}
                   onChange={(e) => setRating(a.player.id, parseFloat(e.target.value))}
@@ -287,6 +287,16 @@ function SquadPerformance({
                     <option key={v} value={v}>{v.toFixed(1)}</option>
                   ))}
                 </select>
+                <button
+                  type="button"
+                  onClick={() => setRating(a.player.id, 0)}
+                  disabled={mgr <= 0}
+                  className="h-7 w-7 grid place-items-center rounded border border-border text-muted-foreground hover:text-foreground hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed"
+                  aria-label={`Clear manager rating for ${a.player.name}`}
+                  title="Clear rating"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </div>
             </div>
           );
