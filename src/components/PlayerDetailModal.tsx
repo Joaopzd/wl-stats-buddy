@@ -1,5 +1,11 @@
 import { useMemo } from "react";
-import { X, Trophy, Shield, Star, AlertTriangle } from "lucide-react";
+import { X, Trophy, Shield, Star, AlertTriangle, Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { PlayerCard } from "@/components/PlayerCard";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
@@ -97,8 +103,30 @@ export function PlayerDetailModal({
             {eyeTest && (
               <div className="rounded-md border border-warn-caution/50 bg-warn-caution/10 px-3 py-2 flex items-start gap-2">
                 <AlertTriangle className="h-4 w-4 text-warn-caution shrink-0 mt-0.5" />
-                <div className="text-[11px] leading-tight">
-                  <div className="font-bold uppercase tracking-wider text-warn-caution">Eye-test mismatch</div>
+                <div className="text-[11px] leading-tight flex-1">
+                  <div className="font-bold uppercase tracking-wider text-warn-caution flex items-center gap-1">
+                    Eye-test mismatch
+                    <TooltipProvider delayDuration={150}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            aria-label="When does this warning appear?"
+                            className="inline-flex items-center justify-center text-warn-caution/80 hover:text-warn-caution"
+                          >
+                            <Info className="h-3 w-3" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[260px] text-[11px] leading-snug">
+                          Shown when a player has:
+                          <br />• Matches played ≥ 9
+                          <br />• System Rating ≥ 7.00
+                          <br />• Manager Rating count ≥ 3
+                          <br />• Manager Rating avg &lt; 6.00
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <div className="text-muted-foreground">
                     Strong system rating ({career.avgRating.toFixed(2)}) but Manager Rating is low ({managerCareer.avg.toFixed(2)}).
                   </div>
