@@ -283,12 +283,12 @@ export function rankBadgeClasses(rank: WLRank): string {
   const tier = rankTier(rank);
   switch (tier) {
     case "Elite":
-      return "bg-gradient-to-r from-purple-600/30 to-amber-400/30 text-amber-200 border-amber-400/60";
+      return "rank-badge rank-badge--elite bg-gradient-to-r from-purple-600/30 to-amber-400/30 text-amber-200 border-amber-400/60";
     case "Champion":
-      return "bg-gradient-to-r from-red-600/30 to-amber-500/30 text-amber-200 border-red-500/60";
+      return "rank-badge rank-badge--champion bg-gradient-to-r from-red-600/30 to-amber-500/30 text-amber-200 border-red-500/60";
     case "Contender":
-      return "bg-gradient-to-r from-sky-600/25 to-slate-300/25 text-sky-200 border-sky-400/50";
+      return "rank-badge rank-badge--contender bg-gradient-to-r from-sky-600/25 to-slate-300/25 text-sky-200 border-sky-400/50";
     default:
-      return "bg-secondary text-muted-foreground border-border";
+      return "rank-badge rank-badge--unranked bg-secondary text-muted-foreground border-border";
   }
 }
