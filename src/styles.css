@@ -273,7 +273,7 @@
 /* Active nav pill in AppShell uses primary/15 which fades on cream. */
 .theme-light .bg-primary\/15 {
   background-color: color-mix(in oklab, var(--primary) 22%, white);
-  color: oklch(0.30 0.10 50);
+  color: oklch(0.25 0.10 165);
 }
 .theme-light .bg-primary\/10 { background-color: color-mix(in oklab, var(--primary) 14%, white); }
 .theme-light .bg-primary\/5 { background-color: color-mix(in oklab, var(--primary) 8%, white); }
@@ -282,13 +282,14 @@
 .theme-light .bg-secondary\/40 { background-color: oklch(0.89 0.016 75); }
 .theme-light .bg-secondary\/60 { background-color: oklch(0.87 0.018 75); }
 
-/* Amber/sky/zinc hardcoded text colors are designed for dark surfaces. */
+/* Amber/sky/zinc hardcoded text colors are designed for dark surfaces.
+   Darken on paper for legible icon/medal contrast (Trophy, Shield, medals). */
 .theme-light .text-amber-200,
-.theme-light .text-amber-300 { color: oklch(0.55 0.16 70); }
-.theme-light .text-amber-700 { color: oklch(0.50 0.14 55); }
+.theme-light .text-amber-300 { color: oklch(0.50 0.16 70); }
+.theme-light .text-amber-700 { color: oklch(0.42 0.14 50); }
 .theme-light .text-sky-200,
-.theme-light .text-sky-300 { color: oklch(0.45 0.14 230); }
-.theme-light .text-zinc-300 { color: oklch(0.40 0.012 250); }
+.theme-light .text-sky-300 { color: oklch(0.40 0.14 230); }
+.theme-light .text-zinc-300 { color: oklch(0.35 0.012 250); }
 
 /* RankBadge: rewrite tier backgrounds so badges read on paper. */
 .theme-light .from-purple-600\/30 { --tw-gradient-from: oklch(0.45 0.18 295) !important; }

@@ -93,12 +93,12 @@ export const THEMES: Record<ThemeKey, ThemeDef> = {
   },
   "off-white-copper": {
     key: "off-white-copper",
-    label: "Off-White & Copper",
-    description: "Cream paper · copper accent",
-    swatches: ["#F5F0E8", "#B5651D", "#1A1A1A"],
+    label: "Off-White & Forest",
+    description: "Cream paper · deep forest green",
+    swatches: ["#F5F0E8", "#2D6B4F", "#1A1A1A"],
     light: true,
     bodyBg:
-      "radial-gradient(ellipse 70% 45% at 50% -10%, oklch(0.70 0.10 50 / 0.10), transparent), radial-gradient(ellipse 50% 35% at 85% 100%, oklch(0.55 0.10 40 / 0.06), transparent)",
+      "radial-gradient(ellipse 70% 45% at 50% -10%, oklch(0.55 0.12 165 / 0.10), transparent), radial-gradient(ellipse 50% 35% at 85% 100%, oklch(0.45 0.10 175 / 0.06), transparent)",
     vars: {
       // Stronger separation: darker paper bg, near-white cards, deeper secondary/muted, bolder border.
       "--background": "oklch(0.92 0.016 80)",
@@ -107,27 +107,27 @@ export const THEMES: Record<ThemeKey, ThemeDef> = {
       "--card-foreground": "oklch(0.20 0.018 60)",
       "--popover": "oklch(0.995 0.004 80)",
       "--popover-foreground": "oklch(0.20 0.018 60)",
-      "--primary": "oklch(0.52 0.14 50)",
+      "--primary": "oklch(0.42 0.12 165)",
       "--primary-foreground": "oklch(0.98 0.005 80)",
       "--secondary": "oklch(0.85 0.018 75)",
       "--secondary-foreground": "oklch(0.20 0.018 60)",
       "--muted": "oklch(0.87 0.014 78)",
       "--muted-foreground": "oklch(0.40 0.022 60)",
-      "--accent": "oklch(0.60 0.13 42)",
+      "--accent": "oklch(0.52 0.10 175)",
       "--accent-foreground": "oklch(0.98 0.005 80)",
       "--destructive": "oklch(0.50 0.20 27)",
       "--destructive-foreground": "oklch(0.98 0.005 80)",
-      "--success": "oklch(0.52 0.15 145)",
+      "--success": "oklch(0.52 0.16 150)",
       "--success-foreground": "oklch(0.98 0.005 80)",
       "--border": "oklch(0.70 0.020 75 / 0.95)",
       "--input": "oklch(0.93 0.014 80)",
-      "--ring": "oklch(0.52 0.14 50)",
+      "--ring": "oklch(0.42 0.12 165)",
       "--gradient-primary":
-        "linear-gradient(135deg, oklch(0.52 0.14 50), oklch(0.62 0.12 42))",
+        "linear-gradient(135deg, oklch(0.42 0.12 165), oklch(0.52 0.10 175))",
       "--gradient-card":
         "linear-gradient(160deg, oklch(1.00 0.002 80), oklch(0.97 0.010 80))",
       "--gradient-hero":
-        "radial-gradient(ellipse at top, oklch(0.52 0.14 50 / 0.12), transparent 60%), linear-gradient(180deg, oklch(0.94 0.014 80), oklch(0.89 0.018 78))",
+        "radial-gradient(ellipse at top, oklch(0.42 0.12 165 / 0.12), transparent 60%), linear-gradient(180deg, oklch(0.94 0.014 80), oklch(0.89 0.018 78))",
       "--pitch-line": "oklch(0.22 0.015 60 / 0.30)",
       // Stronger shadow on light surfaces so cards lift off the paper bg.
       "--shadow-card": "0 6px 24px -10px oklch(0.20 0.018 60 / 0.22), 0 2px 6px -2px oklch(0.20 0.018 60 / 0.10)",

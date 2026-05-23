@@ -439,7 +439,7 @@ function WLDetail() {
                   tabIndex={0}
                   onClick={() => setViewingMatch(m)}
                   onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewingMatch(m); } }}
-                  className={`grid grid-cols-[2rem_7rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-2 border-l-4 hover:bg-secondary/30 cursor-pointer transition ${win ? "border-l-primary" : "border-l-destructive"}`}
+                  className={`grid grid-cols-[2rem_7rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-2 border-l-4 hover:bg-secondary/30 cursor-pointer transition ${win ? "border-l-[color:var(--success)]" : "border-l-destructive"}`}
                   aria-label={`View match ${m.index} details`}
                 >
                   <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
