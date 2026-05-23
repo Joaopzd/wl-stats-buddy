@@ -228,7 +228,7 @@ export function BestXI({
                   </HoverCardContent>
                 </HoverCard>
               ) : (
-                <div className="h-9 w-9 rounded-full border-2 border-dashed border-white/60 bg-black/30 grid place-items-center">
+                <div className="h-16 w-12 rounded-md border-2 border-dashed border-white/60 bg-black/30 grid place-items-center">
                   <span className="text-[9px] font-bold text-white tracking-wider">
                     {slot.position}
                   </span>
