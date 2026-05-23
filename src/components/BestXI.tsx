@@ -161,7 +161,7 @@ export function BestXI({
         </div>
 
         <div
-          className="relative w-full max-w-md mx-auto rounded-lg overflow-hidden border border-emerald-700/40"
+          className="relative w-full max-w-xl mx-auto rounded-lg overflow-hidden border border-emerald-700/40"
           style={{
             aspectRatio: "3 / 4",
             background:
