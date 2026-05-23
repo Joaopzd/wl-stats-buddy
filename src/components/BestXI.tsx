@@ -194,7 +194,7 @@ export function BestXI({
                         position={agg.player.position}
                         rarity={agg.player.rarity}
                         imageUrl={agg.player.imageUrl}
-                        size="xs"
+                        size="sm"
                       />
                     </button>
                   </HoverCardTrigger>
