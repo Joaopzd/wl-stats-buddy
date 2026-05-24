@@ -273,7 +273,7 @@
 /* Active nav pill in AppShell uses primary/15 which fades on cream. */
 .theme-light .bg-primary\/15 {
   background-color: color-mix(in oklab, var(--primary) 22%, white);
-  color: oklch(0.25 0.10 165);
+  color: oklch(0.22 0.06 257);
 }
 .theme-light .bg-primary\/10 { background-color: color-mix(in oklab, var(--primary) 14%, white); }
 .theme-light .bg-primary\/5 { background-color: color-mix(in oklab, var(--primary) 8%, white); }
