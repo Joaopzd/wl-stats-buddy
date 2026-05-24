@@ -80,10 +80,7 @@ export function AICoach({ wls, matches, players }: Props) {
         </span>
       </div>
 
-      <div
-        className="surface-card p-5 border border-border/60"
-        style={{ color: "#F8FAFC" }}
-      >
+      <div className="surface-card p-5 border border-border/60 text-foreground">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="min-w-0">
             <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
@@ -111,7 +108,7 @@ export function AICoach({ wls, matches, players }: Props) {
             <CoachItem icon={<ShieldHalf className="h-3.5 w-3.5" />} label="Defensive Balance" text={report.balance} />
             <CoachItem icon={<Activity className="h-3.5 w-3.5" />} label="Tilt Factor" text={report.tilt} />
             <CoachItem icon={<Users className="h-3.5 w-3.5" />} label="Efficiency Gap" text={report.efficiency} />
-            <div className="sm:col-span-2 rounded-md border border-primary/40 bg-primary/10 p-3 text-sm flex items-start gap-2" style={{ color: "#F8FAFC" }}>
+            <div className="sm:col-span-2 rounded-md border border-primary/40 bg-primary/10 p-3 text-sm flex items-start gap-2 text-foreground">
               <Brain className="h-4 w-4 text-primary mt-0.5 shrink-0" />
               <span className="font-semibold">{report.summary}</span>
             </div>
@@ -124,7 +121,7 @@ export function AICoach({ wls, matches, players }: Props) {
 
 function CoachItem({ icon, label, text }: { icon: React.ReactNode; label: string; text: string }) {
   return (
-    <div className="rounded-md border border-border/60 bg-background/40 p-3" style={{ color: "#F8FAFC" }}>
+    <div className="rounded-md border border-border/60 bg-background/40 p-3 text-foreground">
       <div className="text-[10px] uppercase tracking-[0.25em] text-primary font-bold flex items-center gap-1.5 mb-1">
         {icon} {label}
       </div>
