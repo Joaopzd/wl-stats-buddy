@@ -121,7 +121,7 @@ export function AICoach({ wls, matches, players }: Props) {
 
 function CoachItem({ icon, label, text }: { icon: React.ReactNode; label: string; text: string }) {
   return (
-    <div className="rounded-md border border-border/60 bg-background/40 p-3" style={{ color: "#F8FAFC" }}>
+    <div className="rounded-md border border-border/60 bg-background/40 p-3 text-foreground">
       <div className="text-[10px] uppercase tracking-[0.25em] text-primary font-bold flex items-center gap-1.5 mb-1">
         {icon} {label}
       </div>
