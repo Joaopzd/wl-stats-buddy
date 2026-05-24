@@ -80,10 +80,7 @@ export function AICoach({ wls, matches, players }: Props) {
         </span>
       </div>
 
-      <div
-        className="surface-card p-5 border border-border/60"
-        style={{ color: "#F8FAFC" }}
-      >
+      <div className="surface-card p-5 border border-border/60 text-foreground">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="min-w-0">
             <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
