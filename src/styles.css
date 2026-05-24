@@ -251,10 +251,27 @@
   background-color: oklch(0.98 0.006 80 / 0.96);
 }
 
-/* Default muted text is too pale against paper. */
-.theme-light .text-muted-foreground { color: oklch(0.38 0.022 60); }
-.theme-light .text-muted-foreground\/60 { color: oklch(0.55 0.020 60); }
-.theme-light .text-muted-foreground\/40 { color: oklch(0.65 0.018 60); }
+/* Default muted text is too pale against paper. Tightened for legibility. */
+.theme-light .text-muted-foreground { color: oklch(0.32 0.030 257); }
+.theme-light .text-muted-foreground\/60 { color: oklch(0.40 0.030 257); }
+.theme-light .text-muted-foreground\/50 { color: oklch(0.45 0.028 257); }
+.theme-light .text-muted-foreground\/40 { color: oklch(0.50 0.026 257); }
+
+/* Foreground opacity utilities collapse against cream — anchor them
+   to the dark navy ink so they stay readable. */
+.theme-light .text-foreground\/90 { color: oklch(0.22 0.035 257); }
+.theme-light .text-foreground\/80 { color: oklch(0.26 0.035 257); }
+.theme-light .text-foreground\/70 { color: oklch(0.30 0.035 257); }
+.theme-light .text-foreground\/60 { color: oklch(0.34 0.035 257); }
+.theme-light .text-foreground\/50 { color: oklch(0.40 0.030 257); }
+
+/* Bright accent text colors used inline need darkening on paper. */
+.theme-light .text-amber-400 { color: oklch(0.52 0.16 70); }
+
+/* Placeholders default to muted-foreground — boost contrast on paper. */
+.theme-light ::placeholder { color: oklch(0.50 0.028 257); opacity: 1; }
+.theme-light input::placeholder,
+.theme-light textarea::placeholder { color: oklch(0.48 0.028 257); }
 
 /* Hover/active reveal — make state changes actually visible. */
 .theme-light .hover\:text-foreground:hover { color: oklch(0.12 0.018 60); }
