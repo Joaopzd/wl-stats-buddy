@@ -108,7 +108,7 @@ export function AICoach({ wls, matches, players }: Props) {
             <CoachItem icon={<ShieldHalf className="h-3.5 w-3.5" />} label="Defensive Balance" text={report.balance} />
             <CoachItem icon={<Activity className="h-3.5 w-3.5" />} label="Tilt Factor" text={report.tilt} />
             <CoachItem icon={<Users className="h-3.5 w-3.5" />} label="Efficiency Gap" text={report.efficiency} />
-            <div className="sm:col-span-2 rounded-md border border-primary/40 bg-primary/10 p-3 text-sm flex items-start gap-2" style={{ color: "#F8FAFC" }}>
+            <div className="sm:col-span-2 rounded-md border border-primary/40 bg-primary/10 p-3 text-sm flex items-start gap-2 text-foreground">
               <Brain className="h-4 w-4 text-primary mt-0.5 shrink-0" />
               <span className="font-semibold">{report.summary}</span>
             </div>
