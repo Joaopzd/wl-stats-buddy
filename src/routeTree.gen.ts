@@ -14,6 +14,7 @@ import { Route as PlayersRouteImport } from './routes/players'
 import { Route as ClubRouteImport } from './routes/club'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WeekendLeaguesIndexRouteImport } from './routes/weekend-leagues.index'
+import { Route as WeekendLeaguesCompareRouteImport } from './routes/weekend-leagues.compare'
 import { Route as WeekendLeaguesWlIdRouteImport } from './routes/weekend-leagues.$wlId'
 
 const RankingsRoute = RankingsRouteImport.update({
@@ -41,6 +42,11 @@ const WeekendLeaguesIndexRoute = WeekendLeaguesIndexRouteImport.update({
   path: '/weekend-leagues/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WeekendLeaguesCompareRoute = WeekendLeaguesCompareRouteImport.update({
+  id: '/weekend-leagues/compare',
+  path: '/weekend-leagues/compare',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WeekendLeaguesWlIdRoute = WeekendLeaguesWlIdRouteImport.update({
   id: '/weekend-leagues/$wlId',
   path: '/weekend-leagues/$wlId',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/players': typeof PlayersRoute
   '/rankings': typeof RankingsRoute
   '/weekend-leagues/$wlId': typeof WeekendLeaguesWlIdRoute
+  '/weekend-leagues/compare': typeof WeekendLeaguesCompareRoute
   '/weekend-leagues/': typeof WeekendLeaguesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/players': typeof PlayersRoute
   '/rankings': typeof RankingsRoute
   '/weekend-leagues/$wlId': typeof WeekendLeaguesWlIdRoute
+  '/weekend-leagues/compare': typeof WeekendLeaguesCompareRoute
   '/weekend-leagues': typeof WeekendLeaguesIndexRoute
 }
 export interface FileRoutesById {
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   '/players': typeof PlayersRoute
   '/rankings': typeof RankingsRoute
   '/weekend-leagues/$wlId': typeof WeekendLeaguesWlIdRoute
+  '/weekend-leagues/compare': typeof WeekendLeaguesCompareRoute
   '/weekend-leagues/': typeof WeekendLeaguesIndexRoute
 }
 export interface FileRouteTypes {
@@ -80,6 +89,7 @@ export interface FileRouteTypes {
     | '/players'
     | '/rankings'
     | '/weekend-leagues/$wlId'
+    | '/weekend-leagues/compare'
     | '/weekend-leagues/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -88,6 +98,7 @@ export interface FileRouteTypes {
     | '/players'
     | '/rankings'
     | '/weekend-leagues/$wlId'
+    | '/weekend-leagues/compare'
     | '/weekend-leagues'
   id:
     | '__root__'
@@ -96,6 +107,7 @@ export interface FileRouteTypes {
     | '/players'
     | '/rankings'
     | '/weekend-leagues/$wlId'
+    | '/weekend-leagues/compare'
     | '/weekend-leagues/'
   fileRoutesById: FileRoutesById
 }
@@ -105,6 +117,7 @@ export interface RootRouteChildren {
   PlayersRoute: typeof PlayersRoute
   RankingsRoute: typeof RankingsRoute
   WeekendLeaguesWlIdRoute: typeof WeekendLeaguesWlIdRoute
+  WeekendLeaguesCompareRoute: typeof WeekendLeaguesCompareRoute
   WeekendLeaguesIndexRoute: typeof WeekendLeaguesIndexRoute
 }
 
@@ -145,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WeekendLeaguesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/weekend-leagues/compare': {
+      id: '/weekend-leagues/compare'
+      path: '/weekend-leagues/compare'
+      fullPath: '/weekend-leagues/compare'
+      preLoaderRoute: typeof WeekendLeaguesCompareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/weekend-leagues/$wlId': {
       id: '/weekend-leagues/$wlId'
       path: '/weekend-leagues/$wlId'
@@ -161,8 +181,18 @@ const rootRouteChildren: RootRouteChildren = {
   PlayersRoute: PlayersRoute,
   RankingsRoute: RankingsRoute,
   WeekendLeaguesWlIdRoute: WeekendLeaguesWlIdRoute,
+  WeekendLeaguesCompareRoute: WeekendLeaguesCompareRoute,
   WeekendLeaguesIndexRoute: WeekendLeaguesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
