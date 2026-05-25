@@ -32,6 +32,9 @@ export function MatchDialog({
   const [penalties, setPenalties] = useState<boolean>(existingMatch?.penalties ?? false);
   const [penaltyWinner, setPenaltyWinner] = useState<PenaltyWinner>(existingMatch?.penaltyWinner ?? "us");
   const [rageQuit, setRageQuit] = useState<boolean>(existingMatch?.rageQuit ?? false);
+  const [tactics, setTactics] = useState<MatchTactic[]>(existingMatch?.tactics ?? []);
+  const toggleTactic = (t: MatchTactic) =>
+    setTactics((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]));
 
   const startingIdSet = new Set(Object.values(wl.startingAssignments ?? {}));
   const [perfs, setPerfs] = useState<Record<string, MatchPlayerStat & { played: boolean }>>(() => {
