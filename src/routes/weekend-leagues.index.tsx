@@ -58,7 +58,10 @@ function WLList() {
           <h1 className="font-display text-4xl tracking-wider">Weekend Leagues</h1>
           <p className="text-sm text-muted-foreground mt-1">{wls.length} sessions logged</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Link to="/weekend-leagues/compare" className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-md border border-border bg-secondary/50 text-foreground font-semibold uppercase tracking-wider text-xs hover:bg-secondary transition">
+            <GitCompareArrows className="h-4 w-4 text-primary" /> Compare WLs
+          </Link>
           <button onClick={() => setBriefingOpen(true)} className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-md border border-border bg-secondary/50 text-foreground font-semibold uppercase tracking-wider text-xs hover:bg-secondary transition">
             <ClipboardList className="h-4 w-4 text-primary" /> Coach's Briefing
           </button>
