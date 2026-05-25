@@ -105,6 +105,8 @@ export interface Match {
   mvpPlayerId?: string;
   /** Selected generic opponent crest id (see lib/crests). */
   opponentCrestId?: string;
+  /** Optional tactical adjustments / context tags taken during the match. */
+  tactics?: MatchTactic[];
   createdAt: number;
 }
 
