@@ -63,6 +63,28 @@ export interface MatchPlayerStat {
 
 export type PenaltyWinner = "us" | "them";
 
+/** Tactical adjustments / context tags applied during a match. */
+export type MatchTactic =
+  | "Mudança Defensiva"
+  | "Esquema Tático"
+  | "Mudança Meio Campo"
+  | "Mudança Ataque"
+  | "High-Press Tático"
+  | "Delay Game"
+  | "Conta de Cliente"
+  | "Break Time";
+
+export const MATCH_TACTICS: MatchTactic[] = [
+  "Mudança Defensiva",
+  "Esquema Tático",
+  "Mudança Meio Campo",
+  "Mudança Ataque",
+  "High-Press Tático",
+  "Delay Game",
+  "Conta de Cliente",
+  "Break Time",
+];
+
 export interface Match {
   id: string;
   wlId: string;
