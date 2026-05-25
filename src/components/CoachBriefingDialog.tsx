@@ -69,7 +69,7 @@ export function CoachBriefingDialog({ open, onOpenChange, wls, matches, players 
 
   return (
     <Dialog open={open} onOpenChange={(o) => { onOpenChange(o); if (!o) setTips(null); }}>
-      <DialogContent className="max-w-md" style={{ color: "#F8FAFC" }}>
+      <DialogContent className="max-w-md text-foreground">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 font-display tracking-wider">
             <ClipboardList className="h-5 w-5 text-primary" /> Coach's Briefing
