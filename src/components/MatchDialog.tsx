@@ -200,6 +200,35 @@ export function MatchDialog({
                   </div>
                 </div>
               )}
+
+              {/* Tactical notes — multi-select */}
+              <div className="pt-1">
+                <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
+                  <ListChecks className="h-3 w-3" /> Tactical Notes
+                  {tactics.length > 0 && (
+                    <span className="text-primary font-mono normal-case tracking-normal">· {tactics.length} selected</span>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {MATCH_TACTICS.map((t) => {
+                    const on = tactics.includes(t);
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => toggleTactic(t)}
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold uppercase tracking-wider transition border ${
+                          on
+                            ? "bg-primary/20 text-primary border-primary/60"
+                            : "bg-background/40 text-muted-foreground border-border hover:text-foreground"
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
 
             {/* Player performances — aligned columns, no inner scroll */}
