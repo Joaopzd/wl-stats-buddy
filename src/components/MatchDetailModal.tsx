@@ -114,6 +114,19 @@ export function MatchDetailModal({
               <Tag tone="rq" icon={<AlertTriangle className="h-3 w-3" />}>Rage Quit</Tag>
             )}
           </div>
+          {match.tactics && match.tactics.length > 0 && (
+            <div className="mt-3 flex items-center justify-center gap-1.5 flex-wrap">
+              <span className="text-[9px] uppercase tracking-[0.25em] text-muted-foreground font-bold mr-1">Tactics</span>
+              {match.tactics.map((t) => (
+                <span
+                  key={t}
+                  className="inline-flex items-center text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border bg-primary/15 text-primary border-primary/50"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="p-6 space-y-5">

@@ -36,8 +36,8 @@ function TrendTooltip({ active, payload }: { active?: boolean; payload?: Array<{
   const gdPositive = d.gd >= 0;
   return (
     <div
-      className="rounded-md border border-border/70 bg-popover/95 backdrop-blur px-3 py-2 shadow-xl text-xs"
-      style={{ color: "#F8FAFC", minWidth: 160 }}
+      className="rounded-md border border-border/70 bg-popover/95 backdrop-blur px-3 py-2 shadow-xl text-xs text-foreground"
+      style={{ minWidth: 160 }}
     >
       <div className="font-display tracking-wider text-sm mb-1.5 text-foreground">{d.name}</div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-1 font-mono">
