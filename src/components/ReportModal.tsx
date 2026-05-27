@@ -4,7 +4,7 @@ import { SoccerBall } from "./icons/SoccerBall";
 import { SoccerBoot } from "./icons/SoccerBoot";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
-import { aggregatePlayer, clutchAggregate, CLUTCH_MIN_MATCHES, performanceStatus, rankFromWins, type ClutchAgg, type WLRecord } from "@/lib/stats";
+import { aggregatePlayer, clutchAggregate, CLUTCH_MIN_MATCHES, CLUTCH_KING_TOOLTIP, CLUTCH_DROP_TOOLTIP, performanceStatus, rankFromWins, type ClutchAgg, type WLRecord } from "@/lib/stats";
 import { RatingDisplay } from "@/components/RatingDisplay";
 import { AlertTriangle } from "lucide-react";
 import { RankBadge } from "@/components/RankBadge";
