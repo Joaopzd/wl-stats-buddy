@@ -12,6 +12,65 @@ export function isGoalsConcededEligible(pos: Position): boolean {
   return GC_POSITIONS.includes(pos);
 }
 
+/** High-pressure window: final stretch of a Weekend League (matches 11–15). */
+export const CLUTCH_MIN_INDEX = 11;
+export const CLUTCH_MAX_INDEX = 15;
+/** Minimum high-pressure appearances required before a clutch badge is awarded. */
+export const CLUTCH_MIN_MATCHES = 5;
+
+export function isClutchMatch(m: Match): boolean {
+  return m.index >= CLUTCH_MIN_INDEX && m.index <= CLUTCH_MAX_INDEX;
+}
+
+export type ClutchBadge = "king" | "drop" | null;
+
+export interface ClutchSplit {
+  matches: number;
+  goals: number;
+  assists: number;
+  avgRating: number;
+  ratedMatches: number;
+}
+
+export interface ClutchAgg {
+  player: Player;
+  baseline: ClutchSplit;
+  clutch: ClutchSplit;
+  /** clutch.avgRating - baseline.avgRating; 0 when either side has no rated matches. */
+  ratingDelta: number;
+  /** Awarded only when clutch.matches >= CLUTCH_MIN_MATCHES and both sides have a rating. */
+  badge: ClutchBadge;
+}
+
+function toSplit(a: PlayerAgg): ClutchSplit {
+  return {
+    matches: a.matches,
+    goals: a.goals,
+    assists: a.assists,
+    avgRating: a.avgRating,
+    ratedMatches: a.ratedMatches,
+  };
+}
+
+export function clutchAggregate(player: Player, matches: Match[]): ClutchAgg {
+  const baseline = aggregatePlayer(player, matches);
+  const clutch = aggregatePlayer(player, matches.filter(isClutchMatch));
+  const bothRated = baseline.ratedMatches > 0 && clutch.ratedMatches > 0;
+  const ratingDelta = bothRated ? clutch.avgRating - baseline.avgRating : 0;
+  let badge: ClutchBadge = null;
+  if (clutch.matches >= CLUTCH_MIN_MATCHES && bothRated) {
+    if (ratingDelta <= -1.0) badge = "drop";
+    else if (clutch.avgRating >= baseline.avgRating) badge = "king";
+  }
+  return {
+    player,
+    baseline: toSplit(baseline),
+    clutch: toSplit(clutch),
+    ratingDelta,
+    badge,
+  };
+}
+
 /** Performance tiers based on average rating with a sample-size guard. */
 export type PerformanceStatus = "ok" | "caution" | "critical" | "insufficient";
 /** Minimum matches before underperformance warnings apply. */
