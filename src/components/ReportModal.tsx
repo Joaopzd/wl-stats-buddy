@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
-import { Trophy, Flame, Star, TrendingDown, X, LayoutGrid, TrendingUp, Shield, Crown } from "lucide-react";
+import { Trophy, Flame, Star, TrendingDown, X, LayoutGrid, TrendingUp, Shield, Crown, Zap } from "lucide-react";
 import { SoccerBall } from "./icons/SoccerBall";
 import { SoccerBoot } from "./icons/SoccerBoot";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
-import { aggregatePlayer, performanceStatus, rankFromWins, type WLRecord } from "@/lib/stats";
+import { aggregatePlayer, clutchAggregate, CLUTCH_MIN_MATCHES, performanceStatus, rankFromWins, type ClutchAgg, type WLRecord } from "@/lib/stats";
 import { RatingDisplay } from "@/components/RatingDisplay";
 import { AlertTriangle } from "lucide-react";
 import { RankBadge } from "@/components/RankBadge";
