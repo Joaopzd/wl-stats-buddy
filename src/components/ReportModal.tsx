@@ -363,12 +363,18 @@ function ClutchFactor({ squad, matches }: { squad: Player[]; matches: Match[] })
               <div className="col-span-5 min-w-0 flex items-center gap-1.5">
                 <span className="font-semibold truncate">{c.player.name}</span>
                 {c.badge === "king" && (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[9px] uppercase tracking-wider font-bold">
+                  <span
+                    title={CLUTCH_KING_TOOLTIP}
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[9px] uppercase tracking-wider font-bold cursor-help"
+                  >
                     <Flame className="h-2.5 w-2.5" /> Clutch King
                   </span>
                 )}
                 {c.badge === "drop" && (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-destructive/20 text-destructive text-[9px] uppercase tracking-wider font-bold">
+                  <span
+                    title={CLUTCH_DROP_TOOLTIP}
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-destructive/20 text-destructive text-[9px] uppercase tracking-wider font-bold cursor-help"
+                  >
                     <TrendingDown className="h-2.5 w-2.5" /> Pressure Drop
                   </span>
                 )}
