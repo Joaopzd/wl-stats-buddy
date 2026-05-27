@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers } from "@/lib/store";
-import { aggregateAllPlayers, clutchAggregate, CLUTCH_MIN_MATCHES, performanceStatus, type ClutchAgg, type PlayerAgg } from "@/lib/stats";
+import { aggregateAllPlayers, clutchAggregate, CLUTCH_MIN_MATCHES, CLUTCH_KING_TOOLTIP, CLUTCH_DROP_TOOLTIP, performanceStatus, type ClutchAgg, type PlayerAgg } from "@/lib/stats";
 import { RatingDisplay } from "@/components/RatingDisplay";
 import { Sparkles, Trophy, Shield, Info, Zap, AlertTriangle, Flame, TrendingDown } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
