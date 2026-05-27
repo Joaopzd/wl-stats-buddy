@@ -154,6 +154,10 @@ export function ReportModal({
 
         <SquadPerformance aggs={aggs} wl={wl} />
 
+        <ClutchFactor squad={squad} matches={matches} />
+
+
+
 
         <div className="flex gap-3 mt-6">
           <button onClick={onClose} className="flex-1 px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90">
