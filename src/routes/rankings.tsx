@@ -145,8 +145,88 @@ function RankingsPage() {
           subline="Min 2 sub appearances · (G+A/app) × √apps × rating"
         />
 
+        <ClutchLeaderboard rows={topClutch} />
       </div>
     </AppShell>
+  );
+}
+
+function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
+  return (
+    <div className="surface-card p-5 lg:col-span-3">
+      <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center gap-2 text-primary">
+          <Flame className="h-4 w-4" />
+          <h2 className="font-display text-lg tracking-wider">Clutch Leaderboard</h2>
+        </div>
+        <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          Δ Rating · Matches 11–15
+        </div>
+      </div>
+      <div className="text-[10px] text-muted-foreground mb-3">
+        Career performance during the final WL stretch vs baseline. Min {CLUTCH_MIN_MATCHES} clutch apps.
+      </div>
+      {rows.length === 0 ? (
+        <div className="text-sm text-muted-foreground py-6 text-center">
+          No player has {CLUTCH_MIN_MATCHES}+ rated appearances in matches 11–15 yet.
+        </div>
+      ) : (
+        <ol className="space-y-1.5">
+          {rows.map((c, i) => {
+            const rank = i + 1;
+            const medal =
+              rank === 1 ? "text-amber-300" :
+              rank === 2 ? "text-zinc-300" :
+              rank === 3 ? "text-amber-700" :
+              "text-muted-foreground";
+            const delta = c.ratingDelta;
+            const deltaTone = delta >= 0.0001 ? "text-primary" : delta <= -0.0001 ? "text-destructive" : "text-muted-foreground";
+            const sign = delta > 0 ? "+" : "";
+            return (
+              <li
+                key={c.player.id}
+                className={`flex items-center gap-3 px-3 py-2 rounded-md border ${
+                  c.badge === "king"
+                    ? "border-primary/40 bg-primary/10"
+                    : c.badge === "drop"
+                      ? "border-destructive/40 bg-destructive/5"
+                      : "border-border/40 bg-background/50"
+                }`}
+              >
+                <div className={`stat-num font-display text-xl w-7 text-right shrink-0 ${medal}`}>{rank}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold truncate flex items-center gap-1.5">
+                    {c.player.name}
+                    {c.badge === "king" && (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[9px] uppercase tracking-wider font-bold">
+                        <Flame className="h-2.5 w-2.5" /> Clutch King
+                      </span>
+                    )}
+                    {c.badge === "drop" && (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-destructive/20 text-destructive text-[9px] uppercase tracking-wider font-bold">
+                        <TrendingDown className="h-2.5 w-2.5" /> Pressure Drop
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">
+                    {c.player.position} · {c.clutch.matches} clutch · {c.baseline.matches} total · {c.clutch.goals}G/{c.clutch.assists}A
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="font-display text-base stat-num">
+                    <span className="text-foreground">{c.clutch.avgRating.toFixed(2)}</span>
+                    <span className="text-muted-foreground text-xs"> vs {c.baseline.avgRating.toFixed(2)}</span>
+                  </div>
+                  <div className={`text-[11px] font-mono ${deltaTone}`}>
+                    {sign}{delta.toFixed(2)}
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      )}
+    </div>
   );
 }
 
