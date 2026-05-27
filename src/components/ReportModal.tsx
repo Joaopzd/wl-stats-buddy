@@ -312,3 +312,87 @@ function SquadPerformance({
     </motion.div>
   );
 }
+
+function ClutchFactor({ squad, matches }: { squad: Player[]; matches: Match[] }) {
+  const rows: ClutchAgg[] = squad
+    .map((p) => clutchAggregate(p, matches))
+    .filter((c) => c.clutch.matches > 0)
+    .sort((a, b) => {
+      const aBadged = a.badge ? 1 : 0;
+      const bBadged = b.badge ? 1 : 0;
+      if (aBadged !== bBadged) return bBadged - aBadged;
+      return b.ratingDelta - a.ratingDelta || b.clutch.avgRating - a.clutch.avgRating;
+    });
+
+  if (rows.length === 0) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.55 }}
+      className="mt-4 p-4 rounded-lg border border-border bg-secondary/30"
+    >
+      <div className="flex items-center justify-between mb-1">
+        <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-foreground flex items-center gap-1.5">
+          <Zap className="h-3.5 w-3.5 text-primary" /> Clutch Factor · Matches 11–15
+        </div>
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+          Badges need {CLUTCH_MIN_MATCHES}+ clutch apps
+        </div>
+      </div>
+      <div className="text-[10px] text-muted-foreground mb-3">
+        High-pressure stretch: the final five WL matches where ranks are decided.
+      </div>
+      <div className="space-y-1.5">
+        {rows.map((c) => {
+          const delta = c.ratingDelta;
+          const deltaTone = delta >= 0.0001 ? "text-primary" : delta <= -0.0001 ? "text-destructive" : "text-muted-foreground";
+          const deltaSign = delta > 0 ? "+" : "";
+          return (
+            <div
+              key={c.player.id}
+              className={`grid grid-cols-12 gap-2 items-center px-2 py-1.5 rounded text-xs border ${
+                c.badge === "king"
+                  ? "border-primary/40 bg-primary/10"
+                  : c.badge === "drop"
+                    ? "border-destructive/40 bg-destructive/5"
+                    : "border-border/40 bg-background/40"
+              }`}
+            >
+              <div className="col-span-5 min-w-0 flex items-center gap-1.5">
+                <span className="font-semibold truncate">{c.player.name}</span>
+                {c.badge === "king" && (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[9px] uppercase tracking-wider font-bold">
+                    <Flame className="h-2.5 w-2.5" /> Clutch King
+                  </span>
+                )}
+                {c.badge === "drop" && (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-destructive/20 text-destructive text-[9px] uppercase tracking-wider font-bold">
+                    <TrendingDown className="h-2.5 w-2.5" /> Pressure Drop
+                  </span>
+                )}
+              </div>
+              <div className="col-span-2 text-center stat-num text-[11px] text-muted-foreground">
+                {c.clutch.matches} cl · {c.baseline.matches} tot
+              </div>
+              <div className="col-span-2 text-center stat-num text-[11px]">
+                {c.clutch.goals}G/{c.clutch.assists}A
+              </div>
+              <div className="col-span-3 text-right font-display stat-num">
+                <span className="text-foreground">{c.clutch.avgRating > 0 ? c.clutch.avgRating.toFixed(2) : "—"}</span>
+                <span className="text-muted-foreground"> vs </span>
+                <span className="text-muted-foreground">{c.baseline.avgRating > 0 ? c.baseline.avgRating.toFixed(2) : "—"}</span>
+                {c.clutch.ratedMatches > 0 && c.baseline.ratedMatches > 0 && (
+                  <span className={`ml-1.5 text-[10px] font-mono ${deltaTone}`}>
+                    {deltaSign}{delta.toFixed(2)}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+}
