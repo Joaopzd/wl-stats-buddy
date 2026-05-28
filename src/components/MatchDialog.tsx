@@ -202,6 +202,18 @@ export function MatchDialog({
                   </div>
                 </div>
               )}
+              {rageQuit && (
+                <div>
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Who rage-quit</div>
+                  <div className="flex gap-1 bg-input border border-border rounded-md p-1 max-w-xs">
+                    {(["them", "us"] as const).map((w) => (
+                      <button key={w} type="button" onClick={() => setRageQuitBy(w)} className={`flex-1 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition ${rageQuitBy === w ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                        {w === "us" ? "I quit" : "Opponent"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Tactical notes — multi-select */}
               <div className="pt-1">
