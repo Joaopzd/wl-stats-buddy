@@ -53,6 +53,7 @@ function Dashboard() {
   }, [matches]);
 
   const platformStats = useMemo(() => platformRecords(matches), [matches]);
+  const flags = useMemo(() => matchFlagTotals(matches), [matches]);
 
   const aggs = useMemo(() => aggregateAllPlayers(players, matches), [players, matches]);
   const mostApps = useMemo(() => [...aggs].filter(a => a.matches > 0).sort((a, b) => b.matches - a.matches)[0], [aggs]);
