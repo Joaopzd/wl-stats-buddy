@@ -243,6 +243,7 @@ function Dashboard() {
                 );
               })}
           </div>
+          </div>
 
           <div className="surface-card p-5 mb-8">
             <div className="flex items-center justify-between mb-4">
@@ -285,7 +286,6 @@ function Dashboard() {
                 <div className="text-[10px] text-muted-foreground mt-1">times I quit early</div>
               </div>
             </div>
-          </div>
           </div>
 
           {wlMVP && lastWL && <MVPCard agg={wlMVP} wlNumber={lastWL.number} />}
