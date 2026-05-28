@@ -1,6 +1,17 @@
 import { useSyncExternalStore } from "react";
 
-export type ThemeKey = "midnight-stealth" | "gt-racing" | "off-white-copper" | "cyber-neon" | "sahara-dusk";
+export type ThemeKey =
+  | "midnight-stealth"
+  | "gt-racing"
+  | "off-white-copper"
+  | "cyber-neon"
+  | "sahara-dusk"
+  | "burgundy-gold"
+  | "ivory-charcoal"
+  | "burnt-slate"
+  | "navy-champagne"
+  | "forest-stone"
+  | "bronze-pearl";
 
 export interface ThemeDef {
   key: ThemeKey;
