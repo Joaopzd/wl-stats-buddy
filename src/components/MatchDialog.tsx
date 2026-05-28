@@ -98,6 +98,7 @@ export function MatchDialog({
       penalties,
       penaltyWinner: penalties ? penaltyWinner : undefined,
       rageQuit,
+      rageQuitBy: rageQuit ? rageQuitBy : undefined,
       mvpPlayerId: autoMvp?.playerId,
       tactics: tactics.length ? tactics : undefined,
     };
