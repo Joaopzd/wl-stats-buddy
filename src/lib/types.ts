@@ -99,8 +99,10 @@ export interface Match {
   penalties?: boolean;
   /** Who won the shootout (only meaningful if penalties=true). */
   penaltyWinner?: PenaltyWinner;
-  /** Opponent rage-quit early. */
+  /** A rage quit occurred. (Legacy: true === opponent quit.) */
   rageQuit?: boolean;
+  /** Who rage-quit. Defaults to "them" when rageQuit=true and this is unset (legacy). */
+  rageQuitBy?: "us" | "them";
   /** Player designated as MVP for this match (must also have a performance entry). */
   mvpPlayerId?: string;
   /** Selected generic opponent crest id (see lib/crests). */
