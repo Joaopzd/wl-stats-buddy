@@ -3,8 +3,8 @@ import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { StatTile } from "@/components/StatTile";
 import { useMatches, usePlayers, useWLs } from "@/lib/store";
-import { aggregateAllPlayers, aggregatePlayer, performanceStatus, platformRecords, rankFromWins, UNDERPERFORM_MIN_MATCHES, wlRecord } from "@/lib/stats";
-import { Trophy, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, Gamepad2, Users, Crown, AlertTriangle } from "lucide-react";
+import { aggregateAllPlayers, aggregatePlayer, matchFlagTotals, performanceStatus, platformRecords, rankFromWins, UNDERPERFORM_MIN_MATCHES, wlRecord } from "@/lib/stats";
+import { Trophy, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, Gamepad2, Users, Crown, AlertTriangle, Zap, Flag as FlagIcon, DoorOpen } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 import { WLTrendsChart } from "@/components/WLTrendsChart";
@@ -53,6 +53,7 @@ function Dashboard() {
   }, [matches]);
 
   const platformStats = useMemo(() => platformRecords(matches), [matches]);
+  const flags = useMemo(() => matchFlagTotals(matches), [matches]);
 
   const aggs = useMemo(() => aggregateAllPlayers(players, matches), [players, matches]);
   const mostApps = useMemo(() => [...aggs].filter(a => a.matches > 0).sort((a, b) => b.matches - a.matches)[0], [aggs]);
@@ -241,6 +242,49 @@ function Dashboard() {
                   </div>
                 );
               })}
+          </div>
+          </div>
+
+          <div className="surface-card p-5 mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
+                <FlagIcon className="h-3.5 w-3.5 text-primary" /> Match Flags
+              </h3>
+              <span className="text-[10px] text-muted-foreground">Across {flags.played} match{flags.played === 1 ? "" : "es"}</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="rounded-md border border-border/60 bg-background/40 p-3">
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                  <Zap className="h-3 w-3 text-amber-300" /> Extra Time
+                </div>
+                <div className="font-display stat-num text-3xl mt-1 leading-none">{flags.extraTime}</div>
+                <div className="text-[10px] text-muted-foreground mt-1">matches went to ET</div>
+              </div>
+              <div className="rounded-md border border-border/60 bg-background/40 p-3">
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                  <FlagIcon className="h-3 w-3 text-primary" /> Penalties
+                </div>
+                <div className="font-display stat-num text-3xl mt-1 leading-none">{flags.penalties}</div>
+                <div className="text-[10px] text-muted-foreground mt-1 font-mono">
+                  <span className="text-primary">{flags.penaltiesWon}W</span>
+                  <span className="text-muted-foreground/50 mx-1">·</span>
+                  <span className="text-destructive">{flags.penaltiesLost}L</span>
+                </div>
+              </div>
+              <div className="rounded-md border border-border/60 bg-background/40 p-3">
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                  <DoorOpen className="h-3 w-3 text-primary" /> RQ — Opponent
+                </div>
+                <div className="font-display stat-num text-3xl mt-1 leading-none text-primary">{flags.rageQuitThem}</div>
+                <div className="text-[10px] text-muted-foreground mt-1">they bottled it</div>
+              </div>
+              <div className="rounded-md border border-border/60 bg-background/40 p-3">
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                  <DoorOpen className="h-3 w-3 text-destructive" /> RQ — Me
+                </div>
+                <div className="font-display stat-num text-3xl mt-1 leading-none text-destructive">{flags.rageQuitUs}</div>
+                <div className="text-[10px] text-muted-foreground mt-1">times I quit early</div>
+              </div>
             </div>
           </div>
 

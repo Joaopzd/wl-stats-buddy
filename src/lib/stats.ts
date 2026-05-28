@@ -1,5 +1,42 @@
 import type { Match, Platform, Player, Position, WeekendLeague } from "./types";
 
+/** Aggregated counts of "special" match-flag events across a set of matches. */
+export interface MatchFlagTotals {
+  extraTime: number;
+  penalties: number;
+  penaltiesWon: number;
+  penaltiesLost: number;
+  rageQuitUs: number;
+  rageQuitThem: number;
+  played: number;
+}
+
+export function matchFlagTotals(matches: Match[]): MatchFlagTotals {
+  let extraTime = 0, penalties = 0, pw = 0, pl = 0, rqUs = 0, rqThem = 0;
+  for (const m of matches) {
+    if (m.extraTime) extraTime += 1;
+    if (m.penalties) {
+      penalties += 1;
+      if (m.penaltyWinner === "us") pw += 1;
+      else if (m.penaltyWinner === "them") pl += 1;
+    }
+    if (m.rageQuit) {
+      const by = m.rageQuitBy ?? "them"; // legacy: rageQuit=true meant opponent
+      if (by === "us") rqUs += 1;
+      else rqThem += 1;
+    }
+  }
+  return {
+    extraTime,
+    penalties,
+    penaltiesWon: pw,
+    penaltiesLost: pl,
+    rageQuitUs: rqUs,
+    rageQuitThem: rqThem,
+    played: matches.length,
+  };
+}
+
 /** Positions eligible to earn Clean Sheet credit. */
 const CS_POSITIONS: Position[] = ["GK", "CB", "LB", "RB"];
 /** Positions that track Goals Conceded individually. */
