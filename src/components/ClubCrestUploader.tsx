@@ -44,10 +44,12 @@ export function ClubCrestUploader() {
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider hover:opacity-90"
+            disabled={busy}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider hover:opacity-90 disabled:opacity-50"
           >
-            <Upload className="h-3 w-3" /> {dataUrl ? "Replace" : "Upload"}
+            <Upload className="h-3 w-3" /> {busy ? "Uploading…" : dataUrl ? "Replace" : "Upload"}
           </button>
+
           {dataUrl && (
             <button
               type="button"
