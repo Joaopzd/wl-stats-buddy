@@ -37,10 +37,22 @@ const subscribe = (l: () => void) => {
   return () => listeners.delete(l);
 };
 
-function publicUrl(path: string | null | undefined): string | null {
+function publicUrl(path: string | null | undefined, version?: string | number | null): string | null {
   if (!path) return null;
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-  return data.publicUrl;
+  if (!data.publicUrl) return null;
+  if (version === undefined || version === null) return data.publicUrl;
+  const separator = data.publicUrl.includes("?") ? "&" : "?";
+  return `${data.publicUrl}${separator}v=${encodeURIComponent(String(version))}`;
+}
+
+function assertImageLoads(src: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve();
+    img.onerror = () => reject(new Error("Uploaded image could not be loaded from storage"));
+    img.src = src;
+  });
 }
 
 async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
@@ -66,7 +78,7 @@ async function maybeUploadImage(
     .from(BUCKET)
     .upload(path, blob, { upsert: true, contentType: blob.type || `image/${safeExt}` });
   if (error) throw new Error(error.message);
-  return { path, url: publicUrl(path) };
+  return { path, url: publicUrl(path, Date.now()) };
 }
 
 async function loadAll() {
@@ -83,8 +95,8 @@ async function loadAll() {
   if (s.data) {
     state.clubName = s.data.club_name ?? "";
     state.opponentName = s.data.opponent_name ?? DEFAULT_OPPONENT;
-    state.clubCrest = publicUrl(s.data.club_crest_path);
-    state.opponentCrest = publicUrl(s.data.opponent_crest_path);
+    state.clubCrest = publicUrl(s.data.club_crest_path, s.data.updated_at);
+    state.opponentCrest = publicUrl(s.data.opponent_crest_path, s.data.updated_at);
   }
   state.loading = false;
   emit();
