@@ -37,10 +37,31 @@ const subscribe = (l: () => void) => {
   return () => listeners.delete(l);
 };
 
-function publicUrl(path: string | null | undefined): string | null {
+function publicUrl(path: string | null | undefined, version?: string | number | null): string | null {
   if (!path) return null;
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-  return data.publicUrl;
+  if (!data.publicUrl) return null;
+  if (version === undefined || version === null) return data.publicUrl;
+  const separator = data.publicUrl.includes("?") ? "&" : "?";
+  return `${data.publicUrl}${separator}v=${encodeURIComponent(String(version))}`;
+}
+
+function assertImageLoads(src: string, attempts = 3): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const tryLoad = (remaining: number) => {
+      const img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => {
+        if (remaining > 1) {
+          window.setTimeout(() => tryLoad(remaining - 1), 350);
+          return;
+        }
+        reject(new Error("Uploaded image could not be loaded from storage"));
+      };
+      img.src = src;
+    };
+    tryLoad(attempts);
+  });
 }
 
 async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
@@ -66,7 +87,7 @@ async function maybeUploadImage(
     .from(BUCKET)
     .upload(path, blob, { upsert: true, contentType: blob.type || `image/${safeExt}` });
   if (error) throw new Error(error.message);
-  return { path, url: publicUrl(path) };
+  return { path, url: publicUrl(path, Date.now()) };
 }
 
 async function loadAll() {
@@ -83,8 +104,8 @@ async function loadAll() {
   if (s.data) {
     state.clubName = s.data.club_name ?? "";
     state.opponentName = s.data.opponent_name ?? DEFAULT_OPPONENT;
-    state.clubCrest = publicUrl(s.data.club_crest_path);
-    state.opponentCrest = publicUrl(s.data.opponent_crest_path);
+    state.clubCrest = publicUrl(s.data.club_crest_path, s.data.updated_at);
+    state.opponentCrest = publicUrl(s.data.opponent_crest_path, s.data.updated_at);
   }
   state.loading = false;
   emit();
@@ -341,29 +362,29 @@ export const store = {
 
   // ----- Settings: club / opponent ---------------------------------
   getClubCrest: () => state.clubCrest,
-  setClubCrest(value: string | null) {
+  async setClubCrest(value: string | null) {
     const prev = state.clubCrest;
     state.clubCrest = value; // optimistic; replaced with public URL after upload
     emit();
-    (async () => {
-      try {
-        if (!userId) throw new Error("Not signed in");
-        let path: string | null = null;
-        let url: string | null = value;
-        if (value?.startsWith("data:")) {
-          const r = await maybeUploadImage(value, `${userId}/club`);
-          path = r.path;
-          url = r.url;
-          state.clubCrest = url;
-          emit();
-        }
-        await upsertSettings({ club_crest_path: path });
-      } catch (e) {
-        state.clubCrest = prev;
+    try {
+      if (!userId) throw new Error("Not signed in");
+      let path: string | null = null;
+      let url: string | null = value;
+      if (value?.startsWith("data:")) {
+        const r = await maybeUploadImage(value, `${userId}/club`);
+        path = r.path;
+        url = r.url;
+        if (url) await assertImageLoads(url);
+        state.clubCrest = url;
         emit();
-        reportError("Falha ao salvar escudo do clube", e);
       }
-    })();
+      await upsertSettings({ club_crest_path: path });
+    } catch (e) {
+      state.clubCrest = prev;
+      emit();
+      reportError("Falha ao salvar escudo do clube", e);
+      throw e;
+    }
   },
 
   getClubName: () => state.clubName,
@@ -380,29 +401,29 @@ export const store = {
   },
 
   getOpponentCrest: () => state.opponentCrest,
-  setOpponentCrest(value: string | null) {
+  async setOpponentCrest(value: string | null) {
     const prev = state.opponentCrest;
     state.opponentCrest = value;
     emit();
-    (async () => {
-      try {
-        if (!userId) throw new Error("Not signed in");
-        let path: string | null = null;
-        let url: string | null = value;
-        if (value?.startsWith("data:")) {
-          const r = await maybeUploadImage(value, `${userId}/opponent`);
-          path = r.path;
-          url = r.url;
-          state.opponentCrest = url;
-          emit();
-        }
-        await upsertSettings({ opponent_crest_path: path });
-      } catch (e) {
-        state.opponentCrest = prev;
+    try {
+      if (!userId) throw new Error("Not signed in");
+      let path: string | null = null;
+      let url: string | null = value;
+      if (value?.startsWith("data:")) {
+        const r = await maybeUploadImage(value, `${userId}/opponent`);
+        path = r.path;
+        url = r.url;
+        if (url) await assertImageLoads(url);
+        state.opponentCrest = url;
         emit();
-        reportError("Falha ao salvar escudo do adversário", e);
       }
-    })();
+      await upsertSettings({ opponent_crest_path: path });
+    } catch (e) {
+      state.opponentCrest = prev;
+      emit();
+      reportError("Falha ao salvar escudo do adversário", e);
+      throw e;
+    }
   },
 
   getOpponentName: () => state.opponentName,

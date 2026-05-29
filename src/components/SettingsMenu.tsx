@@ -15,6 +15,7 @@ export function SettingsMenu() {
   const opponentCrest = useOpponentCrest();
   const [open, setOpen] = useState(false);
   const [nameDraft, setNameDraft] = useState(opponentName);
+  const [crestPreview, setCrestPreview] = useState<string | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -38,11 +39,22 @@ export function SettingsMenu() {
     if (file.size > 10_000_000) { toast.error("Image too large (max ~10 MB)"); return; }
     try {
       const dataUrl = await compressImageToDataURL(file);
-      store.setOpponentCrest(dataUrl);
-      toast.success("Opponent crest updated");
+      setCrestPreview(dataUrl);
+      toast.success("Preview loaded — confirm to save");
     } catch (e) {
       console.error("Crest upload failed", e);
       toast.error("Could not read this image. Try a PNG or JPG (HEIC from iPhone is not supported — convert it first).");
+    }
+  };
+
+  const saveCrestPreview = async () => {
+    if (!crestPreview) return;
+    try {
+      await store.setOpponentCrest(crestPreview);
+      setCrestPreview(null);
+      toast.success("Opponent crest updated");
+    } catch {
+      // store already reports the detailed error and restores the previous crest.
     }
   };
 
@@ -130,13 +142,22 @@ export function SettingsMenu() {
           />
 
           <div className="mt-3 flex items-center gap-3">
-            <OpponentCrest size={48} />
+            {crestPreview ? (
+              <div className="relative">
+                <div className="inline-grid place-items-center rounded-full overflow-hidden bg-background/60 border border-primary/70 shrink-0" style={{ width: 48, height: 48 }}>
+                  <img src={crestPreview} alt="Opponent crest preview" className="h-12 w-12 object-contain" draggable={false} />
+                </div>
+                <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-primary ring-2 ring-background" aria-hidden />
+              </div>
+            ) : (
+              <OpponentCrest size={48} />
+            )}
             <div className="min-w-0 flex-1">
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                 Opponent Crest
               </div>
               <div className="text-[11px] text-muted-foreground truncate">
-                {opponentCrest ? "Custom crest in use" : "Using default crest"}
+                {crestPreview ? "Preview ready — confirm to save" : opponentCrest ? "Custom crest in use" : "Using default crest"}
               </div>
               <div className="mt-1.5 flex gap-1.5">
                 <button
@@ -146,10 +167,28 @@ export function SettingsMenu() {
                 >
                   <Upload className="h-3 w-3" /> {opponentCrest ? "Replace" : "Upload"}
                 </button>
-                {opponentCrest && (
+                {crestPreview && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={saveCrestPreview}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded border border-primary text-primary text-[10px] font-bold uppercase tracking-wider hover:bg-primary/10"
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCrestPreview(null)}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded border border-border text-muted-foreground text-[10px] font-bold uppercase tracking-wider hover:text-foreground"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                )}
+                {opponentCrest && !crestPreview && (
                   <button
                     type="button"
-                    onClick={() => { store.setOpponentCrest(null); toast.success("Crest reset"); }}
+                    onClick={async () => { await store.setOpponentCrest(null); toast.success("Crest reset"); }}
                     className="inline-flex items-center gap-1 px-2 py-1 rounded border border-border text-muted-foreground text-[10px] font-bold uppercase tracking-wider hover:text-destructive"
                   >
                     <Trash2 className="h-3 w-3" /> Reset
