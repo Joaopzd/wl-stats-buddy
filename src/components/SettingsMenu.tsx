@@ -34,17 +34,18 @@ export function SettingsMenu() {
     };
   }, [open]);
 
-  const onPickFile = (file: File) => {
-    if (!file.type.startsWith("image/")) { toast.error("Please pick an image"); return; }
-    if (file.size > 1_500_000) { toast.error("Image too large (max ~1.5 MB)"); return; }
-    const reader = new FileReader();
-    reader.onload = () => {
-      store.setOpponentCrest(reader.result as string);
+  const onPickFile = async (file: File) => {
+    if (file.size > 10_000_000) { toast.error("Image too large (max ~10 MB)"); return; }
+    try {
+      const dataUrl = await compressImageToDataURL(file);
+      store.setOpponentCrest(dataUrl);
       toast.success("Opponent crest updated");
-    };
-    reader.onerror = () => toast.error("Failed to read image");
-    reader.readAsDataURL(file);
+    } catch (e) {
+      console.error("Crest upload failed", e);
+      toast.error("Could not read this image. Try a PNG or JPG (HEIC from iPhone is not supported — convert it first).");
+    }
   };
+
 
   const commitName = () => {
     const trimmed = nameDraft.trim();
