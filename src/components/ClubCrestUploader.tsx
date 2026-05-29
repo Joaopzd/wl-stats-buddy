@@ -1,32 +1,36 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Upload, Trash2 } from "lucide-react";
 import { store, useClubCrest } from "@/lib/store";
 import { ClubCrest } from "./ClubCrest";
+import { compressImageToDataURL } from "@/lib/imageCompress";
 import { toast } from "sonner";
 
 /** Compact card to upload, replace, or remove the user's club crest. */
 export function ClubCrestUploader() {
   const dataUrl = useClubCrest();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
 
-  const onPick = (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please pick an image file");
+  const onPick = async (file: File) => {
+    if (file.size > 10_000_000) {
+      toast.error("Image too large (max ~10 MB)");
       return;
     }
-    if (file.size > 1_500_000) {
-      toast.error("Image too large (max ~1.5 MB)");
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      store.setClubCrest(result);
+    setBusy(true);
+    try {
+      const dataUrl = await compressImageToDataURL(file);
+      store.setClubCrest(dataUrl);
       toast.success("Club crest updated");
-    };
-    reader.onerror = () => toast.error("Failed to read image");
-    reader.readAsDataURL(file);
+    } catch (e) {
+      console.error("Crest upload failed", e);
+      toast.error(
+        "Could not read this image. Try a PNG or JPG (HEIC from iPhone is not supported — convert it first).",
+      );
+    } finally {
+      setBusy(false);
+    }
   };
+
 
   return (
     <div className="surface-card p-4 flex items-center gap-4">
