@@ -3,8 +3,9 @@ import { Settings, Check, Upload, Trash2 } from "lucide-react";
 import { THEMES, setTheme, useTheme, type ThemeKey } from "@/lib/theme";
 import { store, useOpponentCrest, useOpponentName } from "@/lib/store";
 import { OpponentCrest } from "./OpponentCrest";
-import { OpponentCrest } from "./OpponentCrest";
 import { compressImageToDataURL } from "@/lib/imageCompress";
+import { toast } from "sonner";
+
 
 
 /** Settings gear that opens accent picker + opponent identity config. */
