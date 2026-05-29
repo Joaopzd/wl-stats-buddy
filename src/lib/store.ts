@@ -366,6 +366,7 @@ export const store = {
           const r = await maybeUploadImage(value, `${userId}/club`);
           path = r.path;
           url = r.url;
+          if (url) await assertImageLoads(url);
           state.clubCrest = url;
           emit();
         }
@@ -405,6 +406,7 @@ export const store = {
           const r = await maybeUploadImage(value, `${userId}/opponent`);
           path = r.path;
           url = r.url;
+          if (url) await assertImageLoads(url);
           state.opponentCrest = url;
           emit();
         }
