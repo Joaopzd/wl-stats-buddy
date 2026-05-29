@@ -46,12 +46,21 @@ function publicUrl(path: string | null | undefined, version?: string | number | 
   return `${data.publicUrl}${separator}v=${encodeURIComponent(String(version))}`;
 }
 
-function assertImageLoads(src: string): Promise<void> {
+function assertImageLoads(src: string, attempts = 3): Promise<void> {
   return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve();
-    img.onerror = () => reject(new Error("Uploaded image could not be loaded from storage"));
-    img.src = src;
+    const tryLoad = (remaining: number) => {
+      const img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => {
+        if (remaining > 1) {
+          window.setTimeout(() => tryLoad(remaining - 1), 350);
+          return;
+        }
+        reject(new Error("Uploaded image could not be loaded from storage"));
+      };
+      img.src = src;
+    };
+    tryLoad(attempts);
   });
 }
 
