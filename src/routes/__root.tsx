@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { store } from "@/lib/store";
 import { migrateLocalToCloud } from "@/lib/migrate";
+import { migrateAnonymousUser } from "@/lib/migrateUser.functions";
+import { PENDING_ANON_MIGRATION_KEY } from "@/components/AuthButton";
 
 import appCss from "../styles.css?url";
 
