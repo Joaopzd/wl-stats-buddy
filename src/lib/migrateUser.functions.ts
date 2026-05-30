@@ -114,7 +114,7 @@ export const migrateAnonymousUser = createServerFn({ method: "POST" })
         .eq("user_id", newUserId)
         .maybeSingle();
       if (s) {
-        const patch: Record<string, string | null> = {};
+        const patch: { club_crest_path?: string; opponent_crest_path?: string } = {};
         if (s.club_crest_path?.startsWith(`${anonUserId}/`)) {
           patch.club_crest_path = s.club_crest_path.replace(`${anonUserId}/`, `${newUserId}/`);
         }
