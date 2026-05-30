@@ -2,6 +2,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { LayoutDashboard, Trophy, Users, Sparkles, Shield } from "lucide-react";
 import { ClubCrest } from "./ClubCrest";
 import { SettingsMenu } from "./SettingsMenu";
+import { AuthButton } from "./AuthButton";
 
 const links = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -47,6 +48,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
+            <AuthButton />
             <SettingsMenu />
           </div>
         </div>

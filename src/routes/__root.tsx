@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { store } from "@/lib/store";
 import { migrateLocalToCloud } from "@/lib/migrate";
+import { migrateAnonymousUser } from "@/lib/migrateUser.functions";
+import { PENDING_ANON_MIGRATION_KEY } from "@/components/AuthButton";
 
 import appCss from "../styles.css?url";
 
@@ -80,6 +82,26 @@ function RootComponent() {
         }
         if (cancelled || !session?.user) return;
         const uid = session.user.id;
+
+        // If returning from Google sign-in with a pending anon migration, run it first.
+        const pendingAnon = typeof window !== "undefined"
+          ? localStorage.getItem(PENDING_ANON_MIGRATION_KEY)
+          : null;
+        if (pendingAnon && !session.user.is_anonymous && pendingAnon !== uid) {
+          try {
+            const res = await migrateAnonymousUser({
+              data: { anonUserId: pendingAnon, accessToken: session.access_token },
+            });
+            if (res.migrated) {
+              toast.success("Conta vinculada — seus dados foram migrados para sua conta Google.");
+            }
+          } catch (e) {
+            toast.error("Falha ao migrar dados anônimos: " + (e instanceof Error ? e.message : String(e)));
+          } finally {
+            localStorage.removeItem(PENDING_ANON_MIGRATION_KEY);
+          }
+        }
+
         await store.init(uid);
         try {
           const res = await migrateLocalToCloud(uid);
@@ -91,6 +113,13 @@ function RootComponent() {
         } catch (e) {
           toast.error("Falha na migração: " + (e instanceof Error ? e.message : String(e)));
         }
+
+        // React to future sign-in/out events.
+        supabase.auth.onAuthStateChange(async (_evt, s) => {
+          if (s?.user && s.user.id !== store.getUserId()) {
+            await store.init(s.user.id);
+          }
+        });
       } catch (e) {
         toast.error("Falha ao conectar: " + (e instanceof Error ? e.message : String(e)));
       }
