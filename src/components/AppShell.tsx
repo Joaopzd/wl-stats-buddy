@@ -48,6 +48,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
+            <AuthButton />
             <SettingsMenu />
           </div>
         </div>
