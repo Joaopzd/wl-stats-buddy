@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { LogIn, LogOut, User as UserIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
@@ -71,10 +72,22 @@ export function AuthButton() {
 
   return (
     <div className="flex items-center gap-2">
-      <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground max-w-[160px] truncate">
+      <Link
+        to="/account"
+        className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground max-w-[160px] truncate"
+        title="Ver conta"
+      >
         <UserIcon className="h-3.5 w-3.5 shrink-0" />
         <span className="truncate">{email ?? "Conta"}</span>
-      </div>
+      </Link>
+      <Link
+        to="/account"
+        className="sm:hidden h-9 w-9 grid place-items-center rounded-md border border-border/60 text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition"
+        title="Conta"
+        aria-label="Conta"
+      >
+        <UserIcon className="h-4 w-4" />
+      </Link>
       <button
         type="button"
         onClick={signOut}

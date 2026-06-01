@@ -94,6 +94,12 @@ function RootComponent() {
             });
             if (res.migrated) {
               toast.success("Conta vinculada — seus dados foram migrados para sua conta Google.");
+              if (typeof window !== "undefined") {
+                sessionStorage.setItem("fc26_just_migrated", "1");
+                if (!window.location.pathname.startsWith("/account")) {
+                  window.history.replaceState(null, "", "/account");
+                }
+              }
             }
           } catch (e) {
             toast.error("Falha ao migrar dados anônimos: " + (e instanceof Error ? e.message : String(e)));
