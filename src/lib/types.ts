@@ -34,6 +34,8 @@ export type Rarity =
   | "Trophy Titans"
   | "Evo"
   | "FUT Champions TOTS"
+  | "Prime Heroes"
+  | "World Tour"
   // Legends
   | "Icon Base"
   | "Hero Base";
