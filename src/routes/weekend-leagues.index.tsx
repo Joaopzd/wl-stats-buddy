@@ -8,6 +8,7 @@ import { Plus, ChevronRight, Trophy, Trash2, ClipboardList, GitCompareArrows } f
 import { RankBadge } from "@/components/RankBadge";
 import { CoachBriefingDialog } from "@/components/CoachBriefingDialog";
 import { LeagueWatermark } from "@/components/LeagueWatermark";
+import { ClubCrest } from "@/components/ClubCrest";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 
@@ -133,7 +134,10 @@ function WLList() {
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
                 <div className="relative z-10">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Weekend League</div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-1.5">
+                  <ClubCrest size={14} overrideUrl={wl.clubCrestUrl} />
+                  <span className="truncate">{wl.clubName || "Weekend League"}</span>
+                </div>
                 <div className={`font-display mt-1 leading-tight pr-6 ${hasCustom ? "text-2xl" : "text-5xl"}`}>{label}</div>
                 {hasCustom && (
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">WL #{wl.number}</div>

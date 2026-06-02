@@ -147,8 +147,9 @@ function WLDetail() {
             {/* Top: identity + record */}
             <div className="px-5 sm:px-7 pt-5 pb-4 flex items-start justify-between gap-5">
               <div className="min-w-0 flex-1">
-                <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold mb-2">
-                  Weekend League · #{wl.number}
+                <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold mb-2 flex items-center gap-2">
+                  <ClubCrest size={20} overrideUrl={wl.clubCrestUrl} />
+                  <span className="truncate">{wl.clubName || "My Club"} · WL #{wl.number}</span>
                 </div>
                 {editingName ? (
                   <div className="flex items-center gap-2">

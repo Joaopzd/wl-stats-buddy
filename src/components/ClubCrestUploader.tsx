@@ -48,6 +48,7 @@ export function ClubCrestUploader() {
 
 
   return (
+    <div className="space-y-2">
     <div className="surface-card p-4 flex items-center gap-4">
       {preview ? (
         <div className="relative">
@@ -117,6 +118,11 @@ export function ClubCrestUploader() {
           e.target.value = "";
         }}
       />
+    </div>
+    <p className="text-[11px] text-muted-foreground leading-relaxed px-1">
+      ⓘ Trocar a identidade ativa do clube vale para próximas partidas e WLs.
+      Campanhas passadas mantêm o nome e o escudo originais.
+    </p>
     </div>
   );
 }
