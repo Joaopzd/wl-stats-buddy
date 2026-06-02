@@ -1,4 +1,4 @@
-import type { SVGProps } from "react";
+import type { SVGProps, ReactElement } from "react";
 
 /** Italic "LL" mark — La Liga. */
 function LaLigaMark(props: SVGProps<SVGSVGElement>) {
@@ -84,7 +84,7 @@ function BoltMark(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-function pickMark(title: string): (props: SVGProps<SVGSVGElement>) => JSX.Element {
+function pickMark(title: string): (props: SVGProps<SVGSVGElement>) => React.ReactElement {
   const t = title.toLowerCase();
   if (t.includes("laliga") || t.includes("la liga")) return LaLigaMark;
   if (t.includes("bundesliga")) return BicycleKickMark;
