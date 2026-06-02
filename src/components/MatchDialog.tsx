@@ -151,7 +151,7 @@ export function MatchDialog({
 
             {/* Versus header: My crest · Score · Opponent crest */}
             <div className="surface-card p-3 flex items-center gap-3">
-              <ClubCrest size={CREST_SIZE.dialog} />
+              <ClubCrest size={CREST_SIZE.dialog} overrideUrl={wl.clubCrestUrl} />
               <div className="flex-1 grid grid-cols-2 gap-3">
                 <ScoreInput label="You" value={scoreFor} onChange={setScoreFor} accent />
                 <ScoreInput label="Opponent" value={scoreAgainst} onChange={setScoreAgainst} />

@@ -237,20 +237,28 @@ export const store = {
     emit();
   },
   addWL(w: WeekendLeague) {
-    state.wls = [...state.wls, w];
+    // Snapshot the active club identity at creation time. Past WLs preserve
+    // their original name + crest forever, even when the user later edits the
+    // live identity in Settings.
+    const snapshot: WeekendLeague = {
+      ...w,
+      clubName: w.clubName ?? (state.clubName || undefined),
+      clubCrestUrl: w.clubCrestUrl ?? state.clubCrest ?? null,
+    };
+    state.wls = [...state.wls, snapshot];
     emit();
     (async () => {
       try {
         if (!userId) throw new Error("Not signed in");
         const { error } = await supabase.from("weekend_leagues").insert({
-          id: w.id,
+          id: snapshot.id,
           user_id: userId,
-          number: w.number,
-          data: w as unknown as never,
+          number: snapshot.number,
+          data: snapshot as unknown as never,
         } as never);
         if (error) throw new Error(error.message);
       } catch (e) {
-        state.wls = state.wls.filter((x) => x.id !== w.id);
+        state.wls = state.wls.filter((x) => x.id !== snapshot.id);
         emit();
         reportError("Falha ao criar WL", e);
       }
