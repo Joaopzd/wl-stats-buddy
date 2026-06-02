@@ -84,7 +84,7 @@ function BoltMark(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-function pickMark(title: string): (props: SVGProps<SVGSVGElement>) => React.ReactElement {
+function pickMark(title: string): (props: SVGProps<SVGSVGElement>) => ReactElement {
   const t = title.toLowerCase();
   if (t.includes("laliga") || t.includes("la liga")) return LaLigaMark;
   if (t.includes("bundesliga")) return BicycleKickMark;
