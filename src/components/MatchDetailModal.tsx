@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { X, Star, Zap, Flag as FlagIcon, AlertTriangle, Trophy, Pencil } from "lucide-react";
-import type { Match, Player } from "@/lib/types";
+import type { Match, Player, WeekendLeague } from "@/lib/types";
 import { matchIsWin } from "@/lib/stats";
 import { ClubCrest } from "./ClubCrest";
 import { OpponentCrest } from "./OpponentCrest";
@@ -13,17 +13,22 @@ import { CREST_SIZE } from "@/lib/ui";
 export function MatchDetailModal({
   match,
   players,
+  wl,
   onClose,
   onEdit,
 }: {
   match: Match;
   players: Player[];
+  /** WL this match belongs to. Used to render the historical club identity snapshot. */
+  wl?: WeekendLeague;
   onClose: () => void;
   onEdit?: () => void;
 }) {
   const playersById = new Map(players.map((p) => [p.id, p]));
   const win = matchIsWin(match);
-  const clubName = useClubName();
+  const liveClubName = useClubName();
+  const clubName = wl?.clubName ?? liveClubName;
+  const clubCrestOverride = wl ? wl.clubCrestUrl ?? null : undefined;
   const opponentName = useOpponentName();
 
   // MVP: explicit mvpPlayerId, else highest rating > 0
@@ -81,7 +86,7 @@ export function MatchDetailModal({
           </div>
           <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5 font-display leading-none">
             <div className="flex flex-col items-center justify-self-center gap-1.5 min-w-0 w-full">
-              <ClubCrest size={CREST_SIZE.detail} />
+              <ClubCrest size={CREST_SIZE.detail} overrideUrl={clubCrestOverride} />
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[8rem] text-center">
                 {clubName || "My Club"}
               </div>

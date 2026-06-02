@@ -514,6 +514,7 @@ function WLDetail() {
         <MatchDetailModal
           match={viewingMatch}
           players={players}
+          wl={wl}
           onClose={() => setViewingMatch(null)}
           onEdit={() => { setEditingMatch(viewingMatch); setViewingMatch(null); setMatchOpen(true); }}
         />
