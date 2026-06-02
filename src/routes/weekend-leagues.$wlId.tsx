@@ -446,7 +446,7 @@ function WLDetail() {
                     M{m.index}
                   </span>
                   <div className="flex items-center justify-center gap-1.5 leading-none">
-                    <ClubCrest size={CREST_SIZE.list} />
+                    <ClubCrest size={CREST_SIZE.list} overrideUrl={wl.clubCrestUrl} />
                     <span className="font-display stat-num text-sm">
                       <span className="text-foreground">{m.scoreFor}</span>
                       <span className="text-muted-foreground/50 mx-0.5">–</span>
