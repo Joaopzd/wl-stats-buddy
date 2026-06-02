@@ -36,6 +36,7 @@ export type Rarity =
   | "FUT Champions TOTS"
   | "Prime Heroes"
   | "World Tour"
+  | "EOAE"
   // Legends
   | "Icon Base"
   | "Hero Base";
@@ -134,6 +135,10 @@ export interface WeekendLeague {
   playerPickIds?: string[];
   /** Subjective post-WL manager rating per player (0–10, 0.5 increments). */
   managerRatings?: Record<string, number>;
+  /** Snapshot of the active club name at the moment this WL was created. Frozen forever. */
+  clubName?: string;
+  /** Snapshot of the active club crest URL at the moment this WL was created. Frozen forever. */
+  clubCrestUrl?: string | null;
 }
 
 /** Convenience: render the user-facing label for a WL. */

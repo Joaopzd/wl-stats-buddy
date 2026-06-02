@@ -107,6 +107,8 @@ export const rarityVisual = (r: Rarity): RarityVisual => {
       return solid("#f34da8", "#42111c");
     case "World Tour":
       return solid("#b8d210", "#f27620");
+    case "EOAE":
+      return solid("#2d037e", "#ed25f5");
 
     // ===== Legends (kept) =====
     case "Icon Base":
@@ -171,6 +173,7 @@ export const raritySwatch = (r: Rarity): string => {
     "FUT Champions TOTS": "#CB332B",
     "Prime Heroes": "#f34da8",
     "World Tour": "#b8d210",
+    EOAE: "#2d037e",
   };
   if (hexMap[r]) {
     // Rendered via inline style elsewhere; return a neutral utility for layout fallback.
