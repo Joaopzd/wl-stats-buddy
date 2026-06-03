@@ -159,6 +159,97 @@ export function SettingsMenu() {
 
           <div className="my-3 h-px bg-border/60" />
 
+          {/* Active Club Profile */}
+          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">
+            Active Club Profile
+          </div>
+
+          <label className="block text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
+            Club Name
+          </label>
+          <input
+            type="text"
+            value={clubNameDraft}
+            placeholder="My Club"
+            onChange={(e) => setClubNameDraft(e.target.value)}
+            onBlur={commitClubName}
+            onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
+            className="w-full h-9 px-2.5 rounded-md bg-input border border-border text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+
+          <div className="mt-3 flex items-center gap-3">
+            {clubCrestPreview ? (
+              <div className="relative">
+                <div className="inline-grid place-items-center rounded-full overflow-hidden bg-background/60 border border-primary/70 shrink-0" style={{ width: 48, height: 48 }}>
+                  <img src={clubCrestPreview} alt="Club crest preview" className="h-12 w-12 object-contain" draggable={false} />
+                </div>
+                <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-primary ring-2 ring-background" aria-hidden />
+              </div>
+            ) : (
+              <ClubCrest size={48} />
+            )}
+            <div className="min-w-0 flex-1">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                Club Crest
+              </div>
+              <div className="text-[11px] text-muted-foreground truncate">
+                {clubCrestPreview ? "Preview ready — confirm to save" : clubCrest ? "Custom crest in use" : "No crest yet"}
+              </div>
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => clubFileRef.current?.click()}
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider hover:opacity-90"
+                >
+                  <Upload className="h-3 w-3" /> {clubCrest ? "Replace" : "Upload"}
+                </button>
+                {clubCrestPreview && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={saveClubCrestPreview}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded border border-primary text-primary text-[10px] font-bold uppercase tracking-wider hover:bg-primary/10"
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setClubCrestPreview(null)}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded border border-border text-muted-foreground text-[10px] font-bold uppercase tracking-wider hover:text-foreground"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                )}
+                {clubCrest && !clubCrestPreview && (
+                  <button
+                    type="button"
+                    onClick={async () => { await store.setClubCrest(null); toast.success("Crest removed"); }}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded border border-border text-muted-foreground text-[10px] font-bold uppercase tracking-wider hover:text-destructive"
+                  >
+                    <Trash2 className="h-3 w-3" /> Remove
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+          <input
+            ref={clubFileRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) onPickClubFile(f);
+              e.target.value = "";
+            }}
+          />
+          <p className="mt-2 text-[10px] leading-snug text-muted-foreground">
+            ⓘ Editar aqui cria automaticamente um novo perfil para próximas WLs. WLs antigas mantêm o perfil original (visível na aba Club).
+          </p>
+
+          <div className="my-3 h-px bg-border/60" />
+
           {/* Opponent config */}
           <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">
             Opponent Configuration
