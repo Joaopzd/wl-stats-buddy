@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers, useWLs, store } from "@/lib/store";
-import { aggregatePlayer, bestStreak, matchIsWin, rankFromWins, wlRecord } from "@/lib/stats";
+import { aggregatePlayer, bestStreak, currentWinStreak, matchIsWin, rankFromWins, wlRecord } from "@/lib/stats";
 
 import { SquadDialog } from "@/components/SquadDialog";
 import { MatchDialog } from "@/components/MatchDialog";
