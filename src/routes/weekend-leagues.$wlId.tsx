@@ -141,6 +141,7 @@ function WLDetail() {
         const canAddPick = maxPicks > 0 && usedPicks < maxPicks;
         const gd = (record?.goalsFor ?? 0) - (record?.goalsAgainst ?? 0);
         const gdPositive = gd >= 0;
+        const streak = currentWinStreak(matches);
 
         return (
           <div className="surface-glow overflow-hidden mb-6">
