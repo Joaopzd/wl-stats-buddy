@@ -26,6 +26,7 @@ export function SettingsMenu() {
   const clubFileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { setNameDraft(opponentName); }, [opponentName, open]);
+  useEffect(() => { setClubNameDraft(clubName); }, [clubName, open]);
 
   useEffect(() => {
     if (!open) return;
