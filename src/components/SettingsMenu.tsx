@@ -14,11 +14,16 @@ export function SettingsMenu() {
   const theme = useTheme();
   const opponentName = useOpponentName();
   const opponentCrest = useOpponentCrest();
+  const clubName = useClubName();
+  const clubCrest = useClubCrest();
   const [open, setOpen] = useState(false);
   const [nameDraft, setNameDraft] = useState(opponentName);
+  const [clubNameDraft, setClubNameDraft] = useState(clubName);
   const [crestPreview, setCrestPreview] = useState<string | null>(null);
+  const [clubCrestPreview, setClubCrestPreview] = useState<string | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const clubFileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { setNameDraft(opponentName); }, [opponentName, open]);
 
