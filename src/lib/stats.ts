@@ -349,6 +349,45 @@ export function bestStreak(matches: Match[]): number {
   return best;
 }
 
+/** Consecutive wins counting backwards from the most recent match. */
+export function currentWinStreak(matches: Match[]): number {
+  const sorted = [...matches].sort((a, b) => a.index - b.index);
+  let cur = 0;
+  for (let i = sorted.length - 1; i >= 0; i--) {
+    if (matchIsWin(sorted[i])) cur += 1;
+    else break;
+  }
+  return cur;
+}
+
+/**
+ * Club identity profile derived from WL snapshots. Each unique
+ * (clubName, clubCrestUrl) tuple used across WLs becomes its own profile,
+ * so the Club page can split lifetime stats per identity.
+ */
+export interface ClubProfile {
+  id: string;
+  name: string;
+  crestUrl: string | null;
+  wlIds: string[];
+}
+
+export function deriveClubProfiles(wls: WeekendLeague[]): ClubProfile[] {
+  const map = new Map<string, ClubProfile>();
+  for (const wl of wls) {
+    const name = (wl.clubName ?? "").trim();
+    const crest = wl.clubCrestUrl ?? null;
+    const key = `${name}|${crest ?? ""}`;
+    let p = map.get(key);
+    if (!p) {
+      p = { id: key, name: name || "Unnamed Club", crestUrl: crest, wlIds: [] };
+      map.set(key, p);
+    }
+    p.wlIds.push(wl.id);
+  }
+  return [...map.values()].sort((a, b) => b.wlIds.length - a.wlIds.length);
+}
+
 export type RankTier = "Elite" | "Champion" | "Contender" | "Unranked";
 
 export type WLRank =
