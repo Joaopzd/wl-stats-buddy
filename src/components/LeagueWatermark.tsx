@@ -43,11 +43,22 @@ function BicycleKickMark(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** Heraldic medieval lion silhouette — Premier League. */
-function LionMark(props: SVGProps<SVGSVGElement>) {
+/** Italic "PL" mark — Premier League. */
+function PLMark(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 100 100" fill="currentColor" {...props}>
-      <path d="M50 8 c-4 0 -6 3 -7 6 c-3 -2 -7 -2 -9 1 c-2 3 -1 7 1 9 c-5 1 -9 5 -10 11 c-1 5 1 10 4 13 c-3 2 -5 6 -5 11 c0 4 2 8 5 10 c-2 2 -3 5 -3 9 c0 6 4 11 9 13 l3 1 l1 8 l4 -1 l1 -6 l8 0 l1 6 l4 1 l1 -8 l3 -1 c5 -2 9 -7 9 -13 c0 -4 -1 -7 -3 -9 c3 -2 5 -6 5 -10 c0 -5 -2 -9 -5 -11 c3 -3 5 -8 4 -13 c-1 -6 -5 -10 -10 -11 c2 -2 3 -6 1 -9 c-2 -3 -6 -3 -9 -1 c-1 -3 -3 -6 -7 -6 z M42 42 c1 -2 3 -3 5 -3 c2 0 4 1 5 3 c-2 1 -3 1 -5 1 c-2 0 -3 0 -5 -1 z M37 50 c2 0 3 1 3 3 c0 2 -1 3 -3 3 c-2 0 -3 -1 -3 -3 c0 -2 1 -3 3 -3 z M63 50 c2 0 3 1 3 3 c0 2 -1 3 -3 3 c-2 0 -3 -1 -3 -3 c0 -2 1 -3 3 -3 z M50 60 c3 0 5 2 5 4 c0 1 -2 2 -5 2 c-3 0 -5 -1 -5 -2 c0 -2 2 -4 5 -4 z" />
+      <text
+        x="50"
+        y="78"
+        textAnchor="middle"
+        fontFamily="Georgia, 'Times New Roman', serif"
+        fontStyle="italic"
+        fontWeight="900"
+        fontSize="78"
+        letterSpacing="-6"
+      >
+        PL
+      </text>
     </svg>
   );
 }
