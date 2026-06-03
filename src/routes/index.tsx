@@ -305,7 +305,7 @@ function Dashboard() {
                   <AlertTriangle className="h-3.5 w-3.5" /> Squad Alerts
                 </h3>
                 <span className="text-[10px] text-muted-foreground">
-                  Starters · avg rating below 6.5 (min. {UNDERPERFORM_MIN_MATCHES} apps)
+                  Outfield starters · avg rating below 6.5 (min. {UNDERPERFORM_MIN_MATCHES} apps)
                 </span>
               </div>
               <div className="divide-y divide-border/40">
