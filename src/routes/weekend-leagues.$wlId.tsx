@@ -405,6 +405,15 @@ function WLDetail() {
         )}
       </section>
 
+      {matches.length > 0 && !wl.closed && (
+        <LiveWLReport
+          wl={wl}
+          matches={matches}
+          squadAggs={squadAggs}
+        />
+      )}
+
+
       {matches.length > 0 && (
         <section className="mb-6">
           <div className="flex items-baseline justify-between mb-3">
