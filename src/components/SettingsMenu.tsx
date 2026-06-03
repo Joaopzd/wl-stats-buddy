@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Settings, Check, Upload, Trash2 } from "lucide-react";
 import { THEMES, setTheme, useTheme, type ThemeKey } from "@/lib/theme";
-import { store, useOpponentCrest, useOpponentName } from "@/lib/store";
+import { store, useClubCrest, useClubName, useOpponentCrest, useOpponentName } from "@/lib/store";
+import { ClubCrest } from "./ClubCrest";
 import { OpponentCrest } from "./OpponentCrest";
 import { compressImageToDataURL } from "@/lib/imageCompress";
 import { toast } from "sonner";
