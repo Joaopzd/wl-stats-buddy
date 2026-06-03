@@ -1033,7 +1033,7 @@ function LiveWLReport({
 }: {
   wl: { id: string };
   matches: Match[];
-  squadAggs: ReturnType<typeof aggregatePlayer>[] | { player: Player; matches: number; goals: number; assists: number; ga: number; avgRating: number; ratedMatches: number; mvpCount: number; cleanSheets: number }[];
+  squadAggs: PlayerAgg[];
 }) {
   void wl;
   // Top contributors: must have played at least 1 match in this WL.
