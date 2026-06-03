@@ -1038,7 +1038,7 @@ function LiveWLReport({
   void wl;
   // Top contributors: must have played at least 1 match in this WL.
   const ranked = useMemo(() => {
-    return [...(squadAggs as ReturnType<typeof aggregatePlayer>[])]
+    return [...squadAggs]
       .filter((a) => a.matches > 0)
       .sort((a, b) => {
         const score = (x: typeof a) => x.ga * 2 + x.avgRating * x.matches * 0.4;
