@@ -1061,7 +1061,7 @@ function LiveWLReport({
   // Current MVP (highest ga * sqrt(matches) blend).
   const mvp = ranked[0] ?? null;
   const weakest = useMemo(() => {
-    const candidates = (squadAggs as ReturnType<typeof aggregatePlayer>[])
+    const candidates = squadAggs
       .filter((a) => a.player.position !== "GK" && a.matches >= 3 && a.avgRating > 0);
     if (!candidates.length) return null;
     return [...candidates].sort((a, b) => a.avgRating - b.avgRating)[0];
