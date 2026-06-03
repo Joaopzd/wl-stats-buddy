@@ -99,7 +99,7 @@ function pickMark(title: string): (props: SVGProps<SVGSVGElement>) => ReactEleme
   const t = title.toLowerCase();
   if (t.includes("laliga") || t.includes("la liga")) return LaLigaMark;
   if (t.includes("bundesliga")) return BicycleKickMark;
-  if (t.includes("premier")) return LionMark;
+  if (t.includes("premier")) return PLMark;
   if (t.includes("ligue")) return ArchesMark;
   if (t.includes("ultimate")) return CrownMark;
   if (t.includes("herostorm") || t.includes("hero storm")) return BoltMark;
