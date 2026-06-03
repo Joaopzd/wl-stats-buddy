@@ -65,6 +65,35 @@ export function SettingsMenu() {
     }
   };
 
+  const onPickClubFile = async (file: File) => {
+    if (file.size > 10_000_000) { toast.error("Image too large (max ~10 MB)"); return; }
+    try {
+      const dataUrl = await compressImageToDataURL(file);
+      setClubCrestPreview(dataUrl);
+      toast.success("Preview loaded — confirm to save");
+    } catch (e) {
+      console.error("Club crest upload failed", e);
+      toast.error("Could not read this image. Try a PNG or JPG.");
+    }
+  };
+
+  const saveClubCrestPreview = async () => {
+    if (!clubCrestPreview) return;
+    try {
+      await store.setClubCrest(clubCrestPreview);
+      setClubCrestPreview(null);
+      toast.success("Club crest updated · próximas WLs vão usar este escudo");
+    } catch {
+      // store reports the detailed error
+    }
+  };
+
+  const commitClubName = () => {
+    const trimmed = clubNameDraft.trim();
+    if (trimmed === clubName) return;
+    store.setClubName(trimmed);
+    toast.success("Active club name saved · próximas WLs vão usar este nome");
+  };
 
   const commitName = () => {
     const trimmed = nameDraft.trim();
