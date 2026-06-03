@@ -107,8 +107,11 @@ function Dashboard() {
   }, [lastWL, matches, players]);
 
   const empty = wls.length === 0 && players.length === 0;
-  // Squad Alerts: starters with 9+ matches who are statistically underperforming
-  // (avg rating below 6.5 — covers both "caution" and "critical" tiers).
+  // Squad Alerts: outfield starters with 9+ matches who are statistically
+  // underperforming (avg rating below 6.5 — covers both "caution" and
+  // "critical" tiers). Goalkeepers are excluded — this EA FC version has
+  // very high scoring, so GK ratings are systemically lower and would
+  // generate false positives. We still surface a GK separately below.
   const squadAlerts = useMemo(() => {
     const starterIds = new Set<string>();
     for (const wl of wls) {
@@ -117,6 +120,7 @@ function Dashboard() {
     }
     return aggs
       .filter((a) => starterIds.has(a.player.id))
+      .filter((a) => a.player.position !== "GK")
       .filter((a) => {
         const s = performanceStatus(a);
         return s === "critical" || s === "caution";
@@ -301,7 +305,7 @@ function Dashboard() {
                   <AlertTriangle className="h-3.5 w-3.5" /> Squad Alerts
                 </h3>
                 <span className="text-[10px] text-muted-foreground">
-                  Starters · avg rating below 6.5 (min. {UNDERPERFORM_MIN_MATCHES} apps)
+                  Outfield starters · avg rating below 6.5 (min. {UNDERPERFORM_MIN_MATCHES} apps)
                 </span>
               </div>
               <div className="divide-y divide-border/40">

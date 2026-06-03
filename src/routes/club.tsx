@@ -5,8 +5,8 @@ import { ClubCrest } from "@/components/ClubCrest";
 import { ClubCrestUploader } from "@/components/ClubCrestUploader";
 import { RankBadge } from "@/components/RankBadge";
 import { useClubName, useMatches, usePlayers, useWLs, store } from "@/lib/store";
-import { aggregatePlayer, matchIsWin, rankFromWins, wlRecord, isCleanSheetEligible } from "@/lib/stats";
-import { Pencil, Check, X, Trophy, Shield, Users, Award, Medal } from "lucide-react";
+import { aggregatePlayer, deriveClubProfiles, matchIsWin, rankFromWins, wlRecord, isCleanSheetEligible } from "@/lib/stats";
+import { Pencil, Check, X, Trophy, Shield, Users, Award, Medal, Globe } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 import { BestXI } from "@/components/BestXI";
@@ -16,11 +16,13 @@ export const Route = createFileRoute("/club")({
   head: () => ({
     meta: [
       { title: "Club — WL Tracker" },
-      { name: "description", content: "Manage your club identity and view lifetime statistics." },
+      { name: "description", content: "Manage your club identity and view lifetime statistics, split by club profile." },
     ],
   }),
   component: ClubPage,
 });
+
+const ALL_PROFILE_ID = "__all__";
 
 function ClubPage() {
   const clubName = useClubName();
@@ -30,24 +32,51 @@ function ClubPage() {
 
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState(clubName);
+  const [profileId, setProfileId] = useState<string>(ALL_PROFILE_ID);
 
   useEffect(() => {
     if (!editingName) setDraftName(clubName);
   }, [clubName, editingName]);
 
+  // Each unique (clubName, clubCrestUrl) snapshot used across WLs is a profile.
+  // "O CLUBE" (ALL) aggregates every campaign regardless of identity.
+  const profiles = useMemo(() => deriveClubProfiles(wls), [wls]);
+
+  // Reset to ALL if the currently-selected profile disappears (WL deleted).
+  useEffect(() => {
+    if (profileId === ALL_PROFILE_ID) return;
+    if (!profiles.some((p) => p.id === profileId)) setProfileId(ALL_PROFILE_ID);
+  }, [profiles, profileId]);
+
+  const scopedWLs = useMemo(() => {
+    if (profileId === ALL_PROFILE_ID) return wls;
+    const wlIds = new Set(profiles.find((p) => p.id === profileId)?.wlIds ?? []);
+    return wls.filter((w) => wlIds.has(w.id));
+  }, [wls, profiles, profileId]);
+
+  const scopedMatches = useMemo(() => {
+    const wlIds = new Set(scopedWLs.map((w) => w.id));
+    return matches.filter((m) => wlIds.has(m.wlId));
+  }, [matches, scopedWLs]);
+
+  const activeProfile =
+    profileId === ALL_PROFILE_ID
+      ? null
+      : profiles.find((p) => p.id === profileId) ?? null;
+
   const stats = useMemo(() => {
     let wins = 0, losses = 0, gf = 0, ga = 0;
-    for (const m of matches) {
+    for (const m of scopedMatches) {
       gf += m.scoreFor;
       ga += m.scoreAgainst;
       if (matchIsWin(m)) wins += 1;
       else losses += 1;
     }
     let totalAssists = 0;
-    for (const m of matches) for (const p of m.performances) totalAssists += p.assists;
+    for (const m of scopedMatches) for (const p of m.performances) totalAssists += p.assists;
 
     let cleanSheets = 0;
-    for (const m of matches) {
+    for (const m of scopedMatches) {
       if (m.scoreAgainst !== 0) continue;
       const seen = new Set<string>();
       for (const perf of m.performances) {
@@ -56,23 +85,23 @@ function ClubPage() {
         const player = players.find((pl) => pl.id === perf.playerId);
         if (player && isCleanSheetEligible(player.position)) {
           cleanSheets += 1;
-          break; // count one team clean sheet per match
+          break;
         }
       }
     }
 
     const usedIds = new Set<string>();
-    for (const wl of wls) for (const id of wl.squadPlayerIds) usedIds.add(id);
+    for (const wl of scopedWLs) for (const id of wl.squadPlayerIds) usedIds.add(id);
 
     let bestWins = 0;
-    for (const wl of wls) {
-      const r = wlRecord(wl, matches);
+    for (const wl of scopedWLs) {
+      const r = wlRecord(wl, scopedMatches);
       if (r.wins > bestWins) bestWins = r.wins;
     }
     const bestRank = rankFromWins(bestWins);
 
     return {
-      played: matches.length,
+      played: scopedMatches.length,
       wins,
       losses,
       gf,
@@ -82,23 +111,24 @@ function ClubPage() {
       uniquePlayers: usedIds.size,
       bestWins,
       bestRank,
+      wlCount: scopedWLs.length,
     };
-  }, [matches, players, wls]);
+  }, [scopedMatches, scopedWLs, players]);
 
   const topAgg = useMemo(() => {
-    const aggs = players.map((p) => aggregatePlayer(p, matches));
+    const aggs = players.map((p) => aggregatePlayer(p, scopedMatches));
     return [...aggs].sort((a, b) => b.matches - a.matches)[0];
-  }, [players, matches]);
+  }, [players, scopedMatches]);
 
   const saveName = () => {
     store.setClubName(draftName);
     setEditingName(false);
-    toast.success("Club name updated");
+    toast.success("Active club name updated");
   };
 
   return (
     <AppShell>
-      {/* Hero / identity */}
+      {/* Hero / active identity */}
       <div className="surface-card p-6 sm:p-8 flex flex-col items-center text-center mb-8">
         <ClubCrest size={96} />
         {editingName ? (
@@ -134,7 +164,7 @@ function ClubPage() {
           </button>
         )}
         <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mt-2">
-          Champs Tracker · Club Identity
+          Active identity · used on next WL
         </div>
       </div>
 
@@ -143,11 +173,51 @@ function ClubPage() {
         <ClubCrestUploader />
       </div>
 
+      {/* Profile selector */}
+      {profiles.length > 0 && (
+        <div className="mb-6">
+          <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold mb-2">
+            Club Profiles
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <ProfilePill
+              active={profileId === ALL_PROFILE_ID}
+              onClick={() => setProfileId(ALL_PROFILE_ID)}
+              icon={<Globe className="h-3.5 w-3.5" />}
+              label="O CLUBE"
+              sub={`${wls.length} WL${wls.length === 1 ? "" : "s"}`}
+            />
+            {profiles.map((p) => (
+              <ProfilePill
+                key={p.id}
+                active={profileId === p.id}
+                onClick={() => setProfileId(p.id)}
+                icon={<ClubCrest size={18} overrideUrl={p.crestUrl} />}
+                label={p.name}
+                sub={`${p.wlIds.length} WL${p.wlIds.length === 1 ? "" : "s"}`}
+              />
+            ))}
+          </div>
+          <p className="text-[11px] text-muted-foreground mt-2">
+            Editar nome ou escudo aqui em cima cria um novo perfil automaticamente para as próximas WLs.
+            Campanhas passadas continuam vinculadas ao perfil que estava ativo quando foram criadas.
+          </p>
+        </div>
+      )}
+
       {/* Performance history */}
-      <h2 className="font-display text-2xl tracking-wider mb-4 flex items-center gap-2">
-        <Trophy className="h-5 w-5 text-primary" /> Hall of Fame
+      <h2 className="font-display text-2xl tracking-wider mb-2 flex items-center gap-2">
+        <Trophy className="h-5 w-5 text-primary" />
+        {activeProfile ? activeProfile.name : "Hall of Fame"}
+        {activeProfile && (
+          <ClubCrest size={28} overrideUrl={activeProfile.crestUrl} className="ml-1" />
+        )}
       </h2>
-      <p className="text-xs text-muted-foreground mb-4">Lifetime totals across every Weekend League recorded.</p>
+      <p className="text-xs text-muted-foreground mb-4">
+        {activeProfile
+          ? `Lifetime totals while playing as "${activeProfile.name}" · ${stats.wlCount} WL${stats.wlCount === 1 ? "" : "s"}.`
+          : `Lifetime totals across every Weekend League recorded · ${stats.wlCount} WL${stats.wlCount === 1 ? "" : "s"}.`}
+      </p>
 
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
         <Tile label="Matches Played" value={stats.played} icon={<Trophy className="h-3.5 w-3.5" />} />
@@ -186,8 +256,40 @@ function ClubPage() {
         </div>
       )}
 
-      <BestXI players={players} matches={matches} wls={wls} />
+      <BestXI players={players} matches={scopedMatches} wls={scopedWLs} />
     </AppShell>
+  );
+}
+
+function ProfilePill({
+  active,
+  onClick,
+  icon,
+  label,
+  sub,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+  sub: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border text-left transition ${
+        active
+          ? "bg-primary/10 border-primary text-foreground shadow-[var(--shadow-neon)]"
+          : "bg-secondary/40 border-border text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+      }`}
+    >
+      <span className="shrink-0 grid place-items-center">{icon}</span>
+      <span className="min-w-0">
+        <span className="block font-display text-sm leading-tight truncate max-w-[12rem]">{label}</span>
+        <span className="block text-[9px] uppercase tracking-wider font-mono opacity-80">{sub}</span>
+      </span>
+    </button>
   );
 }
 
