@@ -195,10 +195,20 @@ function WLDetail() {
                   <Trophy className="h-3 w-3 text-primary" /> Record
                 </div>
                 <div className="flex items-baseline gap-1.5 justify-end leading-none">
-                  <span className="font-display text-5xl sm:text-6xl stat-num text-primary">{wins}</span>
+                  <span className="font-display text-5xl sm:text-6xl stat-num text-primary inline-flex items-baseline gap-1">
+                    {wins}
+                    {streak >= 2 && (
+                      <WinStreakFire streak={streak} />
+                    )}
+                  </span>
                   <span className="font-display text-3xl text-muted-foreground/40">–</span>
                   <span className="font-display text-5xl sm:text-6xl stat-num text-destructive/90">{record?.losses ?? 0}</span>
                 </div>
+                {streak >= 2 && (
+                  <div className="mt-1 text-[10px] uppercase tracking-wider font-bold" style={{ color: streak >= 4 ? "#ff6b1a" : "#f59e0b" }}>
+                    {streak}-win streak{streak >= 4 ? " · on fire" : ""}
+                  </div>
+                )}
               </div>
             </div>
 
