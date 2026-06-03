@@ -997,3 +997,211 @@ function PlayerPickDialog({
     </div>
   );
 }
+
+/**
+ * Fire badge shown next to the win count during a live WL whenever the
+ * player has 2+ consecutive wins. Glows brighter at 4+ to signal momentum.
+ */
+function WinStreakFire({ streak }: { streak: number }) {
+  const hot = streak >= 4;
+  const size = hot ? 28 : 20;
+  const color = hot ? "#ff6b1a" : "#f59e0b";
+  return (
+    <span
+      aria-label={`${streak}-win streak`}
+      title={`${streak}-win streak`}
+      className={`inline-block align-baseline ${hot ? "animate-pulse" : ""}`}
+      style={{ filter: hot ? `drop-shadow(0 0 8px ${color})` : `drop-shadow(0 0 3px ${color}80)` }}
+    >
+      <Flame
+        style={{ width: size, height: size, color, fill: color, fillOpacity: hot ? 0.35 : 0.15 }}
+        strokeWidth={hot ? 2 : 1.75}
+      />
+    </span>
+  );
+}
+
+/**
+ * Live, in-progress WL report shown while a campaign is still running.
+ * Aggregates per-player contributions (G/A/rating), plots a rating-per-match
+ * trend, and surfaces a current MVP / weak-link / momentum highlight card.
+ */
+function LiveWLReport({
+  wl,
+  matches,
+  squadAggs,
+}: {
+  wl: { id: string };
+  matches: Match[];
+  squadAggs: ReturnType<typeof aggregatePlayer>[] | { player: Player; matches: number; goals: number; assists: number; ga: number; avgRating: number; ratedMatches: number; mvpCount: number; cleanSheets: number }[];
+}) {
+  void wl;
+  // Top contributors: must have played at least 1 match in this WL.
+  const ranked = useMemo(() => {
+    return [...(squadAggs as ReturnType<typeof aggregatePlayer>[])]
+      .filter((a) => a.matches > 0)
+      .sort((a, b) => {
+        const score = (x: typeof a) => x.ga * 2 + x.avgRating * x.matches * 0.4;
+        return score(b) - score(a);
+      })
+      .slice(0, 6);
+  }, [squadAggs]);
+
+  // Rating-per-match trend (average team rating for each played match).
+  const trend = useMemo(() => {
+    return [...matches]
+      .sort((a, b) => a.index - b.index)
+      .map((m) => {
+        const rated = m.performances.filter((p) => (p.rating ?? 0) > 0);
+        const avg = rated.length ? rated.reduce((s, p) => s + (p.rating ?? 0), 0) / rated.length : 0;
+        return { index: m.index, avg, win: matchIsWin(m) };
+      });
+  }, [matches]);
+
+  // Current MVP (highest ga * sqrt(matches) blend).
+  const mvp = ranked[0] ?? null;
+  const weakest = useMemo(() => {
+    const candidates = (squadAggs as ReturnType<typeof aggregatePlayer>[])
+      .filter((a) => a.player.position !== "GK" && a.matches >= 3 && a.avgRating > 0);
+    if (!candidates.length) return null;
+    return [...candidates].sort((a, b) => a.avgRating - b.avgRating)[0];
+  }, [squadAggs]);
+
+  const streak = currentWinStreak(matches);
+  const recentAvg = trend.slice(-3).filter((t) => t.avg > 0);
+  const teamAvg = recentAvg.length
+    ? recentAvg.reduce((s, t) => s + t.avg, 0) / recentAvg.length
+    : 0;
+
+  return (
+    <section className="mb-8">
+      <div className="flex items-baseline justify-between mb-3">
+        <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
+          <Activity className="h-5 w-5 text-primary" /> Live Report
+        </h2>
+        <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
+          {matches.length}/15 played
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
+        <div className="surface-card p-4">
+          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+            <Trophy className="h-3 w-3 text-amber-300" /> Current MVP
+          </div>
+          {mvp ? (
+            <>
+              <div className="font-display text-lg mt-1 truncate">{mvp.player.name}</div>
+              <div className="text-[10px] font-mono text-muted-foreground">
+                {mvp.matches}MP · {mvp.goals}G · {mvp.assists}A · {mvp.avgRating > 0 ? mvp.avgRating.toFixed(2) : "—"}
+              </div>
+            </>
+          ) : (
+            <div className="text-xs text-muted-foreground mt-2">No data yet.</div>
+          )}
+        </div>
+        <div className="surface-card p-4">
+          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+            <TrendingDown className="h-3 w-3 text-warn-caution" /> Weak Link
+          </div>
+          {weakest ? (
+            <>
+              <div className="font-display text-lg mt-1 truncate">{weakest.player.name}</div>
+              <div className="text-[10px] font-mono text-muted-foreground">
+                {weakest.player.position} · {weakest.matches}MP · avg {weakest.avgRating.toFixed(2)}
+              </div>
+            </>
+          ) : (
+            <div className="text-xs text-muted-foreground mt-2">Need 3+ rated apps.</div>
+          )}
+        </div>
+        <div className="surface-card p-4">
+          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+            <TrendingUp className="h-3 w-3 text-primary" /> Momentum
+          </div>
+          <div className="font-display text-lg mt-1 flex items-baseline gap-2">
+            {streak > 0 ? `${streak}W` : "—"}
+            {streak >= 2 && <WinStreakFire streak={streak} />}
+          </div>
+          <div className="text-[10px] font-mono text-muted-foreground">
+            Team avg (last 3): {teamAvg > 0 ? teamAvg.toFixed(2) : "—"}
+          </div>
+        </div>
+      </div>
+
+      <div className="surface-card p-4 mb-3">
+        <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">
+          Rating trend per match
+        </div>
+        <RatingTrendChart points={trend} />
+      </div>
+
+      <div className="surface-card p-4">
+        <div className="flex items-baseline justify-between mb-2">
+          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold">
+            Top contributors
+          </div>
+          <div className="text-[9px] text-muted-foreground font-mono">G·A · avg rating</div>
+        </div>
+        {ranked.length === 0 ? (
+          <div className="text-xs text-muted-foreground py-3 text-center">No contributions yet.</div>
+        ) : (
+          <div className="divide-y divide-border/40">
+            {ranked.map((a, i) => (
+              <div key={a.player.id} className="flex items-center gap-2 py-2 text-sm">
+                <span className="font-display stat-num text-base w-6 text-center text-muted-foreground">{i + 1}</span>
+                <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded w-9 text-center shrink-0">
+                  {a.player.position}
+                </span>
+                <span className="font-semibold truncate flex-1">{a.player.name}</span>
+                <span className="font-mono text-xs text-foreground tabular-nums">
+                  {a.goals}<span className="text-muted-foreground/60">G</span>·{a.assists}<span className="text-muted-foreground/60">A</span>
+                </span>
+                <span className="font-display stat-num text-base w-12 text-right text-primary">
+                  {a.avgRating > 0 ? a.avgRating.toFixed(2) : "—"}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/** Compact SVG line chart showing team avg rating per match. */
+function RatingTrendChart({ points }: { points: { index: number; avg: number; win: boolean }[] }) {
+  const W = 600, H = 100, P = 8;
+  const rated = points.filter((p) => p.avg > 0);
+  if (rated.length === 0) {
+    return <div className="text-xs text-muted-foreground text-center py-4">No ratings logged yet.</div>;
+  }
+  const xs = (i: number) => P + (i / Math.max(1, points.length - 1)) * (W - 2 * P);
+  const ys = (v: number) => {
+    const min = 4, max = 10;
+    const clamped = Math.max(min, Math.min(max, v));
+    return H - P - ((clamped - min) / (max - min)) * (H - 2 * P);
+  };
+  const path = points
+    .map((p, i) => (p.avg > 0 ? `${i === 0 ? "M" : "L"}${xs(i).toFixed(1)} ${ys(p.avg).toFixed(1)}` : ""))
+    .filter(Boolean)
+    .join(" ");
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-24" preserveAspectRatio="none">
+      {/* baseline 6.0 */}
+      <line x1={P} x2={W - P} y1={ys(6)} y2={ys(6)} stroke="currentColor" strokeOpacity="0.15" strokeDasharray="3 3" />
+      <path d={path} fill="none" stroke="hsl(var(--primary))" strokeWidth="2" />
+      {points.map((p, i) =>
+        p.avg > 0 ? (
+          <circle
+            key={i}
+            cx={xs(i)}
+            cy={ys(p.avg)}
+            r={3}
+            fill={p.win ? "hsl(var(--primary))" : "hsl(var(--destructive))"}
+          />
+        ) : null,
+      )}
+    </svg>
+  );
+}
