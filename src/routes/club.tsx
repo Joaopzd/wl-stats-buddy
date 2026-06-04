@@ -6,7 +6,7 @@ import { ClubCrestUploader } from "@/components/ClubCrestUploader";
 import { RankBadge } from "@/components/RankBadge";
 import { useClubName, useMatches, usePlayers, useWLs, store } from "@/lib/store";
 import { aggregatePlayer, deriveClubProfiles, matchIsWin, rankFromWins, wlRecord, isCleanSheetEligible } from "@/lib/stats";
-import { Pencil, Check, X, Trophy, Shield, Users, Award, Medal, Globe } from "lucide-react";
+import { Pencil, Check, X, Trophy, Shield, Users, Award, Medal, Globe, Activity, Target } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 import { BestXI } from "@/components/BestXI";
@@ -90,6 +90,16 @@ function ClubPage() {
       }
     }
 
+    // Possession / xG averages — only over matches that recorded the metric.
+    let possSum = 0, possCount = 0;
+    let xgForSum = 0, xgForCount = 0;
+    let xgAgSum = 0, xgAgCount = 0;
+    for (const m of scopedMatches) {
+      if (typeof m.possessionFor === "number") { possSum += m.possessionFor; possCount += 1; }
+      if (typeof m.xgFor === "number" && m.xgFor > 0) { xgForSum += m.xgFor; xgForCount += 1; }
+      if (typeof m.xgAgainst === "number" && m.xgAgainst > 0) { xgAgSum += m.xgAgainst; xgAgCount += 1; }
+    }
+
     const usedIds = new Set<string>();
     for (const wl of scopedWLs) for (const id of wl.squadPlayerIds) usedIds.add(id);
 
@@ -112,6 +122,11 @@ function ClubPage() {
       bestWins,
       bestRank,
       wlCount: scopedWLs.length,
+      avgPossession: possCount ? possSum / possCount : null,
+      possCount,
+      avgXgFor: xgForCount ? xgForSum / xgForCount : null,
+      avgXgAgainst: xgAgCount ? xgAgSum / xgAgCount : null,
+      xgSampleCount: Math.max(xgForCount, xgAgCount),
     };
   }, [scopedMatches, scopedWLs, players]);
 
@@ -227,12 +242,19 @@ function ClubPage() {
         <Tile label="Unique Players" value={stats.uniquePlayers} icon={<Users className="h-3.5 w-3.5" />} />
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <Tile label="Goals Scored" value={stats.gf} icon={<SoccerBall size={14} />} />
         <Tile label="Goals Conceded" value={stats.ga} icon={<Shield className="h-3.5 w-3.5" />} />
         <Tile label="Total Assists" value={stats.totalAssists} icon={<SoccerBoot size={14} />} />
         <Tile label="Clean Sheets" value={stats.cleanSheets} icon={<Shield className="h-3.5 w-3.5" />} />
       </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-8">
+        <PossessionTile avg={stats.avgPossession} count={stats.possCount} />
+        <XgTile label="Avg xG · You" value={stats.avgXgFor} count={stats.xgSampleCount} icon={<Target className="h-3.5 w-3.5 text-primary" />} accent />
+        <XgTile label="Avg xG · Against" value={stats.avgXgAgainst} count={stats.xgSampleCount} icon={<Target className="h-3.5 w-3.5 text-destructive" />} danger />
+      </div>
+
 
       <div className="surface-card p-6 flex flex-col sm:flex-row items-center gap-5 justify-between">
         <div className="flex items-center gap-4">
@@ -321,3 +343,51 @@ function WinRateTile({ wins, played }: { wins: number; played: number }) {
     </div>
   );
 }
+
+function PossessionTile({ avg, count }: { avg: number | null; count: number }) {
+  const pct = avg ?? 50;
+  const youPct = Math.round(pct);
+  const oppPct = 100 - youPct;
+  return (
+    <div className="surface-card p-4">
+      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+        <Activity className="h-3.5 w-3.5 text-primary" /> Avg Possession
+      </div>
+      {avg === null ? (
+        <>
+          <div className="font-display text-3xl stat-num mt-1 leading-none text-muted-foreground/60">—</div>
+          <div className="text-[10px] text-muted-foreground mt-1 font-mono">log possession on matches</div>
+        </>
+      ) : (
+        <>
+          <div className="flex items-baseline gap-2 mt-1 leading-none">
+            <span className="font-display stat-num text-3xl text-primary">{youPct}%</span>
+            <span className="text-muted-foreground/50 text-sm">vs</span>
+            <span className="font-display stat-num text-2xl text-muted-foreground">{oppPct}%</span>
+          </div>
+          <div className="mt-2 h-1.5 bg-destructive/30 rounded overflow-hidden">
+            <div className="h-full bg-primary" style={{ width: `${youPct}%` }} />
+          </div>
+          <div className="text-[10px] text-muted-foreground mt-1 font-mono">across {count} match{count === 1 ? "" : "es"}</div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function XgTile({ label, value, count, icon, accent, danger }: { label: string; value: number | null; count: number; icon: React.ReactNode; accent?: boolean; danger?: boolean }) {
+  return (
+    <div className="surface-card p-4">
+      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+        {icon} {label}
+      </div>
+      <div className={`font-display text-3xl stat-num mt-1 leading-none ${accent ? "text-primary" : danger ? "text-destructive" : ""}`}>
+        {value === null ? "—" : value.toFixed(2)}
+      </div>
+      <div className="text-[10px] text-muted-foreground mt-1 font-mono">
+        {value === null ? "no xG logged" : `per match · ${count} sample${count === 1 ? "" : "s"}`}
+      </div>
+    </div>
+  );
+}
+

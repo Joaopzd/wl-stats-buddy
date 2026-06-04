@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Zap, Flag as FlagIcon, AlertTriangle, ListChecks } from "lucide-react";
+import { X, Zap, Flag as FlagIcon, AlertTriangle, ListChecks, ChevronDown, ChevronUp, Activity, Target } from "lucide-react";
 import { store } from "@/lib/store";
 import type { Match, MatchPlayerStat, MatchTactic, Platform, PenaltyWinner, Player, WeekendLeague } from "@/lib/types";
 import { MATCH_TACTICS, wlLabel } from "@/lib/types";
@@ -34,6 +34,13 @@ export function MatchDialog({
   const [rageQuit, setRageQuit] = useState<boolean>(existingMatch?.rageQuit ?? false);
   const [rageQuitBy, setRageQuitBy] = useState<"us" | "them">(existingMatch?.rageQuitBy ?? (existingMatch?.rageQuit ? "them" : "them"));
   const [tactics, setTactics] = useState<MatchTactic[]>(existingMatch?.tactics ?? []);
+  const [possessionFor, setPossessionFor] = useState<number>(existingMatch?.possessionFor ?? 50);
+  const [xgFor, setXgFor] = useState<number>(existingMatch?.xgFor ?? 0);
+  const [xgAgainst, setXgAgainst] = useState<number>(existingMatch?.xgAgainst ?? 0);
+  // Minimized by default for a cleaner add-match flow; opens on demand.
+  const [detailsOpen, setDetailsOpen] = useState<boolean>(
+    !!(existingMatch && (existingMatch.extraTime || existingMatch.penalties || existingMatch.rageQuit || (existingMatch.tactics?.length ?? 0) > 0 || existingMatch.possessionFor != null || (existingMatch.xgFor ?? 0) > 0 || (existingMatch.xgAgainst ?? 0) > 0)),
+  );
   const toggleTactic = (t: MatchTactic) =>
     setTactics((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]));
 
@@ -101,6 +108,9 @@ export function MatchDialog({
       rageQuitBy: rageQuit ? rageQuitBy : undefined,
       mvpPlayerId: autoMvp?.playerId,
       tactics: tactics.length ? tactics : undefined,
+      possessionFor: Math.max(0, Math.min(100, Math.round(possessionFor))),
+      xgFor: Math.max(0, Math.round(xgFor * 100) / 100),
+      xgAgainst: Math.max(0, Math.round(xgAgainst * 100) / 100),
     };
 
     if (existingMatch) {
@@ -182,68 +192,122 @@ export function MatchDialog({
               </div>
             </div>
 
-            {/* Match flags */}
-            <div className="mb-4 surface-card p-3 space-y-3">
-              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">Match details</div>
-              <div className="flex flex-wrap gap-2">
-                <FlagToggle active={extraTime} onClick={() => setExtraTime((v) => !v)} icon={<Zap className="h-3.5 w-3.5" />} label="Extra Time" />
-                <FlagToggle active={penalties} onClick={() => setPenalties((v) => !v)} icon={<FlagIcon className="h-3.5 w-3.5" />} label="Penalties" />
-                <FlagToggle active={rageQuit} onClick={() => setRageQuit((v) => !v)} icon={<AlertTriangle className="h-3.5 w-3.5" />} label="Rage Quit" />
-              </div>
-              {penalties && (
-                <div>
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Shootout winner</div>
-                  <div className="flex gap-1 bg-input border border-border rounded-md p-1 max-w-xs">
-                    {(["us", "them"] as PenaltyWinner[]).map((w) => (
-                      <button key={w} type="button" onClick={() => setPenaltyWinner(w)} className={`flex-1 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition ${penaltyWinner === w ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-                        {w === "us" ? "We won" : "They won"}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {rageQuit && (
-                <div>
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Who rage-quit</div>
-                  <div className="flex gap-1 bg-input border border-border rounded-md p-1 max-w-xs">
-                    {(["them", "us"] as const).map((w) => (
-                      <button key={w} type="button" onClick={() => setRageQuitBy(w)} className={`flex-1 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition ${rageQuitBy === w ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-                        {w === "us" ? "I quit" : "Opponent"}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Tactical notes — multi-select */}
-              <div className="pt-1">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
-                  <ListChecks className="h-3 w-3" /> Tactical Notes
-                  {tactics.length > 0 && (
-                    <span className="text-primary font-mono normal-case tracking-normal">· {tactics.length} selected</span>
+            {/* Match flags — minimized by default */}
+            <div className="mb-4 surface-card overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setDetailsOpen((v) => !v)}
+                className="w-full flex items-center justify-between gap-2 px-3 py-2 hover:bg-secondary/40 transition text-left"
+                aria-expanded={detailsOpen}
+              >
+                <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-2">
+                  Match details
+                  {(extraTime || penalties || rageQuit || tactics.length > 0) && (
+                    <span className="text-primary font-mono normal-case tracking-normal">
+                      ·{extraTime ? " ET" : ""}{penalties ? " PEN" : ""}{rageQuit ? " RQ" : ""}{tactics.length ? ` ${tactics.length}T` : ""}
+                    </span>
                   )}
+                </span>
+                {detailsOpen ? (
+                  <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
+                ) : (
+                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                )}
+              </button>
+              {detailsOpen && (
+                <div className="px-3 pb-3 pt-1 space-y-3 border-t border-border/60">
+                  <div className="flex flex-wrap gap-2">
+                    <FlagToggle active={extraTime} onClick={() => setExtraTime((v) => !v)} icon={<Zap className="h-3.5 w-3.5" />} label="Extra Time" />
+                    <FlagToggle active={penalties} onClick={() => setPenalties((v) => !v)} icon={<FlagIcon className="h-3.5 w-3.5" />} label="Penalties" />
+                    <FlagToggle active={rageQuit} onClick={() => setRageQuit((v) => !v)} icon={<AlertTriangle className="h-3.5 w-3.5" />} label="Rage Quit" />
+                  </div>
+                  {penalties && (
+                    <div>
+                      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Shootout winner</div>
+                      <div className="flex gap-1 bg-input border border-border rounded-md p-1 max-w-xs">
+                        {(["us", "them"] as PenaltyWinner[]).map((w) => (
+                          <button key={w} type="button" onClick={() => setPenaltyWinner(w)} className={`flex-1 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition ${penaltyWinner === w ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                            {w === "us" ? "We won" : "They won"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {rageQuit && (
+                    <div>
+                      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Who rage-quit</div>
+                      <div className="flex gap-1 bg-input border border-border rounded-md p-1 max-w-xs">
+                        {(["them", "us"] as const).map((w) => (
+                          <button key={w} type="button" onClick={() => setRageQuitBy(w)} className={`flex-1 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition ${rageQuitBy === w ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                            {w === "us" ? "I quit" : "Opponent"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tactical notes — multi-select */}
+                  <div className="pt-1">
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
+                      <ListChecks className="h-3 w-3" /> Tactical Notes
+                      {tactics.length > 0 && (
+                        <span className="text-primary font-mono normal-case tracking-normal">· {tactics.length} selected</span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {MATCH_TACTICS.map((t) => {
+                        const on = tactics.includes(t);
+                        return (
+                          <button
+                            key={t}
+                            type="button"
+                            onClick={() => toggleTactic(t)}
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold uppercase tracking-wider transition border ${
+                              on
+                                ? "bg-primary/20 text-primary border-primary/60"
+                                : "bg-background/40 text-muted-foreground border-border hover:text-foreground"
+                            }`}
+                          >
+                            {t}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {MATCH_TACTICS.map((t) => {
-                    const on = tactics.includes(t);
-                    return (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => toggleTactic(t)}
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold uppercase tracking-wider transition border ${
-                          on
-                            ? "bg-primary/20 text-primary border-primary/60"
-                            : "bg-background/40 text-muted-foreground border-border hover:text-foreground"
-                        }`}
-                      >
-                        {t}
-                      </button>
-                    );
-                  })}
+              )}
+            </div>
+
+            {/* Possession & xG — quick performance metrics */}
+            <div className="mb-4 surface-card p-3 space-y-3">
+              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+                <Activity className="h-3 w-3 text-primary" /> Possession & xG
+              </div>
+              <div>
+                <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1.5">
+                  <span className="text-primary">You · {Math.round(possessionFor)}%</span>
+                  <span>Opponent · {100 - Math.round(possessionFor)}%</span>
                 </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={1}
+                  value={possessionFor}
+                  onChange={(e) => setPossessionFor(parseInt(e.target.value) || 0)}
+                  className="w-full accent-[var(--primary)]"
+                  aria-label="Possession %"
+                />
+                <div className="flex justify-between text-[9px] uppercase tracking-wider text-muted-foreground/60 mt-0.5 font-mono">
+                  <span>0</span><span>50</span><span>100</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <XgInput label="xG (You)" icon={<Target className="h-3 w-3 text-primary" />} value={xgFor} onChange={setXgFor} accent />
+                <XgInput label="xG (Opponent)" icon={<Target className="h-3 w-3 text-muted-foreground" />} value={xgAgainst} onChange={setXgAgainst} />
               </div>
             </div>
+
 
             {/* Player performances — aligned columns, no inner scroll */}
             <div>
@@ -413,4 +477,29 @@ function FlagToggle({ active, onClick, icon, label }: { active: boolean; onClick
     </button>
   );
 }
+
+function XgInput({ label, icon, value, onChange, accent }: { label: string; icon: React.ReactNode; value: number; onChange: (v: number) => void; accent?: boolean }) {
+  return (
+    <div>
+      <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
+        {icon} {label}
+      </span>
+      <input
+        type="number"
+        inputMode="decimal"
+        min={0}
+        step={0.1}
+        value={value}
+        onFocus={(e) => e.target.select()}
+        onChange={(e) => {
+          const v = e.target.value;
+          if (v === "") return onChange(0);
+          onChange(Math.max(0, parseFloat(v) || 0));
+        }}
+        className={`w-full h-10 bg-input border border-border rounded-md text-center stat-num text-lg font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${accent ? "text-primary" : ""}`}
+      />
+    </div>
+  );
+}
+
 
