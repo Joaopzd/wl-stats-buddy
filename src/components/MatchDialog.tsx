@@ -108,6 +108,9 @@ export function MatchDialog({
       rageQuitBy: rageQuit ? rageQuitBy : undefined,
       mvpPlayerId: autoMvp?.playerId,
       tactics: tactics.length ? tactics : undefined,
+      possessionFor: Math.max(0, Math.min(100, Math.round(possessionFor))),
+      xgFor: Math.max(0, Math.round(xgFor * 100) / 100),
+      xgAgainst: Math.max(0, Math.round(xgAgainst * 100) / 100),
     };
 
     if (existingMatch) {
