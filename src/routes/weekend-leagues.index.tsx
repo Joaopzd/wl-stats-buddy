@@ -32,6 +32,7 @@ function WLList() {
   const [num, setNum] = useState("");
   const [name, setName] = useState("");
   const [briefingOpen, setBriefingOpen] = useState(false);
+  const [editingWL, setEditingWL] = useState<WeekendLeague | null>(null);
 
   const sorted = [...wls].sort((a, b) => b.number - a.number);
   const nextNum = (Math.max(0, ...wls.map((w) => w.number)) + 1).toString();
