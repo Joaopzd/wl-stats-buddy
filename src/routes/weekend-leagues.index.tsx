@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { useMatches, useWLs, store, usePlayers } from "@/lib/store";
+import { useMatches, useWLs, store, usePlayers, useClubName, useClubCrest } from "@/lib/store";
 import { wlRecord, rankFromWins } from "@/lib/stats";
-import { wlLabel } from "@/lib/types";
-import { Plus, ChevronRight, Trophy, Trash2, ClipboardList, GitCompareArrows } from "lucide-react";
+import { wlLabel, type WeekendLeague } from "@/lib/types";
+import { Plus, ChevronRight, Trophy, Trash2, ClipboardList, GitCompareArrows, Pencil, X } from "lucide-react";
 import { RankBadge } from "@/components/RankBadge";
 import { CoachBriefingDialog } from "@/components/CoachBriefingDialog";
 import { LeagueWatermark } from "@/components/LeagueWatermark";
