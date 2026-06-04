@@ -238,7 +238,7 @@ function PlayersPage() {
                         <div className="min-w-0">
                           <div className="font-semibold truncate">{a.player.name}</div>
                           <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className={`h-2 w-2 rounded-full ${raritySwatch(a.player.rarity)}`} />
+                            <span className={`h-2 w-2 rounded-full ${raritySwatch(a.player.rarity)}`} style={raritySwatchStyle(a.player.rarity)} />
                             <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{a.player.rarity}</span>
                           </div>
                         </div>
