@@ -13,6 +13,7 @@ import { AICoach } from "@/components/AICoach";
 import { RankBadge } from "@/components/RankBadge";
 import { ClubCrest } from "@/components/ClubCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
+import { PlayerCard } from "@/components/PlayerCard";
 import { useClubName } from "@/lib/store";
 
 
