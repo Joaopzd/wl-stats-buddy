@@ -34,6 +34,13 @@ export function MatchDialog({
   const [rageQuit, setRageQuit] = useState<boolean>(existingMatch?.rageQuit ?? false);
   const [rageQuitBy, setRageQuitBy] = useState<"us" | "them">(existingMatch?.rageQuitBy ?? (existingMatch?.rageQuit ? "them" : "them"));
   const [tactics, setTactics] = useState<MatchTactic[]>(existingMatch?.tactics ?? []);
+  const [possessionFor, setPossessionFor] = useState<number>(existingMatch?.possessionFor ?? 50);
+  const [xgFor, setXgFor] = useState<number>(existingMatch?.xgFor ?? 0);
+  const [xgAgainst, setXgAgainst] = useState<number>(existingMatch?.xgAgainst ?? 0);
+  // Minimized by default for a cleaner add-match flow; opens on demand.
+  const [detailsOpen, setDetailsOpen] = useState<boolean>(
+    !!(existingMatch && (existingMatch.extraTime || existingMatch.penalties || existingMatch.rageQuit || (existingMatch.tactics?.length ?? 0) > 0 || existingMatch.possessionFor != null || (existingMatch.xgFor ?? 0) > 0 || (existingMatch.xgAgainst ?? 0) > 0)),
+  );
   const toggleTactic = (t: MatchTactic) =>
     setTactics((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]));
 
