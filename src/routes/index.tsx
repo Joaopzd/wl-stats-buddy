@@ -435,19 +435,43 @@ function MVPCard({
 }
 
 function RatedCard({ agg, rank }: { agg: ReturnType<typeof aggregateAllPlayers>[number]; rank: number }) {
-  const medal = rank === 1 ? "text-primary" : "text-muted-foreground";
+  const isTop = rank === 1;
+  const medalBg =
+    rank === 1 ? "from-amber-400/30 to-amber-500/5 border-amber-400/60" :
+    rank === 2 ? "from-zinc-300/25 to-zinc-400/5 border-zinc-300/50" :
+    "from-amber-700/25 to-amber-800/5 border-amber-700/50";
+  const medalText =
+    rank === 1 ? "text-amber-300" :
+    rank === 2 ? "text-zinc-200" :
+    "text-amber-500";
   return (
-    <div className={`surface-card p-5 border-l-4 ${rank === 1 ? "border-l-primary" : "border-l-border"}`}>
-      <div className="flex items-baseline justify-between">
-        <div className={`font-display text-3xl ${medal}`}>#{rank}</div>
-        <div className="font-display text-4xl stat-num text-foreground">{agg.avgRating.toFixed(2)}</div>
+    <div className={`surface-card relative overflow-hidden p-5 bg-gradient-to-br ${medalBg} ${isTop ? "shadow-[0_0_30px_-15px_color-mix(in_oklab,var(--primary)_60%,transparent)]" : ""}`}>
+      <div className={`absolute -top-2 -left-2 font-display text-[5rem] leading-none opacity-10 ${medalText} pointer-events-none select-none`}>
+        #{rank}
       </div>
-      <div className="mt-2 font-display text-xl truncate">{agg.player.name}</div>
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-        {agg.player.position} · {agg.player.overall} OVR · {agg.player.rarity}
-      </div>
-      <div className="text-[10px] text-muted-foreground mt-1">
-        {agg.ratedMatches} rated apps · {agg.matches} total
+      <div className="relative flex items-center gap-4">
+        <PlayerCard
+          name={agg.player.name}
+          overall={agg.player.overall}
+          position={agg.player.position}
+          rarity={agg.player.rarity}
+          imageUrl={agg.player.imageUrl}
+          size="lg"
+        />
+        <div className="min-w-0 flex-1">
+          <div className={`text-[10px] uppercase tracking-[0.25em] font-bold ${medalText}`}>Rank #{rank}</div>
+          <div className="font-display text-xl truncate mt-0.5">{agg.player.name}</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">
+            {agg.player.position} · {agg.player.overall} OVR
+          </div>
+          <div className="mt-3 flex items-baseline gap-1.5">
+            <span className={`font-display stat-num text-4xl ${medalText}`}>{agg.avgRating.toFixed(2)}</span>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">avg</span>
+          </div>
+          <div className="text-[10px] text-muted-foreground mt-0.5 font-mono">
+            {agg.ratedMatches} rated · {agg.matches} apps
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -458,25 +482,43 @@ function LegendCard({
   agg,
   metric,
   sub,
+  accentIcon,
 }: {
   label: string;
   agg: ReturnType<typeof aggregateAllPlayers>[number] | undefined;
   metric: (a: ReturnType<typeof aggregateAllPlayers>[number]) => string;
   sub?: string;
+  accentIcon?: React.ReactNode;
 }) {
   return (
-    <div className="surface-card p-5">
-      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">{label}</div>
+    <div className="surface-card relative overflow-hidden p-5 border-l-4 border-l-primary/70 hover:border-l-primary transition-colors">
+      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+        {accentIcon}
+        {label}
+      </div>
       {agg && agg.matches > 0 ? (
-        <>
-          <div className="mt-2 font-display text-2xl truncate">{agg.player.name}</div>
-          <div className="text-xs text-muted-foreground">{agg.player.position} · {agg.player.overall} OVR · {agg.player.rarity}</div>
-          <div className="mt-3 stat-num text-foreground text-lg font-semibold">{metric(agg)}</div>
-          {sub && <div className="text-[10px] text-muted-foreground mt-1">{sub}</div>}
-        </>
+        <div className="mt-3 flex items-center gap-3">
+          <PlayerCard
+            name={agg.player.name}
+            overall={agg.player.overall}
+            position={agg.player.position}
+            rarity={agg.player.rarity}
+            imageUrl={agg.player.imageUrl}
+            size="lg"
+          />
+          <div className="min-w-0 flex-1">
+            <div className="font-display text-base truncate leading-tight">{agg.player.name}</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">
+              {agg.player.position} · {agg.player.overall} OVR
+            </div>
+            <div className="mt-2 font-display stat-num text-2xl text-primary leading-none">{metric(agg)}</div>
+            {sub && <div className="text-[10px] text-muted-foreground mt-1">{sub}</div>}
+          </div>
+        </div>
       ) : (
         <div className="mt-3 text-sm text-muted-foreground">No data yet</div>
       )}
     </div>
   );
 }
+
