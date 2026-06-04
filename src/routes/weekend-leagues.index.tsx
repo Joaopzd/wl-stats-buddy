@@ -127,13 +127,22 @@ function WLList() {
                 className="surface-card p-5 group hover:border-primary/50 hover:shadow-[var(--shadow-glow)] transition-all relative overflow-hidden"
               >
                 <LeagueWatermark title={label} />
-                <button
-                  onClick={(e) => { e.preventDefault(); if (confirm(`Delete ${label} and all its matches?`)) { store.deleteWL(wl.id); toast.success("Deleted"); } }}
-                  className="absolute top-3 right-3 z-20 p-1.5 rounded text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition"
-                  aria-label="Delete"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                <div className="absolute top-3 right-3 z-20 flex items-center gap-1">
+                  <button
+                    onClick={(e) => { e.preventDefault(); setEditingWL(wl); }}
+                    className="p-1.5 rounded text-muted-foreground/60 hover:text-primary hover:bg-primary/10 transition"
+                    aria-label="Edit WL"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    onClick={(e) => { e.preventDefault(); if (confirm(`Delete ${label} and all its matches?`)) { store.deleteWL(wl.id); toast.success("Deleted"); } }}
+                    className="p-1.5 rounded text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition"
+                    aria-label="Delete"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
                 <div className="relative z-10">
                 <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-1.5">
                   <ClubCrest size={14} overrideUrl={wl.clubCrestUrl} />
