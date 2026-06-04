@@ -242,12 +242,19 @@ function ClubPage() {
         <Tile label="Unique Players" value={stats.uniquePlayers} icon={<Users className="h-3.5 w-3.5" />} />
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <Tile label="Goals Scored" value={stats.gf} icon={<SoccerBall size={14} />} />
         <Tile label="Goals Conceded" value={stats.ga} icon={<Shield className="h-3.5 w-3.5" />} />
         <Tile label="Total Assists" value={stats.totalAssists} icon={<SoccerBoot size={14} />} />
         <Tile label="Clean Sheets" value={stats.cleanSheets} icon={<Shield className="h-3.5 w-3.5" />} />
       </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-8">
+        <PossessionTile avg={stats.avgPossession} count={stats.possCount} />
+        <XgTile label="Avg xG · You" value={stats.avgXgFor} count={stats.xgSampleCount} icon={<Target className="h-3.5 w-3.5 text-primary" />} accent />
+        <XgTile label="Avg xG · Against" value={stats.avgXgAgainst} count={stats.xgSampleCount} icon={<Target className="h-3.5 w-3.5 text-destructive" />} danger />
+      </div>
+
 
       <div className="surface-card p-6 flex flex-col sm:flex-row items-center gap-5 justify-between">
         <div className="flex items-center gap-4">
