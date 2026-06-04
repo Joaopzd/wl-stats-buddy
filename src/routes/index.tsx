@@ -335,10 +335,10 @@ function Dashboard() {
             <Star className="h-5 w-5 text-primary" /> Club Legends
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <LegendCard label="Most Apps" agg={mostApps} metric={(a) => `${a.matches} matches`} />
-            <LegendCard label="Top Scorer" agg={topScorer} metric={(a) => `${a.goals} goals`} />
-            <LegendCard label="Top Assister" agg={topAssist} metric={(a) => `${a.assists} assists`} />
-            <LegendCard label="Best G/A per game" agg={topGAperGame} metric={(a) => `${a.gaPerGame.toFixed(2)}`} sub="min. 3 matches" />
+            <LegendCard label="Most Apps" agg={mostApps} metric={(a) => `${a.matches} matches`} accentIcon={<Trophy className="h-3.5 w-3.5 text-primary" />} />
+            <LegendCard label="Top Scorer" agg={topScorer} metric={(a) => `${a.goals} goals`} accentIcon={<SoccerBall size={14} className="text-primary" />} />
+            <LegendCard label="Top Assister" agg={topAssist} metric={(a) => `${a.assists} assists`} accentIcon={<SoccerBoot size={14} className="text-accent" />} />
+            <LegendCard label="Best G/A per game" agg={topGAperGame} metric={(a) => `${a.gaPerGame.toFixed(2)}`} sub="min. 3 matches" accentIcon={<Sparkles className="h-3.5 w-3.5 text-primary" />} />
           </div>
 
           <h2 className="font-display text-2xl tracking-wider mt-10 mb-2 flex items-center gap-2">
