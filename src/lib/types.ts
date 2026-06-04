@@ -112,6 +112,12 @@ export interface Match {
   opponentCrestId?: string;
   /** Optional tactical adjustments / context tags taken during the match. */
   tactics?: MatchTactic[];
+  /** Possession % for the user's team (0–100). Opponent is the complement. */
+  possessionFor?: number;
+  /** Expected Goals for the user's team. */
+  xgFor?: number;
+  /** Expected Goals for the opponent. */
+  xgAgainst?: number;
   createdAt: number;
 }
 
