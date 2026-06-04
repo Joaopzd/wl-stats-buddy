@@ -133,6 +133,12 @@ export const FORMATION_NAMES = Object.keys(FORMATIONS) as FormationName[];
 /** Compatibility for assigning a player to a slot (fuzzy: same line is fine). */
 export function positionFits(playerPos: Position, slotPos: Position): boolean {
   if (playerPos === slotPos) return true;
+  // Wingers and wide midfielders overlap on the same side — an LM can play
+  // LW and an RM can play RW (and vice-versa). Same-side only.
+  const leftWide = (p: Position) => p === "LM" || p === "LW";
+  const rightWide = (p: Position) => p === "RM" || p === "RW";
+  if (leftWide(playerPos) && leftWide(slotPos)) return true;
+  if (rightWide(playerPos) && rightWide(slotPos)) return true;
   const groups: Position[][] = [
     ["GK"],
     ["LB", "RB", "CB"],
