@@ -343,3 +343,51 @@ function WinRateTile({ wins, played }: { wins: number; played: number }) {
     </div>
   );
 }
+
+function PossessionTile({ avg, count }: { avg: number | null; count: number }) {
+  const pct = avg ?? 50;
+  const youPct = Math.round(pct);
+  const oppPct = 100 - youPct;
+  return (
+    <div className="surface-card p-4">
+      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+        <Activity className="h-3.5 w-3.5 text-primary" /> Avg Possession
+      </div>
+      {avg === null ? (
+        <>
+          <div className="font-display text-3xl stat-num mt-1 leading-none text-muted-foreground/60">—</div>
+          <div className="text-[10px] text-muted-foreground mt-1 font-mono">log possession on matches</div>
+        </>
+      ) : (
+        <>
+          <div className="flex items-baseline gap-2 mt-1 leading-none">
+            <span className="font-display stat-num text-3xl text-primary">{youPct}%</span>
+            <span className="text-muted-foreground/50 text-sm">vs</span>
+            <span className="font-display stat-num text-2xl text-muted-foreground">{oppPct}%</span>
+          </div>
+          <div className="mt-2 h-1.5 bg-destructive/30 rounded overflow-hidden">
+            <div className="h-full bg-primary" style={{ width: `${youPct}%` }} />
+          </div>
+          <div className="text-[10px] text-muted-foreground mt-1 font-mono">across {count} match{count === 1 ? "" : "es"}</div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function XgTile({ label, value, count, icon, accent, danger }: { label: string; value: number | null; count: number; icon: React.ReactNode; accent?: boolean; danger?: boolean }) {
+  return (
+    <div className="surface-card p-4">
+      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+        {icon} {label}
+      </div>
+      <div className={`font-display text-3xl stat-num mt-1 leading-none ${accent ? "text-primary" : danger ? "text-destructive" : ""}`}>
+        {value === null ? "—" : value.toFixed(2)}
+      </div>
+      <div className="text-[10px] text-muted-foreground mt-1 font-mono">
+        {value === null ? "no xG logged" : `per match · ${count} sample${count === 1 ? "" : "s"}`}
+      </div>
+    </div>
+  );
+}
+
