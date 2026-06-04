@@ -6,7 +6,7 @@ import { ClubCrestUploader } from "@/components/ClubCrestUploader";
 import { RankBadge } from "@/components/RankBadge";
 import { useClubName, useMatches, usePlayers, useWLs, store } from "@/lib/store";
 import { aggregatePlayer, deriveClubProfiles, matchIsWin, rankFromWins, wlRecord, isCleanSheetEligible } from "@/lib/stats";
-import { Pencil, Check, X, Trophy, Shield, Users, Award, Medal, Globe } from "lucide-react";
+import { Pencil, Check, X, Trophy, Shield, Users, Award, Medal, Globe, Activity, Target } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 import { BestXI } from "@/components/BestXI";
