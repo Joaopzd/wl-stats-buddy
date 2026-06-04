@@ -478,3 +478,28 @@ function FlagToggle({ active, onClick, icon, label }: { active: boolean; onClick
   );
 }
 
+function XgInput({ label, icon, value, onChange, accent }: { label: string; icon: React.ReactNode; value: number; onChange: (v: number) => void; accent?: boolean }) {
+  return (
+    <div>
+      <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
+        {icon} {label}
+      </span>
+      <input
+        type="number"
+        inputMode="decimal"
+        min={0}
+        step={0.1}
+        value={value}
+        onFocus={(e) => e.target.select()}
+        onChange={(e) => {
+          const v = e.target.value;
+          if (v === "") return onChange(0);
+          onChange(Math.max(0, parseFloat(v) || 0));
+        }}
+        className={`w-full h-10 bg-input border border-border rounded-md text-center stat-num text-lg font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${accent ? "text-primary" : ""}`}
+      />
+    </div>
+  );
+}
+
+
