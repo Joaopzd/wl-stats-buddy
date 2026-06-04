@@ -90,6 +90,16 @@ function ClubPage() {
       }
     }
 
+    // Possession / xG averages — only over matches that recorded the metric.
+    let possSum = 0, possCount = 0;
+    let xgForSum = 0, xgForCount = 0;
+    let xgAgSum = 0, xgAgCount = 0;
+    for (const m of scopedMatches) {
+      if (typeof m.possessionFor === "number") { possSum += m.possessionFor; possCount += 1; }
+      if (typeof m.xgFor === "number" && m.xgFor > 0) { xgForSum += m.xgFor; xgForCount += 1; }
+      if (typeof m.xgAgainst === "number" && m.xgAgainst > 0) { xgAgSum += m.xgAgainst; xgAgCount += 1; }
+    }
+
     const usedIds = new Set<string>();
     for (const wl of scopedWLs) for (const id of wl.squadPlayerIds) usedIds.add(id);
 
@@ -112,6 +122,11 @@ function ClubPage() {
       bestWins,
       bestRank,
       wlCount: scopedWLs.length,
+      avgPossession: possCount ? possSum / possCount : null,
+      possCount,
+      avgXgFor: xgForCount ? xgForSum / xgForCount : null,
+      avgXgAgainst: xgAgCount ? xgAgSum / xgAgCount : null,
+      xgSampleCount: Math.max(xgForCount, xgAgCount),
     };
   }, [scopedMatches, scopedWLs, players]);
 
