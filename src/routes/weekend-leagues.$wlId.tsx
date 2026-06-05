@@ -1073,6 +1073,26 @@ function LiveWLReport({
     ? recentAvg.reduce((s, t) => s + t.avg, 0) / recentAvg.length
     : 0;
 
+  // Possession & xG averages across the WL so far (only matches that logged the stat).
+  const liveAdvanced = useMemo(() => {
+    let possSum = 0, possCount = 0;
+    let xgForSum = 0, xgForCount = 0;
+    let xgAgSum = 0, xgAgCount = 0;
+    for (const m of matches) {
+      if (typeof m.possessionFor === "number") { possSum += m.possessionFor; possCount += 1; }
+      if (typeof m.xgFor === "number" && m.xgFor > 0) { xgForSum += m.xgFor; xgForCount += 1; }
+      if (typeof m.xgAgainst === "number" && m.xgAgainst > 0) { xgAgSum += m.xgAgainst; xgAgCount += 1; }
+    }
+    return {
+      avgPossession: possCount ? possSum / possCount : null,
+      possCount,
+      avgXgFor: xgForCount ? xgForSum / xgForCount : null,
+      xgForCount,
+      avgXgAgainst: xgAgCount ? xgAgSum / xgAgCount : null,
+      xgAgCount,
+    };
+  }, [matches]);
+
   return (
     <section className="mb-8">
       <div className="flex items-baseline justify-between mb-3">
