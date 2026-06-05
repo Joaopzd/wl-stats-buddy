@@ -1251,3 +1251,38 @@ function RatingTrendChart({ points }: { points: { index: number; avg: number; wi
     </svg>
   );
 }
+
+function LiveStatTile({
+  label,
+  icon,
+  value,
+  sub,
+  accent,
+  danger,
+  bar,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  value: string;
+  sub: string;
+  accent?: boolean;
+  danger?: boolean;
+  bar?: number | null;
+}) {
+  return (
+    <div className="surface-card p-3">
+      <div className="text-[9px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+        {icon} {label}
+      </div>
+      <div className={`font-display stat-num text-2xl mt-1 leading-none ${accent ? "text-primary" : danger ? "text-destructive" : ""}`}>
+        {value}
+      </div>
+      {typeof bar === "number" && (
+        <div className="mt-2 h-1 bg-destructive/30 rounded overflow-hidden">
+          <div className="h-full bg-primary" style={{ width: `${bar}%` }} />
+        </div>
+      )}
+      <div className="text-[9px] text-muted-foreground mt-1 font-mono">{sub}</div>
+    </div>
+  );
+}
