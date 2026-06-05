@@ -34,6 +34,8 @@ function ClubPage() {
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState(clubName);
   const [profileId, setProfileId] = useState<string>(ALL_PROFILE_ID);
+  const [editingProfile, setEditingProfile] = useState<ClubProfile | null>(null);
+
 
   useEffect(() => {
     if (!editingName) setDraftName(clubName);
