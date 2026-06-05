@@ -1,15 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { AppShell } from "@/components/AppShell";
 import { ClubCrest } from "@/components/ClubCrest";
 import { ClubCrestUploader } from "@/components/ClubCrestUploader";
 import { RankBadge } from "@/components/RankBadge";
 import { useClubName, useMatches, usePlayers, useWLs, store } from "@/lib/store";
-import { aggregatePlayer, deriveClubProfiles, matchIsWin, rankFromWins, wlRecord, isCleanSheetEligible } from "@/lib/stats";
-import { Pencil, Check, X, Trophy, Shield, Users, Award, Medal, Globe, Activity, Target } from "lucide-react";
+import { aggregatePlayer, deriveClubProfiles, matchIsWin, rankFromWins, wlRecord, isCleanSheetEligible, type ClubProfile } from "@/lib/stats";
+import { Pencil, Check, X, Trophy, Shield, Users, Award, Medal, Globe, Activity, Target, Upload, Trash2 } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 import { BestXI } from "@/components/BestXI";
+import { compressImageToDataURL } from "@/lib/imageCompress";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/club")({
