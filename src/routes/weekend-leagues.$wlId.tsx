@@ -1149,6 +1149,32 @@ function LiveWLReport({
         </div>
       </div>
 
+      <div className="grid grid-cols-3 gap-3 mb-3">
+        <LiveStatTile
+          label="Avg Possession"
+          icon={<Activity className="h-3 w-3 text-primary" />}
+          value={liveAdvanced.avgPossession === null ? "—" : `${Math.round(liveAdvanced.avgPossession)}%`}
+          accent={liveAdvanced.avgPossession !== null && liveAdvanced.avgPossession >= 50}
+          danger={liveAdvanced.avgPossession !== null && liveAdvanced.avgPossession < 45}
+          sub={liveAdvanced.possCount ? `${liveAdvanced.possCount} logged` : "log possession"}
+          bar={liveAdvanced.avgPossession === null ? null : Math.round(liveAdvanced.avgPossession)}
+        />
+        <LiveStatTile
+          label="Avg xG · You"
+          icon={<TrendingUp className="h-3 w-3 text-primary" />}
+          value={liveAdvanced.avgXgFor === null ? "—" : liveAdvanced.avgXgFor.toFixed(2)}
+          accent
+          sub={liveAdvanced.xgForCount ? `${liveAdvanced.xgForCount} sample${liveAdvanced.xgForCount === 1 ? "" : "s"}` : "no xG logged"}
+        />
+        <LiveStatTile
+          label="Avg xG · Against"
+          icon={<TrendingDown className="h-3 w-3 text-destructive" />}
+          value={liveAdvanced.avgXgAgainst === null ? "—" : liveAdvanced.avgXgAgainst.toFixed(2)}
+          danger
+          sub={liveAdvanced.xgAgCount ? `${liveAdvanced.xgAgCount} sample${liveAdvanced.xgAgCount === 1 ? "" : "s"}` : "no xG logged"}
+        />
+      </div>
+
       <div className="surface-card p-4 mb-3">
         <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">
           Rating trend per match
