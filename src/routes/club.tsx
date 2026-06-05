@@ -210,6 +210,7 @@ function ClubPage() {
                 key={p.id}
                 active={profileId === p.id}
                 onClick={() => setProfileId(p.id)}
+                onEdit={() => setEditingProfile(p)}
                 icon={<ClubCrest size={18} overrideUrl={p.crestUrl} />}
                 label={p.name}
                 sub={`${p.wlIds.length} WL${p.wlIds.length === 1 ? "" : "s"}`}
@@ -217,8 +218,8 @@ function ClubPage() {
             ))}
           </div>
           <p className="text-[11px] text-muted-foreground mt-2">
-            Editar nome ou escudo aqui em cima cria um novo perfil automaticamente para as próximas WLs.
-            Campanhas passadas continuam vinculadas ao perfil que estava ativo quando foram criadas.
+            Editar nome ou escudo no topo cria um novo perfil automaticamente para as próximas WLs.
+            Use o lápis em cada perfil acima para reescrever a identidade visual de uma campanha já existente.
           </p>
         </div>
       )}
@@ -228,7 +229,17 @@ function ClubPage() {
         <Trophy className="h-5 w-5 text-primary" />
         {activeProfile ? activeProfile.name : "Hall of Fame"}
         {activeProfile && (
-          <ClubCrest size={28} overrideUrl={activeProfile.crestUrl} className="ml-1" />
+          <>
+            <ClubCrest size={28} overrideUrl={activeProfile.crestUrl} className="ml-1" />
+            <button
+              onClick={() => setEditingProfile(activeProfile)}
+              className="ml-1 p-1 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition"
+              aria-label="Edit profile identity"
+              title="Editar identidade visual deste perfil"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+          </>
         )}
       </h2>
       <p className="text-xs text-muted-foreground mb-4">
