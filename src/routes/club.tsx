@@ -1,15 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { AppShell } from "@/components/AppShell";
 import { ClubCrest } from "@/components/ClubCrest";
 import { ClubCrestUploader } from "@/components/ClubCrestUploader";
 import { RankBadge } from "@/components/RankBadge";
 import { useClubName, useMatches, usePlayers, useWLs, store } from "@/lib/store";
-import { aggregatePlayer, deriveClubProfiles, matchIsWin, rankFromWins, wlRecord, isCleanSheetEligible } from "@/lib/stats";
-import { Pencil, Check, X, Trophy, Shield, Users, Award, Medal, Globe, Activity, Target } from "lucide-react";
+import { aggregatePlayer, deriveClubProfiles, matchIsWin, rankFromWins, wlRecord, isCleanSheetEligible, type ClubProfile } from "@/lib/stats";
+import { Pencil, Check, X, Trophy, Shield, Users, Award, Medal, Globe, Activity, Target, Upload, Trash2 } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 import { BestXI } from "@/components/BestXI";
+import { compressImageToDataURL } from "@/lib/imageCompress";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/club")({
@@ -33,6 +34,8 @@ function ClubPage() {
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState(clubName);
   const [profileId, setProfileId] = useState<string>(ALL_PROFILE_ID);
+  const [editingProfile, setEditingProfile] = useState<ClubProfile | null>(null);
+
 
   useEffect(() => {
     if (!editingName) setDraftName(clubName);
@@ -207,6 +210,7 @@ function ClubPage() {
                 key={p.id}
                 active={profileId === p.id}
                 onClick={() => setProfileId(p.id)}
+                onEdit={() => setEditingProfile(p)}
                 icon={<ClubCrest size={18} overrideUrl={p.crestUrl} />}
                 label={p.name}
                 sub={`${p.wlIds.length} WL${p.wlIds.length === 1 ? "" : "s"}`}
@@ -214,8 +218,8 @@ function ClubPage() {
             ))}
           </div>
           <p className="text-[11px] text-muted-foreground mt-2">
-            Editar nome ou escudo aqui em cima cria um novo perfil automaticamente para as próximas WLs.
-            Campanhas passadas continuam vinculadas ao perfil que estava ativo quando foram criadas.
+            Editar nome ou escudo no topo cria um novo perfil automaticamente para as próximas WLs.
+            Use o lápis em cada perfil acima para reescrever a identidade visual de uma campanha já existente.
           </p>
         </div>
       )}
@@ -225,7 +229,17 @@ function ClubPage() {
         <Trophy className="h-5 w-5 text-primary" />
         {activeProfile ? activeProfile.name : "Hall of Fame"}
         {activeProfile && (
-          <ClubCrest size={28} overrideUrl={activeProfile.crestUrl} className="ml-1" />
+          <>
+            <ClubCrest size={28} overrideUrl={activeProfile.crestUrl} className="ml-1" />
+            <button
+              onClick={() => setEditingProfile(activeProfile)}
+              className="ml-1 p-1 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition"
+              aria-label="Edit profile identity"
+              title="Editar identidade visual deste perfil"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+          </>
         )}
       </h2>
       <p className="text-xs text-muted-foreground mb-4">
@@ -279,6 +293,23 @@ function ClubPage() {
       )}
 
       <BestXI players={players} matches={scopedMatches} wls={scopedWLs} />
+
+      {editingProfile && (
+        <ProfileEditModal
+          profile={editingProfile}
+          onClose={() => setEditingProfile(null)}
+          onSave={(newName, newCrest) => {
+            for (const wlId of editingProfile.wlIds) {
+              store.updateWL(wlId, {
+                clubName: newName || undefined,
+                clubCrestUrl: newCrest,
+              });
+            }
+            setEditingProfile(null);
+            toast.success(`Identidade visual atualizada em ${editingProfile.wlIds.length} WL${editingProfile.wlIds.length === 1 ? "" : "s"}`);
+          }}
+        />
+      )}
     </AppShell>
   );
 }
@@ -286,32 +317,156 @@ function ClubPage() {
 function ProfilePill({
   active,
   onClick,
+  onEdit,
   icon,
   label,
   sub,
 }: {
   active: boolean;
   onClick: () => void;
+  onEdit?: () => void;
   icon: React.ReactNode;
   label: string;
   sub: string;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border text-left transition ${
+    <div
+      className={`inline-flex items-center gap-1 rounded-md border transition ${
         active
           ? "bg-primary/10 border-primary text-foreground shadow-[var(--shadow-neon)]"
           : "bg-secondary/40 border-border text-muted-foreground hover:text-foreground hover:bg-secondary/70"
       }`}
     >
-      <span className="shrink-0 grid place-items-center">{icon}</span>
-      <span className="min-w-0">
-        <span className="block font-display text-sm leading-tight truncate max-w-[12rem]">{label}</span>
-        <span className="block text-[9px] uppercase tracking-wider font-mono opacity-80">{sub}</span>
-      </span>
-    </button>
+      <button
+        type="button"
+        onClick={onClick}
+        className="inline-flex items-center gap-2 pl-3 pr-2 py-1.5 text-left min-w-0"
+      >
+        <span className="shrink-0 grid place-items-center">{icon}</span>
+        <span className="min-w-0">
+          <span className="block font-display text-sm leading-tight truncate max-w-[12rem]">{label}</span>
+          <span className="block text-[9px] uppercase tracking-wider font-mono opacity-80">{sub}</span>
+        </span>
+      </button>
+      {onEdit && (
+        <button
+          type="button"
+          onClick={onEdit}
+          className="p-1.5 mr-1 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition shrink-0"
+          aria-label={`Editar perfil ${label}`}
+          title="Editar identidade visual"
+        >
+          <Pencil className="h-3 w-3" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function ProfileEditModal({
+  profile,
+  onClose,
+  onSave,
+}: {
+  profile: ClubProfile;
+  onClose: () => void;
+  onSave: (name: string, crestUrl: string | null) => void;
+}) {
+  const [name, setName] = useState(profile.name === "Unnamed Club" ? "" : profile.name);
+  const [crest, setCrest] = useState<string | null>(profile.crestUrl);
+  const [busy, setBusy] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const onPick = async (file: File) => {
+    if (file.size > 10_000_000) {
+      toast.error("Imagem muito grande (máx ~10 MB)");
+      return;
+    }
+    setBusy(true);
+    try {
+      const url = await compressImageToDataURL(file);
+      setCrest(url);
+    } catch {
+      toast.error("Não foi possível ler essa imagem. Use PNG ou JPG.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm grid place-items-center p-4" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="surface-glow w-full max-w-md rounded-lg overflow-hidden">
+        <div className="px-5 py-4 border-b border-border/60 flex items-center justify-between">
+          <div>
+            <h2 className="font-display text-xl tracking-wider">Editar identidade</h2>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">
+              {profile.wlIds.length} WL{profile.wlIds.length === 1 ? "" : "s"} será{profile.wlIds.length === 1 ? "" : "ão"} reescrita{profile.wlIds.length === 1 ? "" : "s"}
+            </p>
+          </div>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground" aria-label="Fechar">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="p-5 space-y-4">
+          <div className="flex items-center gap-4">
+            <ClubCrest size={64} overrideUrl={crest} />
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => inputRef.current?.click()}
+                disabled={busy}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider hover:opacity-90 disabled:opacity-50"
+              >
+                <Upload className="h-3 w-3" /> {busy ? "Carregando…" : crest ? "Trocar escudo" : "Enviar escudo"}
+              </button>
+              {crest && (
+                <button
+                  type="button"
+                  onClick={() => setCrest(null)}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border text-muted-foreground text-[10px] font-bold uppercase tracking-wider hover:text-destructive"
+                >
+                  <Trash2 className="h-3 w-3" /> Remover
+                </button>
+              )}
+              <input
+                ref={inputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) onPick(f);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Nome do clube</label>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nome do clube"
+              maxLength={48}
+              className="w-full bg-input border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            Isso reescreve o snapshot de nome e escudo em todas as WLs desse perfil. A identidade ativa do clube não é alterada.
+          </p>
+        </div>
+        <div className="px-5 py-3 border-t border-border/60 flex gap-2">
+          <button
+            onClick={() => onSave(name.trim(), crest)}
+            disabled={busy}
+            className="flex-1 px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90 disabled:opacity-50"
+          >
+            Salvar
+          </button>
+          <button onClick={onClose} className="px-5 py-2.5 rounded-md border border-border text-muted-foreground hover:text-foreground text-sm">Cancelar</button>
+        </div>
+      </div>
+    </div>
   );
 }
 

@@ -1073,6 +1073,26 @@ function LiveWLReport({
     ? recentAvg.reduce((s, t) => s + t.avg, 0) / recentAvg.length
     : 0;
 
+  // Possession & xG averages across the WL so far (only matches that logged the stat).
+  const liveAdvanced = useMemo(() => {
+    let possSum = 0, possCount = 0;
+    let xgForSum = 0, xgForCount = 0;
+    let xgAgSum = 0, xgAgCount = 0;
+    for (const m of matches) {
+      if (typeof m.possessionFor === "number") { possSum += m.possessionFor; possCount += 1; }
+      if (typeof m.xgFor === "number" && m.xgFor > 0) { xgForSum += m.xgFor; xgForCount += 1; }
+      if (typeof m.xgAgainst === "number" && m.xgAgainst > 0) { xgAgSum += m.xgAgainst; xgAgCount += 1; }
+    }
+    return {
+      avgPossession: possCount ? possSum / possCount : null,
+      possCount,
+      avgXgFor: xgForCount ? xgForSum / xgForCount : null,
+      xgForCount,
+      avgXgAgainst: xgAgCount ? xgAgSum / xgAgCount : null,
+      xgAgCount,
+    };
+  }, [matches]);
+
   return (
     <section className="mb-8">
       <div className="flex items-baseline justify-between mb-3">
@@ -1127,6 +1147,32 @@ function LiveWLReport({
             Team avg (last 3): {teamAvg > 0 ? teamAvg.toFixed(2) : "—"}
           </div>
         </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3 mb-3">
+        <LiveStatTile
+          label="Avg Possession"
+          icon={<Activity className="h-3 w-3 text-primary" />}
+          value={liveAdvanced.avgPossession === null ? "—" : `${Math.round(liveAdvanced.avgPossession)}%`}
+          accent={liveAdvanced.avgPossession !== null && liveAdvanced.avgPossession >= 50}
+          danger={liveAdvanced.avgPossession !== null && liveAdvanced.avgPossession < 45}
+          sub={liveAdvanced.possCount ? `${liveAdvanced.possCount} logged` : "log possession"}
+          bar={liveAdvanced.avgPossession === null ? null : Math.round(liveAdvanced.avgPossession)}
+        />
+        <LiveStatTile
+          label="Avg xG · You"
+          icon={<TrendingUp className="h-3 w-3 text-primary" />}
+          value={liveAdvanced.avgXgFor === null ? "—" : liveAdvanced.avgXgFor.toFixed(2)}
+          accent
+          sub={liveAdvanced.xgForCount ? `${liveAdvanced.xgForCount} sample${liveAdvanced.xgForCount === 1 ? "" : "s"}` : "no xG logged"}
+        />
+        <LiveStatTile
+          label="Avg xG · Against"
+          icon={<TrendingDown className="h-3 w-3 text-destructive" />}
+          value={liveAdvanced.avgXgAgainst === null ? "—" : liveAdvanced.avgXgAgainst.toFixed(2)}
+          danger
+          sub={liveAdvanced.xgAgCount ? `${liveAdvanced.xgAgCount} sample${liveAdvanced.xgAgCount === 1 ? "" : "s"}` : "no xG logged"}
+        />
       </div>
 
       <div className="surface-card p-4 mb-3">
@@ -1203,5 +1249,40 @@ function RatingTrendChart({ points }: { points: { index: number; avg: number; wi
         ) : null,
       )}
     </svg>
+  );
+}
+
+function LiveStatTile({
+  label,
+  icon,
+  value,
+  sub,
+  accent,
+  danger,
+  bar,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  value: string;
+  sub: string;
+  accent?: boolean;
+  danger?: boolean;
+  bar?: number | null;
+}) {
+  return (
+    <div className="surface-card p-3">
+      <div className="text-[9px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+        {icon} {label}
+      </div>
+      <div className={`font-display stat-num text-2xl mt-1 leading-none ${accent ? "text-primary" : danger ? "text-destructive" : ""}`}>
+        {value}
+      </div>
+      {typeof bar === "number" && (
+        <div className="mt-2 h-1 bg-destructive/30 rounded overflow-hidden">
+          <div className="h-full bg-primary" style={{ width: `${bar}%` }} />
+        </div>
+      )}
+      <div className="text-[9px] text-muted-foreground mt-1 font-mono">{sub}</div>
+    </div>
   );
 }
