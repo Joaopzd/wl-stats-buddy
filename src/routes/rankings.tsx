@@ -247,6 +247,9 @@ function Leaderboard({
   empty: string;
   subline?: string;
 }) {
+  const top3 = rows.slice(0, 3);
+  const rest = rows.slice(3);
+
   return (
     <div className="surface-card p-5">
       <div className="flex items-center justify-between mb-4">
@@ -260,40 +263,73 @@ function Leaderboard({
       {rows.length === 0 ? (
         <div className="text-sm text-muted-foreground py-6 text-center">{empty}</div>
       ) : (
-        <ol className="space-y-1.5">
-          {rows.map((a, i) => {
-            const rank = i + 1;
-            const medal =
-              rank === 1 ? "text-amber-300" :
-              rank === 2 ? "text-zinc-300" :
-              rank === 3 ? "text-amber-700" :
-              "text-muted-foreground";
-            const status = performanceStatus(a);
-            const rowAlert =
-              status === "critical"
-                ? "border-warn-critical/60 bg-warn-critical/5"
-                : status === "caution"
-                  ? "border-warn-caution/50 bg-warn-caution/5"
-                  : rank <= 3
-                    ? "bg-primary/5 border-primary/20"
-                    : "bg-background/50 border-border/40";
-            return (
-              <li key={a.player.id} className={`flex items-center gap-3 px-3 py-2 rounded-md transition border ${rowAlert}`}>
-                <div className={`stat-num font-display text-xl w-7 text-right shrink-0 ${medal}`}>{rank}</div>
-                <div className="min-w-0 flex-1">
-                  <div className="font-semibold truncate flex items-center gap-1.5">
-                    {status === "critical" && <AlertTriangle className="h-3 w-3 text-warn-critical shrink-0" />}
+        <>
+          {/* Podium: top 3 highlighted */}
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {top3.map((a, i) => {
+              const rank = i + 1;
+              const tone =
+                rank === 1
+                  ? { ring: "ring-2 ring-amber-300/70", bg: "bg-gradient-to-b from-amber-400/20 to-amber-500/5", medal: "text-amber-300", crown: "👑" }
+                  : rank === 2
+                    ? { ring: "ring-1 ring-zinc-300/60", bg: "bg-gradient-to-b from-zinc-300/15 to-zinc-400/5", medal: "text-zinc-200", crown: "🥈" }
+                    : { ring: "ring-1 ring-amber-700/50", bg: "bg-gradient-to-b from-amber-700/15 to-amber-800/5", medal: "text-amber-600", crown: "🥉" };
+              const isFirst = rank === 1;
+              return (
+                <div
+                  key={a.player.id}
+                  className={`relative rounded-lg p-3 flex flex-col items-center text-center ${tone.bg} ${tone.ring} ${isFirst ? "scale-[1.04]" : ""}`}
+                  style={isFirst ? { boxShadow: "0 0 20px -6px rgba(250, 204, 21, 0.4)" } : undefined}
+                >
+                  <div className={`absolute -top-2 left-2 font-display stat-num text-base ${tone.medal}`}>
+                    #{rank}
+                  </div>
+                  <div className="text-xl mb-1" aria-hidden>{tone.crown}</div>
+                  <div className={`font-display ${isFirst ? "text-3xl" : "text-2xl"} stat-num text-primary leading-none`}>
+                    {metric(a)}
+                  </div>
+                  <div className="font-semibold text-xs mt-2 truncate w-full" title={a.player.name}>
                     {a.player.name}
                   </div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">
-                    {a.player.position} · {a.player.overall} · {a.matches} apps
+                  <div className="text-[9px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">
+                    {a.player.position} · {a.matches}MP
                   </div>
                 </div>
-                <div className="font-display text-xl stat-num text-primary shrink-0">{metric(a)}</div>
-              </li>
-            );
-          })}
-        </ol>
+              );
+            })}
+          </div>
+
+          {/* Compact list: positions 4+ */}
+          {rest.length > 0 && (
+            <ol className="space-y-1.5">
+              {rest.map((a, i) => {
+                const rank = i + 4;
+                const status = performanceStatus(a);
+                const rowAlert =
+                  status === "critical"
+                    ? "border-warn-critical/60 bg-warn-critical/5"
+                    : status === "caution"
+                      ? "border-warn-caution/50 bg-warn-caution/5"
+                      : "bg-background/50 border-border/40";
+                return (
+                  <li key={a.player.id} className={`flex items-center gap-3 px-3 py-2 rounded-md transition border ${rowAlert}`}>
+                    <div className="stat-num font-display text-base w-7 text-right shrink-0 text-muted-foreground">{rank}</div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold truncate flex items-center gap-1.5 text-sm">
+                        {status === "critical" && <AlertTriangle className="h-3 w-3 text-warn-critical shrink-0" />}
+                        {a.player.name}
+                      </div>
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">
+                        {a.player.position} · {a.player.overall} · {a.matches} apps
+                      </div>
+                    </div>
+                    <div className="font-display text-lg stat-num text-primary shrink-0">{metric(a)}</div>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </>
       )}
     </div>
   );
