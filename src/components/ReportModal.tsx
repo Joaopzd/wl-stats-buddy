@@ -33,6 +33,7 @@ export function ReportModal({
   onClose: () => void;
   onBackToList: () => void;
 }) {
+  const opponentName = useOpponentName();
   const squad = players.filter((p) => wl.squadPlayerIds.includes(p.id));
   const aggs = squad.map((p) => aggregatePlayer(p, matches));
 
