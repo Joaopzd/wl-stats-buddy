@@ -4,11 +4,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+/* Rajdhani + JetBrains Mono are loaded via <link> in src/routes/__root.tsx */
 
 @theme inline {
-  --font-display: "Inter", system-ui, -apple-system, sans-serif;
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: "Rajdhani", "Inter", system-ui, -apple-system, sans-serif;
+  --font-sans: "Rajdhani", "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -52,50 +52,48 @@
 :root {
   --radius: 0.5rem;
 
-  /* Midnight Stealth Palette — deep navy surfaces, softer foreground for reduced eye strain. */
-  --background: oklch(0.20 0.04 257); /* #0F172A Navy Dark */
-  --foreground: oklch(0.92 0.013 247); /* #E2E8F0 Soft Ice */
+  /* PitchSide Palette — Deep Navy + Championship Gold (default theme) */
+  --background: #1D2344;       /* Deep Navy */
+  --foreground: #F4F5F7;       /* Pure White / Ice */
 
-  --card: oklch(0.23 0.035 257);
-  --card-foreground: oklch(0.92 0.013 247);
+  --card: #282F54;             /* Card Slate */
+  --card-foreground: #F4F5F7;
 
-  --popover: oklch(0.22 0.035 257);
-  --popover-foreground: oklch(0.92 0.013 247);
+  --popover: #282F54;
+  --popover-foreground: #F4F5F7;
 
-  /* Muted Emerald — primary action */
-  --primary: oklch(0.69 0.14 162);
-  --primary-foreground: oklch(0.16 0.03 257);
+  /* Championship Gold — primary action */
+  --primary: #F7C534;
+  --primary-foreground: #1D2344;
 
-  --secondary: oklch(0.27 0.035 257);
-  --secondary-foreground: oklch(0.92 0.013 247);
+  --secondary: #2E365F;
+  --secondary-foreground: #F4F5F7;
 
-  --muted: oklch(0.27 0.03 257);
-  --muted-foreground: oklch(0.66 0.025 247);
+  --muted: #2E365F;
+  --muted-foreground: #8A92B2; /* Data Gray */
 
-  --accent: oklch(0.62 0.14 220);
-  --accent-foreground: oklch(0.16 0.03 257);
+  --accent: #F7C534;
+  --accent-foreground: #1D2344;
 
-  /* Deep Crimson destructive */
-  --destructive: oklch(0.52 0.18 27);
-  --destructive-foreground: oklch(0.98 0.005 247);
+  --destructive: oklch(0.55 0.20 27);
+  --destructive-foreground: #F4F5F7;
 
-  --success: oklch(0.69 0.14 162);
-  --success-foreground: oklch(0.16 0.03 257);
+  --success: oklch(0.72 0.16 160);
+  --success-foreground: #1D2344;
 
-  --border: oklch(0.32 0.03 257 / 0.55);
-  --input: oklch(0.26 0.03 257);
-  --ring: oklch(0.69 0.14 162);
+  --border: rgba(138, 146, 178, 0.28);
+  --input: #232A4B;
+  --ring: #F7C534;
 
-  /* Underperforming Warning System tokens (dark theme defaults) */
-  --warn-critical: oklch(0.65 0.20 27); /* legible crimson on dark */
-  --warn-caution: oklch(0.78 0.14 75); /* amber */
+  --warn-critical: oklch(0.68 0.20 27);
+  --warn-caution: #F7C534;
 
-  --pitch: oklch(0.30 0.09 150);
-  --pitch-line: oklch(0.92 0.013 247 / 0.35);
+  --pitch: oklch(0.32 0.10 150);
+  --pitch-line: rgba(244, 245, 247, 0.35);
 
-  --gradient-primary: linear-gradient(135deg, oklch(0.69 0.14 162), oklch(0.58 0.10 195));
-  --gradient-card: linear-gradient(160deg, oklch(0.24 0.035 257), oklch(0.20 0.03 252));
-  --gradient-hero: radial-gradient(ellipse at top, oklch(0.69 0.14 162 / 0.10), transparent 60%), linear-gradient(180deg, oklch(0.22 0.04 257), oklch(0.18 0.035 257));
+  --gradient-primary: linear-gradient(135deg, #F7C534, #F7A934);
+  --gradient-card: linear-gradient(160deg, #282F54, #232A4B);
+  --gradient-hero: radial-gradient(ellipse at top, rgba(247, 197, 52, 0.10), transparent 60%), linear-gradient(180deg, #232A4B, #1D2344);
   --gradient-rare: linear-gradient(135deg, #c9a84c, #f0d78c);
   --gradient-totw: linear-gradient(135deg, #1a1a1a, #4a4a4a);
   --gradient-icon: linear-gradient(135deg, #f5e6c8, #c9a84c);
