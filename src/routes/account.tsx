@@ -3,15 +3,16 @@ import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
-import { CheckCircle2, LogIn, LogOut, ShieldCheck, User as UserIcon, Cloud, CloudOff } from "lucide-react";
+import { CheckCircle2, LogIn, LogOut, ShieldCheck, User as UserIcon, Cloud, CloudOff, Pencil, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { PENDING_ANON_MIGRATION_KEY } from "@/components/AuthButton";
+import logoAsset from "@/assets/pitchside-logo.png.asset.json";
 
 export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
       { title: "Account — PitchSide" },
-      { name: "description", content: "Your Google account and cloud sync status." },
+      { name: "description", content: "Your account, username and cloud sync status on PitchSide." },
     ],
   }),
   component: AccountPage,
@@ -24,9 +25,13 @@ function AccountPage() {
   const [email, setEmail] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [avatar, setAvatar] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [isAnon, setIsAnon] = useState(true);
   const [justMigrated, setJustMigrated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [editingUsername, setEditingUsername] = useState(false);
+  const [usernameDraft, setUsernameDraft] = useState("");
+  const [savingUsername, setSavingUsername] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -36,6 +41,7 @@ function AccountPage() {
       const meta = (u?.user_metadata ?? {}) as Record<string, unknown>;
       setName((meta.full_name as string) ?? (meta.name as string) ?? null);
       setAvatar((meta.avatar_url as string) ?? (meta.picture as string) ?? null);
+      setUsername((meta.username as string) ?? (meta.display_name as string) ?? null);
     });
     if (typeof window !== "undefined" && sessionStorage.getItem(WELCOME_FLAG) === "1") {
       setJustMigrated(true);
@@ -69,12 +75,44 @@ function AccountPage() {
     setTimeout(() => window.location.reload(), 50);
   };
 
+  const saveUsername = async () => {
+    const trimmed = usernameDraft.trim().slice(0, 24);
+    if (!trimmed) {
+      toast.error("Username não pode ser vazio");
+      return;
+    }
+    setSavingUsername(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ data: { username: trimmed } });
+      if (error) throw error;
+      setUsername(trimmed);
+      setEditingUsername(false);
+      toast.success("Username atualizado");
+    } catch (e) {
+      toast.error("Falha ao salvar username: " + (e instanceof Error ? e.message : String(e)));
+    } finally {
+      setSavingUsername(false);
+    }
+  };
+
   return (
     <AppShell>
       <div className="max-w-2xl mx-auto">
+        {/* PitchSide hero logo */}
+        <div className="surface-card p-6 sm:p-10 mb-6 text-center bg-gradient-to-b from-[#1D2344] to-[#282F54]">
+          <img
+            src={logoAsset.url}
+            alt="PitchSide"
+            className="mx-auto h-32 sm:h-40 w-auto object-contain drop-shadow-[0_0_24px_rgba(247,197,52,0.45)]"
+          />
+          <div className="mt-3 text-[10px] uppercase tracking-[0.4em] text-primary font-bold">
+            PitchSide · Weekend League Tracker
+          </div>
+        </div>
+
         <h1 className="font-display text-4xl tracking-wider">Conta</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Entre com Google para sincronizar seus dados na nuvem e nunca perdê-los ao trocar de navegador.
+          Entre com Google para sincronizar seus dados na nuvem e escolha um username para ser exibido no topo.
         </p>
 
         {justMigrated && !isAnon && (
@@ -132,6 +170,57 @@ function AccountPage() {
                     Autenticado via Google
                   </div>
                 </div>
+              </div>
+
+              {/* Username editor */}
+              <div className="mt-6 pt-5 border-t border-border/60">
+                <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold mb-2">
+                  Username (exibido no topo)
+                </div>
+                {editingUsername ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      autoFocus
+                      value={usernameDraft}
+                      onChange={(e) => setUsernameDraft(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") saveUsername();
+                        if (e.key === "Escape") setEditingUsername(false);
+                      }}
+                      placeholder="Seu username"
+                      maxLength={24}
+                      className="flex-1 bg-input border border-border rounded-md px-3 py-2 font-display text-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                    <button
+                      onClick={saveUsername}
+                      disabled={savingUsername}
+                      className="p-2 rounded-md bg-primary text-primary-foreground disabled:opacity-50"
+                      aria-label="Salvar username"
+                    >
+                      <Check className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setEditingUsername(false)}
+                      className="p-2 rounded-md border border-border text-muted-foreground"
+                      aria-label="Cancelar"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => { setUsernameDraft(username ?? ""); setEditingUsername(true); }}
+                    className="group inline-flex items-center gap-2"
+                  >
+                    <span className="font-display text-2xl tracking-wider">
+                      {username ?? <span className="text-muted-foreground italic text-base">Definir username</span>}
+                    </span>
+                    <Pencil className="h-4 w-4 text-muted-foreground group-hover:text-primary transition" />
+                  </button>
+                )}
+                <p className="text-[11px] text-muted-foreground mt-2">
+                  O username substitui o email no canto superior direito do app.
+                </p>
               </div>
 
               <div className="mt-6 pt-5 border-t border-border/60 grid sm:grid-cols-2 gap-3 text-sm">
