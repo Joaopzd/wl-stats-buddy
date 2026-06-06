@@ -10,19 +10,25 @@ const PENDING_KEY = "fc26_pending_anon_migration";
 /** Tracks current session and renders sign-in / sign-out control. */
 export function AuthButton() {
   const [email, setEmail] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [isAnon, setIsAnon] = useState<boolean>(true);
   const [loading, setLoading] = useState(false);
+
+  const pullUser = (u: { email?: string | null; is_anonymous?: boolean; user_metadata?: Record<string, unknown> } | null | undefined) => {
+    setEmail(u?.email ?? null);
+    setIsAnon(!!u?.is_anonymous);
+    const meta = (u?.user_metadata ?? {}) as Record<string, unknown>;
+    setUsername((meta.username as string) ?? (meta.display_name as string) ?? null);
+  };
 
   useEffect(() => {
     let active = true;
     supabase.auth.getUser().then(({ data }) => {
       if (!active) return;
-      setEmail(data.user?.email ?? null);
-      setIsAnon(!!data.user?.is_anonymous);
+      pullUser(data.user);
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      setEmail(session?.user?.email ?? null);
-      setIsAnon(!!session?.user?.is_anonymous);
+      pullUser(session?.user);
     });
     return () => { active = false; subscription.unsubscribe(); };
   }, []);
@@ -74,11 +80,11 @@ export function AuthButton() {
     <div className="flex items-center gap-2">
       <Link
         to="/account"
-        className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground max-w-[160px] truncate"
+        className="hidden sm:flex items-center gap-1.5 text-xs text-foreground hover:text-primary max-w-[180px] truncate font-semibold uppercase tracking-wider"
         title="Ver conta"
       >
         <UserIcon className="h-3.5 w-3.5 shrink-0" />
-        <span className="truncate">{email ?? "Conta"}</span>
+        <span className="truncate">{username ?? email ?? "Conta"}</span>
       </Link>
       <Link
         to="/account"
