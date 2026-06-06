@@ -1,11 +1,26 @@
 import { useState, useRef, useEffect } from "react";
-import { Settings, Check, Upload, Trash2 } from "lucide-react";
+import { Settings, Check, Upload, Trash2, ChevronDown } from "lucide-react";
 import { THEMES, setTheme, useTheme, type ThemeKey } from "@/lib/theme";
 import { store, useClubCrest, useClubName, useOpponentCrest, useOpponentName } from "@/lib/store";
 import { ClubCrest } from "./ClubCrest";
 import { OpponentCrest } from "./OpponentCrest";
 import { compressImageToDataURL } from "@/lib/imageCompress";
 import { toast } from "sonner";
+
+/** Collapsible section header used inside the Settings panel. */
+function SectionHeader({ open, onToggle, title }: { open: boolean; onToggle: () => void; title: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="w-full flex items-center justify-between text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2 hover:text-foreground transition"
+      aria-expanded={open}
+    >
+      <span>{title}</span>
+      <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
+    </button>
+  );
+}
 
 
 
@@ -21,9 +36,13 @@ export function SettingsMenu() {
   const [clubNameDraft, setClubNameDraft] = useState(clubName);
   const [crestPreview, setCrestPreview] = useState<string | null>(null);
   const [clubCrestPreview, setClubCrestPreview] = useState<string | null>(null);
+  const [openSection, setOpenSection] = useState<"theme" | "club" | "opponent" | null>("theme");
   const wrapRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const clubFileRef = useRef<HTMLInputElement>(null);
+
+  const toggleSection = (s: "theme" | "club" | "opponent") =>
+    setOpenSection((cur) => (cur === s ? null : s));
 
   useEffect(() => { setNameDraft(opponentName); }, [opponentName, open]);
   useEffect(() => { setClubNameDraft(clubName); }, [clubName, open]);
