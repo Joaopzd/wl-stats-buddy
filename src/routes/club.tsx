@@ -16,7 +16,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/club")({
   head: () => ({
     meta: [
-      { title: "Club — WL Tracker" },
+      { title: "Club — PitchSide" },
       { name: "description", content: "Manage your club identity and view lifetime statistics, split by club profile." },
     ],
   }),

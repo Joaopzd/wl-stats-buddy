@@ -20,9 +20,9 @@ import { useClubName } from "@/lib/store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — WL Tracker" },
+      { title: "Dashboard — PitchSide" },
       { name: "description", content: "Your career-wide Weekend League dashboard for EA FC 26." },
-      { property: "og:title", content: "WL Tracker Dashboard" },
+      { property: "og:title", content: "PitchSide Dashboard" },
       { property: "og:description", content: "All-time wins, top scorers, MVPs and more." },
     ],
   }),

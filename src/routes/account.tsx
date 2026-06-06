@@ -10,7 +10,7 @@ import { PENDING_ANON_MIGRATION_KEY } from "@/components/AuthButton";
 export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
-      { title: "Account — WL Tracker" },
+      { title: "Account — PitchSide" },
       { name: "description", content: "Your Google account and cloud sync status." },
     ],
   }),
