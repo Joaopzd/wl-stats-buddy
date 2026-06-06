@@ -13,7 +13,7 @@ const MIN_MATCHES = 9;
 export const Route = createFileRoute("/rankings")({
   head: () => ({
     meta: [
-      { title: "Club Legends — WL Tracker" },
+      { title: "Club Legends — PitchSide" },
       { name: "description", content: "Top 10 leaderboards: scorers, playmakers and best-rated players in your club." },
       { property: "og:title", content: "Club Legends · Rankings" },
       { property: "og:description", content: "Top 10 leaderboards across your career." },

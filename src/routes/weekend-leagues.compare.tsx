@@ -11,7 +11,7 @@ import { RankBadge } from "@/components/RankBadge";
 export const Route = createFileRoute("/weekend-leagues/compare")({
   head: () => ({
     meta: [
-      { title: "Compare Weekend Leagues — WL Tracker" },
+      { title: "Compare Weekend Leagues — PitchSide" },
       { name: "description", content: "Side-by-side comparison of multiple Weekend Leagues and per-player evolution." },
     ],
   }),

@@ -16,7 +16,7 @@ import { compressImageToDataURL } from "@/lib/imageCompress";
 export const Route = createFileRoute("/players")({
   head: () => ({
     meta: [
-      { title: "Players — WL Tracker" },
+      { title: "Players — PitchSide" },
       { name: "description", content: "Your EA FC 26 player database with cumulative WL stats." },
       { property: "og:title", content: "Player Database" },
       { property: "og:description", content: "All your players and their career WL stats." },

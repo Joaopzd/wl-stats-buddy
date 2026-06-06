@@ -1,11 +1,26 @@
 import { useState, useRef, useEffect } from "react";
-import { Settings, Check, Upload, Trash2 } from "lucide-react";
+import { Settings, Check, Upload, Trash2, ChevronDown } from "lucide-react";
 import { THEMES, setTheme, useTheme, type ThemeKey } from "@/lib/theme";
 import { store, useClubCrest, useClubName, useOpponentCrest, useOpponentName } from "@/lib/store";
 import { ClubCrest } from "./ClubCrest";
 import { OpponentCrest } from "./OpponentCrest";
 import { compressImageToDataURL } from "@/lib/imageCompress";
 import { toast } from "sonner";
+
+/** Collapsible section header used inside the Settings panel. */
+function SectionHeader({ open, onToggle, title }: { open: boolean; onToggle: () => void; title: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="w-full flex items-center justify-between text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2 hover:text-foreground transition"
+      aria-expanded={open}
+    >
+      <span>{title}</span>
+      <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
+    </button>
+  );
+}
 
 
 
@@ -21,9 +36,13 @@ export function SettingsMenu() {
   const [clubNameDraft, setClubNameDraft] = useState(clubName);
   const [crestPreview, setCrestPreview] = useState<string | null>(null);
   const [clubCrestPreview, setClubCrestPreview] = useState<string | null>(null);
+  const [openSection, setOpenSection] = useState<"theme" | "club" | "opponent" | null>("theme");
   const wrapRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const clubFileRef = useRef<HTMLInputElement>(null);
+
+  const toggleSection = (s: "theme" | "club" | "opponent") =>
+    setOpenSection((cur) => (cur === s ? null : s));
 
   useEffect(() => { setNameDraft(opponentName); }, [opponentName, open]);
   useEffect(() => { setClubNameDraft(clubName); }, [clubName, open]);
@@ -120,9 +139,10 @@ export function SettingsMenu() {
           className="absolute right-0 mt-2 w-72 rounded-lg border border-border bg-popover shadow-[var(--shadow-card)] p-3 z-50 max-h-[80vh] overflow-y-auto"
         >
           {/* Theme */}
-          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">
-            Theme Palette
-          </div>
+          <SectionHeader open={openSection === "theme"} onToggle={() => toggleSection("theme")} title="Theme Palette" />
+          {openSection === "theme" && (
+          <>
+
           <ul className="space-y-1">
             {(Object.keys(THEMES) as ThemeKey[]).map((k) => {
               const t = THEMES[k];
@@ -156,13 +176,16 @@ export function SettingsMenu() {
               );
             })}
           </ul>
+          </>
+          )}
 
           <div className="my-3 h-px bg-border/60" />
 
           {/* Active Club Profile */}
-          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">
-            Active Club Profile
-          </div>
+          <SectionHeader open={openSection === "club"} onToggle={() => toggleSection("club")} title="Active Club Profile" />
+          {openSection === "club" && (
+          <>
+
 
           <label className="block text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
             Club Name
@@ -248,12 +271,16 @@ export function SettingsMenu() {
             ⓘ Editar aqui cria automaticamente um novo perfil para próximas WLs. WLs antigas mantêm o perfil original (visível na aba Club).
           </p>
 
+          </>
+          )}
+
           <div className="my-3 h-px bg-border/60" />
 
           {/* Opponent config */}
-          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">
-            Opponent Configuration
-          </div>
+          <SectionHeader open={openSection === "opponent"} onToggle={() => toggleSection("opponent")} title="Opponent Configuration" />
+          {openSection === "opponent" && (
+          <>
+
 
           <label className="block text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
             Opponent Name
@@ -335,6 +362,8 @@ export function SettingsMenu() {
               e.target.value = "";
             }}
           />
+          </>
+          )}
         </div>
       )}
     </div>

@@ -1,8 +1,8 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { LayoutDashboard, Trophy, Users, Sparkles, Shield } from "lucide-react";
-import { ClubCrest } from "./ClubCrest";
 import { SettingsMenu } from "./SettingsMenu";
 import { AuthButton } from "./AuthButton";
+import logoAsset from "@/assets/pitchside-logo.png.asset.json";
 
 const links = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -19,12 +19,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-40 border-b border-border/60 backdrop-blur-xl bg-background/70">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="relative h-9 w-9 rounded-md grid place-items-center shadow-[var(--shadow-neon)] overflow-hidden">
-              <ClubCrest size={36} className="!rounded-md !border-0 !bg-transparent" />
-            </div>
-            <div className="leading-tight">
-              <div className="font-display text-xl tracking-wider">WL TRACKER</div>
-              <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">EA FC 26</div>
+            <img
+              src={logoAsset.url}
+              alt="PitchSide logo"
+              className="h-10 w-auto object-contain drop-shadow-[0_0_8px_rgba(247,197,52,0.35)]"
+            />
+            <div className="leading-tight hidden sm:block">
+              <div className="font-display text-lg tracking-wider font-bold">PS: WEEKEND LEAGUE TRACKER</div>
+              <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">PitchSide · EA FC 26</div>
             </div>
           </Link>
           <div className="flex items-center gap-2">
@@ -73,7 +75,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </header>
       <main className="flex-1 mx-auto w-full max-w-7xl px-4 sm:px-6 py-6 sm:py-10">{children}</main>
       <footer className="border-t border-border/40 py-6 text-center text-xs text-muted-foreground">
-        Built for grinders · EA FC 26 Weekend League
+        PitchSide · Built for grinders · EA FC 26 Weekend League
       </footer>
     </div>
   );

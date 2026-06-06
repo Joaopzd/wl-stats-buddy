@@ -15,7 +15,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/weekend-leagues/")({
   head: () => ({
     meta: [
-      { title: "Weekend Leagues — WL Tracker" },
+      { title: "Weekend Leagues — PitchSide" },
       { name: "description", content: "All your EA FC 26 Weekend League sessions and records." },
       { property: "og:title", content: "Weekend Leagues" },
       { property: "og:description", content: "Browse, create and analyze every WL session." },

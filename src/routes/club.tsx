@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState, useEffect } from "react";
 import { AppShell } from "@/components/AppShell";
 import { ClubCrest } from "@/components/ClubCrest";
-import { ClubCrestUploader } from "@/components/ClubCrestUploader";
+
 import { RankBadge } from "@/components/RankBadge";
 import { useClubName, useMatches, usePlayers, useWLs, store } from "@/lib/store";
 import { aggregatePlayer, deriveClubProfiles, matchIsWin, rankFromWins, wlRecord, isCleanSheetEligible, type ClubProfile } from "@/lib/stats";
@@ -16,7 +16,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/club")({
   head: () => ({
     meta: [
-      { title: "Club — WL Tracker" },
+      { title: "Club — PitchSide" },
       { name: "description", content: "Manage your club identity and view lifetime statistics, split by club profile." },
     ],
   }),
@@ -186,10 +186,8 @@ function ClubPage() {
         </div>
       </div>
 
-      {/* Identity management */}
-      <div className="grid sm:grid-cols-1 gap-4 mb-8">
-        <ClubCrestUploader />
-      </div>
+      {/* Identity is managed via the gear icon in the header — kept out of Club tab to reduce clutter. */}
+
 
       {/* Profile selector */}
       {profiles.length > 0 && (

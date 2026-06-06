@@ -28,7 +28,7 @@ import { rarityVisual } from "@/lib/format";
 export const Route = createFileRoute("/weekend-leagues/$wlId")({
   head: () => ({
     meta: [
-      { title: "WL Detail — WL Tracker" },
+      { title: "WL Detail — PitchSide" },
       { name: "description", content: "Detailed Weekend League view: squad, matches, and per-player performance." },
       { property: "og:title", content: "Weekend League Detail" },
       { property: "og:description", content: "Track every match in this WL session." },

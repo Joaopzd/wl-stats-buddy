@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 
 export type ThemeKey =
+  | "pitchside"
   | "midnight-stealth"
   | "gt-racing"
   | "off-white-copper"
@@ -28,6 +29,40 @@ export interface ThemeDef {
 }
 
 export const THEMES: Record<ThemeKey, ThemeDef> = {
+  "pitchside": {
+    key: "pitchside",
+    label: "PitchSide",
+    description: "Deep navy · championship gold",
+    swatches: ["#1D2344", "#F7C534", "#F4F5F7"],
+    bodyBg:
+      "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(247,197,52,0.06), transparent), radial-gradient(ellipse 60% 40% at 80% 100%, rgba(247,197,52,0.04), transparent)",
+    vars: {
+      "--background": "#1D2344",
+      "--foreground": "#F4F5F7",
+      "--card": "#282F54",
+      "--card-foreground": "#F4F5F7",
+      "--popover": "#282F54",
+      "--popover-foreground": "#F4F5F7",
+      "--primary": "#F7C534",
+      "--primary-foreground": "#1D2344",
+      "--secondary": "#2E365F",
+      "--secondary-foreground": "#F4F5F7",
+      "--muted": "#2E365F",
+      "--muted-foreground": "#8A92B2",
+      "--accent": "#F7C534",
+      "--accent-foreground": "#1D2344",
+      "--destructive": "oklch(0.55 0.20 27)",
+      "--destructive-foreground": "#F4F5F7",
+      "--success": "oklch(0.72 0.16 160)",
+      "--success-foreground": "#1D2344",
+      "--border": "rgba(138, 146, 178, 0.28)",
+      "--input": "#232A4B",
+      "--ring": "#F7C534",
+      "--gradient-primary": "linear-gradient(135deg, #F7C534, #F7A934)",
+      "--gradient-card": "linear-gradient(160deg, #282F54, #232A4B)",
+      "--gradient-hero": "radial-gradient(ellipse at top, rgba(247,197,52,0.10), transparent 60%), linear-gradient(180deg, #232A4B, #1D2344)",
+    },
+  },
   "midnight-stealth": {
     key: "midnight-stealth",
     label: "Midnight Stealth",
@@ -460,7 +495,7 @@ const subscribe = (l: () => void) => {
   return () => listeners.delete(l);
 };
 
-let current: ThemeKey = "midnight-stealth";
+let current: ThemeKey = "pitchside";
 if (isBrowser) {
   try {
     const v = localStorage.getItem(KEY) as ThemeKey | null;
@@ -503,5 +538,5 @@ export function setTheme(key: ThemeKey) {
 }
 
 export function useTheme(): ThemeKey {
-  return useSyncExternalStore(subscribe, getTheme, () => "midnight-stealth");
+  return useSyncExternalStore(subscribe, getTheme, () => "pitchside");
 }
