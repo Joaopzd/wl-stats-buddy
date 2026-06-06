@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Trophy, Flame, Star, TrendingDown, X, LayoutGrid, TrendingUp, Shield, Crown, Zap } from "lucide-react";
+import { useState } from "react";
+import { Trophy, Flame, Star, TrendingDown, X, LayoutGrid, TrendingUp, Shield, Crown, Zap, ChevronDown, Target, Activity } from "lucide-react";
 import { SoccerBall } from "./icons/SoccerBall";
 import { SoccerBoot } from "./icons/SoccerBoot";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
@@ -8,7 +9,9 @@ import { aggregatePlayer, clutchAggregate, CLUTCH_MIN_MATCHES, CLUTCH_KING_TOOLT
 import { RatingDisplay } from "@/components/RatingDisplay";
 import { AlertTriangle } from "lucide-react";
 import { RankBadge } from "@/components/RankBadge";
-import { store } from "@/lib/store";
+import { ClubCrest } from "@/components/ClubCrest";
+import { OpponentCrest } from "@/components/OpponentCrest";
+import { store, useOpponentName } from "@/lib/store";
 
 /** 0, 0.5, 1.0 … 10.0 — values offered in the Manager Rating dropdown. */
 const MANAGER_RATING_OPTIONS = Array.from({ length: 21 }, (_, i) => i * 0.5);
