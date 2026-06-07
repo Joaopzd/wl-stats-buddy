@@ -114,20 +114,21 @@ export function ReportModal({
                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground">You</div>
               </div>
 
-              {/* Score */}
+              {/* Wins / Losses — the headline result */}
               <div className="flex flex-col items-center">
                 <div className="flex items-baseline gap-3 leading-none">
-                  <span className="font-display stat-num text-6xl sm:text-7xl text-primary font-bold tabular-nums">{totalG}</span>
+                  <span className="font-display stat-num text-6xl sm:text-7xl text-primary font-bold tabular-nums">{record.wins}</span>
                   <span className="text-3xl text-muted-foreground font-display">–</span>
-                  <span className="font-display stat-num text-6xl sm:text-7xl text-foreground font-bold tabular-nums">{record.goalsAgainst}</span>
+                  <span className="font-display stat-num text-6xl sm:text-7xl text-foreground font-bold tabular-nums">{record.losses}</span>
                 </div>
-                <div className={`mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                <div className="mt-1 text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Wins · Losses</div>
+                <div className={`mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${
                   gd >= 0
                     ? "bg-primary/15 text-primary border border-primary/30"
                     : "bg-destructive/15 text-destructive border border-destructive/30"
                 }`}>
                   {gd >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                  GD {gd >= 0 ? "+" : ""}{gd}
+                  {totalG}–{record.goalsAgainst} · GD {gd >= 0 ? "+" : ""}{gd}
                 </div>
               </div>
 
