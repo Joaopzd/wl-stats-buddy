@@ -46,6 +46,8 @@ export function ReportModal({
   }
 
   const mvp = [...aggs].sort((a, b) => b.ga - a.ga || b.goals - a.goals)[0];
+  const topScorer = [...aggs].filter((a) => a.goals > 0).sort((a, b) => b.goals - a.goals || b.assists - a.assists)[0];
+  const topAssister = [...aggs].filter((a) => a.assists > 0).sort((a, b) => b.assists - a.assists || b.goals - a.goals)[0];
 
   const minMatches = Math.ceil(matches.length / 2);
   const eligible = aggs.filter((a) => a.matches >= minMatches);
