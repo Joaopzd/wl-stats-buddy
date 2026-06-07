@@ -278,35 +278,17 @@ export function MatchDialog({
               )}
             </div>
 
-            {/* Possession & xG — quick performance metrics */}
-            <div className="mb-4 surface-card p-3 space-y-3">
-              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
-                <Activity className="h-3 w-3 text-primary" /> Possession & xG
-              </div>
-              <div>
-                <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-1.5">
-                  <span className="text-primary">You · {Math.round(possessionFor)}%</span>
-                  <span>Opponent · {100 - Math.round(possessionFor)}%</span>
-                </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  step={1}
-                  value={possessionFor}
-                  onChange={(e) => setPossessionFor(parseInt(e.target.value) || 0)}
-                  className="w-full accent-[var(--primary)]"
-                  aria-label="Possession %"
-                />
-                <div className="flex justify-between text-[11px] uppercase tracking-wider text-muted-foreground/60 mt-0.5 font-mono">
-                  <span>0</span><span>50</span><span>100</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3 pt-1">
-                <XgInput label="xG (You)" icon={<Target className="h-3 w-3 text-primary" />} value={xgFor} onChange={setXgFor} accent />
-                <XgInput label="xG (Opponent)" icon={<Target className="h-3 w-3 text-muted-foreground" />} value={xgAgainst} onChange={setXgAgainst} />
-              </div>
-            </div>
+            {/* Possession & xG — collapsible */}
+            <PossessionXgSection
+              possessionFor={possessionFor}
+              setPossessionFor={setPossessionFor}
+              xgFor={xgFor}
+              setXgFor={setXgFor}
+              xgAgainst={xgAgainst}
+              setXgAgainst={setXgAgainst}
+              defaultOpen={!!(existingMatch && (existingMatch.possessionFor != null || (existingMatch.xgFor ?? 0) > 0 || (existingMatch.xgAgainst ?? 0) > 0))}
+            />
+
 
 
             {/* Player performances — aligned columns, no inner scroll */}
@@ -501,5 +483,83 @@ function XgInput({ label, icon, value, onChange, accent }: { label: string; icon
     </div>
   );
 }
+
+function PossessionXgSection({
+  possessionFor, setPossessionFor, xgFor, setXgFor, xgAgainst, setXgAgainst, defaultOpen,
+}: {
+  possessionFor: number;
+  setPossessionFor: (v: number) => void;
+  xgFor: number;
+  setXgFor: (v: number) => void;
+  xgAgainst: number;
+  setXgAgainst: (v: number) => void;
+  defaultOpen: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  const possYou = Math.max(0, Math.min(100, Math.round(possessionFor)));
+  return (
+    <div className="mb-4 surface-card overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between gap-2 px-3 py-2 hover:bg-secondary/40 transition text-left"
+        aria-expanded={open}
+      >
+        <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-2">
+          <Activity className="h-3 w-3 text-primary" /> Possession & xG
+          {(possYou !== 50 || xgFor > 0 || xgAgainst > 0) && (
+            <span className="text-primary font-mono normal-case tracking-normal">
+              · {possYou}% · xG {xgFor.toFixed(1)}–{xgAgainst.toFixed(1)}
+            </span>
+          )}
+        </span>
+        {open ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
+      </button>
+      {open && (
+        <div className="px-3 pb-3 pt-2 space-y-3 border-t border-border/60">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
+                <Activity className="h-3 w-3 text-primary" /> Possession (You) %
+              </span>
+              <input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={100}
+                step={1}
+                value={possYou}
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v === "") return setPossessionFor(0);
+                  setPossessionFor(Math.max(0, Math.min(100, parseInt(v) || 0)));
+                }}
+                className="w-full h-10 bg-input border border-border rounded-md text-center stat-num text-lg font-semibold text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
+            <div>
+              <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
+                <Activity className="h-3 w-3 text-muted-foreground" /> Opponent % (auto)
+              </span>
+              <div className="w-full h-10 bg-input/50 border border-border rounded-md text-center stat-num text-lg font-semibold text-muted-foreground grid place-items-center">
+                {100 - possYou}%
+              </div>
+            </div>
+          </div>
+          <div className="h-1.5 rounded overflow-hidden bg-secondary/60 flex">
+            <div className="bg-primary" style={{ width: `${possYou}%` }} />
+            <div className="bg-destructive/60" style={{ width: `${100 - possYou}%` }} />
+          </div>
+          <div className="grid grid-cols-2 gap-3 pt-1">
+            <XgInput label="xG (You)" icon={<Target className="h-3 w-3 text-primary" />} value={xgFor} onChange={setXgFor} accent />
+            <XgInput label="xG (Opponent)" icon={<Target className="h-3 w-3 text-muted-foreground" />} value={xgAgainst} onChange={setXgAgainst} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 

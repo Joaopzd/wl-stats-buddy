@@ -184,50 +184,60 @@ export function ReportModal({
             <StatBar leftLabel="Total Assists" leftVal={totalA} rightVal={"—"} leftAccent icon={<SoccerBoot size={12} />} />
           </div>
 
-          {/* PLAYER OF THE MATCH style awards */}
-          {mvp && mvp.matches > 0 && (
-            <Award
-              type="Player of the WL"
-              color="primary"
-              icon={<Star className="h-5 w-5" />}
-              name={mvp.player.name}
-              sub={`${mvp.player.position} · ${mvp.player.overall} · ${mvp.player.rarity}`}
-              stat={`${mvp.goals}G + ${mvp.assists}A · ${mvp.matches} apps`}
-            />
-          )}
+          {/* AWARDS BLOCK */}
+          <div className="rounded-lg border border-border bg-secondary/30 p-4 mb-5">
+            <div className="text-[11px] uppercase tracking-[0.25em] font-bold text-foreground mb-3 flex items-center gap-1.5">
+              <Trophy className="h-3.5 w-3.5 text-primary" /> Awards
+            </div>
+            {mvp && mvp.matches > 0 && (
+              <Award
+                type="MVP"
+                color="primary"
+                icon={<Star className="h-5 w-5" />}
+                name={mvp.player.name}
+                sub={`${mvp.player.position} · ${mvp.player.overall} · ${mvp.player.rarity}`}
+                stat={`${mvp.goals}G + ${mvp.assists}A · avg ${mvp.avgRating > 0 ? mvp.avgRating.toFixed(2) : "—"} · ${mvp.matches} apps`}
+              />
+            )}
 
-          {topScorer && (
-            <Award
-              type="Top Scorer"
-              color="primary"
-              icon={<SoccerBall size={20} />}
-              name={topScorer.player.name}
-              sub={`${topScorer.player.position} · ${topScorer.player.overall} · ${topScorer.player.rarity}`}
-              stat={`${topScorer.goals} goals · ${topScorer.matches} apps`}
-            />
-          )}
+            {topScorer && (
+              <Award
+                type="Top Scorer"
+                color="primary"
+                icon={<SoccerBall size={20} />}
+                name={topScorer.player.name}
+                sub={`${topScorer.player.position} · ${topScorer.player.overall} · ${topScorer.player.rarity}`}
+                stat={`${topScorer.goals} goals · ${(topScorer.goals / Math.max(1, topScorer.matches)).toFixed(2)} G/match · ${topScorer.matches} apps`}
+              />
+            )}
 
-          {topAssister && (
-            <Award
-              type="Top Assister"
-              color="primary"
-              icon={<SoccerBoot size={20} />}
-              name={topAssister.player.name}
-              sub={`${topAssister.player.position} · ${topAssister.player.overall} · ${topAssister.player.rarity}`}
-              stat={`${topAssister.assists} assists · ${topAssister.matches} apps`}
-            />
-          )}
+            {topAssister && (
+              <Award
+                type="Top Assister"
+                color="primary"
+                icon={<SoccerBoot size={20} />}
+                name={topAssister.player.name}
+                sub={`${topAssister.player.position} · ${topAssister.player.overall} · ${topAssister.player.rarity}`}
+                stat={`${topAssister.assists} assists · ${(topAssister.assists / Math.max(1, topAssister.matches)).toFixed(2)} A/match · ${topAssister.matches} apps`}
+              />
+            )}
 
-          {under && (
-            <Award
-              type="Underperformer"
-              color="destructive"
-              icon={<TrendingDown className="h-5 w-5" />}
-              name={under.player.name}
-              sub={`${under.player.position} · ${under.player.overall} · played ${under.matches}/${matches.length}`}
-              stat={`${under.goals}G + ${under.assists}A · ${under.gaPerGame.toFixed(2)} G+A/game`}
-            />
-          )}
+            {under && (
+              <Award
+                type="Weak Link"
+                color="destructive"
+                icon={<TrendingDown className="h-5 w-5" />}
+                name={under.player.name}
+                sub={`${under.player.position} · ${under.player.overall} · played ${under.matches}/${matches.length}`}
+                stat={`avg ${under.avgRating > 0 ? under.avgRating.toFixed(2) : "—"} · ${under.gaPerGame.toFixed(2)} G+A/game · ${under.goals}G ${under.assists}A`}
+              />
+            )}
+
+            {!mvp && !topScorer && !topAssister && !under && (
+              <div className="text-xs text-muted-foreground text-center py-3">No awards data yet.</div>
+            )}
+          </div>
+
 
           {/* Collapsibles — default closed */}
           <CollapsibleSection title="Squad Performance" icon={<Crown className="h-3.5 w-3.5 text-primary" />}>

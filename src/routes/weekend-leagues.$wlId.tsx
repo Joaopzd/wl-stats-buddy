@@ -406,7 +406,7 @@ function WLDetail() {
       </section>
 
       {matches.length > 0 && !wl.closed && (
-        <LiveWLReport
+        <LiveReportSection
           wl={wl}
           matches={matches}
           squadAggs={squadAggs}
@@ -414,19 +414,15 @@ function WLDetail() {
       )}
 
 
+
       {matches.length > 0 && (
-        <section className="mb-6">
-          <div className="flex items-baseline justify-between mb-3">
-            <h2 className="font-display text-2xl tracking-wider">Timeline</h2>
-            <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Tap to jump</span>
-          </div>
-          <MatchTimeline
-            matches={matches}
-            players={players}
-            onJump={(m) => setViewingMatch(m)}
-          />
-        </section>
+        <TimelineSection
+          matches={matches}
+          players={players}
+          onJump={(m) => setViewingMatch(m)}
+        />
       )}
+
 
       <section>
         <div className="flex items-baseline justify-between mb-3">
@@ -1030,10 +1026,12 @@ function LiveWLReport({
   wl,
   matches,
   squadAggs,
+  hideHeader,
 }: {
   wl: { id: string };
   matches: Match[];
   squadAggs: PlayerAgg[];
+  hideHeader?: boolean;
 }) {
   void wl;
   // Top contributors: must have played at least 1 match in this WL.
@@ -1094,15 +1092,19 @@ function LiveWLReport({
   }, [matches]);
 
   return (
-    <section className="mb-8">
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
-          <Activity className="h-5 w-5 text-primary" /> Live Report
-        </h2>
-        <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
-          {matches.length}/15 played
-        </span>
-      </div>
+    <section className={hideHeader ? "" : "mb-8"}>
+      {!hideHeader && (
+        <div className="flex items-baseline justify-between mb-3">
+          <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
+            <Activity className="h-5 w-5 text-primary" /> Live Report
+          </h2>
+          <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
+            {matches.length}/15 played
+          </span>
+        </div>
+      )}
+
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
         <div className="surface-card p-4">
@@ -1175,20 +1177,15 @@ function LiveWLReport({
         />
       </div>
 
-      <div className="surface-card p-4 mb-3">
-        <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">
-          Rating trend per match
-        </div>
+      <LiveCollapsible title="Rating trend per match" defaultOpen={false} className="mb-3">
         <RatingTrendChart points={trend} />
-      </div>
+      </LiveCollapsible>
 
-      <div className="surface-card p-4">
-        <div className="flex items-baseline justify-between mb-2">
-          <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold">
-            Top contributors
-          </div>
-          <div className="text-[11px] text-muted-foreground font-mono">G·A · avg rating</div>
-        </div>
+      <LiveCollapsible
+        title="Top contributors"
+        defaultOpen={false}
+        meta="G·A · avg rating"
+      >
         {ranked.length === 0 ? (
           <div className="text-xs text-muted-foreground py-3 text-center">No contributions yet.</div>
         ) : (
@@ -1210,10 +1207,45 @@ function LiveWLReport({
             ))}
           </div>
         )}
-      </div>
+      </LiveCollapsible>
     </section>
   );
 }
+
+/** Collapsible card used inside the Live Report. */
+function LiveCollapsible({
+  title,
+  meta,
+  defaultOpen = false,
+  className = "",
+  children,
+}: {
+  title: string;
+  meta?: string;
+  defaultOpen?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className={`surface-card overflow-hidden ${className}`}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between px-4 py-3 hover:bg-secondary/40 transition"
+        aria-expanded={open}
+      >
+        <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold">{title}</span>
+        <span className="flex items-center gap-2">
+          {meta && <span className="text-[11px] text-muted-foreground font-mono">{meta}</span>}
+          <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+        </span>
+      </button>
+      {open && <div className="px-4 pb-4">{children}</div>}
+    </div>
+  );
+}
+
 
 /** Compact SVG line chart showing team avg rating per match. */
 function RatingTrendChart({ points }: { points: { index: number; avg: number; win: boolean }[] }) {
@@ -1286,3 +1318,75 @@ function LiveStatTile({
     </div>
   );
 }
+
+/** Minimal collapsible section wrapper used to declutter the WL detail page. */
+function CollapsibleWrap({
+  title,
+  defaultOpen = true,
+  meta,
+  children,
+}: {
+  title: string;
+  defaultOpen?: boolean;
+  meta?: string;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className="mb-6">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-baseline justify-between mb-3 group"
+        aria-expanded={open}
+      >
+        <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
+          {title}
+          <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+        </h2>
+        {meta && <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">{meta}</span>}
+      </button>
+      {open && children}
+    </section>
+  );
+}
+
+function TimelineSection({
+  matches,
+  players,
+  onJump,
+}: {
+  matches: Match[];
+  players: Player[];
+  onJump: (m: Match) => void;
+}) {
+  return (
+    <CollapsibleWrap title="Timeline" defaultOpen meta="Tap to jump">
+      <MatchTimeline matches={matches} players={players} onJump={onJump} />
+    </CollapsibleWrap>
+  );
+}
+
+function LiveReportSection(props: { wl: { id: string }; matches: Match[]; squadAggs: PlayerAgg[] }) {
+  const [open, setOpen] = useState(true);
+  return (
+    <section className="mb-8">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-baseline justify-between mb-3"
+        aria-expanded={open}
+      >
+        <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
+          <Activity className="h-5 w-5 text-primary" /> Live Report
+          <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+        </h2>
+        <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
+          {props.matches.length}/15 played
+        </span>
+      </button>
+      {open && <LiveWLReport {...props} hideHeader />}
+    </section>
+  );
+}
+
