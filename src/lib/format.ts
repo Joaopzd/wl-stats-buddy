@@ -182,6 +182,10 @@ export const raritySwatch = (r: Rarity): string => {
     "Prime Heroes": "#f34da8",
     "World Tour": "#b8d210",
     EOAE: "#2d037e",
+    "FUT Birthday Icon": "#f7f7f3",
+    "Heroes Ultimate Scream": "#3945de",
+    "Journey of Nations": "#7bf8ad",
+    "National Pride": "#9456dd",
   };
   if (hexMap[r]) {
     // Rendered via inline style elsewhere; return a neutral utility for layout fallback.
