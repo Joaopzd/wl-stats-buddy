@@ -1026,10 +1026,12 @@ function LiveWLReport({
   wl,
   matches,
   squadAggs,
+  hideHeader,
 }: {
   wl: { id: string };
   matches: Match[];
   squadAggs: PlayerAgg[];
+  hideHeader?: boolean;
 }) {
   void wl;
   // Top contributors: must have played at least 1 match in this WL.
