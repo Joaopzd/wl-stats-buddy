@@ -148,7 +148,7 @@ function WLDetail() {
             {/* Top: identity + record */}
             <div className="px-5 sm:px-7 pt-5 pb-4 flex items-start justify-between gap-5">
               <div className="min-w-0 flex-1">
-                <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold mb-2 flex items-center gap-2">
+                <div className="text-[11px] uppercase tracking-[0.3em] text-primary font-bold mb-2 flex items-center gap-2">
                   <ClubCrest size={20} overrideUrl={wl.clubCrestUrl} />
                   <span className="truncate">{wl.clubName || "My Club"} · WL #{wl.number}</span>
                 </div>
@@ -179,11 +179,11 @@ function WLDetail() {
                 <div className="mt-2.5 flex items-center gap-2 flex-wrap">
                   <RankBadge rank={rankFromWins(wins)} size="sm" />
                   {wl.formation && (
-                    <span className="px-2 py-0.5 rounded bg-secondary text-foreground text-[10px] font-bold uppercase tracking-wider">
+                    <span className="px-2 py-0.5 rounded bg-secondary text-foreground text-[11px] font-bold uppercase tracking-wider">
                       {wl.formation}
                     </span>
                   )}
-                  <span className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">
+                  <span className="text-[11px] text-muted-foreground font-mono uppercase tracking-wider">
                     {record?.played ?? 0}/15 Played
                   </span>
                 </div>
@@ -191,7 +191,7 @@ function WLDetail() {
 
               {/* Record */}
               <div className="shrink-0 text-right">
-                <div className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground font-bold mb-1 flex items-center justify-end gap-1">
+                <div className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-bold mb-1 flex items-center justify-end gap-1">
                   <Trophy className="h-3 w-3 text-primary" /> Record
                 </div>
                 <div className="flex items-baseline gap-1.5 justify-end leading-none">
@@ -205,7 +205,7 @@ function WLDetail() {
                   <span className="font-display text-5xl sm:text-6xl stat-num text-destructive/90">{record?.losses ?? 0}</span>
                 </div>
                 {streak >= 2 && (
-                  <div className="mt-1 text-[10px] uppercase tracking-wider font-bold" style={{ color: streak >= 4 ? "#ff6b1a" : "#f59e0b" }}>
+                  <div className="mt-1 text-[11px] uppercase tracking-wider font-bold" style={{ color: streak >= 4 ? "#ff6b1a" : "#f59e0b" }}>
                     {streak}-win streak{streak >= 4 ? " · on fire" : ""}
                   </div>
                 )}
@@ -272,7 +272,7 @@ function WLDetail() {
             {/* Picks summary */}
             {(wl.playerPickIds?.length ?? 0) > 0 && (
               <div className="border-t border-border/60 px-4 sm:px-5 py-3 bg-background/30">
-                <div className="text-[9px] uppercase tracking-[0.3em] font-bold mb-2 flex items-center gap-1.5" style={{ color: "#FFF475" }}>
+                <div className="text-[11px] uppercase tracking-[0.3em] font-bold mb-2 flex items-center gap-1.5" style={{ color: "#FFF475" }}>
                   <Sparkles className="h-3 w-3" /> Red Picks · {wl.playerPickIds!.length}/{maxPicks || wl.playerPickIds!.length}
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -282,7 +282,7 @@ function WLDetail() {
                     return (
                       <div key={pid} className="flex items-center gap-2 rounded-md border-2 px-2 py-1.5" style={{ background: "#CB332B", borderColor: "#FFF475", color: "#FFFFFF" }}>
                         <span className="font-display stat-num text-base leading-none">{p.overall}</span>
-                        <span className="text-[9px] font-mono uppercase tracking-wider opacity-80 bg-black/20 px-1 py-0.5 rounded">{p.position}</span>
+                        <span className="text-[11px] font-mono uppercase tracking-wider opacity-80 bg-black/20 px-1 py-0.5 rounded">{p.position}</span>
                         <span className="text-xs font-semibold truncate max-w-[10rem]">{p.name}</span>
                       </div>
                     );
@@ -314,12 +314,12 @@ function WLDetail() {
                 <span className="font-display text-xl tracking-wider">Squad</span>
                 <span className="text-xs text-muted-foreground font-mono">({squad.length})</span>
                 {wl.formation && (
-                  <span className="px-1.5 py-0.5 rounded bg-secondary text-foreground text-[9px] font-bold uppercase tracking-wider ml-1">
+                  <span className="px-1.5 py-0.5 rounded bg-secondary text-foreground text-[11px] font-bold uppercase tracking-wider ml-1">
                     {wl.formation}
                   </span>
                 )}
                 {wl.startingAssignments && (
-                  <span className="text-[10px] text-muted-foreground font-mono ml-auto sm:ml-2 shrink-0">
+                  <span className="text-[11px] text-muted-foreground font-mono ml-auto sm:ml-2 shrink-0">
                     {Object.keys(wl.startingAssignments).length}/11 · {(wl.benchPlayerIds?.length ?? 0)} bench
                   </span>
                 )}
@@ -338,7 +338,7 @@ function WLDetail() {
                         <div className="rounded-md border border-amber-400/40 bg-amber-500/10 px-3 py-2 flex items-center gap-2">
                           <Trophy className="h-4 w-4 text-amber-300 shrink-0" />
                           <div className="min-w-0 flex-1">
-                            <div className="text-[9px] uppercase tracking-[0.25em] text-amber-300 font-bold">Weekly MVP</div>
+                            <div className="text-[11px] uppercase tracking-[0.25em] text-amber-300 font-bold">Weekly MVP</div>
                             <div className="text-xs font-semibold truncate">{mvpLeader.player.name}</div>
                           </div>
                           <div className="font-display stat-num text-amber-300 text-lg">{mvpLeader.mvpCount}</div>
@@ -348,7 +348,7 @@ function WLDetail() {
                         <div className="rounded-md border border-sky-400/40 bg-sky-500/10 px-3 py-2 flex items-center gap-2">
                           <Shield className="h-4 w-4 text-sky-300 shrink-0" />
                           <div className="min-w-0 flex-1">
-                            <div className="text-[9px] uppercase tracking-[0.25em] text-sky-300 font-bold">Clean Sheets Leader</div>
+                            <div className="text-[11px] uppercase tracking-[0.25em] text-sky-300 font-bold">Clean Sheets Leader</div>
                             <div className="text-xs font-semibold truncate">{csLeader.player.name}</div>
                           </div>
                           <div className="font-display stat-num text-sky-300 text-lg">{csLeader.cleanSheets}</div>
@@ -378,7 +378,7 @@ function WLDetail() {
                 )}
 
                 <details className="group">
-                  <summary className="cursor-pointer text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold py-1 hover:text-foreground select-none flex items-center gap-1">
+                  <summary className="cursor-pointer text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold py-1 hover:text-foreground select-none flex items-center gap-1">
                     <ChevronDown className="h-3 w-3 group-open:rotate-180 transition-transform" />
                     Per-player stats
                   </summary>
@@ -386,10 +386,10 @@ function WLDetail() {
                     {squadAggs.map((a) => (
                       <div key={a.player.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-background/50 border border-border/60">
                         <span className="font-display text-base text-foreground stat-num w-7 text-center shrink-0 leading-none">{a.player.overall}</span>
-                        <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{a.player.position}</span>
+                        <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{a.player.position}</span>
                         <div className="min-w-0 flex-1">
                           <div className="text-[11px] font-semibold truncate leading-tight">{a.player.name}</div>
-                          <div className="text-[9px] text-muted-foreground font-mono leading-tight">
+                          <div className="text-[11px] text-muted-foreground font-mono leading-tight">
                             {a.matches}MP · {a.goals}G · {a.assists}A · {a.avgRating > 0 ? a.avgRating.toFixed(2) : "—"}
                             {a.mvpCount > 0 && <span className="text-amber-300 ml-1">· {a.mvpCount}★</span>}
                             {a.cleanSheets > 0 && <span className="text-sky-300 ml-1">· {a.cleanSheets}CS</span>}
@@ -418,7 +418,7 @@ function WLDetail() {
         <section className="mb-6">
           <div className="flex items-baseline justify-between mb-3">
             <h2 className="font-display text-2xl tracking-wider">Timeline</h2>
-            <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Tap to jump</span>
+            <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Tap to jump</span>
           </div>
           <MatchTimeline
             matches={matches}
@@ -431,7 +431,7 @@ function WLDetail() {
       <section>
         <div className="flex items-baseline justify-between mb-3">
           <h2 className="font-display text-2xl tracking-wider">Matches ({matches.length})</h2>
-          <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Tap to edit</span>
+          <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Tap to edit</span>
         </div>
         {matches.length === 0 ? (
           <div className="surface-card p-8 text-center text-muted-foreground text-sm">
@@ -440,7 +440,7 @@ function WLDetail() {
         ) : (
           <div className="surface-card overflow-hidden divide-y divide-border/60">
             {/* Header row */}
-            <div className="hidden sm:grid grid-cols-[2rem_7rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-1.5 text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-bold bg-background/40">
+            <div className="hidden sm:grid grid-cols-[2rem_7rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold bg-background/40">
               <span>#</span>
               <span className="text-center">Versus</span>
               <span>Plat</span>
@@ -463,7 +463,7 @@ function WLDetail() {
                   className={`grid grid-cols-[2rem_7rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-2 border-l-4 hover:bg-secondary/30 cursor-pointer transition ${win ? "border-l-[color:var(--success)]" : "border-l-destructive"}`}
                   aria-label={`View match ${m.index} details`}
                 >
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
                     M{m.index}
                   </span>
                   <div className="flex items-center justify-center gap-1.5 leading-none">
@@ -479,7 +479,7 @@ function WLDetail() {
                     <PlatformBadge platform={m.platform} size="xs" />
                   </div>
                   <div className="flex items-center gap-1 flex-wrap min-w-0">
-                    <span className={`text-[9px] font-bold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>
+                    <span className={`text-[11px] font-bold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>
                       {win ? "W" : "L"}
                     </span>
                     {m.extraTime && <Tag tone="warn">ET</Tag>}
@@ -593,7 +593,7 @@ function IconStat({ icon, value, label, tone }: { icon: React.ReactNode; value: 
       <div className={`${iconColor} shrink-0`}>{icon}</div>
       <div className="min-w-0">
         <div className="stat-num font-display text-2xl sm:text-3xl leading-none text-foreground">{value}</div>
-        <div className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground mt-1 font-semibold">{label}</div>
+        <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground mt-1 font-semibold">{label}</div>
       </div>
     </div>
   );
@@ -607,7 +607,7 @@ function GDStat({ value }: { value: number }) {
         <div className="stat-num text-2xl sm:text-3xl font-display leading-none text-foreground">
           {positive ? "+" : ""}{value}
         </div>
-        <div className="text-[9px] uppercase tracking-[0.25em] mt-1 font-bold text-foreground/80">GD</div>
+        <div className="text-[11px] uppercase tracking-[0.25em] mt-1 font-bold text-foreground/80">GD</div>
       </div>
     </div>
   );
@@ -620,7 +620,7 @@ function InlineStat({ icon, value, label, tone }: { icon: React.ReactNode; value
       <div className={`${iconColor} shrink-0`}>{icon}</div>
       <div className="min-w-0 flex items-baseline gap-1.5">
         <span className="stat-num font-display text-lg leading-none text-foreground">{value}</span>
-        <span className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground font-semibold">{label}</span>
+        <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground font-semibold">{label}</span>
       </div>
     </div>
   );
@@ -630,7 +630,7 @@ function InlineGD({ value }: { value: number }) {
   const positive = value >= 0;
   return (
     <div className={`flex items-center gap-1.5 px-2 rounded ${positive ? "text-foreground" : "text-destructive"}`}>
-      <span className="text-[9px] uppercase tracking-[0.2em] font-bold text-muted-foreground">GD</span>
+      <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-muted-foreground">GD</span>
       <span className="stat-num font-display text-lg leading-none">
         {positive ? "+" : ""}{value}
       </span>
@@ -645,7 +645,7 @@ function Tag({ children, tone }: { children: React.ReactNode; tone: "warn" | "in
     tone === "info" ? "bg-sky-500/20 text-sky-300 border-sky-500/40" :
     "bg-destructive/20 text-destructive border-destructive/40";
   return (
-    <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${cls}`}>
+    <span className={`text-[11px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${cls}`}>
       {children}
     </span>
   );
@@ -666,7 +666,7 @@ function LineupPitch({
   const playersById = new Map(players.map((p) => [p.id, p]));
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold mb-2">
+      <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold mb-2">
         Starting XI · {formation}
       </div>
       <div
@@ -702,7 +702,7 @@ function LineupPitch({
                 </button>
               ) : (
                 <div className="h-9 w-9 rounded-full border-2 border-dashed border-white/60 bg-black/30 grid place-items-center">
-                  <span className="text-[9px] font-bold text-white tracking-wider">{slot.position}</span>
+                  <span className="text-[11px] font-bold text-white tracking-wider">{slot.position}</span>
                 </div>
               )}
             </div>
@@ -717,7 +717,7 @@ function BenchList({ benchIds, players, onPick }: { benchIds: string[]; players:
   const playersById = new Map(players.map((p) => [p.id, p]));
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold mb-2">
+      <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold mb-2">
         Bench ({benchIds.length})
       </div>
       {benchIds.length === 0 ? (
@@ -737,7 +737,7 @@ function BenchList({ benchIds, players, onPick }: { benchIds: string[]; players:
                 <PlayerCard name={p.name} overall={p.overall} position={p.position} rarity={p.rarity} imageUrl={p.imageUrl} size="xs" />
                 <div className="min-w-0 flex-1">
                   <div className="text-[11px] font-semibold truncate leading-tight">{p.name}</div>
-                  <div className="text-[9px] text-muted-foreground font-mono leading-tight">{p.overall} · {p.position}</div>
+                  <div className="text-[11px] text-muted-foreground font-mono leading-tight">{p.overall} · {p.position}</div>
                 </div>
               </button>
             );
@@ -803,10 +803,10 @@ function MatchTimeline({
                     aria-label={`Jump to match ${m.index}. ${tooltip}`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[9px] font-mono uppercase tracking-wider text-muted-foreground">
+                      <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
                         M{m.index}
                       </span>
-                      <span className={`text-[9px] font-bold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>
+                      <span className={`text-[11px] font-bold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>
                         {win ? "W" : "L"}
                       </span>
                     </div>
@@ -821,18 +821,18 @@ function MatchTimeline({
                       {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
                       {m.rageQuit && <Tag tone="rq">RQ</Tag>}
                     </div>
-                    <div className="mt-1.5 text-[9px] font-mono text-muted-foreground text-center tabular-nums">
+                    <div className="mt-1.5 text-[11px] font-mono text-muted-foreground text-center tabular-nums">
                       {totalG}G · {totalA}A
                     </div>
                     {topName && (
-                      <div className="mt-0.5 text-[9px] text-muted-foreground text-center truncate" title={topName}>
+                      <div className="mt-0.5 text-[11px] text-muted-foreground text-center truncate" title={topName}>
                         ★ {topName}
                       </div>
                     )}
                   </button>
                   {/* Cumulative rank label after this match */}
                   <div
-                    className={`mx-auto px-2 py-0.5 rounded-full border text-[9px] font-bold uppercase tracking-wider text-center truncate max-w-[8rem] ${
+                    className={`mx-auto px-2 py-0.5 rounded-full border text-[11px] font-bold uppercase tracking-wider text-center truncate max-w-[8rem] ${
                       rankedUp
                         ? "border-primary text-primary bg-primary/10 shadow-[0_0_10px_-4px_var(--primary)]"
                         : "border-border/60 text-muted-foreground bg-background/40"
@@ -878,7 +878,7 @@ function BeltStat({
       {icon && <span className={`shrink-0 ${iconColor}`}>{icon}</span>}
       <div className="flex flex-col items-start leading-none">
         <span className={`font-display stat-num text-2xl sm:text-3xl ${valueColor}`}>{display}</span>
-        <span className="text-[9px] uppercase tracking-[0.25em] text-muted-foreground font-bold mt-1">{label}</span>
+        <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mt-1">{label}</span>
       </div>
     </div>
   );
@@ -931,7 +931,7 @@ function PlayerPickDialog({
 
         <div className="space-y-3">
           <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Name</span>
+            <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Name</span>
             <input
               autoFocus
               value={name}
@@ -944,7 +944,7 @@ function PlayerPickDialog({
 
           <div className="grid grid-cols-2 gap-3">
             <label className="block">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Position</span>
+              <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Position</span>
               <select
                 value={position}
                 onChange={(e) => setPosition(e.target.value as Position)}
@@ -954,7 +954,7 @@ function PlayerPickDialog({
               </select>
             </label>
             <label className="block">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Overall</span>
+              <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Overall</span>
               <input
                 type="number"
                 min={1}
@@ -973,8 +973,8 @@ function PlayerPickDialog({
               style={v.style}
             >
               <span className="text-xl leading-none">{overall || "—"}</span>
-              <span className="text-[10px] leading-none">{position}</span>
-              <span className="text-[9px] uppercase tracking-tight truncate max-w-full">
+              <span className="text-[11px] leading-none">{position}</span>
+              <span className="text-[11px] uppercase tracking-tight truncate max-w-full">
                 {name.trim() ? name.trim().split(" ").slice(-1)[0] : "Name"}
               </span>
             </div>
@@ -1099,20 +1099,20 @@ function LiveWLReport({
         <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
           <Activity className="h-5 w-5 text-primary" /> Live Report
         </h2>
-        <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
+        <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
           {matches.length}/15 played
         </span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
         <div className="surface-card p-4">
-          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+          <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
             <Trophy className="h-3 w-3 text-amber-300" /> Current MVP
           </div>
           {mvp ? (
             <>
               <div className="font-display text-lg mt-1 truncate">{mvp.player.name}</div>
-              <div className="text-[10px] font-mono text-muted-foreground">
+              <div className="text-[11px] font-mono text-muted-foreground">
                 {mvp.matches}MP · {mvp.goals}G · {mvp.assists}A · {mvp.avgRating > 0 ? mvp.avgRating.toFixed(2) : "—"}
               </div>
             </>
@@ -1121,13 +1121,13 @@ function LiveWLReport({
           )}
         </div>
         <div className="surface-card p-4">
-          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+          <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
             <TrendingDown className="h-3 w-3 text-warn-caution" /> Weak Link
           </div>
           {weakest ? (
             <>
               <div className="font-display text-lg mt-1 truncate">{weakest.player.name}</div>
-              <div className="text-[10px] font-mono text-muted-foreground">
+              <div className="text-[11px] font-mono text-muted-foreground">
                 {weakest.player.position} · {weakest.matches}MP · avg {weakest.avgRating.toFixed(2)}
               </div>
             </>
@@ -1136,14 +1136,14 @@ function LiveWLReport({
           )}
         </div>
         <div className="surface-card p-4">
-          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+          <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
             <TrendingUp className="h-3 w-3 text-primary" /> Momentum
           </div>
           <div className="font-display text-lg mt-1 flex items-baseline gap-2">
             {streak > 0 ? `${streak}W` : "—"}
             {streak >= 2 && <WinStreakFire streak={streak} />}
           </div>
-          <div className="text-[10px] font-mono text-muted-foreground">
+          <div className="text-[11px] font-mono text-muted-foreground">
             Team avg (last 3): {teamAvg > 0 ? teamAvg.toFixed(2) : "—"}
           </div>
         </div>
@@ -1176,7 +1176,7 @@ function LiveWLReport({
       </div>
 
       <div className="surface-card p-4 mb-3">
-        <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">
           Rating trend per match
         </div>
         <RatingTrendChart points={trend} />
@@ -1184,10 +1184,10 @@ function LiveWLReport({
 
       <div className="surface-card p-4">
         <div className="flex items-baseline justify-between mb-2">
-          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold">
+          <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold">
             Top contributors
           </div>
-          <div className="text-[9px] text-muted-foreground font-mono">G·A · avg rating</div>
+          <div className="text-[11px] text-muted-foreground font-mono">G·A · avg rating</div>
         </div>
         {ranked.length === 0 ? (
           <div className="text-xs text-muted-foreground py-3 text-center">No contributions yet.</div>
@@ -1196,7 +1196,7 @@ function LiveWLReport({
             {ranked.map((a, i) => (
               <div key={a.player.id} className="flex items-center gap-2 py-2 text-sm">
                 <span className="font-display stat-num text-base w-6 text-center text-muted-foreground">{i + 1}</span>
-                <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded w-9 text-center shrink-0">
+                <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded w-9 text-center shrink-0">
                   {a.player.position}
                 </span>
                 <span className="font-semibold truncate flex-1">{a.player.name}</span>
@@ -1271,7 +1271,7 @@ function LiveStatTile({
 }) {
   return (
     <div className="surface-card p-3">
-      <div className="text-[9px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+      <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
         {icon} {label}
       </div>
       <div className={`font-display stat-num text-2xl mt-1 leading-none ${accent ? "text-primary" : danger ? "text-destructive" : ""}`}>
@@ -1282,7 +1282,7 @@ function LiveStatTile({
           <div className="h-full bg-primary" style={{ width: `${bar}%` }} />
         </div>
       )}
-      <div className="text-[9px] text-muted-foreground mt-1 font-mono">{sub}</div>
+      <div className="text-[11px] text-muted-foreground mt-1 font-mono">{sub}</div>
     </div>
   );
 }

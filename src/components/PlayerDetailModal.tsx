@@ -173,7 +173,7 @@ function Meta({
 }) {
   return (
     <div className="rounded-md border border-border/60 bg-background/40 px-2 py-1.5">
-      <div className="text-[9px] uppercase tracking-[0.25em] text-muted-foreground font-bold">
+      <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold">
         {label}
       </div>
       <div
@@ -196,7 +196,7 @@ function Section({
 }) {
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-1.5">
+      <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-1.5">
         {title}
       </div>
       {children}
@@ -278,7 +278,7 @@ function Stat({
 }) {
   return (
     <div className="rounded-md border border-border/60 bg-background/40 px-2 py-1.5">
-      <div className="flex items-center gap-1 text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-bold">
+      <div className="flex items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold">
         {icon}
         {label}
       </div>

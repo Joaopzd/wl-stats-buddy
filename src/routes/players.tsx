@@ -170,7 +170,7 @@ function PlayersPage() {
           Limpar filtros
         </button>
       </div>
-      <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
+      <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
         Clique nos cabeçalhos para ordenar · Use os campos para filtrar
       </p>
 
@@ -187,7 +187,7 @@ function PlayersPage() {
         <div className="surface-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-secondary/60 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+              <thead className="bg-secondary/60 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
                 <tr>
                   <th className="text-left p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("name")}>Player{sortIndicator("name")}</th>
                   <th className="text-left p-3 font-semibold hidden sm:table-cell cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("pos")}>Pos{sortIndicator("pos")}</th>
@@ -207,22 +207,22 @@ function PlayersPage() {
                 <tr className="bg-secondary/30">
                   <th className="p-2"></th>
                   <th className="p-2 hidden sm:table-cell">
-                    <select value={posFilter} onChange={(e) => setPosFilter(e.target.value)} className="w-full bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal">
+                    <select value={posFilter} onChange={(e) => setPosFilter(e.target.value)} className="w-full bg-input border border-border rounded px-1 py-1 text-[11px] normal-case tracking-normal font-normal">
                       <option value="">All</option>
                       {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
                     </select>
                   </th>
                   <th className="p-2 hidden sm:table-cell">
-                    <input type="number" value={minOvr} onChange={(e) => setMinOvr(e.target.value)} placeholder="≥" className="w-14 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" />
+                    <input type="number" value={minOvr} onChange={(e) => setMinOvr(e.target.value)} placeholder="≥" className="w-14 bg-input border border-border rounded px-1 py-1 text-[11px] normal-case tracking-normal font-normal text-right" />
                   </th>
-                  <th className="p-2"><input type="number" value={minMatches} onChange={(e) => setMinMatches(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
-                  <th className="p-2"><input type="number" value={minGoals} onChange={(e) => setMinGoals(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
-                  <th className="p-2"><input type="number" value={minAssists} onChange={(e) => setMinAssists(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
-                  <th className="p-2"><input type="number" value={minGA} onChange={(e) => setMinGA(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
-                  <th className="p-2"><input type="number" value={minMvp} onChange={(e) => setMinMvp(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
-                  <th className="p-2"><input type="number" value={minCs} onChange={(e) => setMinCs(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minMatches} onChange={(e) => setMinMatches(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[11px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minGoals} onChange={(e) => setMinGoals(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[11px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minAssists} onChange={(e) => setMinAssists(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[11px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minGA} onChange={(e) => setMinGA(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[11px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minMvp} onChange={(e) => setMinMvp(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[11px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" value={minCs} onChange={(e) => setMinCs(e.target.value)} placeholder="≥" className="w-12 bg-input border border-border rounded px-1 py-1 text-[11px] normal-case tracking-normal font-normal text-right" /></th>
                   <th className="p-2"></th>
-                  <th className="p-2"><input type="number" step="0.1" value={minRating} onChange={(e) => setMinRating(e.target.value)} placeholder="≥" className="w-14 bg-input border border-border rounded px-1 py-1 text-[10px] normal-case tracking-normal font-normal text-right" /></th>
+                  <th className="p-2"><input type="number" step="0.1" value={minRating} onChange={(e) => setMinRating(e.target.value)} placeholder="≥" className="w-14 bg-input border border-border rounded px-1 py-1 text-[11px] normal-case tracking-normal font-normal text-right" /></th>
                   <th className="p-2"></th>
                   <th className="p-2"></th>
                   <th className="p-2"></th>
@@ -239,7 +239,7 @@ function PlayersPage() {
                           <div className="font-semibold truncate">{a.player.name}</div>
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <span className={`h-2 w-2 rounded-full ${raritySwatch(a.player.rarity)}`} style={raritySwatchStyle(a.player.rarity)} />
-                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{a.player.rarity}</span>
+                            <span className="text-[11px] uppercase tracking-wider text-muted-foreground">{a.player.rarity}</span>
                           </div>
                         </div>
                       </div>
@@ -493,13 +493,13 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
                     onError={() => setPreviewBroken(true)}
                   />
                 ) : (
-                  <span className="text-[9px] text-muted-foreground uppercase tracking-wider text-center px-1">
+                  <span className="text-[11px] text-muted-foreground uppercase tracking-wider text-center px-1">
                     {previewBroken ? "Broken" : "Preview"}
                   </span>
                 )}
               </div>
             </div>
-            <p className="text-[10px] text-muted-foreground mt-1.5">
+            <p className="text-[11px] text-muted-foreground mt-1.5">
               Envie do seu dispositivo (a imagem é comprimida automaticamente) ou cole uma URL. Vazio mostra o card da raridade.
             </p>
           </Field>
@@ -518,7 +518,7 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">{label}</span>
+      <span className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">{label}</span>
       {children}
     </label>
   );

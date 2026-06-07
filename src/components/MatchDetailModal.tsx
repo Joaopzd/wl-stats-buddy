@@ -81,13 +81,13 @@ export function MatchDetailModal({
 
         {/* Header */}
         <div className={`px-6 pt-6 pb-5 border-b border-border/60 ${win ? "bg-primary/5" : "bg-destructive/5"}`}>
-          <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold">
+          <div className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-bold">
             Match {match.index} · {win ? "WIN" : "LOSS"}
           </div>
           <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5 font-display leading-none">
             <div className="flex flex-col items-center justify-self-center gap-1.5 min-w-0 w-full">
               <ClubCrest size={CREST_SIZE.detail} overrideUrl={clubCrestOverride} />
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[8rem] text-center">
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[8rem] text-center">
                 {clubName || "My Club"}
               </div>
             </div>
@@ -98,7 +98,7 @@ export function MatchDetailModal({
             </div>
             <div className="flex flex-col items-center justify-self-center gap-1.5 min-w-0 w-full">
               <OpponentCrest id={match.opponentCrestId} size={CREST_SIZE.detail} />
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[8rem] text-center">
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[8rem] text-center">
                 {opponentName}
               </div>
             </div>
@@ -121,11 +121,11 @@ export function MatchDetailModal({
           </div>
           {match.tactics && match.tactics.length > 0 && (
             <div className="mt-3 flex items-center justify-center gap-1.5 flex-wrap">
-              <span className="text-[9px] uppercase tracking-[0.25em] text-muted-foreground font-bold mr-1">Tactics</span>
+              <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mr-1">Tactics</span>
               {match.tactics.map((t) => (
                 <span
                   key={t}
-                  className="inline-flex items-center text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border bg-primary/15 text-primary border-primary/50"
+                  className="inline-flex items-center text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border bg-primary/15 text-primary border-primary/50"
                 >
                   {t}
                 </span>
@@ -143,9 +143,9 @@ export function MatchDetailModal({
                   <Trophy className="h-6 w-6" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-amber-300">MVP</div>
+                  <div className="text-[11px] uppercase tracking-[0.25em] font-bold text-amber-300">MVP</div>
                   <div className="font-display text-xl truncate">{mvpPlayer.name}</div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
                     {mvpPlayer.position} · {mvpPlayer.overall} · {mvp.goals}G {mvp.assists}A
                   </div>
                 </div>
@@ -174,7 +174,7 @@ export function MatchDetailModal({
 
           {/* Player ratings */}
           <div>
-            <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2 flex items-center gap-1.5">
+            <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2 flex items-center gap-1.5">
               <Star className="h-3.5 w-3.5" /> Player Ratings ({ratings.length})
             </div>
             {ratings.length === 0 ? (
@@ -195,11 +195,11 @@ export function MatchDetailModal({
                       <span className="font-display text-base text-foreground stat-num w-7 text-center shrink-0 leading-none">
                         {player!.overall}
                       </span>
-                      <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">
+                      <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">
                         {player!.position}
                       </span>
                       <div className="text-[12px] font-semibold truncate flex-1 leading-tight">{player!.name}</div>
-                      <span className="text-[9px] font-mono text-muted-foreground tabular-nums">
+                      <span className="text-[11px] font-mono text-muted-foreground tabular-nums">
                         {perf.goals}G {perf.assists}A
                       </span>
                       <span className={`font-display stat-num text-sm w-10 text-right ${tone}`}>
@@ -241,7 +241,7 @@ function Tag({ children, tone, icon }: { children: React.ReactNode; tone: "warn"
     tone === "info" ? "bg-sky-500/20 text-sky-300 border-sky-500/40" :
     "bg-destructive/20 text-destructive border-destructive/40";
   return (
-    <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${cls}`}>
+    <span className={`inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${cls}`}>
       {icon}
       {children}
     </span>
@@ -264,7 +264,7 @@ function SummaryList({
   const accent = tone === "primary" ? "text-primary" : "text-sky-300";
   return (
     <div className="surface-card p-3">
-      <div className={`text-[10px] uppercase tracking-[0.25em] font-bold mb-2 flex items-center gap-1.5 ${accent}`}>
+      <div className={`text-[11px] uppercase tracking-[0.25em] font-bold mb-2 flex items-center gap-1.5 ${accent}`}>
         {icon} {label}
       </div>
       {items.length === 0 ? (

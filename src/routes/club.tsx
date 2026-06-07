@@ -181,7 +181,7 @@ function ClubPage() {
             <Pencil className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition" />
           </button>
         )}
-        <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mt-2">
+        <div className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground mt-2">
           Active identity · used on next WL
         </div>
       </div>
@@ -192,7 +192,7 @@ function ClubPage() {
       {/* Profile selector */}
       {profiles.length > 0 && (
         <div className="mb-6">
-          <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold mb-2">
+          <div className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-bold mb-2">
             Club Profiles
           </div>
           <div className="flex flex-wrap gap-2">
@@ -274,7 +274,7 @@ function ClubPage() {
             <Medal className="h-7 w-7" />
           </div>
           <div>
-            <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold">Best Result</div>
+            <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold">Best Result</div>
             <div className="font-display text-3xl mt-0.5">
               {stats.bestWins} {stats.bestWins === 1 ? "Win" : "Wins"}
             </div>
@@ -343,7 +343,7 @@ function ProfilePill({
         <span className="shrink-0 grid place-items-center">{icon}</span>
         <span className="min-w-0">
           <span className="block font-display text-sm leading-tight truncate max-w-[12rem]">{label}</span>
-          <span className="block text-[9px] uppercase tracking-wider font-mono opacity-80">{sub}</span>
+          <span className="block text-[11px] uppercase tracking-wider font-mono opacity-80">{sub}</span>
         </span>
       </button>
       {onEdit && (
@@ -397,7 +397,7 @@ function ProfileEditModal({
         <div className="px-5 py-4 border-b border-border/60 flex items-center justify-between">
           <div>
             <h2 className="font-display text-xl tracking-wider">Editar identidade</h2>
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">
+            <p className="text-[11px] uppercase tracking-wider text-muted-foreground mt-0.5">
               {profile.wlIds.length} WL{profile.wlIds.length === 1 ? "" : "s"} será{profile.wlIds.length === 1 ? "" : "ão"} reescrita{profile.wlIds.length === 1 ? "" : "s"}
             </p>
           </div>
@@ -413,7 +413,7 @@ function ProfileEditModal({
                 type="button"
                 onClick={() => inputRef.current?.click()}
                 disabled={busy}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider hover:opacity-90 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground text-[11px] font-bold uppercase tracking-wider hover:opacity-90 disabled:opacity-50"
               >
                 <Upload className="h-3 w-3" /> {busy ? "Carregando…" : crest ? "Trocar escudo" : "Enviar escudo"}
               </button>
@@ -421,7 +421,7 @@ function ProfileEditModal({
                 <button
                   type="button"
                   onClick={() => setCrest(null)}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border text-muted-foreground text-[10px] font-bold uppercase tracking-wider hover:text-destructive"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border text-muted-foreground text-[11px] font-bold uppercase tracking-wider hover:text-destructive"
                 >
                   <Trash2 className="h-3 w-3" /> Remover
                 </button>
@@ -440,7 +440,7 @@ function ProfileEditModal({
             </div>
           </div>
           <div>
-            <label className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Nome do clube</label>
+            <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Nome do clube</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -471,7 +471,7 @@ function ProfileEditModal({
 function Tile({ label, value, icon, accent, danger }: { label: string; value: number; icon?: React.ReactNode; accent?: boolean; danger?: boolean }) {
   return (
     <div className="surface-card p-4">
-      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+      <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
         {icon} {label}
       </div>
       <div className={`font-display text-3xl stat-num mt-1 leading-none ${accent ? "text-primary" : danger ? "text-destructive" : ""}`}>
@@ -486,13 +486,13 @@ function WinRateTile({ wins, played }: { wins: number; played: number }) {
   const tone = played === 0 ? "" : pct >= 60 ? "text-primary" : pct >= 40 ? "text-amber-300" : "text-destructive";
   return (
     <div className="surface-card p-4">
-      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+      <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
         <Trophy className="h-3.5 w-3.5" /> Win Rate
       </div>
       <div className={`font-display text-3xl stat-num mt-1 leading-none ${tone}`}>
         {played ? `${pct.toFixed(1)}%` : "—"}
       </div>
-      <div className="text-[10px] text-muted-foreground mt-1 font-mono">{wins}W / {played} MP</div>
+      <div className="text-[11px] text-muted-foreground mt-1 font-mono">{wins}W / {played} MP</div>
     </div>
   );
 }
@@ -503,13 +503,13 @@ function PossessionTile({ avg, count }: { avg: number | null; count: number }) {
   const oppPct = 100 - youPct;
   return (
     <div className="surface-card p-4">
-      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+      <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
         <Activity className="h-3.5 w-3.5 text-primary" /> Avg Possession
       </div>
       {avg === null ? (
         <>
           <div className="font-display text-3xl stat-num mt-1 leading-none text-muted-foreground/60">—</div>
-          <div className="text-[10px] text-muted-foreground mt-1 font-mono">log possession on matches</div>
+          <div className="text-[11px] text-muted-foreground mt-1 font-mono">log possession on matches</div>
         </>
       ) : (
         <>
@@ -521,7 +521,7 @@ function PossessionTile({ avg, count }: { avg: number | null; count: number }) {
           <div className="mt-2 h-1.5 bg-destructive/30 rounded overflow-hidden">
             <div className="h-full bg-primary" style={{ width: `${youPct}%` }} />
           </div>
-          <div className="text-[10px] text-muted-foreground mt-1 font-mono">across {count} match{count === 1 ? "" : "es"}</div>
+          <div className="text-[11px] text-muted-foreground mt-1 font-mono">across {count} match{count === 1 ? "" : "es"}</div>
         </>
       )}
     </div>
@@ -531,13 +531,13 @@ function PossessionTile({ avg, count }: { avg: number | null; count: number }) {
 function XgTile({ label, value, count, icon, accent, danger }: { label: string; value: number | null; count: number; icon: React.ReactNode; accent?: boolean; danger?: boolean }) {
   return (
     <div className="surface-card p-4">
-      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+      <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
         {icon} {label}
       </div>
       <div className={`font-display text-3xl stat-num mt-1 leading-none ${accent ? "text-primary" : danger ? "text-destructive" : ""}`}>
         {value === null ? "—" : value.toFixed(2)}
       </div>
-      <div className="text-[10px] text-muted-foreground mt-1 font-mono">
+      <div className="text-[11px] text-muted-foreground mt-1 font-mono">
         {value === null ? "no xG logged" : `per match · ${count} sample${count === 1 ? "" : "s"}`}
       </div>
     </div>

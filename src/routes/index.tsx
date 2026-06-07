@@ -137,7 +137,7 @@ function Dashboard() {
         <div className="flex items-center gap-3 min-w-0">
           <ClubCrest size={44} />
           <div className="min-w-0 leading-tight">
-            <div className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground font-bold">Champs Tracker</div>
+            <div className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-bold">Champs Tracker</div>
             <h1 className="font-display text-lg sm:text-xl tracking-wider truncate">
               {clubName || "Your Club"}
             </h1>
@@ -168,7 +168,7 @@ function Dashboard() {
         <>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div className="surface-card p-4 border-l-4 border-l-primary">
-              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
                 <Trophy className="h-3.5 w-3.5" /> {lastWL ? `WL #${lastWL.number}` : "Last WL"}
               </div>
               <div className="font-display text-3xl stat-num mt-1 text-foreground leading-none">
@@ -177,11 +177,11 @@ function Dashboard() {
               <div className="mt-2">
                 {lastRecord
                   ? <RankBadge rank={rankFromWins(lastRecord.wins)} size="sm" />
-                  : <span className="text-[10px] text-muted-foreground">No WLs yet</span>}
+                  : <span className="text-[11px] text-muted-foreground">No WLs yet</span>}
               </div>
             </div>
             <div className="surface-card p-4">
-              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
                 <Award className="h-3.5 w-3.5" /> All-time Best
               </div>
               <div className="font-display text-3xl stat-num mt-1 leading-none">
@@ -190,7 +190,7 @@ function Dashboard() {
               <div className="mt-2">
                 {bestWL
                   ? <RankBadge rank={rankFromWins(bestWL.wins)} size="sm" />
-                  : <span className="text-[10px] text-muted-foreground">—</span>}
+                  : <span className="text-[11px] text-muted-foreground">—</span>}
               </div>
             </div>
             <StatTile label="Goals scored" value={totals.gf} icon={<SoccerBall size={56} strokeWidth={1.2} />} />
@@ -203,7 +203,7 @@ function Dashboard() {
             return (
               <div className="surface-card p-5 mb-8 flex items-center justify-between gap-4 border-l-4" style={{ borderLeftColor: positive ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
                 <div>
-                  <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
+                  <div className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
                     {positive ? <TrendingUp className="h-3.5 w-3.5 text-primary" /> : <TrendingDown className="h-3.5 w-3.5 text-destructive" />}
                     Cumulative Goal Difference
                   </div>
@@ -218,10 +218,10 @@ function Dashboard() {
 
           <div className="surface-card p-5 mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
+              <h3 className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
                 <Gamepad2 className="h-3.5 w-3.5 text-primary" /> Platform Performance
               </h3>
-              <span className="text-[10px] text-muted-foreground">Win rate by platform</span>
+              <span className="text-[11px] text-muted-foreground">Win rate by platform</span>
             </div>
             <div className="grid grid-cols-3 gap-3">
               {platformStats.map((p) => {
@@ -241,7 +241,7 @@ function Dashboard() {
                     <div className="mt-2 h-1.5 bg-secondary/60 rounded overflow-hidden">
                       <div className={`h-full ${bar}`} style={{ width: `${pct}%` }} />
                     </div>
-                    <div className="mt-1.5 text-[10px] text-muted-foreground font-mono">
+                    <div className="mt-1.5 text-[11px] text-muted-foreground font-mono">
                       {p.wins}W · {p.losses}L · {p.played} matches
                     </div>
                   </div>
@@ -252,43 +252,43 @@ function Dashboard() {
 
           <div className="surface-card p-5 mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
+              <h3 className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
                 <FlagIcon className="h-3.5 w-3.5 text-primary" /> Match Flags
               </h3>
-              <span className="text-[10px] text-muted-foreground">Across {flags.played} match{flags.played === 1 ? "" : "es"}</span>
+              <span className="text-[11px] text-muted-foreground">Across {flags.played} match{flags.played === 1 ? "" : "es"}</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="rounded-md border border-border/60 bg-background/40 p-3">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
                   <Zap className="h-3 w-3 text-amber-300" /> Extra Time
                 </div>
                 <div className="font-display stat-num text-3xl mt-1 leading-none">{flags.extraTime}</div>
-                <div className="text-[10px] text-muted-foreground mt-1">matches went to ET</div>
+                <div className="text-[11px] text-muted-foreground mt-1">matches went to ET</div>
               </div>
               <div className="rounded-md border border-border/60 bg-background/40 p-3">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
                   <FlagIcon className="h-3 w-3 text-primary" /> Penalties
                 </div>
                 <div className="font-display stat-num text-3xl mt-1 leading-none">{flags.penalties}</div>
-                <div className="text-[10px] text-muted-foreground mt-1 font-mono">
+                <div className="text-[11px] text-muted-foreground mt-1 font-mono">
                   <span className="text-primary">{flags.penaltiesWon}W</span>
                   <span className="text-muted-foreground/50 mx-1">·</span>
                   <span className="text-destructive">{flags.penaltiesLost}L</span>
                 </div>
               </div>
               <div className="rounded-md border border-border/60 bg-background/40 p-3">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
                   <DoorOpen className="h-3 w-3 text-primary" /> RQ — Opponent
                 </div>
                 <div className="font-display stat-num text-3xl mt-1 leading-none text-primary">{flags.rageQuitThem}</div>
-                <div className="text-[10px] text-muted-foreground mt-1">they bottled it</div>
+                <div className="text-[11px] text-muted-foreground mt-1">they bottled it</div>
               </div>
               <div className="rounded-md border border-border/60 bg-background/40 p-3">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
                   <DoorOpen className="h-3 w-3 text-destructive" /> RQ — Me
                 </div>
                 <div className="font-display stat-num text-3xl mt-1 leading-none text-destructive">{flags.rageQuitUs}</div>
-                <div className="text-[10px] text-muted-foreground mt-1">times I quit early</div>
+                <div className="text-[11px] text-muted-foreground mt-1">times I quit early</div>
               </div>
             </div>
           </div>
@@ -302,10 +302,10 @@ function Dashboard() {
           {squadAlerts.length > 0 && (
             <div className="surface-card p-5 mb-8 border-l-4 border-l-warn-caution">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-[10px] uppercase tracking-[0.3em] text-warn-caution font-bold flex items-center gap-2">
+                <h3 className="text-[11px] uppercase tracking-[0.3em] text-warn-caution font-bold flex items-center gap-2">
                   <AlertTriangle className="h-3.5 w-3.5" /> Squad Alerts
                 </h3>
-                <span className="text-[10px] text-muted-foreground">
+                <span className="text-[11px] text-muted-foreground">
                   Outfield starters · avg rating below 6.5 (min. {UNDERPERFORM_MIN_MATCHES} apps)
                 </span>
               </div>
@@ -317,7 +317,7 @@ function Dashboard() {
                       <div className="flex items-center gap-2 min-w-0">
                         {critical && <AlertTriangle className="h-3.5 w-3.5 text-warn-critical shrink-0" />}
                         <span className="font-semibold truncate">{a.player.name}</span>
-                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">
+                        <span className="text-[11px] uppercase tracking-wider text-muted-foreground shrink-0">
                           {a.player.position} · {a.matches} apps
                         </span>
                       </div>
@@ -392,8 +392,8 @@ function MVPCard({
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">MVP of the Week</span>
-            <span className="px-1.5 py-0.5 rounded bg-primary/20 text-primary text-[9px] font-bold uppercase tracking-wider border border-primary/30">
+            <span className="text-[11px] uppercase tracking-[0.3em] text-primary font-bold">MVP of the Week</span>
+            <span className="px-1.5 py-0.5 rounded bg-primary/20 text-primary text-[11px] font-bold uppercase tracking-wider border border-primary/30">
               WL #{wlNumber}
             </span>
           </div>
@@ -420,12 +420,12 @@ function MVPCard({
           {agg.ratedMatches > 0 ? (
             <>
               <div className="font-display stat-num text-4xl text-primary leading-none">{agg.avgRating.toFixed(2)}</div>
-              <div className="text-[10px] text-muted-foreground mt-1">Avg · {agg.ratedMatches} rated</div>
+              <div className="text-[11px] text-muted-foreground mt-1">Avg · {agg.ratedMatches} rated</div>
             </>
           ) : (
             <>
               <div className="font-display stat-num text-4xl text-primary leading-none">{agg.goals + agg.assists}</div>
-              <div className="text-[10px] text-muted-foreground mt-1">G+A · no ratings yet</div>
+              <div className="text-[11px] text-muted-foreground mt-1">G+A · no ratings yet</div>
             </>
           )}
         </div>
@@ -459,16 +459,16 @@ function RatedCard({ agg, rank }: { agg: ReturnType<typeof aggregateAllPlayers>[
           size="lg"
         />
         <div className="min-w-0 flex-1">
-          <div className={`text-[10px] uppercase tracking-[0.25em] font-bold ${medalText}`}>Rank #{rank}</div>
+          <div className={`text-[11px] uppercase tracking-[0.25em] font-bold ${medalText}`}>Rank #{rank}</div>
           <div className="font-display text-xl truncate mt-0.5">{agg.player.name}</div>
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
             {agg.player.position} · {agg.player.overall} OVR
           </div>
           <div className="mt-3 flex items-baseline gap-1.5">
             <span className={`font-display stat-num text-4xl ${medalText}`}>{agg.avgRating.toFixed(2)}</span>
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">avg</span>
+            <span className="text-[11px] uppercase tracking-wider text-muted-foreground">avg</span>
           </div>
-          <div className="text-[10px] text-muted-foreground mt-0.5 font-mono">
+          <div className="text-[11px] text-muted-foreground mt-0.5 font-mono">
             {agg.ratedMatches} rated · {agg.matches} apps
           </div>
         </div>
@@ -492,7 +492,7 @@ function LegendCard({
 }) {
   return (
     <div className="surface-card relative overflow-hidden p-5 border-l-4 border-l-primary/70 hover:border-l-primary transition-colors">
-      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+      <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
         {accentIcon}
         {label}
       </div>
@@ -508,11 +508,11 @@ function LegendCard({
           />
           <div className="min-w-0 flex-1">
             <div className="font-display text-base truncate leading-tight">{agg.player.name}</div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">
+            <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">
               {agg.player.position} · {agg.player.overall} OVR
             </div>
             <div className="mt-2 font-display stat-num text-2xl text-primary leading-none">{metric(agg)}</div>
-            {sub && <div className="text-[10px] text-muted-foreground mt-1">{sub}</div>}
+            {sub && <div className="text-[11px] text-muted-foreground mt-1">{sub}</div>}
           </div>
         </div>
       ) : (

@@ -85,7 +85,7 @@ function WLList() {
       {creating && (
         <div className="surface-glow p-5 mb-6 grid sm:grid-cols-[140px_1fr_auto_auto] gap-3 items-end">
           <div>
-            <label className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">WL Number</label>
+            <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">WL Number</label>
             <input
               type="number"
               value={num}
@@ -95,7 +95,7 @@ function WLList() {
             />
           </div>
           <div>
-            <label className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Custom Name (optional)</label>
+            <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Custom Name (optional)</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -144,13 +144,13 @@ function WLList() {
                   </button>
                 </div>
                 <div className="relative z-10">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-1.5">
+                <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-1.5">
                   <ClubCrest size={14} overrideUrl={wl.clubCrestUrl} />
                   <span className="truncate">{wl.clubName || "Weekend League"}</span>
                 </div>
                 <div className={`font-display mt-1 leading-tight pr-6 ${hasCustom ? "text-2xl" : "text-5xl"}`}>{label}</div>
                 {hasCustom && (
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">WL #{wl.number}</div>
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground mt-0.5">WL #{wl.number}</div>
                 )}
                 <div className="mt-4 flex items-end justify-between">
                   <div>
@@ -159,10 +159,10 @@ function WLList() {
                       <span className="text-muted-foreground/50 mx-1">·</span>
                       <span className="text-destructive">{r.losses}</span>
                     </div>
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">{r.played}/15 played</div>
+                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground mt-1">{r.played}/15 played</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Rank</div>
+                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-1">Rank</div>
                     <RankBadge rank={rankFromWins(r.wins)} size="sm" />
                   </div>
                 </div>
@@ -212,7 +212,7 @@ function WLEditModal({ wl, onClose }: { wl: WeekendLeague; onClose: () => void }
         <div className="px-5 py-4 border-b border-border/60 flex items-center justify-between">
           <div>
             <h2 className="font-display text-xl tracking-wider">Edit WL #{wl.number}</h2>
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">{wlLabel(wl)}</p>
+            <p className="text-[11px] uppercase tracking-wider text-muted-foreground mt-0.5">{wlLabel(wl)}</p>
           </div>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground" aria-label="Close">
             <X className="h-5 w-5" />
@@ -220,7 +220,7 @@ function WLEditModal({ wl, onClose }: { wl: WeekendLeague; onClose: () => void }
         </div>
         <div className="p-5 space-y-4">
           <div>
-            <label className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Custom Name</label>
+            <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Custom Name</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -229,15 +229,15 @@ function WLEditModal({ wl, onClose }: { wl: WeekendLeague; onClose: () => void }
               className="w-full bg-input border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
               autoFocus
             />
-            <p className="text-[10px] text-muted-foreground mt-1">Leave empty to use the default <span className="font-mono">WL #{wl.number}</span>.</p>
+            <p className="text-[11px] text-muted-foreground mt-1">Leave empty to use the default <span className="font-mono">WL #{wl.number}</span>.</p>
           </div>
 
           <div className="surface-card p-3">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-2">Club identity snapshot</div>
+            <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-2">Club identity snapshot</div>
             <div className="flex items-center gap-2.5 mb-3">
               <ClubCrest size={28} overrideUrl={wl.clubCrestUrl} />
               <div className="min-w-0">
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Currently saved</div>
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Currently saved</div>
                 <div className="font-display text-sm truncate">{wl.clubName || "Unnamed"}</div>
               </div>
             </div>

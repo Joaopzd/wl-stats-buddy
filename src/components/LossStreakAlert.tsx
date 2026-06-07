@@ -38,7 +38,7 @@ export function LossStreakAlert({ onClose }: { onClose: () => void }) {
         >
           Time to Refuel?
         </h3>
-        <p className="mt-1 text-[10px] uppercase tracking-[0.25em] text-primary font-bold">
+        <p className="mt-1 text-[11px] uppercase tracking-[0.25em] text-primary font-bold">
           Two losses in a row
         </p>
         <p className="mt-4 text-sm text-foreground/90 leading-relaxed">{tip}</p>
