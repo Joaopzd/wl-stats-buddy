@@ -1092,15 +1092,19 @@ function LiveWLReport({
   }, [matches]);
 
   return (
-    <section className="mb-8">
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
-          <Activity className="h-5 w-5 text-primary" /> Live Report
-        </h2>
-        <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
-          {matches.length}/15 played
-        </span>
-      </div>
+    <section className={hideHeader ? "" : "mb-8"}>
+      {!hideHeader && (
+        <div className="flex items-baseline justify-between mb-3">
+          <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
+            <Activity className="h-5 w-5 text-primary" /> Live Report
+          </h2>
+          <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
+            {matches.length}/15 played
+          </span>
+        </div>
+      )}
+
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
         <div className="surface-card p-4">
