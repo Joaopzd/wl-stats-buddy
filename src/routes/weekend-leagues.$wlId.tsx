@@ -1177,20 +1177,15 @@ function LiveWLReport({
         />
       </div>
 
-      <div className="surface-card p-4 mb-3">
-        <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">
-          Rating trend per match
-        </div>
+      <LiveCollapsible title="Rating trend per match" defaultOpen={false} className="mb-3">
         <RatingTrendChart points={trend} />
-      </div>
+      </LiveCollapsible>
 
-      <div className="surface-card p-4">
-        <div className="flex items-baseline justify-between mb-2">
-          <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold">
-            Top contributors
-          </div>
-          <div className="text-[11px] text-muted-foreground font-mono">G·A · avg rating</div>
-        </div>
+      <LiveCollapsible
+        title="Top contributors"
+        defaultOpen={false}
+        meta="G·A · avg rating"
+      >
         {ranked.length === 0 ? (
           <div className="text-xs text-muted-foreground py-3 text-center">No contributions yet.</div>
         ) : (
@@ -1212,10 +1207,45 @@ function LiveWLReport({
             ))}
           </div>
         )}
-      </div>
+      </LiveCollapsible>
     </section>
   );
 }
+
+/** Collapsible card used inside the Live Report. */
+function LiveCollapsible({
+  title,
+  meta,
+  defaultOpen = false,
+  className = "",
+  children,
+}: {
+  title: string;
+  meta?: string;
+  defaultOpen?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className={`surface-card overflow-hidden ${className}`}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between px-4 py-3 hover:bg-secondary/40 transition"
+        aria-expanded={open}
+      >
+        <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold">{title}</span>
+        <span className="flex items-center gap-2">
+          {meta && <span className="text-[11px] text-muted-foreground font-mono">{meta}</span>}
+          <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+        </span>
+      </button>
+      {open && <div className="px-4 pb-4">{children}</div>}
+    </div>
+  );
+}
+
 
 /** Compact SVG line chart showing team avg rating per match. */
 function RatingTrendChart({ points }: { points: { index: number; avg: number; win: boolean }[] }) {
