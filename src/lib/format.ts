@@ -109,6 +109,14 @@ export const rarityVisual = (r: Rarity): RarityVisual => {
       return solid("#b8d210", "#f27620");
     case "EOAE":
       return solid("#2d037e", "#ed25f5");
+    case "FUT Birthday Icon":
+      return solid("#f7f7f3", "#de15d8");
+    case "Heroes Ultimate Scream":
+      return solid("#3945de", "#e2f7fb");
+    case "Journey of Nations":
+      return solid("#7bf8ad", "#5a2fe9");
+    case "National Pride":
+      return solid("#9456dd", "#47da40");
 
     // ===== Legends (kept) =====
     case "Icon Base":
