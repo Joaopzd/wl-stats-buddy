@@ -406,12 +406,13 @@ function WLDetail() {
       </section>
 
       {matches.length > 0 && !wl.closed && (
-        <LiveWLReport
+        <LiveReportSection
           wl={wl}
           matches={matches}
           squadAggs={squadAggs}
         />
       )}
+
 
 
       {matches.length > 0 && (
