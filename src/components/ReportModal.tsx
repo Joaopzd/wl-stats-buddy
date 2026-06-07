@@ -99,7 +99,7 @@ export function ReportModal({
 
           <div className="relative">
             <div className="text-center mb-4">
-              <div className="text-[10px] uppercase tracking-[0.4em] text-primary font-bold">FULL TIME · WEEKEND LEAGUE</div>
+              <div className="text-[11px] uppercase tracking-[0.4em] text-primary font-bold">FULL TIME · WEEKEND LEAGUE</div>
               <div className="mt-1 text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">{wlLabel(wl)}</div>
             </div>
 
@@ -111,7 +111,7 @@ export function ReportModal({
                 <div className="mt-2 font-display text-base sm:text-lg tracking-wider font-bold uppercase truncate max-w-full">
                   {clubName}
                 </div>
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">You</div>
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">You</div>
               </div>
 
               {/* Wins / Losses — the headline result */}
@@ -138,22 +138,22 @@ export function ReportModal({
                 <div className="mt-2 font-display text-base sm:text-lg tracking-wider font-bold uppercase truncate max-w-full">
                   {opponentName || "Opponents"}
                 </div>
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Aggregate</div>
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Aggregate</div>
               </div>
             </div>
 
             {/* Rank + meta strip */}
             <div className="mt-5 flex items-center justify-center gap-2 flex-wrap">
               <RankBadge rank={rank} size="lg" />
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/70 text-foreground text-[10px] font-bold uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/70 text-foreground text-[11px] font-bold uppercase tracking-wider">
                 <Trophy className="h-3 w-3 text-primary" /> {record.wins}W · {record.losses}L · {winPct}%
               </span>
               {wl.formation && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/70 text-foreground text-[10px] font-bold uppercase tracking-wider">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/70 text-foreground text-[11px] font-bold uppercase tracking-wider">
                   <LayoutGrid className="h-3 w-3" /> {wl.formation}
                 </span>
               )}
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/70 text-foreground text-[10px] font-bold uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/70 text-foreground text-[11px] font-bold uppercase tracking-wider">
                 <Flame className="h-3 w-3 text-primary" /> Best {streak}
               </span>
             </div>
@@ -164,7 +164,7 @@ export function ReportModal({
         <div className="px-5 sm:px-7 py-6">
           {/* MATCH STATS — Sofascore/Fotmob bar style */}
           <div className="rounded-lg border border-border bg-secondary/30 p-4 mb-5">
-            <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-foreground mb-3 flex items-center gap-1.5">
+            <div className="text-[11px] uppercase tracking-[0.25em] font-bold text-foreground mb-3 flex items-center gap-1.5">
               <Activity className="h-3.5 w-3.5 text-primary" /> Match Stats
             </div>
             <StatBar leftLabel="Goals" leftVal={totalG} rightVal={record.goalsAgainst} leftAccent />
@@ -267,7 +267,7 @@ function StatBar({
     <div className="py-2 border-b border-border/40 last:border-b-0">
       <div className="flex items-center justify-between text-sm">
         <span className={`font-display stat-num font-bold w-12 text-left ${leftAccent ? "text-primary" : "text-foreground"}`}>{leftVal}</span>
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
+        <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
           {icon}{leftLabel}
         </span>
         <span className="font-display stat-num font-bold w-12 text-right text-foreground">{rightVal}</span>
@@ -292,7 +292,7 @@ function CollapsibleSection({ title, icon, children }: { title: string; icon: Re
         className="w-full flex items-center justify-between px-4 py-3 hover:bg-secondary/40 transition"
         aria-expanded={open}
       >
-        <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-foreground flex items-center gap-1.5">
+        <span className="text-[11px] uppercase tracking-[0.25em] font-bold text-foreground flex items-center gap-1.5">
           {icon} {title}
         </span>
         <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
@@ -305,7 +305,7 @@ function CollapsibleSection({ title, icon, children }: { title: string; icon: Re
 function BigStat({ label, value, accent, danger, icon }: { label: string; value: number; accent?: boolean; danger?: boolean; icon?: React.ReactNode }) {
   return (
     <div className="surface-card p-4 text-center">
-      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center justify-center gap-1">{icon}{label}</div>
+      <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center justify-center gap-1">{icon}{label}</div>
       <div className={`font-display text-5xl mt-1 leading-none ${accent ? "text-primary" : danger ? "text-destructive" : ""}`}>{value}</div>
     </div>
   );
@@ -314,7 +314,7 @@ function BigStat({ label, value, accent, danger, icon }: { label: string; value:
 function SmallStat({ label, value, icon }: { label: string; value: number; icon?: React.ReactNode }) {
   return (
     <div className="surface-card p-3 flex items-center justify-between">
-      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">{icon}{label}</div>
+      <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">{icon}{label}</div>
       <div className="stat-num font-display text-2xl">{value}</div>
     </div>
   );
@@ -332,9 +332,9 @@ function Award({ type, color, icon, name, sub, stat }: { type: string; color: "p
       <div className="flex items-center gap-3">
         <div className={`h-12 w-12 rounded-md grid place-items-center ${isP ? "bg-primary/20 text-primary" : "bg-destructive/20 text-destructive"}`}>{icon}</div>
         <div className="flex-1 min-w-0">
-          <div className={`text-[10px] uppercase tracking-[0.25em] font-bold ${isP ? "text-primary" : "text-destructive"}`}>{type}</div>
+          <div className={`text-[11px] uppercase tracking-[0.25em] font-bold ${isP ? "text-primary" : "text-destructive"}`}>{type}</div>
           <div className="font-display text-xl truncate">{name}</div>
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{sub}</div>
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{sub}</div>
         </div>
         <div className="text-right text-xs text-muted-foreground stat-num">{stat}</div>
       </div>
@@ -370,12 +370,12 @@ function SquadPerformance({
       className="mt-4 p-4 rounded-lg border border-border bg-secondary/30"
     >
       <div className="flex items-center justify-between mb-3">
-        <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-foreground flex items-center gap-1.5">
+        <div className="text-[11px] uppercase tracking-[0.25em] font-bold text-foreground flex items-center gap-1.5">
           <Crown className="h-3.5 w-3.5 text-primary" /> Squad Performance · Sorted by Rating
         </div>
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{rows.length} players</div>
+        <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{rows.length} players</div>
       </div>
-      <div className="grid grid-cols-12 gap-2 px-2 pb-1.5 text-[9px] uppercase tracking-wider text-muted-foreground font-bold border-b border-border/50">
+      <div className="grid grid-cols-12 gap-2 px-2 pb-1.5 text-[11px] uppercase tracking-wider text-muted-foreground font-bold border-b border-border/50">
         <div className="col-span-4">Player</div>
         <div className="col-span-1 text-center">Pos</div>
         <div className="col-span-1 text-center">G</div>
@@ -397,12 +397,12 @@ function SquadPerformance({
           return (
             <div key={a.player.id} className={`grid grid-cols-12 gap-2 items-center px-2 py-1.5 text-xs ${rowCls}`}>
               <div className="col-span-4 flex items-center gap-2 min-w-0">
-                <span className="text-[9px] font-mono text-muted-foreground w-4 shrink-0">{i + 1}</span>
+                <span className="text-[11px] font-mono text-muted-foreground w-4 shrink-0">{i + 1}</span>
                 <span className="font-semibold truncate">{a.player.name}</span>
                 {i === 0 && <Crown className="h-3 w-3 text-primary shrink-0" />}
                 {status === "critical" && <AlertTriangle className="h-3 w-3 text-warn-critical shrink-0" />}
               </div>
-              <div className="col-span-1 text-center text-[10px] font-mono text-muted-foreground uppercase">{a.player.position}</div>
+              <div className="col-span-1 text-center text-[11px] font-mono text-muted-foreground uppercase">{a.player.position}</div>
               <div className="col-span-1 text-center stat-num">{a.goals}</div>
               <div className="col-span-1 text-center stat-num">{a.assists}</div>
               <div className="col-span-1 text-center stat-num text-muted-foreground">{a.matches}</div>
@@ -436,7 +436,7 @@ function SquadPerformance({
           );
         })}
       </div>
-      <div className="mt-2 text-[10px] text-muted-foreground italic">
+      <div className="mt-2 text-[11px] text-muted-foreground italic">
         Manager Rating is your subjective tactical review. Saved automatically.
       </div>
     </motion.div>
@@ -464,14 +464,14 @@ function ClutchFactor({ squad, matches }: { squad: Player[]; matches: Match[] })
       className="mt-4 p-4 rounded-lg border border-border bg-secondary/30"
     >
       <div className="flex items-center justify-between mb-1">
-        <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-foreground flex items-center gap-1.5">
+        <div className="text-[11px] uppercase tracking-[0.25em] font-bold text-foreground flex items-center gap-1.5">
           <Zap className="h-3.5 w-3.5 text-primary" /> Clutch Factor · Matches 11–15
         </div>
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
           Badges need {CLUTCH_MIN_MATCHES}+ clutch apps
         </div>
       </div>
-      <div className="text-[10px] text-muted-foreground mb-3">
+      <div className="text-[11px] text-muted-foreground mb-3">
         High-pressure stretch: the final five WL matches where ranks are decided.
       </div>
       <div className="space-y-1.5">
@@ -495,7 +495,7 @@ function ClutchFactor({ squad, matches }: { squad: Player[]; matches: Match[] })
                 {c.badge === "king" && (
                   <span
                     title={CLUTCH_KING_TOOLTIP}
-                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[9px] uppercase tracking-wider font-bold cursor-help"
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[11px] uppercase tracking-wider font-bold cursor-help"
                   >
                     <Flame className="h-2.5 w-2.5" /> Clutch King
                   </span>
@@ -503,7 +503,7 @@ function ClutchFactor({ squad, matches }: { squad: Player[]; matches: Match[] })
                 {c.badge === "drop" && (
                   <span
                     title={CLUTCH_DROP_TOOLTIP}
-                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-destructive/20 text-destructive text-[9px] uppercase tracking-wider font-bold cursor-help"
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-destructive/20 text-destructive text-[11px] uppercase tracking-wider font-bold cursor-help"
                   >
                     <TrendingDown className="h-2.5 w-2.5" /> Pressure Drop
                   </span>
@@ -520,7 +520,7 @@ function ClutchFactor({ squad, matches }: { squad: Player[]; matches: Match[] })
                 <span className="text-muted-foreground"> vs </span>
                 <span className="text-muted-foreground">{c.baseline.avgRating > 0 ? c.baseline.avgRating.toFixed(2) : "—"}</span>
                 {c.clutch.ratedMatches > 0 && c.baseline.ratedMatches > 0 && (
-                  <span className={`ml-1.5 text-[10px] font-mono ${deltaTone}`}>
+                  <span className={`ml-1.5 text-[11px] font-mono ${deltaTone}`}>
                     {deltaSign}{delta.toFixed(2)}
                   </span>
                 )}
