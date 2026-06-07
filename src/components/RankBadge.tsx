@@ -12,7 +12,7 @@ export function RankBadge({
 }) {
   const sizeCls =
     size === "sm"
-      ? "text-[9px] px-2 py-0.5 gap-1"
+      ? "text-[11px] px-2 py-0.5 gap-1"
       : size === "lg"
         ? "text-sm px-4 py-1.5 gap-1.5"
         : "text-xs px-3 py-1 gap-1.5";

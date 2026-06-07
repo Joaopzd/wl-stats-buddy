@@ -159,11 +159,11 @@ function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
           <Flame className="h-4 w-4" />
           <h2 className="font-display text-lg tracking-wider">Clutch Leaderboard</h2>
         </div>
-        <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+        <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
           Δ Rating · Matches 11–15
         </div>
       </div>
-      <div className="text-[10px] text-muted-foreground mb-3">
+      <div className="text-[11px] text-muted-foreground mb-3">
         Career performance during the final WL stretch vs baseline. Min {CLUTCH_MIN_MATCHES} clutch apps.
       </div>
       {rows.length === 0 ? (
@@ -200,7 +200,7 @@ function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
                     {c.badge === "king" && (
                       <span
                         title={CLUTCH_KING_TOOLTIP}
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[9px] uppercase tracking-wider font-bold cursor-help"
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[11px] uppercase tracking-wider font-bold cursor-help"
                       >
                         <Flame className="h-2.5 w-2.5" /> Clutch King
                       </span>
@@ -208,13 +208,13 @@ function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
                     {c.badge === "drop" && (
                       <span
                         title={CLUTCH_DROP_TOOLTIP}
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-destructive/20 text-destructive text-[9px] uppercase tracking-wider font-bold cursor-help"
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-destructive/20 text-destructive text-[11px] uppercase tracking-wider font-bold cursor-help"
                       >
                         <TrendingDown className="h-2.5 w-2.5" /> Pressure Drop
                       </span>
                     )}
                   </div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground truncate">
                     {c.player.position} · {c.clutch.matches} clutch · {c.baseline.matches} total · {c.clutch.goals}G/{c.clutch.assists}A
                   </div>
                 </div>
@@ -257,9 +257,9 @@ function Leaderboard({
           {icon}
           <h2 className="font-display text-lg tracking-wider">{title}</h2>
         </div>
-        <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{metricLabel}</div>
+        <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">{metricLabel}</div>
       </div>
-      {subline && <div className="text-[10px] text-muted-foreground mb-3 -mt-2">{subline}</div>}
+      {subline && <div className="text-[11px] text-muted-foreground mb-3 -mt-2">{subline}</div>}
       {rows.length === 0 ? (
         <div className="text-sm text-muted-foreground py-6 text-center">{empty}</div>
       ) : (
@@ -291,7 +291,7 @@ function Leaderboard({
                   <div className="font-semibold text-xs mt-2 truncate w-full" title={a.player.name}>
                     {a.player.name}
                   </div>
-                  <div className="text-[9px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">
                     {a.player.position} · {a.matches}MP
                   </div>
                 </div>
@@ -319,7 +319,7 @@ function Leaderboard({
                         {status === "critical" && <AlertTriangle className="h-3 w-3 text-warn-critical shrink-0" />}
                         {a.player.name}
                       </div>
-                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">
+                      <div className="text-[11px] uppercase tracking-wider text-muted-foreground truncate">
                         {a.player.position} · {a.player.overall} · {a.matches} apps
                       </div>
                     </div>

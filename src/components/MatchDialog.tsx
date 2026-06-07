@@ -173,7 +173,7 @@ export function MatchDialog({
           {/* Body: page (modal) scrolls — no inner scroll on player list */}
           <div className="px-5 sm:px-6 pt-5">
             <div className="mb-4">
-              <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Platform</span>
+              <span className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Platform</span>
               <div className="flex gap-1 bg-input border border-border rounded-md p-1">
                 {PLATFORMS.map((p) => {
                   const isActive = platform === p;
@@ -200,7 +200,7 @@ export function MatchDialog({
                 className="w-full flex items-center justify-between gap-2 px-3 py-2 hover:bg-secondary/40 transition text-left"
                 aria-expanded={detailsOpen}
               >
-                <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-2">
+                <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-2">
                   Match details
                   {(extraTime || penalties || rageQuit || tactics.length > 0) && (
                     <span className="text-primary font-mono normal-case tracking-normal">
@@ -223,7 +223,7 @@ export function MatchDialog({
                   </div>
                   {penalties && (
                     <div>
-                      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Shootout winner</div>
+                      <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Shootout winner</div>
                       <div className="flex gap-1 bg-input border border-border rounded-md p-1 max-w-xs">
                         {(["us", "them"] as PenaltyWinner[]).map((w) => (
                           <button key={w} type="button" onClick={() => setPenaltyWinner(w)} className={`flex-1 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition ${penaltyWinner === w ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
@@ -235,7 +235,7 @@ export function MatchDialog({
                   )}
                   {rageQuit && (
                     <div>
-                      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Who rage-quit</div>
+                      <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Who rage-quit</div>
                       <div className="flex gap-1 bg-input border border-border rounded-md p-1 max-w-xs">
                         {(["them", "us"] as const).map((w) => (
                           <button key={w} type="button" onClick={() => setRageQuitBy(w)} className={`flex-1 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition ${rageQuitBy === w ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
@@ -248,7 +248,7 @@ export function MatchDialog({
 
                   {/* Tactical notes — multi-select */}
                   <div className="pt-1">
-                    <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
+                    <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
                       <ListChecks className="h-3 w-3" /> Tactical Notes
                       {tactics.length > 0 && (
                         <span className="text-primary font-mono normal-case tracking-normal">· {tactics.length} selected</span>
@@ -280,11 +280,11 @@ export function MatchDialog({
 
             {/* Possession & xG — quick performance metrics */}
             <div className="mb-4 surface-card p-3 space-y-3">
-              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
                 <Activity className="h-3 w-3 text-primary" /> Possession & xG
               </div>
               <div>
-                <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1.5">
+                <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-1.5">
                   <span className="text-primary">You · {Math.round(possessionFor)}%</span>
                   <span>Opponent · {100 - Math.round(possessionFor)}%</span>
                 </div>
@@ -298,7 +298,7 @@ export function MatchDialog({
                   className="w-full accent-[var(--primary)]"
                   aria-label="Possession %"
                 />
-                <div className="flex justify-between text-[9px] uppercase tracking-wider text-muted-foreground/60 mt-0.5 font-mono">
+                <div className="flex justify-between text-[11px] uppercase tracking-wider text-muted-foreground/60 mt-0.5 font-mono">
                   <span>0</span><span>50</span><span>100</span>
                 </div>
               </div>
@@ -311,7 +311,7 @@ export function MatchDialog({
 
             {/* Player performances — aligned columns, no inner scroll */}
             <div>
-              <div className="grid grid-cols-[1.25rem_2.25rem_minmax(0,1fr)_2.25rem_2.25rem_2.75rem] items-center gap-2 px-2 pb-2 text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-bold">
+              <div className="grid grid-cols-[1.25rem_2.25rem_minmax(0,1fr)_2.25rem_2.25rem_2.75rem] items-center gap-2 px-2 pb-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold">
                 <span aria-hidden></span>
                 <span aria-hidden></span>
                 <span>Player</span>
@@ -347,7 +347,7 @@ export function MatchDialog({
                             onClick={() => update(p.id, { role: isSub ? "starter" : "sub" })}
                             disabled={!perf.played}
                             title={isSub ? "Came off the bench — click to mark as starter" : "Started the match — click to mark as substitute"}
-                            className={`text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded text-center transition disabled:opacity-50 ${
+                            className={`text-[11px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded text-center transition disabled:opacity-50 ${
                               isSub
                                 ? "bg-accent/20 text-accent border border-accent/50 hover:bg-accent/30"
                                 : "bg-primary/20 text-primary border border-primary/50 hover:bg-primary/30"
@@ -357,7 +357,7 @@ export function MatchDialog({
                           </button>
                           <div className="min-w-0">
                             <div className="text-sm font-semibold truncate leading-tight">{p.name}</div>
-                            <div className="text-[10px] text-muted-foreground font-mono">{p.position} · {p.overall}</div>
+                            <div className="text-[11px] text-muted-foreground font-mono">{p.position} · {p.overall}</div>
                           </div>
                           <NumBox v={perf.goals} on={(v) => update(p.id, { goals: v })} disabled={!perf.played} accent />
                           <NumBox v={perf.assists} on={(v) => update(p.id, { assists: v })} disabled={!perf.played} />
@@ -396,7 +396,7 @@ export function MatchDialog({
 function ScoreInput({ label, value, onChange, accent }: { label: string; value: number; onChange: (v: number) => void; accent?: boolean }) {
   return (
     <div>
-      <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 text-center">{label}</span>
+      <span className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 text-center">{label}</span>
       <input
         type="number"
         inputMode="numeric"
@@ -481,7 +481,7 @@ function FlagToggle({ active, onClick, icon, label }: { active: boolean; onClick
 function XgInput({ label, icon, value, onChange, accent }: { label: string; icon: React.ReactNode; value: number; onChange: (v: number) => void; accent?: boolean }) {
   return (
     <div>
-      <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
+      <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
         {icon} {label}
       </span>
       <input

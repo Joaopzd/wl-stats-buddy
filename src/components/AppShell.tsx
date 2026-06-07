@@ -26,7 +26,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             />
             <div className="leading-tight hidden sm:block">
               <div className="font-display text-lg tracking-wider font-bold">PS: WEEKEND LEAGUE TRACKER</div>
-              <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">PitchSide · EA FC 26</div>
+              <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">PitchSide · EA FC 26</div>
             </div>
           </Link>
           <div className="flex items-center gap-2">

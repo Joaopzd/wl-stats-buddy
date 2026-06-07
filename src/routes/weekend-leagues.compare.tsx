@@ -52,7 +52,7 @@ function ComparePage() {
 
       {/* WL picker */}
       <section className="surface-card p-4 mb-6">
-        <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-3">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-3">
           Select Weekend Leagues ({selected.length} selected)
         </div>
         {sorted.length === 0 ? (
@@ -75,7 +75,7 @@ function ComparePage() {
                 >
                   {on ? <Check className="h-3.5 w-3.5" /> : <span className="h-3.5 w-3.5" aria-hidden />}
                   <span className="font-display tracking-wider">{wlLabel(w)}</span>
-                  <span className="font-mono text-[10px] opacity-80">{r.wins}-{r.losses}</span>
+                  <span className="font-mono text-[11px] opacity-80">{r.wins}-{r.losses}</span>
                 </button>
               );
             })}
@@ -115,7 +115,7 @@ function WLSummaryGrid({ wls, allMatches }: { wls: WeekendLeague[]; allMatches: 
             : 0;
           return (
             <div key={w.id} className="surface-card p-4">
-              <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold">
+              <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold">
                 WL #{w.number}
               </div>
               <div className="font-display text-lg leading-tight truncate" title={wlLabel(w)}>
@@ -150,7 +150,7 @@ function Stat({
   const disp = signed && typeof value === "number" && value >= 0 ? `+${value}` : value;
   return (
     <div className="flex items-baseline justify-between border-b border-border/40 pb-1">
-      <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{label}</span>
+      <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">{label}</span>
       <span className={`stat-num font-display text-base ${cls}`}>{disp}</span>
     </div>
   );
@@ -207,12 +207,12 @@ function PlayerEvolutionTable({
       <div className="surface-card overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
-            <tr className="bg-background/50 text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold">
+            <tr className="bg-background/50 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold">
               <th className="text-left px-3 py-2 sticky left-0 bg-background/80 backdrop-blur">Player</th>
               {wls.map((w) => (
                 <th key={w.id} className="text-center px-3 py-2 whitespace-nowrap">
                   <div>WL #{w.number}</div>
-                  <div className="font-mono text-[9px] text-muted-foreground/70 normal-case tracking-normal truncate max-w-[8rem]">
+                  <div className="font-mono text-[11px] text-muted-foreground/70 normal-case tracking-normal truncate max-w-[8rem]">
                     {w.customName?.trim() || ""}
                   </div>
                 </th>
@@ -225,7 +225,7 @@ function PlayerEvolutionTable({
                 <td className="px-3 py-2 sticky left-0 bg-background/80 backdrop-blur">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="font-display stat-num text-base text-foreground w-7 text-center shrink-0">{player.overall}</span>
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{player.position}</span>
+                    <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{player.position}</span>
                     <span className="text-[12px] font-semibold truncate">{player.name}</span>
                   </div>
                 </td>
@@ -259,7 +259,7 @@ function PerfCell({ agg }: { agg: { matches: number; goals: number; assists: num
   return (
     <div className="leading-tight">
       <div className={`font-display stat-num text-sm ${tone}`}>{r > 0 ? r.toFixed(2) : "—"}</div>
-      <div className="font-mono text-[10px] text-muted-foreground tabular-nums">
+      <div className="font-mono text-[11px] text-muted-foreground tabular-nums">
         {agg.matches}MP · {agg.goals}G · {agg.assists}A
       </div>
     </div>
@@ -270,7 +270,7 @@ function ClubTrend({ wls, allMatches }: { wls: WeekendLeague[]; allMatches: Matc
   // Mini trend showing wins/losses progression across selected WLs.
   return (
     <div className="mt-6 surface-card p-4">
-      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-3">
+      <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-3">
         Club Trend (selected WLs)
       </div>
       <div className="flex items-end gap-3 overflow-x-auto pb-2">
@@ -296,8 +296,8 @@ function ClubTrend({ wls, allMatches }: { wls: WeekendLeague[]; allMatches: Matc
                   title={`${losses} losses`}
                 />
               </div>
-              <div className="text-[9px] font-mono text-muted-foreground">#{w.number}</div>
-              <div className="text-[9px] font-mono text-foreground">{wins}-{losses}</div>
+              <div className="text-[11px] font-mono text-muted-foreground">#{w.number}</div>
+              <div className="text-[11px] font-mono text-foreground">{wins}-{losses}</div>
             </div>
           );
         })}

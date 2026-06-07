@@ -13,7 +13,7 @@ function SectionHeader({ open, onToggle, title }: { open: boolean; onToggle: () 
     <button
       type="button"
       onClick={onToggle}
-      className="w-full flex items-center justify-between text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2 hover:text-foreground transition"
+      className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2 hover:text-foreground transition"
       aria-expanded={open}
     >
       <span>{title}</span>
@@ -166,7 +166,7 @@ export function SettingsMenu() {
                     </span>
                     <span className="flex-1 text-left min-w-0">
                       <span className="block font-semibold truncate leading-tight">{t.label}</span>
-                      <span className="block text-[10px] text-muted-foreground truncate leading-tight">
+                      <span className="block text-[11px] text-muted-foreground truncate leading-tight">
                         {t.description}
                       </span>
                     </span>
@@ -187,7 +187,7 @@ export function SettingsMenu() {
           <>
 
 
-          <label className="block text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
+          <label className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
             Club Name
           </label>
           <input
@@ -212,7 +212,7 @@ export function SettingsMenu() {
               <ClubCrest size={48} />
             )}
             <div className="min-w-0 flex-1">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
                 Club Crest
               </div>
               <div className="text-[11px] text-muted-foreground truncate">
@@ -222,7 +222,7 @@ export function SettingsMenu() {
                 <button
                   type="button"
                   onClick={() => clubFileRef.current?.click()}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider hover:opacity-90"
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded bg-primary text-primary-foreground text-[11px] font-bold uppercase tracking-wider hover:opacity-90"
                 >
                   <Upload className="h-3 w-3" /> {clubCrest ? "Replace" : "Upload"}
                 </button>
@@ -231,14 +231,14 @@ export function SettingsMenu() {
                     <button
                       type="button"
                       onClick={saveClubCrestPreview}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded border border-primary text-primary text-[10px] font-bold uppercase tracking-wider hover:bg-primary/10"
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded border border-primary text-primary text-[11px] font-bold uppercase tracking-wider hover:bg-primary/10"
                     >
                       Save
                     </button>
                     <button
                       type="button"
                       onClick={() => setClubCrestPreview(null)}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded border border-border text-muted-foreground text-[10px] font-bold uppercase tracking-wider hover:text-foreground"
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded border border-border text-muted-foreground text-[11px] font-bold uppercase tracking-wider hover:text-foreground"
                     >
                       Cancel
                     </button>
@@ -248,7 +248,7 @@ export function SettingsMenu() {
                   <button
                     type="button"
                     onClick={async () => { await store.setClubCrest(null); toast.success("Crest removed"); }}
-                    className="inline-flex items-center gap-1 px-2 py-1 rounded border border-border text-muted-foreground text-[10px] font-bold uppercase tracking-wider hover:text-destructive"
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded border border-border text-muted-foreground text-[11px] font-bold uppercase tracking-wider hover:text-destructive"
                   >
                     <Trash2 className="h-3 w-3" /> Remove
                   </button>
@@ -267,7 +267,7 @@ export function SettingsMenu() {
               e.target.value = "";
             }}
           />
-          <p className="mt-2 text-[10px] leading-snug text-muted-foreground">
+          <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
             ⓘ Editar aqui cria automaticamente um novo perfil para próximas WLs. WLs antigas mantêm o perfil original (visível na aba Club).
           </p>
 
@@ -282,7 +282,7 @@ export function SettingsMenu() {
           <>
 
 
-          <label className="block text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
+          <label className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
             Opponent Name
           </label>
           <input
@@ -307,7 +307,7 @@ export function SettingsMenu() {
               <OpponentCrest size={48} />
             )}
             <div className="min-w-0 flex-1">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
                 Opponent Crest
               </div>
               <div className="text-[11px] text-muted-foreground truncate">
@@ -317,7 +317,7 @@ export function SettingsMenu() {
                 <button
                   type="button"
                   onClick={() => fileRef.current?.click()}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider hover:opacity-90"
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded bg-primary text-primary-foreground text-[11px] font-bold uppercase tracking-wider hover:opacity-90"
                 >
                   <Upload className="h-3 w-3" /> {opponentCrest ? "Replace" : "Upload"}
                 </button>
@@ -326,14 +326,14 @@ export function SettingsMenu() {
                     <button
                       type="button"
                       onClick={saveCrestPreview}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded border border-primary text-primary text-[10px] font-bold uppercase tracking-wider hover:bg-primary/10"
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded border border-primary text-primary text-[11px] font-bold uppercase tracking-wider hover:bg-primary/10"
                     >
                       Save
                     </button>
                     <button
                       type="button"
                       onClick={() => setCrestPreview(null)}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded border border-border text-muted-foreground text-[10px] font-bold uppercase tracking-wider hover:text-foreground"
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded border border-border text-muted-foreground text-[11px] font-bold uppercase tracking-wider hover:text-foreground"
                     >
                       Cancel
                     </button>
@@ -343,7 +343,7 @@ export function SettingsMenu() {
                   <button
                     type="button"
                     onClick={async () => { await store.setOpponentCrest(null); toast.success("Crest reset"); }}
-                    className="inline-flex items-center gap-1 px-2 py-1 rounded border border-border text-muted-foreground text-[10px] font-bold uppercase tracking-wider hover:text-destructive"
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded border border-border text-muted-foreground text-[11px] font-bold uppercase tracking-wider hover:text-destructive"
                   >
                     <Trash2 className="h-3 w-3" /> Reset
                   </button>

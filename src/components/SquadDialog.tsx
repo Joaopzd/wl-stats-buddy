@@ -148,7 +148,7 @@ export function SquadDialog({
             placeholder={filterPos ? `Search ${filterPos}-compatible players...` : "Search your database..."}
             className="w-full bg-input border-2 border-primary/40 rounded-md pl-11 pr-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
           />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
             {candidates.length} match{candidates.length === 1 ? "" : "es"}
           </div>
         </div>
@@ -167,10 +167,10 @@ export function SquadDialog({
                     className="w-full flex items-center gap-3 px-3 py-2 rounded-md border border-border bg-card text-left transition hover:border-primary hover:bg-primary/5"
                   >
                     <span className="font-display text-xl text-primary stat-num w-9 text-center shrink-0">{p.overall}</span>
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground bg-secondary px-1.5 py-0.5 rounded shrink-0 w-12 text-center">{p.position}</span>
+                    <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1.5 py-0.5 rounded shrink-0 w-12 text-center">{p.position}</span>
                     <span className="font-semibold truncate flex-1">{p.name}</span>
                     {(inStarting || inBench) && (
-                      <span className="text-[9px] uppercase tracking-wider text-primary font-bold shrink-0">
+                      <span className="text-[11px] uppercase tracking-wider text-primary font-bold shrink-0">
                         {inStarting ? "Starting" : "Bench"}
                       </span>
                     )}
@@ -207,8 +207,8 @@ export function SquadDialog({
         {/* Bench */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Bench ({bench.length})</div>
-            <button onClick={() => setPickingBench(true)} className="text-[10px] uppercase tracking-wider text-primary hover:opacity-80 font-bold">
+            <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Bench ({bench.length})</div>
+            <button onClick={() => setPickingBench(true)} className="text-[11px] uppercase tracking-wider text-primary hover:opacity-80 font-bold">
               + Add to bench
             </button>
           </div>
@@ -222,7 +222,7 @@ export function SquadDialog({
                 return (
                   <div key={id} className="surface-card px-2 py-1.5 flex items-center gap-2">
                     <span className="font-display text-base text-primary stat-num w-7 text-center shrink-0 leading-none">{p.overall}</span>
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{p.position}</span>
+                    <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{p.position}</span>
                     <div className="text-[11px] font-semibold truncate flex-1 leading-tight">{p.name}</div>
                     <button onClick={() => removeFromBench(id)} className="text-muted-foreground hover:text-destructive shrink-0">
                       <X className="h-3 w-3" />
@@ -325,7 +325,7 @@ function Pitch({
                   </span>
                 </div>
               ) : (
-                <span className="text-[9px] font-bold text-white tracking-wider">{slot.position}</span>
+                <span className="text-[11px] font-bold text-white tracking-wider">{slot.position}</span>
               )}
             </button>
           </div>
