@@ -37,6 +37,10 @@ export type Rarity =
   | "Prime Heroes"
   | "World Tour"
   | "EOAE"
+  | "FUT Birthday Icon"
+  | "Heroes Ultimate Scream"
+  | "Journey of Nations"
+  | "National Pride"
   // Legends
   | "Icon Base"
   | "Hero Base";
