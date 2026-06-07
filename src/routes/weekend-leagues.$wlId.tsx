@@ -415,18 +415,13 @@ function WLDetail() {
 
 
       {matches.length > 0 && (
-        <section className="mb-6">
-          <div className="flex items-baseline justify-between mb-3">
-            <h2 className="font-display text-2xl tracking-wider">Timeline</h2>
-            <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Tap to jump</span>
-          </div>
-          <MatchTimeline
-            matches={matches}
-            players={players}
-            onJump={(m) => setViewingMatch(m)}
-          />
-        </section>
+        <TimelineSection
+          matches={matches}
+          players={players}
+          onJump={(m) => setViewingMatch(m)}
+        />
       )}
+
 
       <section>
         <div className="flex items-baseline justify-between mb-3">
