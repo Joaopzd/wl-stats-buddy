@@ -1282,3 +1282,75 @@ function LiveStatTile({
     </div>
   );
 }
+
+/** Minimal collapsible section wrapper used to declutter the WL detail page. */
+function CollapsibleWrap({
+  title,
+  defaultOpen = true,
+  meta,
+  children,
+}: {
+  title: string;
+  defaultOpen?: boolean;
+  meta?: string;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className="mb-6">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-baseline justify-between mb-3 group"
+        aria-expanded={open}
+      >
+        <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
+          {title}
+          <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+        </h2>
+        {meta && <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">{meta}</span>}
+      </button>
+      {open && children}
+    </section>
+  );
+}
+
+function TimelineSection({
+  matches,
+  players,
+  onJump,
+}: {
+  matches: Match[];
+  players: Player[];
+  onJump: (m: Match) => void;
+}) {
+  return (
+    <CollapsibleWrap title="Timeline" defaultOpen meta="Tap to jump">
+      <MatchTimeline matches={matches} players={players} onJump={onJump} />
+    </CollapsibleWrap>
+  );
+}
+
+function LiveReportSection(props: { wl: WeekendLeague; matches: Match[]; squadAggs: PlayerAgg[] }) {
+  const [open, setOpen] = useState(true);
+  return (
+    <section className="mb-8">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-baseline justify-between mb-3"
+        aria-expanded={open}
+      >
+        <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
+          <Activity className="h-5 w-5 text-primary" /> Live Report
+          <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+        </h2>
+        <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
+          {props.matches.length}/15 played
+        </span>
+      </button>
+      {open && <LiveWLReport {...props} hideHeader />}
+    </section>
+  );
+}
+
