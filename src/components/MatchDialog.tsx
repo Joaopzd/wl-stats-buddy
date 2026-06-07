@@ -278,35 +278,17 @@ export function MatchDialog({
               )}
             </div>
 
-            {/* Possession & xG — quick performance metrics */}
-            <div className="mb-4 surface-card p-3 space-y-3">
-              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
-                <Activity className="h-3 w-3 text-primary" /> Possession & xG
-              </div>
-              <div>
-                <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-1.5">
-                  <span className="text-primary">You · {Math.round(possessionFor)}%</span>
-                  <span>Opponent · {100 - Math.round(possessionFor)}%</span>
-                </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  step={1}
-                  value={possessionFor}
-                  onChange={(e) => setPossessionFor(parseInt(e.target.value) || 0)}
-                  className="w-full accent-[var(--primary)]"
-                  aria-label="Possession %"
-                />
-                <div className="flex justify-between text-[11px] uppercase tracking-wider text-muted-foreground/60 mt-0.5 font-mono">
-                  <span>0</span><span>50</span><span>100</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3 pt-1">
-                <XgInput label="xG (You)" icon={<Target className="h-3 w-3 text-primary" />} value={xgFor} onChange={setXgFor} accent />
-                <XgInput label="xG (Opponent)" icon={<Target className="h-3 w-3 text-muted-foreground" />} value={xgAgainst} onChange={setXgAgainst} />
-              </div>
-            </div>
+            {/* Possession & xG — collapsible */}
+            <PossessionXgSection
+              possessionFor={possessionFor}
+              setPossessionFor={setPossessionFor}
+              xgFor={xgFor}
+              setXgFor={setXgFor}
+              xgAgainst={xgAgainst}
+              setXgAgainst={setXgAgainst}
+              defaultOpen={!!(existingMatch && (existingMatch.possessionFor != null || (existingMatch.xgFor ?? 0) > 0 || (existingMatch.xgAgainst ?? 0) > 0))}
+            />
+
 
 
             {/* Player performances — aligned columns, no inner scroll */}
