@@ -1333,7 +1333,7 @@ function TimelineSection({
   );
 }
 
-function LiveReportSection(props: { wl: WeekendLeague; matches: Match[]; squadAggs: PlayerAgg[] }) {
+function LiveReportSection(props: { wl: { id: string }; matches: Match[]; squadAggs: PlayerAgg[] }) {
   const [open, setOpen] = useState(true);
   return (
     <section className="mb-8">
