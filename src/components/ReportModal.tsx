@@ -196,6 +196,28 @@ export function ReportModal({
             />
           )}
 
+          {topScorer && (
+            <Award
+              type="Top Scorer"
+              color="primary"
+              icon={<SoccerBall size={20} />}
+              name={topScorer.player.name}
+              sub={`${topScorer.player.position} · ${topScorer.player.overall} · ${topScorer.player.rarity}`}
+              stat={`${topScorer.goals} goals · ${topScorer.matches} apps`}
+            />
+          )}
+
+          {topAssister && (
+            <Award
+              type="Top Assister"
+              color="primary"
+              icon={<SoccerBoot size={20} />}
+              name={topAssister.player.name}
+              sub={`${topAssister.player.position} · ${topAssister.player.overall} · ${topAssister.player.rarity}`}
+              stat={`${topAssister.assists} assists · ${topAssister.matches} apps`}
+            />
+          )}
+
           {under && (
             <Award
               type="Underperformer"
