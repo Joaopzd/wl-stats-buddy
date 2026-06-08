@@ -144,6 +144,12 @@ function WLDetail() {
         const gd = (record?.goalsFor ?? 0) - (record?.goalsAgainst ?? 0);
         const gdPositive = gd >= 0;
         const streak = currentWinStreak(matches);
+        // Loss streak: number of consecutive losses at the tail.
+        let lossStreak = 0;
+        for (let i = matches.length - 1; i >= 0; i--) {
+          if (matchIsWin(matches[i])) break;
+          lossStreak += 1;
+        }
 
         return (
           <div className="surface-glow overflow-hidden mb-6">
