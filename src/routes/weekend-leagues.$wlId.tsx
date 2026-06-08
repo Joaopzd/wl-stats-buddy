@@ -210,11 +210,19 @@ function WLDetail() {
                     )}
                   </span>
                   <span className="font-display text-3xl text-muted-foreground/40">–</span>
-                  <span className="font-display text-5xl sm:text-6xl stat-num text-destructive/90">{record?.losses ?? 0}</span>
+                  <span className="font-display text-5xl sm:text-6xl stat-num text-destructive/90 inline-flex items-baseline gap-1">
+                    {record?.losses ?? 0}
+                    {lossStreak >= 2 && <LossStreakIce streak={lossStreak} />}
+                  </span>
                 </div>
                 {streak >= 2 && (
                   <div className="mt-1 text-[11px] uppercase tracking-wider font-bold" style={{ color: streak >= 4 ? "#ff6b1a" : "#f59e0b" }}>
                     {streak}-win streak{streak >= 4 ? " · on fire" : ""}
+                  </div>
+                )}
+                {lossStreak >= 2 && (
+                  <div className="mt-1 text-[11px] uppercase tracking-wider font-bold text-sky-300">
+                    {lossStreak}-loss streak{lossStreak >= 4 ? " · cold spell" : ""}
                   </div>
                 )}
               </div>
