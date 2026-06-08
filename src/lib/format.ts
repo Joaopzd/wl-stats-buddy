@@ -192,6 +192,10 @@ export const raritySwatch = (r: Rarity): string => {
     "Heroes Ultimate Scream": "#3945de",
     "Journey of Nations": "#7bf8ad",
     "National Pride": "#9456dd",
+    "Icon TOTY": "#f7f7f3",
+    "MH TOTS": "#6d92ea",
+    "TOTS Highlights": "#5e315d",
+    "Path to Glory": "#351858",
   };
   if (hexMap[r]) {
     // Rendered via inline style elsewhere; return a neutral utility for layout fallback.
