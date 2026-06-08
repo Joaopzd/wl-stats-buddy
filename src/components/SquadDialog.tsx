@@ -4,6 +4,8 @@ import { store } from "@/lib/store";
 import type { Player, WeekendLeague } from "@/lib/types";
 import { FORMATIONS, FORMATION_NAMES, positionFits, type FormationName, type FormationSlot } from "@/lib/formations";
 import { PlayerCard } from "./PlayerCard";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "./ui/hover-card";
+import { rarityVisual } from "@/lib/format";
 import { toast } from "sonner";
 
 type Step = "formation" | "pitch";
@@ -32,10 +34,7 @@ export function SquadDialog({
   const playersById = useMemo(() => new Map(allPlayers.map((p) => [p.id, p])), [allPlayers]);
 
   const handlePickFormation = (f: FormationName) => {
-    if (f !== formation) {
-      // Reset assignments if formation changes (slot ids differ)
-      setAssignments({});
-    }
+    if (f !== formation) setAssignments({});
     setFormation(f);
     setStep("pitch");
   };
@@ -44,14 +43,12 @@ export function SquadDialog({
     if (!pickingSlot) return;
     setAssignments((s) => {
       const next = { ...s };
-      // Remove player from any other slot first
       for (const [k, v] of Object.entries(next)) {
         if (v === playerId) delete next[k];
       }
       next[pickingSlot.id] = playerId;
       return next;
     });
-    // Also remove from bench if present
     setBench((b) => b.filter((id) => id !== playerId));
     setPickingSlot(null);
     setSearch("");
@@ -125,10 +122,7 @@ export function SquadDialog({
     const filterPos = pickingSlot?.position;
     const candidates = allPlayers.filter((p) => {
       if (pickingSlot && !positionFits(p.position, pickingSlot.position)) return false;
-      if (!pickingSlot && startingIds.has(p.id)) return false; // bench: skip starters
-      if (pickingSlot) {
-        // Allow swapping; show all that fit
-      }
+      if (!pickingSlot && startingIds.has(p.id)) return false;
       if (search.trim() && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
@@ -166,6 +160,7 @@ export function SquadDialog({
                     onClick={() => (pickingSlot ? assignSlot(p.id) : addToBench(p.id))}
                     className="w-full flex items-center gap-3 px-3 py-2 rounded-md border border-border bg-card text-left transition hover:border-primary hover:bg-primary/5"
                   >
+                    <RarityDot rarity={p.rarity} size={20} />
                     <span className="font-display text-xl text-primary stat-num w-9 text-center shrink-0">{p.overall}</span>
                     <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1.5 py-0.5 rounded shrink-0 w-12 text-center">{p.position}</span>
                     <span className="font-semibold truncate flex-1">{p.name}</span>
@@ -189,49 +184,73 @@ export function SquadDialog({
     );
   }
 
-  // ============ PITCH STEP ============
+  // ============ PITCH + BENCH STEP (single page, side-by-side) ============
   return (
     <Shell
       onClose={onClose}
       title={`Squad — WL #${wl.number}`}
       subtitle={`${formation} · ${startingCount}/11 starting · ${bench.length} bench`}
       onBack={() => setStep("formation")}
+      wide
     >
-      <div className="flex-1 overflow-y-auto -mx-2 px-2 space-y-5">
-        {/* Pitch */}
-        <Pitch slots={slots} assignments={assignments} playersById={playersById}
-          onSlotClick={(s) => setPickingSlot(s)}
-          onSlotClear={clearSlot}
-        />
-
-        {/* Bench */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Bench ({bench.length})</div>
-            <button onClick={() => setPickingBench(true)} className="text-[11px] uppercase tracking-wider text-primary hover:opacity-80 font-bold">
-              + Add to bench
-            </button>
-          </div>
-          {bench.length === 0 ? (
-            <div className="surface-card p-4 text-center text-muted-foreground text-xs">Empty bench</div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5">
-              {bench.map((id) => {
-                const p = playersById.get(id);
-                if (!p) return null;
-                return (
-                  <div key={id} className="surface-card px-2 py-1.5 flex items-center gap-2">
-                    <span className="font-display text-base text-primary stat-num w-7 text-center shrink-0 leading-none">{p.overall}</span>
-                    <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{p.position}</span>
-                    <div className="text-[11px] font-semibold truncate flex-1 leading-tight">{p.name}</div>
-                    <button onClick={() => removeFromBench(id)} className="text-muted-foreground hover:text-destructive shrink-0">
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                );
-              })}
+      <div className="flex-1 overflow-y-auto -mx-2 px-2">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-5">
+          {/* LEFT: Pitch */}
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold mb-2">
+              Starting 11 · {startingCount}/11
             </div>
-          )}
+            <Pitch
+              slots={slots}
+              assignments={assignments}
+              playersById={playersById}
+              onSlotClick={(s) => setPickingSlot(s)}
+              onSlotClear={clearSlot}
+            />
+          </div>
+
+          {/* RIGHT: Bench list */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
+                Bench ({bench.length})
+              </div>
+              <button
+                onClick={() => setPickingBench(true)}
+                className="text-[11px] uppercase tracking-wider text-primary hover:opacity-80 font-bold"
+              >
+                + Add to bench
+              </button>
+            </div>
+            {bench.length === 0 ? (
+              <div className="surface-card p-4 text-center text-muted-foreground text-xs">Empty bench</div>
+            ) : (
+              <div className="space-y-1.5">
+                {bench.map((id) => {
+                  const p = playersById.get(id);
+                  if (!p) return null;
+                  return (
+                    <HoverCard key={id} openDelay={100} closeDelay={80}>
+                      <HoverCardTrigger asChild>
+                        <div className="surface-card px-2.5 py-2 flex items-center gap-2.5 cursor-default">
+                          <RarityDot rarity={p.rarity} size={22} />
+                          <span className="font-display text-base text-primary stat-num w-8 text-center shrink-0 leading-none">{p.overall}</span>
+                          <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-10 text-center">{p.position}</span>
+                          <div className="text-xs font-semibold truncate flex-1 leading-tight">{p.name}</div>
+                          <button onClick={() => removeFromBench(id)} className="text-muted-foreground hover:text-destructive shrink-0">
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </HoverCardTrigger>
+                      <HoverCardContent side="left" className="w-auto p-2 bg-popover border-border">
+                        <PlayerCard name={p.name} overall={p.overall} position={p.position} rarity={p.rarity} imageUrl={p.imageUrl} size="lg" />
+                      </HoverCardContent>
+                    </HoverCard>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -246,11 +265,11 @@ export function SquadDialog({
 }
 
 function Shell({
-  onClose, onBack, title, subtitle, children,
-}: { onClose: () => void; onBack?: () => void; title: string; subtitle?: string; children: React.ReactNode }) {
+  onClose, onBack, title, subtitle, children, wide,
+}: { onClose: () => void; onBack?: () => void; title: string; subtitle?: string; children: React.ReactNode; wide?: boolean }) {
   return (
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm grid place-items-center p-4" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className="surface-glow w-full max-w-3xl max-h-[90vh] flex flex-col p-6">
+      <div onClick={(e) => e.stopPropagation()} className={`surface-glow w-full ${wide ? "max-w-5xl" : "max-w-3xl"} max-h-[92vh] flex flex-col p-6`}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2 min-w-0">
             {onBack && (
@@ -271,6 +290,32 @@ function Shell({
   );
 }
 
+/** Small disc filled with the player's rarity palette. Replaces the full card on the pitch. */
+function RarityDot({ rarity, size = 24 }: { rarity: Player["rarity"]; size?: number }) {
+  const v = rarityVisual(rarity);
+  const baseStyle: React.CSSProperties = {
+    width: size,
+    height: size,
+    borderRadius: "9999px",
+    boxShadow: "0 1px 3px rgba(0,0,0,.4)",
+    flexShrink: 0,
+  };
+  if (v.style) {
+    return (
+      <span
+        title={String(rarity)}
+        className="inline-block border-2"
+        style={{
+          ...baseStyle,
+          background: v.style.background as string,
+          borderColor: v.style.borderColor as string,
+        }}
+      />
+    );
+  }
+  return <span title={String(rarity)} className={`inline-block ${v.className}`} style={baseStyle} />;
+}
+
 function Pitch({
   slots, assignments, playersById, onSlotClick, onSlotClear,
 }: {
@@ -282,19 +327,18 @@ function Pitch({
 }) {
   return (
     <div
-      className="relative w-full max-w-sm mx-auto rounded-lg overflow-hidden border border-emerald-700/40"
+      className="relative w-full max-w-md mx-auto rounded-lg overflow-hidden border border-emerald-700/40"
       style={{
         aspectRatio: "3 / 4",
         background:
           "repeating-linear-gradient(0deg, oklch(0.32 0.06 145) 0 8%, oklch(0.36 0.06 145) 8% 16%)",
       }}
     >
-      {/* Pitch markings */}
       <div className="absolute inset-1.5 border border-white/30 rounded" />
       <div className="absolute left-1/2 top-1.5 bottom-1.5 w-px bg-white/30 -translate-x-1/2" />
-      <div className="absolute left-1/2 top-1/2 h-10 w-10 border border-white/30 rounded-full -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute left-1/2 top-1.5 -translate-x-1/2 w-1/2 h-7 border border-t-0 border-white/30" />
-      <div className="absolute left-1/2 bottom-1.5 -translate-x-1/2 w-1/2 h-7 border border-b-0 border-white/30" />
+      <div className="absolute left-1/2 top-1/2 h-12 w-12 border border-white/30 rounded-full -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute left-1/2 top-1.5 -translate-x-1/2 w-1/2 h-8 border border-t-0 border-white/30" />
+      <div className="absolute left-1/2 bottom-1.5 -translate-x-1/2 w-1/2 h-8 border border-b-0 border-white/30" />
 
       {slots.map((slot) => {
         const playerId = assignments[slot.id];
@@ -305,29 +349,55 @@ function Pitch({
             className="absolute -translate-x-1/2 -translate-y-1/2"
             style={{ left: `${slot.x}%`, top: `${slot.y}%` }}
           >
-            <button
-              onClick={() => onSlotClick(slot)}
-              className={`group relative grid place-items-center transition ${
-                player ? "" : "h-9 w-9 rounded-full border-2 border-dashed border-white/60 bg-black/30 hover:bg-black/50 hover:border-white"
-              }`}
-              title={slot.position}
-            >
-              {player ? (
-                <div className="relative">
-                  <PlayerCard name={player.name} overall={player.overall} position={player.position} rarity={player.rarity} imageUrl={player.imageUrl} size="xs" />
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => { e.stopPropagation(); onSlotClear(slot.id); }}
-                    className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-destructive text-destructive-foreground grid place-items-center opacity-0 group-hover:opacity-100 transition"
+            {player ? (
+              <HoverCard openDelay={100} closeDelay={80}>
+                <HoverCardTrigger asChild>
+                  <button
+                    onClick={() => onSlotClick(slot)}
+                    className="group relative grid place-items-center"
+                    title={`${player.name} · ${player.position}`}
                   >
-                    <X className="h-2 w-2" />
-                  </span>
-                </div>
-              ) : (
+                    <RarityDot rarity={player.rarity} size={32} />
+                    <span className="absolute inset-0 grid place-items-center font-display text-[10px] font-bold leading-none pointer-events-none"
+                      style={{ color: "white", textShadow: "0 0 3px rgba(0,0,0,0.9)" }}
+                    >
+                      {player.overall}
+                    </span>
+                    <span className="mt-0.5 text-[9px] uppercase font-bold text-white tracking-wider leading-none"
+                      style={{ textShadow: "0 0 3px rgba(0,0,0,0.9)" }}
+                    >
+                      {player.name.split(" ").slice(-1)[0]}
+                    </span>
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      onClick={(e) => { e.stopPropagation(); onSlotClear(slot.id); }}
+                      className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-destructive text-destructive-foreground grid place-items-center opacity-0 group-hover:opacity-100 transition"
+                    >
+                      <X className="h-2 w-2" />
+                    </span>
+                  </button>
+                </HoverCardTrigger>
+                <HoverCardContent side="top" className="w-auto p-2 bg-popover border-border">
+                  <PlayerCard
+                    name={player.name}
+                    overall={player.overall}
+                    position={player.position}
+                    rarity={player.rarity}
+                    imageUrl={player.imageUrl}
+                    size="lg"
+                  />
+                </HoverCardContent>
+              </HoverCard>
+            ) : (
+              <button
+                onClick={() => onSlotClick(slot)}
+                className="h-9 w-9 rounded-full border-2 border-dashed border-white/60 bg-black/30 hover:bg-black/50 hover:border-white grid place-items-center"
+                title={slot.position}
+              >
                 <span className="text-[11px] font-bold text-white tracking-wider">{slot.position}</span>
-              )}
-            </button>
+              </button>
+            )}
           </div>
         );
       })}
