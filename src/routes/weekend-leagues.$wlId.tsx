@@ -1257,42 +1257,26 @@ function LiveCollapsible({
 }
 
 
-/** Compact SVG line chart showing team avg rating per match. */
-function RatingTrendChart({ points }: { points: { index: number; avg: number; win: boolean }[] }) {
-  const W = 600, H = 100, P = 8;
-  const rated = points.filter((p) => p.avg > 0);
-  if (rated.length === 0) {
-    return <div className="text-xs text-muted-foreground text-center py-4">No ratings logged yet.</div>;
-  }
-  const xs = (i: number) => P + (i / Math.max(1, points.length - 1)) * (W - 2 * P);
-  const ys = (v: number) => {
-    const min = 4, max = 10;
-    const clamped = Math.max(min, Math.min(max, v));
-    return H - P - ((clamped - min) / (max - min)) * (H - 2 * P);
-  };
-  const path = points
-    .map((p, i) => (p.avg > 0 ? `${i === 0 ? "M" : "L"}${xs(i).toFixed(1)} ${ys(p.avg).toFixed(1)}` : ""))
-    .filter(Boolean)
-    .join(" ");
+/** Ice badge shown next to the loss count during a live WL when in a 2+ loss skid. */
+function LossStreakIce({ streak }: { streak: number }) {
+  const cold = streak >= 4;
+  const size = cold ? 28 : 20;
+  const color = cold ? "#7dd3fc" : "#38bdf8";
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-24" preserveAspectRatio="none">
-      {/* baseline 6.0 */}
-      <line x1={P} x2={W - P} y1={ys(6)} y2={ys(6)} stroke="currentColor" strokeOpacity="0.15" strokeDasharray="3 3" />
-      <path d={path} fill="none" stroke="hsl(var(--primary))" strokeWidth="2" />
-      {points.map((p, i) =>
-        p.avg > 0 ? (
-          <circle
-            key={i}
-            cx={xs(i)}
-            cy={ys(p.avg)}
-            r={3}
-            fill={p.win ? "hsl(var(--primary))" : "hsl(var(--destructive))"}
-          />
-        ) : null,
-      )}
-    </svg>
+    <span
+      aria-label={`${streak}-loss streak`}
+      title={`${streak}-loss streak`}
+      className={`inline-block align-baseline ${cold ? "animate-pulse" : ""}`}
+      style={{ filter: cold ? `drop-shadow(0 0 8px ${color})` : `drop-shadow(0 0 3px ${color}80)` }}
+    >
+      <Snowflake
+        style={{ width: size, height: size, color }}
+        strokeWidth={cold ? 2.25 : 1.75}
+      />
+    </span>
   );
 }
+
 
 function LiveStatTile({
   label,
