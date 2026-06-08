@@ -91,7 +91,9 @@ function WLDetail() {
   }, [matches.length, reportSeen, wl?.closed]);
 
   // Loss-streak alert: trigger once per fresh L-L streak (resets after a win).
+  // Once the user dismisses it via "Got it", it stays dismissed for the rest of the session.
   useEffect(() => {
+    if (lossAlertDismissed) return;
     if (matches.length < 2) return;
     const last = matches[matches.length - 1];
     const prev = matches[matches.length - 2];
@@ -103,10 +105,9 @@ function WLDetail() {
         setLossAlertOpen(true);
       }
     } else if (!lastIsLoss) {
-      // Reset the marker after a win so a future L-L re-triggers the alert.
       lossAlertShownAtRef.current = null;
     }
-  }, [matches]);
+  }, [matches, lossAlertDismissed]);
 
   if (!wl) {
     return (
