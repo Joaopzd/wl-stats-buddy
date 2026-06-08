@@ -26,7 +26,7 @@ export const rarityVisual = (r: Rarity): RarityVisual => {
     case "TOTW":
       return { className: "bg-gradient-to-br from-zinc-950 to-black text-yellow-300 border border-yellow-300/80" };
     case "Path to Glory":
-      return { className: "bg-gradient-to-br from-cyan-400 to-blue-700 text-white border border-cyan-200/60" };
+      return solid("#351858", "#57cb37");
 
     // ===== Solid palettes from the brief =====
     case "Cornerstone":
