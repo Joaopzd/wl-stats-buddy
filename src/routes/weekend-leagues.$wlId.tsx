@@ -17,7 +17,7 @@ import { OpponentCrest } from "@/components/OpponentCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
 import { CREST_SIZE } from "@/lib/ui";
 import { FORMATIONS, type FormationSlot } from "@/lib/formations";
-import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Shield, ChevronDown, Sparkles, Flame, TrendingUp, TrendingDown, Activity } from "lucide-react";
+import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Shield, ChevronDown, Sparkles, Flame, Snowflake, TrendingUp, TrendingDown, Activity } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
@@ -63,6 +63,7 @@ function WLDetail() {
   const [nameDraft, setNameDraft] = useState("");
   const [squadExpanded, setSquadExpanded] = useState(false);
   const [lossAlertOpen, setLossAlertOpen] = useState(false);
+  const [lossAlertDismissed, setLossAlertDismissed] = useState(false);
   const [pickOpen, setPickOpen] = useState(false);
   const [detailPlayer, setDetailPlayer] = useState<Player | null>(null);
   const lossAlertShownAtRef = useRef<string | null>(null);
@@ -90,7 +91,9 @@ function WLDetail() {
   }, [matches.length, reportSeen, wl?.closed]);
 
   // Loss-streak alert: trigger once per fresh L-L streak (resets after a win).
+  // Once the user dismisses it via "Got it", it stays dismissed for the rest of the session.
   useEffect(() => {
+    if (lossAlertDismissed) return;
     if (matches.length < 2) return;
     const last = matches[matches.length - 1];
     const prev = matches[matches.length - 2];
@@ -102,10 +105,9 @@ function WLDetail() {
         setLossAlertOpen(true);
       }
     } else if (!lastIsLoss) {
-      // Reset the marker after a win so a future L-L re-triggers the alert.
       lossAlertShownAtRef.current = null;
     }
-  }, [matches]);
+  }, [matches, lossAlertDismissed]);
 
   if (!wl) {
     return (
@@ -142,6 +144,12 @@ function WLDetail() {
         const gd = (record?.goalsFor ?? 0) - (record?.goalsAgainst ?? 0);
         const gdPositive = gd >= 0;
         const streak = currentWinStreak(matches);
+        // Loss streak: number of consecutive losses at the tail.
+        let lossStreak = 0;
+        for (let i = matches.length - 1; i >= 0; i--) {
+          if (matchIsWin(matches[i])) break;
+          lossStreak += 1;
+        }
 
         return (
           <div className="surface-glow overflow-hidden mb-6">
@@ -202,11 +210,19 @@ function WLDetail() {
                     )}
                   </span>
                   <span className="font-display text-3xl text-muted-foreground/40">–</span>
-                  <span className="font-display text-5xl sm:text-6xl stat-num text-destructive/90">{record?.losses ?? 0}</span>
+                  <span className="font-display text-5xl sm:text-6xl stat-num text-destructive/90 inline-flex items-baseline gap-1">
+                    {record?.losses ?? 0}
+                    {lossStreak >= 2 && <LossStreakIce streak={lossStreak} />}
+                  </span>
                 </div>
                 {streak >= 2 && (
                   <div className="mt-1 text-[11px] uppercase tracking-wider font-bold" style={{ color: streak >= 4 ? "#ff6b1a" : "#f59e0b" }}>
                     {streak}-win streak{streak >= 4 ? " · on fire" : ""}
+                  </div>
+                )}
+                {lossStreak >= 2 && (
+                  <div className="mt-1 text-[11px] uppercase tracking-wider font-bold text-sky-300">
+                    {lossStreak}-loss streak{lossStreak >= 4 ? " · cold spell" : ""}
                   </div>
                 )}
               </div>
@@ -547,7 +563,7 @@ function WLDetail() {
           onBackToList={() => { store.updateWL(wl.id, { closed: true }); navigate({ to: "/weekend-leagues" }); }}
         />
       )}
-      {lossAlertOpen && <LossStreakAlert onClose={() => setLossAlertOpen(false)} />}
+      {lossAlertOpen && <LossStreakAlert onClose={() => { setLossAlertOpen(false); setLossAlertDismissed(true); }} />}
       {detailPlayer && (
         <PlayerDetailModal
           player={detailPlayer}
@@ -1045,16 +1061,8 @@ function LiveWLReport({
       .slice(0, 6);
   }, [squadAggs]);
 
-  // Rating-per-match trend (average team rating for each played match).
-  const trend = useMemo(() => {
-    return [...matches]
-      .sort((a, b) => a.index - b.index)
-      .map((m) => {
-        const rated = m.performances.filter((p) => (p.rating ?? 0) > 0);
-        const avg = rated.length ? rated.reduce((s, p) => s + (p.rating ?? 0), 0) / rated.length : 0;
-        return { index: m.index, avg, win: matchIsWin(m) };
-      });
-  }, [matches]);
+  // Rating-per-match trend removed; chart deprecated.
+
 
   // Current MVP (highest ga * sqrt(matches) blend).
   const mvp = ranked[0] ?? null;
@@ -1066,10 +1074,15 @@ function LiveWLReport({
   }, [squadAggs]);
 
   const streak = currentWinStreak(matches);
-  const recentAvg = trend.slice(-3).filter((t) => t.avg > 0);
-  const teamAvg = recentAvg.length
-    ? recentAvg.reduce((s, t) => s + t.avg, 0) / recentAvg.length
-    : 0;
+  // Recent team avg rating across last 3 played matches.
+  const teamAvg = useMemo(() => {
+    const last3 = [...matches].sort((a, b) => a.index - b.index).slice(-3);
+    const avgs = last3.map((m) => {
+      const rated = m.performances.filter((p) => (p.rating ?? 0) > 0);
+      return rated.length ? rated.reduce((s, p) => s + (p.rating ?? 0), 0) / rated.length : 0;
+    }).filter((v) => v > 0);
+    return avgs.length ? avgs.reduce((s, v) => s + v, 0) / avgs.length : 0;
+  }, [matches]);
 
   // Possession & xG averages across the WL so far (only matches that logged the stat).
   const liveAdvanced = useMemo(() => {
@@ -1177,9 +1190,6 @@ function LiveWLReport({
         />
       </div>
 
-      <LiveCollapsible title="Rating trend per match" defaultOpen={false} className="mb-3">
-        <RatingTrendChart points={trend} />
-      </LiveCollapsible>
 
       <LiveCollapsible
         title="Top contributors"
@@ -1247,42 +1257,26 @@ function LiveCollapsible({
 }
 
 
-/** Compact SVG line chart showing team avg rating per match. */
-function RatingTrendChart({ points }: { points: { index: number; avg: number; win: boolean }[] }) {
-  const W = 600, H = 100, P = 8;
-  const rated = points.filter((p) => p.avg > 0);
-  if (rated.length === 0) {
-    return <div className="text-xs text-muted-foreground text-center py-4">No ratings logged yet.</div>;
-  }
-  const xs = (i: number) => P + (i / Math.max(1, points.length - 1)) * (W - 2 * P);
-  const ys = (v: number) => {
-    const min = 4, max = 10;
-    const clamped = Math.max(min, Math.min(max, v));
-    return H - P - ((clamped - min) / (max - min)) * (H - 2 * P);
-  };
-  const path = points
-    .map((p, i) => (p.avg > 0 ? `${i === 0 ? "M" : "L"}${xs(i).toFixed(1)} ${ys(p.avg).toFixed(1)}` : ""))
-    .filter(Boolean)
-    .join(" ");
+/** Ice badge shown next to the loss count during a live WL when in a 2+ loss skid. */
+function LossStreakIce({ streak }: { streak: number }) {
+  const cold = streak >= 4;
+  const size = cold ? 28 : 20;
+  const color = cold ? "#7dd3fc" : "#38bdf8";
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-24" preserveAspectRatio="none">
-      {/* baseline 6.0 */}
-      <line x1={P} x2={W - P} y1={ys(6)} y2={ys(6)} stroke="currentColor" strokeOpacity="0.15" strokeDasharray="3 3" />
-      <path d={path} fill="none" stroke="hsl(var(--primary))" strokeWidth="2" />
-      {points.map((p, i) =>
-        p.avg > 0 ? (
-          <circle
-            key={i}
-            cx={xs(i)}
-            cy={ys(p.avg)}
-            r={3}
-            fill={p.win ? "hsl(var(--primary))" : "hsl(var(--destructive))"}
-          />
-        ) : null,
-      )}
-    </svg>
+    <span
+      aria-label={`${streak}-loss streak`}
+      title={`${streak}-loss streak`}
+      className={`inline-block align-baseline ${cold ? "animate-pulse" : ""}`}
+      style={{ filter: cold ? `drop-shadow(0 0 8px ${color})` : `drop-shadow(0 0 3px ${color}80)` }}
+    >
+      <Snowflake
+        style={{ width: size, height: size, color }}
+        strokeWidth={cold ? 2.25 : 1.75}
+      />
+    </span>
   );
 }
+
 
 function LiveStatTile({
   label,

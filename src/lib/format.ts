@@ -26,7 +26,7 @@ export const rarityVisual = (r: Rarity): RarityVisual => {
     case "TOTW":
       return { className: "bg-gradient-to-br from-zinc-950 to-black text-yellow-300 border border-yellow-300/80" };
     case "Path to Glory":
-      return { className: "bg-gradient-to-br from-cyan-400 to-blue-700 text-white border border-cyan-200/60" };
+      return solid("#351858", "#57cb37");
 
     // ===== Solid palettes from the brief =====
     case "Cornerstone":
@@ -117,6 +117,12 @@ export const rarityVisual = (r: Rarity): RarityVisual => {
       return solid("#7bf8ad", "#5a2fe9");
     case "National Pride":
       return solid("#9456dd", "#47da40");
+    case "Icon TOTY":
+      return solid("#f7f7f3", "#b98150");
+    case "MH TOTS":
+      return solid("#6d92ea", "#c9d6de");
+    case "TOTS Highlights":
+      return solid("#5e315d", "#f9d7c5");
 
     // ===== Legends (kept) =====
     case "Icon Base":
@@ -186,6 +192,10 @@ export const raritySwatch = (r: Rarity): string => {
     "Heroes Ultimate Scream": "#3945de",
     "Journey of Nations": "#7bf8ad",
     "National Pride": "#9456dd",
+    "Icon TOTY": "#f7f7f3",
+    "MH TOTS": "#6d92ea",
+    "TOTS Highlights": "#5e315d",
+    "Path to Glory": "#351858",
   };
   if (hexMap[r]) {
     // Rendered via inline style elsewhere; return a neutral utility for layout fallback.
