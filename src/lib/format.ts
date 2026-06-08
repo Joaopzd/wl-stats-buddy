@@ -117,6 +117,12 @@ export const rarityVisual = (r: Rarity): RarityVisual => {
       return solid("#7bf8ad", "#5a2fe9");
     case "National Pride":
       return solid("#9456dd", "#47da40");
+    case "Icon TOTY":
+      return solid("#f7f7f3", "#b98150");
+    case "MH TOTS":
+      return solid("#6d92ea", "#c9d6de");
+    case "TOTS Highlights":
+      return solid("#5e315d", "#f9d7c5");
 
     // ===== Legends (kept) =====
     case "Icon Base":
