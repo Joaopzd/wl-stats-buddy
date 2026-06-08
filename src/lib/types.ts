@@ -41,6 +41,9 @@ export type Rarity =
   | "Heroes Ultimate Scream"
   | "Journey of Nations"
   | "National Pride"
+  | "Icon TOTY"
+  | "MH TOTS"
+  | "TOTS Highlights"
   // Legends
   | "Icon Base"
   | "Hero Base";
