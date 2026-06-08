@@ -1074,10 +1074,15 @@ function LiveWLReport({
   }, [squadAggs]);
 
   const streak = currentWinStreak(matches);
-  const recentAvg = trend.slice(-3).filter((t) => t.avg > 0);
-  const teamAvg = recentAvg.length
-    ? recentAvg.reduce((s, t) => s + t.avg, 0) / recentAvg.length
-    : 0;
+  // Recent team avg rating across last 3 played matches.
+  const teamAvg = useMemo(() => {
+    const last3 = [...matches].sort((a, b) => a.index - b.index).slice(-3);
+    const avgs = last3.map((m) => {
+      const rated = m.performances.filter((p) => (p.rating ?? 0) > 0);
+      return rated.length ? rated.reduce((s, p) => s + (p.rating ?? 0), 0) / rated.length : 0;
+    }).filter((v) => v > 0);
+    return avgs.length ? avgs.reduce((s, v) => s + v, 0) / avgs.length : 0;
+  }, [matches]);
 
   // Possession & xG averages across the WL so far (only matches that logged the stat).
   const liveAdvanced = useMemo(() => {
