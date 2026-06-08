@@ -1193,9 +1193,6 @@ function LiveWLReport({
         />
       </div>
 
-      <LiveCollapsible title="Rating trend per match" defaultOpen={false} className="mb-3">
-        <RatingTrendChart points={trend} />
-      </LiveCollapsible>
 
       <LiveCollapsible
         title="Top contributors"
