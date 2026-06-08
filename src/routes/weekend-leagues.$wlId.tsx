@@ -1061,16 +1061,8 @@ function LiveWLReport({
       .slice(0, 6);
   }, [squadAggs]);
 
-  // Rating-per-match trend (average team rating for each played match).
-  const trend = useMemo(() => {
-    return [...matches]
-      .sort((a, b) => a.index - b.index)
-      .map((m) => {
-        const rated = m.performances.filter((p) => (p.rating ?? 0) > 0);
-        const avg = rated.length ? rated.reduce((s, p) => s + (p.rating ?? 0), 0) / rated.length : 0;
-        return { index: m.index, avg, win: matchIsWin(m) };
-      });
-  }, [matches]);
+  // Rating-per-match trend removed; chart deprecated.
+
 
   // Current MVP (highest ga * sqrt(matches) blend).
   const mvp = ranked[0] ?? null;
