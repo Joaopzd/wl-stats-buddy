@@ -327,7 +327,7 @@ function Pitch({
 }) {
   return (
     <div
-      className="relative w-full max-w-md mx-auto rounded-lg overflow-hidden border border-emerald-700/40"
+      className="relative w-full max-w-[280px] mx-auto rounded-lg overflow-hidden border border-emerald-700/40"
       style={{
         aspectRatio: "3 / 4",
         background:
