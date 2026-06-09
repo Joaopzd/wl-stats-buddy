@@ -269,7 +269,7 @@ function Shell({
 }: { onClose: () => void; onBack?: () => void; title: string; subtitle?: string; children: React.ReactNode; wide?: boolean }) {
   return (
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm grid place-items-center p-4" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className={`surface-glow w-full ${wide ? "max-w-5xl" : "max-w-3xl"} max-h-[92vh] flex flex-col p-6`}>
+      <div onClick={(e) => e.stopPropagation()} className={`surface-glow w-full ${wide ? "max-w-3xl" : "max-w-2xl"} max-h-[90vh] flex flex-col p-5`}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2 min-w-0">
             {onBack && (
