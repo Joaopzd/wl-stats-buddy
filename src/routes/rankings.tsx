@@ -242,6 +242,7 @@ function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
           })}
         </ol>
       )}
+      </div>)}
     </div>
   );
 }
