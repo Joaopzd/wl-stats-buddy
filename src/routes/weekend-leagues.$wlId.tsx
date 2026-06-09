@@ -138,9 +138,7 @@ function WLDetail() {
 
       {(() => {
         const wins = record?.wins ?? 0;
-        const maxPicks = wins >= 13 ? 3 : wins >= 9 ? 2 : 0;
-        const usedPicks = wl.playerPickIds?.length ?? 0;
-        const canAddPick = maxPicks > 0 && usedPicks < maxPicks;
+
         const gd = (record?.goalsFor ?? 0) - (record?.goalsAgainst ?? 0);
         const gdPositive = gd >= 0;
         const streak = currentWinStreak(matches);
