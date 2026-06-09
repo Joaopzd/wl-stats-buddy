@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers } from "@/lib/store";
 import { aggregateAllPlayers, clutchAggregate, CLUTCH_MIN_MATCHES, CLUTCH_KING_TOOLTIP, CLUTCH_DROP_TOOLTIP, performanceStatus, type ClutchAgg, type PlayerAgg } from "@/lib/stats";
 import { RatingDisplay } from "@/components/RatingDisplay";
-import { Sparkles, Trophy, Shield, Info, Zap, AlertTriangle, Flame, TrendingDown } from "lucide-react";
+import { Sparkles, Trophy, Shield, Info, Zap, AlertTriangle, Flame, TrendingDown, ChevronDown } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
+
 
 const MIN_MATCHES = 9;
 
@@ -152,20 +153,29 @@ function RankingsPage() {
 }
 
 function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
+  const [open, setOpen] = useState(false);
   return (
     <div className="surface-card p-5 lg:col-span-3">
-      <div className="flex items-center justify-between mb-1">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between"
+        aria-expanded={open}
+      >
         <div className="flex items-center gap-2 text-primary">
           <Flame className="h-4 w-4" />
-          <h2 className="font-display text-lg tracking-wider">Clutch Leaderboard</h2>
+          <h2 className="font-display text-lg tracking-wider">Clutch King</h2>
         </div>
-        <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-          Δ Rating · Matches 11–15
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Δ Rating · 11–15</span>
+          <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
         </div>
-      </div>
+      </button>
+      {open && (<div className="mt-4">
       <div className="text-[11px] text-muted-foreground mb-3">
         Career performance during the final WL stretch vs baseline. Min {CLUTCH_MIN_MATCHES} clutch apps.
       </div>
+
       {rows.length === 0 ? (
         <div className="text-sm text-muted-foreground py-6 text-center">
           No player has {CLUTCH_MIN_MATCHES}+ rated appearances in matches 11–15 yet.
@@ -232,6 +242,7 @@ function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
           })}
         </ol>
       )}
+      </div>)}
     </div>
   );
 }

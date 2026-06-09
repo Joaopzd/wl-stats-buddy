@@ -45,14 +45,21 @@ export function ReportModal({
     }
   }
 
-  const mvp = [...aggs].sort((a, b) => b.ga - a.ga || b.goals - a.goals)[0];
+  // MVP formula: blends G+A output with average rating, weighted by appearances.
+  // score = avgRating * sqrt(matches) * 1.2 + (goals + assists) * 0.6
+  const mvpScore = (a: typeof aggs[number]) =>
+    (a.avgRating > 0 ? a.avgRating * Math.sqrt(a.matches) * 1.2 : 0) + (a.goals + a.assists) * 0.6;
+  const mvp = [...aggs]
+    .filter((a) => a.matches > 0 && (a.avgRating > 0 || a.ga > 0))
+    .sort((a, b) => mvpScore(b) - mvpScore(a) || b.ga - a.ga)[0];
   const topScorer = [...aggs].filter((a) => a.goals > 0).sort((a, b) => b.goals - a.goals || b.assists - a.assists)[0];
   const topAssister = [...aggs].filter((a) => a.assists > 0).sort((a, b) => b.assists - a.assists || b.goals - a.goals)[0];
 
   const minMatches = Math.ceil(matches.length / 2);
-  const eligible = aggs.filter((a) => a.matches >= minMatches);
+  // Exclude goalkeepers — high goals-against in this game unfairly tanks their rating.
+  const eligible = aggs.filter((a) => a.matches >= minMatches && a.player.position !== "GK");
   const under = eligible.length
-    ? [...eligible].sort((a, b) => a.gaPerGame - b.gaPerGame || a.avgRating - b.avgRating)[0]
+    ? [...eligible].sort((a, b) => a.avgRating - b.avgRating || a.gaPerGame - b.gaPerGame)[0]
     : null;
 
   const rank = rankFromWins(record.wins);

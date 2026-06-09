@@ -138,9 +138,7 @@ function WLDetail() {
 
       {(() => {
         const wins = record?.wins ?? 0;
-        const maxPicks = wins >= 13 ? 3 : wins >= 9 ? 2 : 0;
-        const usedPicks = wl.playerPickIds?.length ?? 0;
-        const canAddPick = maxPicks > 0 && usedPicks < maxPicks;
+
         const gd = (record?.goalsFor ?? 0) - (record?.goalsAgainst ?? 0);
         const gdPositive = gd >= 0;
         const streak = currentWinStreak(matches);
@@ -273,39 +271,8 @@ function WLDetail() {
                   View Report
                 </button>
               )}
-              {canAddPick && (
-                <button
-                  onClick={() => setPickOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md font-semibold uppercase tracking-wider text-[11px] transition border-2 ml-auto"
-                  style={{ background: "#CB332B", borderColor: "#FFF475", color: "#FFFFFF", boxShadow: "0 0 14px -4px #FFF475" }}
-                  title={`Add Player Pick (${usedPicks}/${maxPicks})`}
-                >
-                  <Sparkles className="h-3.5 w-3.5" /> Add Player Pick · {usedPicks}/{maxPicks}
-                </button>
-              )}
             </div>
 
-            {/* Picks summary */}
-            {(wl.playerPickIds?.length ?? 0) > 0 && (
-              <div className="border-t border-border/60 px-4 sm:px-5 py-3 bg-background/30">
-                <div className="text-[11px] uppercase tracking-[0.3em] font-bold mb-2 flex items-center gap-1.5" style={{ color: "#FFF475" }}>
-                  <Sparkles className="h-3 w-3" /> Red Picks · {wl.playerPickIds!.length}/{maxPicks || wl.playerPickIds!.length}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {wl.playerPickIds!.map((pid) => {
-                    const p = players.find((x) => x.id === pid);
-                    if (!p) return null;
-                    return (
-                      <div key={pid} className="flex items-center gap-2 rounded-md border-2 px-2 py-1.5" style={{ background: "#CB332B", borderColor: "#FFF475", color: "#FFFFFF" }}>
-                        <span className="font-display stat-num text-base leading-none">{p.overall}</span>
-                        <span className="text-[11px] font-mono uppercase tracking-wider opacity-80 bg-black/20 px-1 py-0.5 rounded">{p.position}</span>
-                        <span className="text-xs font-semibold truncate max-w-[10rem]">{p.name}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
           </div>
         );
       })()}

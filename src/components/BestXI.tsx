@@ -6,9 +6,10 @@ import {
   type FormationSlot,
   positionFits,
 } from "@/lib/formations";
-import type { Match, Player, WeekendLeague } from "@/lib/types";
+import type { Match, Player, WeekendLeague, Rarity } from "@/lib/types";
 import { aggregateAllPlayers, type PlayerAgg } from "@/lib/stats";
 import { PlayerCard } from "@/components/PlayerCard";
+import { rarityVisual } from "@/lib/format";
 import {
   HoverCard,
   HoverCardContent,
@@ -61,7 +62,6 @@ interface SelectionResult {
 }
 
 function score(a: PlayerAgg): number {
-  // Performance score: avg rating weighted with G+A per game.
   return a.avgRating * 1.0 + a.gaPerGame * 0.5;
 }
 
@@ -80,10 +80,8 @@ function pickBestXI(
       .filter((a) => {
         const played = positionsPlayed.get(a.player.id);
         if (!played || played.size === 0) {
-          // Fallback: allow if player's natural position fits this slot.
           return positionFits(a.player.position, slot.position);
         }
-        // Constraint: must have played in this exact position.
         return played.has(slot.position);
       })
       .sort((a, b) => {
@@ -113,6 +111,57 @@ function pickBestXI(
   return { starting, bench };
 }
 
+/** Disc filled with the player's rarity palette. */
+function RarityDot({ rarity, size = 28 }: { rarity: Rarity; size?: number }) {
+  const v = rarityVisual(rarity);
+  const baseStyle: React.CSSProperties = {
+    width: size,
+    height: size,
+    borderRadius: "9999px",
+    boxShadow: "0 1px 3px rgba(0,0,0,.4)",
+    flexShrink: 0,
+  };
+  if (v.style) {
+    return (
+      <span
+        className="inline-block border-2"
+        style={{
+          ...baseStyle,
+          background: v.style.background as string,
+          borderColor: v.style.borderColor as string,
+        }}
+      />
+    );
+  }
+  return <span className={`inline-block ${v.className}`} style={baseStyle} />;
+}
+
+function StatsCard({ a }: { a: PlayerAgg }) {
+  return (
+    <>
+      <div className="font-display text-base truncate">{a.player.name}</div>
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">
+        {a.player.position} · {a.player.overall} OVR · {a.player.rarity}
+      </div>
+      <dl className="grid grid-cols-2 gap-y-1 text-xs">
+        <dt className="text-muted-foreground">Games</dt>
+        <dd className="font-mono text-right">{a.matches}</dd>
+        <dt className="text-muted-foreground">Win Rate</dt>
+        <dd className="font-mono text-right text-primary">{Math.round(a.winRate * 100)}%</dd>
+        <dt className="text-muted-foreground">Goals</dt>
+        <dd className="font-mono text-right">{a.goals}</dd>
+        <dt className="text-muted-foreground">Assists</dt>
+        <dd className="font-mono text-right">{a.assists}</dd>
+        <dt className="text-muted-foreground">MVPs</dt>
+        <dd className="font-mono text-right">{a.mvpCount}</dd>
+        <dt className="text-muted-foreground">Avg Rating</dt>
+        <dd className="font-mono text-right text-primary">{a.avgRating.toFixed(2)}</dd>
+      </dl>
+      <WinRateBar pct={a.winRate * 100} />
+    </>
+  );
+}
+
 export function BestXI({
   players,
   matches,
@@ -124,14 +173,8 @@ export function BestXI({
 }) {
   const formationName = useMemo(() => mostUsedFormation(wls), [wls]);
   const formation = FORMATIONS[formationName];
-  const aggs = useMemo(
-    () => aggregateAllPlayers(players, matches),
-    [players, matches],
-  );
-  const positionsPlayed = useMemo(
-    () => positionsPlayedByPlayer(wls),
-    [wls],
-  );
+  const aggs = useMemo(() => aggregateAllPlayers(players, matches), [players, matches]);
+  const positionsPlayed = useMemo(() => positionsPlayedByPlayer(wls), [wls]);
   const { starting, bench } = useMemo(
     () => pickBestXI(formation, aggs, positionsPlayed),
     [formation, aggs, positionsPlayed],
@@ -151,173 +194,141 @@ export function BestXI({
         most-used in your saved squads. Min {MIN_MATCHES} matches per player.
       </p>
 
-      <div className="surface-card p-4 sm:p-6">
-        <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold mb-3 flex items-center justify-between">
-          <span className="flex items-center gap-1.5">
-            <Trophy className="h-3.5 w-3.5 text-primary" /> Starting XI ·{" "}
-            {formationName}
-          </span>
-          <span>{filledCount}/11 filled</span>
-        </div>
-
-        <div
-          className="relative w-full max-w-xl mx-auto rounded-lg overflow-hidden border border-emerald-700/40"
-          style={{
-            aspectRatio: "3 / 4",
-            background:
-              "repeating-linear-gradient(0deg, oklch(0.32 0.06 145) 0 8%, oklch(0.36 0.06 145) 8% 16%)",
-          }}
-        >
-          <div className="absolute inset-1.5 border border-white/30 rounded" />
-          <div className="absolute left-1/2 top-1.5 bottom-1.5 w-px bg-white/30 -translate-x-1/2" />
-          <div className="absolute left-1/2 top-1/2 h-12 w-12 border border-white/30 rounded-full -translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute left-1/2 top-1.5 -translate-x-1/2 w-1/2 h-8 border border-t-0 border-white/30" />
-          <div className="absolute left-1/2 bottom-1.5 -translate-x-1/2 w-1/2 h-8 border border-b-0 border-white/30" />
-
-          {starting.map(({ slot, agg }) => (
+      <div className="surface-card p-4 sm:p-5">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-5">
+          {/* LEFT: Pitch */}
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold mb-2 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Trophy className="h-3.5 w-3.5 text-primary" /> Starting XI · {formationName}
+              </span>
+              <span>{filledCount}/11</span>
+            </div>
             <div
-              key={slot.id}
-              className="absolute -translate-x-1/2 -translate-y-1/2"
-              style={{ left: `${slot.x}%`, top: `${slot.y}%` }}
+              className="relative w-full max-w-[280px] mx-auto rounded-lg overflow-hidden border border-emerald-700/40"
+              style={{
+                aspectRatio: "3 / 4",
+                background:
+                  "repeating-linear-gradient(0deg, oklch(0.32 0.06 145) 0 8%, oklch(0.36 0.06 145) 8% 16%)",
+              }}
             >
-              {agg ? (
-                <HoverCard openDelay={80} closeDelay={50}>
-                  <HoverCardTrigger asChild>
-                    <button
-                      type="button"
-                      className="block focus:outline-none focus:ring-2 focus:ring-primary rounded-md"
-                      aria-label={`${agg.player.name} stats`}
-                    >
-                      <PlayerCard
-                        name={agg.player.name}
-                        overall={agg.player.overall}
-                        position={agg.player.position}
-                        rarity={agg.player.rarity}
-                        imageUrl={agg.player.imageUrl}
-                        size="sm"
-                      />
-                    </button>
-                  </HoverCardTrigger>
-                  <HoverCardContent className="w-56">
-                    <div className="font-display text-base truncate">
-                      {agg.player.name}
-                    </div>
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
-                      {agg.player.position} · {agg.player.overall} OVR ·{" "}
-                      {agg.player.rarity}
-                    </div>
-                    <dl className="grid grid-cols-2 gap-y-1 text-xs">
-                      <dt className="text-muted-foreground">Games</dt>
-                      <dd className="font-mono text-right">{agg.matches}</dd>
-                      <dt className="text-muted-foreground">Win Rate</dt>
-                      <dd className="font-mono text-right text-primary">
-                        {Math.round(agg.winRate * 100)}%
-                      </dd>
-                      <dt className="text-muted-foreground">Goals</dt>
-                      <dd className="font-mono text-right">{agg.goals}</dd>
-                      <dt className="text-muted-foreground">Assists</dt>
-                      <dd className="font-mono text-right">{agg.assists}</dd>
-                      <dt className="text-muted-foreground">MVPs</dt>
-                      <dd className="font-mono text-right">{agg.mvpCount}</dd>
-                      <dt className="text-muted-foreground">Avg Rating</dt>
-                      <dd className="font-mono text-right text-primary">
-                        {agg.avgRating.toFixed(2)}
-                      </dd>
-                    </dl>
-                    <WinRateBar pct={agg.winRate * 100} />
-                  </HoverCardContent>
-                </HoverCard>
-              ) : (
-                <div className="h-16 w-12 rounded-md border-2 border-dashed border-white/60 bg-black/30 grid place-items-center">
-                  <span className="text-[9px] font-bold text-white tracking-wider">
-                    {slot.position}
-                  </span>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+              <div className="absolute inset-1.5 border border-white/30 rounded" />
+              <div className="absolute left-1/2 top-1.5 bottom-1.5 w-px bg-white/30 -translate-x-1/2" />
+              <div className="absolute left-1/2 top-1/2 h-12 w-12 border border-white/30 rounded-full -translate-x-1/2 -translate-y-1/2" />
+              <div className="absolute left-1/2 top-1.5 -translate-x-1/2 w-1/2 h-8 border border-t-0 border-white/30" />
+              <div className="absolute left-1/2 bottom-1.5 -translate-x-1/2 w-1/2 h-8 border border-b-0 border-white/30" />
 
-        <div className="mt-6">
-          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold mb-2 flex items-center gap-1.5">
-            <Users className="h-3.5 w-3.5 text-primary" /> Bench · Honorable
-            mentions
-          </div>
-          {bench.length === 0 ? (
-            <div className="text-xs text-muted-foreground py-3 text-center">
-              No bench candidates yet.
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5">
-              {bench.map((a) => (
-                <HoverCard key={a.player.id} openDelay={80}>
-                  <HoverCardTrigger asChild>
-                    <button
-                      type="button"
-                      className="surface-card px-2 py-1.5 flex items-center gap-2 text-left hover:border-primary/40 transition"
-                    >
-                      <span className="font-display text-base text-foreground stat-num w-7 text-center shrink-0 leading-none">
-                        {a.player.overall}
-                      </span>
-                      <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">
-                        {a.player.position}
-                      </span>
-                      <span className="text-[11px] font-semibold truncate flex-1 leading-tight">
-                        {a.player.name}
-                      </span>
-                    </button>
-                  </HoverCardTrigger>
-                  <HoverCardContent className="w-56">
-                    <div className="font-display text-base truncate">
-                      {a.player.name}
+              {starting.map(({ slot, agg }) => (
+                <div
+                  key={slot.id}
+                  className="absolute -translate-x-1/2 -translate-y-1/2"
+                  style={{ left: `${slot.x}%`, top: `${slot.y}%` }}
+                >
+                  {agg ? (
+                    <HoverCard openDelay={100} closeDelay={80}>
+                      <HoverCardTrigger asChild>
+                        <button type="button" className="group relative grid place-items-center focus:outline-none">
+                          <RarityDot rarity={agg.player.rarity} size={30} />
+                          <span
+                            className="absolute inset-0 grid place-items-center font-display text-[10px] font-bold leading-none pointer-events-none"
+                            style={{ color: "white", textShadow: "0 0 3px rgba(0,0,0,0.9)" }}
+                          >
+                            {agg.player.overall}
+                          </span>
+                          <span
+                            className="mt-0.5 text-[9px] uppercase font-bold text-white tracking-wider leading-none"
+                            style={{ textShadow: "0 0 3px rgba(0,0,0,0.9)" }}
+                          >
+                            {agg.player.name.split(" ").slice(-1)[0]}
+                          </span>
+                        </button>
+                      </HoverCardTrigger>
+                      <HoverCardContent side="top" className="w-64 p-3">
+                        <div className="flex gap-3">
+                          <PlayerCard
+                            name={agg.player.name}
+                            overall={agg.player.overall}
+                            position={agg.player.position}
+                            rarity={agg.player.rarity}
+                            imageUrl={agg.player.imageUrl}
+                            size="md"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <StatsCard a={agg} />
+                          </div>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  ) : (
+                    <div className="h-8 w-8 rounded-full border-2 border-dashed border-white/60 bg-black/30 grid place-items-center">
+                      <span className="text-[9px] font-bold text-white tracking-wider">{slot.position}</span>
                     </div>
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
-                      {a.player.position} · {a.player.overall} OVR
-                    </div>
-                    <dl className="grid grid-cols-2 gap-y-1 text-xs">
-                      <dt className="text-muted-foreground">Games</dt>
-                      <dd className="font-mono text-right">{a.matches}</dd>
-                      <dt className="text-muted-foreground">Win Rate</dt>
-                      <dd className="font-mono text-right text-primary">
-                        {Math.round(a.winRate * 100)}%
-                      </dd>
-                      <dt className="text-muted-foreground">Goals</dt>
-                      <dd className="font-mono text-right">{a.goals}</dd>
-                      <dt className="text-muted-foreground">Assists</dt>
-                      <dd className="font-mono text-right">{a.assists}</dd>
-                      <dt className="text-muted-foreground">MVPs</dt>
-                      <dd className="font-mono text-right">{a.mvpCount}</dd>
-                      <dt className="text-muted-foreground">Avg Rating</dt>
-                      <dd className="font-mono text-right text-primary">
-                        {a.avgRating.toFixed(2)}
-                      </dd>
-                    </dl>
-                    <WinRateBar pct={a.winRate * 100} />
-                  </HoverCardContent>
-                </HoverCard>
+                  )}
+                </div>
               ))}
             </div>
-          )}
+          </div>
+
+          {/* RIGHT: Honorable mentions */}
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold mb-2 flex items-center gap-1.5">
+              <Users className="h-3.5 w-3.5 text-primary" /> Honorable Mentions ({bench.length})
+            </div>
+            {bench.length === 0 ? (
+              <div className="surface-card p-4 text-center text-muted-foreground text-xs">No bench candidates yet.</div>
+            ) : (
+              <div className="space-y-1.5">
+                {bench.map((a) => (
+                  <HoverCard key={a.player.id} openDelay={100} closeDelay={80}>
+                    <HoverCardTrigger asChild>
+                      <div className="surface-card px-2.5 py-2 flex items-center gap-2.5 cursor-default">
+                        <RarityDot rarity={a.player.rarity} size={22} />
+                        <span className="font-display text-base text-primary stat-num w-8 text-center shrink-0 leading-none">
+                          {a.player.overall}
+                        </span>
+                        <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-10 text-center">
+                          {a.player.position}
+                        </span>
+                        <div className="text-xs font-semibold truncate flex-1 leading-tight">{a.player.name}</div>
+                        <span className="font-mono text-[11px] text-primary shrink-0">{a.avgRating.toFixed(2)}</span>
+                      </div>
+                    </HoverCardTrigger>
+                    <HoverCardContent side="left" className="w-64 p-3">
+                      <div className="flex gap-3">
+                        <PlayerCard
+                          name={a.player.name}
+                          overall={a.player.overall}
+                          position={a.player.position}
+                          rarity={a.player.rarity}
+                          imageUrl={a.player.imageUrl}
+                          size="md"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <StatsCard a={a} />
+                        </div>
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-/** Compact win-rate progress bar used in BestXI hover cards. */
 function WinRateBar({ pct }: { pct: number }) {
   const width = Math.max(0, Math.min(100, pct));
   return (
     <div className="mt-2">
       <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-        <span>Club Win Rate</span>
+        <span>Win Rate</span>
         <span className="font-mono text-foreground">{Math.round(width)}%</span>
       </div>
       <div className="mt-1 h-1.5 w-full bg-secondary/60 rounded overflow-hidden">
-        <div
-          className="h-full bg-primary"
-          style={{ width: `${width}%` }}
-        />
+        <div className="h-full bg-primary" style={{ width: `${width}%` }} />
       </div>
     </div>
   );
