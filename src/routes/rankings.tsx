@@ -171,20 +171,11 @@ function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
           <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
         </div>
       </button>
-      {open && (<>
-
-      <div className="flex items-center justify-between mb-1">
-        <div className="flex items-center gap-2 text-primary">
-          <Flame className="h-4 w-4" />
-          <h2 className="font-display text-lg tracking-wider">Clutch Leaderboard</h2>
-        </div>
-        <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-          Δ Rating · Matches 11–15
-        </div>
-      </div>
+      {open && (<div className="mt-4">
       <div className="text-[11px] text-muted-foreground mb-3">
         Career performance during the final WL stretch vs baseline. Min {CLUTCH_MIN_MATCHES} clutch apps.
       </div>
+
       {rows.length === 0 ? (
         <div className="text-sm text-muted-foreground py-6 text-center">
           No player has {CLUTCH_MIN_MATCHES}+ rated appearances in matches 11–15 yet.
