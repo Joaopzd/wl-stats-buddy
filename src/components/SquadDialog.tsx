@@ -122,6 +122,9 @@ export function SquadDialog({
   if (pickingSlot || pickingBench) {
     const filterPos = pickingSlot?.position;
     const candidates = allPlayers.filter((p) => {
+      // Hide archived players from the picker unless already on this squad.
+      const alreadyOnSquad = startingIds.has(p.id) || bench.includes(p.id);
+      if (p.isArchived && !alreadyOnSquad) return false;
       if (pickingSlot && !positionFits(p.position, pickingSlot.position)) return false;
       if (!pickingSlot && startingIds.has(p.id)) return false;
       if (search.trim() && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
