@@ -419,8 +419,9 @@ export function MatchDialog({
           {/* Sticky action bar */}
           <div className="sticky bottom-0 z-10 bg-background/95 backdrop-blur-sm border-t border-border/60 px-5 sm:px-6 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             <div className="flex gap-3">
-              <button onClick={save} className="flex-1 px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90">
+              <button onClick={save} title="Shortcut: Alt+S" className="flex-1 px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90 inline-flex items-center justify-center gap-2">
                 {existingMatch ? "Save Changes" : "Log Match"}
+                <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono opacity-70 bg-black/20 rounded px-1.5 py-0.5">Alt+S</span>
               </button>
               <button onClick={onClose} className="px-5 py-2.5 rounded-md border border-border text-muted-foreground hover:text-foreground text-sm">Cancel</button>
             </div>
