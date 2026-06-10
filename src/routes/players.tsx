@@ -76,6 +76,8 @@ function PlayersPage() {
   const [minCs, setMinCs] = useState<string>("");
   const [minRating, setMinRating] = useState<string>("");
   const [detailPlayer, setDetailPlayer] = useState<Player | null>(null);
+  type RosterView = "active" | "dev" | "archived";
+  const [rosterView, setRosterView] = useState<RosterView>("active");
 
   const toggleSort = (key: SortKey) => {
     if (sort === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -92,6 +94,10 @@ function PlayersPage() {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     let list = aggs;
+    // Roster view: Active (not archived), In Development (active w/ <9 matches), Archived.
+    if (rosterView === "active") list = list.filter((a) => !a.player.isArchived);
+    else if (rosterView === "dev") list = list.filter((a) => !a.player.isArchived && a.matches < 9);
+    else list = list.filter((a) => !!a.player.isArchived);
     if (q) {
       list = list.filter(
         (a) =>
@@ -136,7 +142,20 @@ function PlayersPage() {
       return r * dir;
     });
     return list;
-  }, [aggs, search, sort, sortDir, posFilter, rarityFilter, minOvr, minMatches, minGoals, minAssists, minGA, minMvp, minCs, minRating]);
+  }, [aggs, search, sort, sortDir, posFilter, rarityFilter, minOvr, minMatches, minGoals, minAssists, minGA, minMvp, minCs, minRating, rosterView]);
+
+
+  const counts = useMemo(() => {
+    const c = { active: 0, dev: 0, archived: 0 };
+    for (const a of aggs) {
+      if (a.player.isArchived) c.archived += 1;
+      else {
+        c.active += 1;
+        if (a.matches < 9) c.dev += 1;
+      }
+    }
+    return c;
+  }, [aggs]);
 
 
   return (
