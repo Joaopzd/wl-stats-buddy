@@ -251,9 +251,9 @@ export function MatchDialog({
               >
                 <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-2">
                   Match details
-                  {(extraTime || penalties || rageQuit || tactics.length > 0) && (
+                  {(extraTime || penalties || rageQuit || disconnect || tactics.length > 0) && (
                     <span className="text-primary font-mono normal-case tracking-normal">
-                      ·{extraTime ? " ET" : ""}{penalties ? " PEN" : ""}{rageQuit ? " RQ" : ""}{tactics.length ? ` ${tactics.length}T` : ""}
+                      ·{extraTime ? " ET" : ""}{penalties ? " PEN" : ""}{rageQuit ? " RQ" : ""}{disconnect ? " DC" : ""}{tactics.length ? ` ${tactics.length}T` : ""}
                     </span>
                   )}
                 </span>
@@ -269,7 +269,14 @@ export function MatchDialog({
                     <FlagToggle active={extraTime} onClick={() => setExtraTime((v) => !v)} icon={<Zap className="h-3.5 w-3.5" />} label="Extra Time" />
                     <FlagToggle active={penalties} onClick={() => setPenalties((v) => !v)} icon={<FlagIcon className="h-3.5 w-3.5" />} label="Penalties" />
                     <FlagToggle active={rageQuit} onClick={() => setRageQuit((v) => !v)} icon={<AlertTriangle className="h-3.5 w-3.5" />} label="Rage Quit" />
+                    <FlagToggle active={disconnect} onClick={() => setDisconnect((v) => !v)} icon={<WifiOff className="h-3.5 w-3.5" />} label="Disconnect" />
                   </div>
+                  {disconnect && (
+                    <div className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-[11px] text-destructive leading-snug">
+                      Disconnect = auto-loss. Score, possession, xG and player stats will <strong>not</strong> be counted when saving.
+                    </div>
+                  )}
+
                   {penalties && (
                     <div>
                       <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Shootout winner</div>
