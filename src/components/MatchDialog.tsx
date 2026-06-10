@@ -81,6 +81,38 @@ export function MatchDialog({
 
 
   const save = () => {
+    if (disconnect) {
+      // Auto-loss: no stats counted. We persist a 0–1 scoreline so it
+      // counts as a loss in records, but performances/possession/xG are blank.
+      const flags = {
+        extraTime: false,
+        penalties: false,
+        penaltyWinner: undefined as PenaltyWinner | undefined,
+        rageQuit: false,
+        rageQuitBy: undefined as ("us" | "them") | undefined,
+        mvpPlayerId: undefined,
+        tactics: undefined,
+        possessionFor: undefined as number | undefined,
+        xgFor: undefined as number | undefined,
+        xgAgainst: undefined as number | undefined,
+        disconnect: true,
+      };
+      if (existingMatch) {
+        store.updateMatch(existingMatch.id, { scoreFor: 0, scoreAgainst: 1, platform, performances: [], ...flags } as never);
+        toast.success(`Match ${existingMatch.index} marked as disconnect`);
+      } else {
+        const m: Match = {
+          id: uuid(), wlId: wl.id, index: nextIndex,
+          scoreFor: 0, scoreAgainst: 1, platform, performances: [],
+          ...flags,
+          createdAt: Date.now(),
+        };
+        store.addMatch(m);
+        toast.success(`Match ${nextIndex} logged · DISCONNECT (auto-loss)`);
+      }
+      onClose();
+      return;
+    }
     if (scoreFor < 0 || scoreAgainst < 0) return toast.error("Scores can't be negative");
     if (penalties && scoreFor !== scoreAgainst) {
       return toast.error("If penalties were taken, the regulation score must be level");
@@ -112,6 +144,7 @@ export function MatchDialog({
       possessionFor: Math.max(0, Math.min(100, Math.round(possessionFor))),
       xgFor: Math.max(0, Math.round(xgFor * 100) / 100),
       xgAgainst: Math.max(0, Math.round(xgAgainst * 100) / 100),
+      disconnect: false,
     };
 
     if (existingMatch) {
@@ -132,6 +165,21 @@ export function MatchDialog({
     }
     onClose();
   };
+
+  // Alt+S to save the match while the dialog is open.
+  const saveRef = useRef(save);
+  saveRef.current = save;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.altKey && (e.key === "s" || e.key === "S")) {
+        e.preventDefault();
+        saveRef.current();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
 
   const totalGoals = Object.values(perfs).filter(p => p.played).reduce((s, p) => s + p.goals, 0);
   const goalsMismatch = totalGoals !== scoreFor;
