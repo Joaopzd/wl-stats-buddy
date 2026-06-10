@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { X, Zap, Flag as FlagIcon, AlertTriangle, ListChecks, ChevronDown, ChevronUp, Activity, Target } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { X, Zap, Flag as FlagIcon, AlertTriangle, ListChecks, ChevronDown, ChevronUp, Activity, Target, WifiOff } from "lucide-react";
 import { store } from "@/lib/store";
 import type { Match, MatchPlayerStat, MatchTactic, Platform, PenaltyWinner, Player, WeekendLeague } from "@/lib/types";
 import { MATCH_TACTICS, wlLabel } from "@/lib/types";
@@ -37,9 +37,10 @@ export function MatchDialog({
   const [possessionFor, setPossessionFor] = useState<number>(existingMatch?.possessionFor ?? 50);
   const [xgFor, setXgFor] = useState<number>(existingMatch?.xgFor ?? 0);
   const [xgAgainst, setXgAgainst] = useState<number>(existingMatch?.xgAgainst ?? 0);
+  const [disconnect, setDisconnect] = useState<boolean>(existingMatch?.disconnect ?? false);
   // Minimized by default for a cleaner add-match flow; opens on demand.
   const [detailsOpen, setDetailsOpen] = useState<boolean>(
-    !!(existingMatch && (existingMatch.extraTime || existingMatch.penalties || existingMatch.rageQuit || (existingMatch.tactics?.length ?? 0) > 0 || existingMatch.possessionFor != null || (existingMatch.xgFor ?? 0) > 0 || (existingMatch.xgAgainst ?? 0) > 0)),
+    !!(existingMatch && (existingMatch.extraTime || existingMatch.penalties || existingMatch.rageQuit || existingMatch.disconnect || (existingMatch.tactics?.length ?? 0) > 0 || existingMatch.possessionFor != null || (existingMatch.xgFor ?? 0) > 0 || (existingMatch.xgAgainst ?? 0) > 0)),
   );
   const toggleTactic = (t: MatchTactic) =>
     setTactics((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]));
