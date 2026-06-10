@@ -44,6 +44,9 @@ export type Rarity =
   | "Icon TOTY"
   | "MH TOTS"
   | "TOTS Highlights"
+  | "UEFA Europa League"
+  | "UEFA Champions League"
+  | "UEFA Conference League"
   // Legends
   | "Icon Base"
   | "Hero Base";
@@ -58,6 +61,8 @@ export interface Player {
   rarity: Rarity;
   /** Optional direct URL to a player card image (e.g. Futbin / EA). Falls back to the rarity card when empty or broken. */
   imageUrl?: string;
+  /** When true, hide the player from the active roster but keep historical match data. */
+  isArchived?: boolean;
   createdAt: number;
 }
 
@@ -125,6 +130,8 @@ export interface Match {
   xgFor?: number;
   /** Expected Goals for the opponent. */
   xgAgainst?: number;
+  /** Match ended in a disconnect — auto-loss, no per-player stats counted. */
+  disconnect?: boolean;
   createdAt: number;
 }
 
