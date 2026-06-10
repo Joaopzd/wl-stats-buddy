@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { X, Zap, Flag as FlagIcon, AlertTriangle, ListChecks, ChevronDown, ChevronUp, Activity, Target } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { X, Zap, Flag as FlagIcon, AlertTriangle, ListChecks, ChevronDown, ChevronUp, Activity, Target, WifiOff } from "lucide-react";
 import { store } from "@/lib/store";
 import type { Match, MatchPlayerStat, MatchTactic, Platform, PenaltyWinner, Player, WeekendLeague } from "@/lib/types";
 import { MATCH_TACTICS, wlLabel } from "@/lib/types";
@@ -37,9 +37,10 @@ export function MatchDialog({
   const [possessionFor, setPossessionFor] = useState<number>(existingMatch?.possessionFor ?? 50);
   const [xgFor, setXgFor] = useState<number>(existingMatch?.xgFor ?? 0);
   const [xgAgainst, setXgAgainst] = useState<number>(existingMatch?.xgAgainst ?? 0);
+  const [disconnect, setDisconnect] = useState<boolean>(existingMatch?.disconnect ?? false);
   // Minimized by default for a cleaner add-match flow; opens on demand.
   const [detailsOpen, setDetailsOpen] = useState<boolean>(
-    !!(existingMatch && (existingMatch.extraTime || existingMatch.penalties || existingMatch.rageQuit || (existingMatch.tactics?.length ?? 0) > 0 || existingMatch.possessionFor != null || (existingMatch.xgFor ?? 0) > 0 || (existingMatch.xgAgainst ?? 0) > 0)),
+    !!(existingMatch && (existingMatch.extraTime || existingMatch.penalties || existingMatch.rageQuit || existingMatch.disconnect || (existingMatch.tactics?.length ?? 0) > 0 || existingMatch.possessionFor != null || (existingMatch.xgFor ?? 0) > 0 || (existingMatch.xgAgainst ?? 0) > 0)),
   );
   const toggleTactic = (t: MatchTactic) =>
     setTactics((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]));
@@ -80,6 +81,38 @@ export function MatchDialog({
 
 
   const save = () => {
+    if (disconnect) {
+      // Auto-loss: no stats counted. We persist a 0–1 scoreline so it
+      // counts as a loss in records, but performances/possession/xG are blank.
+      const flags = {
+        extraTime: false,
+        penalties: false,
+        penaltyWinner: undefined as PenaltyWinner | undefined,
+        rageQuit: false,
+        rageQuitBy: undefined as ("us" | "them") | undefined,
+        mvpPlayerId: undefined,
+        tactics: undefined,
+        possessionFor: undefined as number | undefined,
+        xgFor: undefined as number | undefined,
+        xgAgainst: undefined as number | undefined,
+        disconnect: true,
+      };
+      if (existingMatch) {
+        store.updateMatch(existingMatch.id, { scoreFor: 0, scoreAgainst: 1, platform, performances: [], ...flags });
+        toast.success(`Match ${existingMatch.index} marked as disconnect`);
+      } else {
+        const m: Match = {
+          id: uuid(), wlId: wl.id, index: nextIndex,
+          scoreFor: 0, scoreAgainst: 1, platform, performances: [],
+          ...flags,
+          createdAt: Date.now(),
+        };
+        store.addMatch(m);
+        toast.success(`Match ${nextIndex} logged · DISCONNECT (auto-loss)`);
+      }
+      onClose();
+      return;
+    }
     if (scoreFor < 0 || scoreAgainst < 0) return toast.error("Scores can't be negative");
     if (penalties && scoreFor !== scoreAgainst) {
       return toast.error("If penalties were taken, the regulation score must be level");
@@ -111,6 +144,7 @@ export function MatchDialog({
       possessionFor: Math.max(0, Math.min(100, Math.round(possessionFor))),
       xgFor: Math.max(0, Math.round(xgFor * 100) / 100),
       xgAgainst: Math.max(0, Math.round(xgAgainst * 100) / 100),
+      disconnect: false,
     };
 
     if (existingMatch) {
@@ -131,6 +165,21 @@ export function MatchDialog({
     }
     onClose();
   };
+
+  // Alt+S to save the match while the dialog is open.
+  const saveRef = useRef(save);
+  saveRef.current = save;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.altKey && (e.key === "s" || e.key === "S")) {
+        e.preventDefault();
+        saveRef.current();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
 
   const totalGoals = Object.values(perfs).filter(p => p.played).reduce((s, p) => s + p.goals, 0);
   const goalsMismatch = totalGoals !== scoreFor;
@@ -202,9 +251,9 @@ export function MatchDialog({
               >
                 <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-2">
                   Match details
-                  {(extraTime || penalties || rageQuit || tactics.length > 0) && (
+                  {(extraTime || penalties || rageQuit || disconnect || tactics.length > 0) && (
                     <span className="text-primary font-mono normal-case tracking-normal">
-                      ·{extraTime ? " ET" : ""}{penalties ? " PEN" : ""}{rageQuit ? " RQ" : ""}{tactics.length ? ` ${tactics.length}T` : ""}
+                      ·{extraTime ? " ET" : ""}{penalties ? " PEN" : ""}{rageQuit ? " RQ" : ""}{disconnect ? " DC" : ""}{tactics.length ? ` ${tactics.length}T` : ""}
                     </span>
                   )}
                 </span>
@@ -220,7 +269,14 @@ export function MatchDialog({
                     <FlagToggle active={extraTime} onClick={() => setExtraTime((v) => !v)} icon={<Zap className="h-3.5 w-3.5" />} label="Extra Time" />
                     <FlagToggle active={penalties} onClick={() => setPenalties((v) => !v)} icon={<FlagIcon className="h-3.5 w-3.5" />} label="Penalties" />
                     <FlagToggle active={rageQuit} onClick={() => setRageQuit((v) => !v)} icon={<AlertTriangle className="h-3.5 w-3.5" />} label="Rage Quit" />
+                    <FlagToggle active={disconnect} onClick={() => setDisconnect((v) => !v)} icon={<WifiOff className="h-3.5 w-3.5" />} label="Disconnect" />
                   </div>
+                  {disconnect && (
+                    <div className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-[11px] text-destructive leading-snug">
+                      Disconnect = auto-loss. Score, possession, xG and player stats will <strong>not</strong> be counted when saving.
+                    </div>
+                  )}
+
                   {penalties && (
                     <div>
                       <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Shootout winner</div>
@@ -363,8 +419,9 @@ export function MatchDialog({
           {/* Sticky action bar */}
           <div className="sticky bottom-0 z-10 bg-background/95 backdrop-blur-sm border-t border-border/60 px-5 sm:px-6 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             <div className="flex gap-3">
-              <button onClick={save} className="flex-1 px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90">
+              <button onClick={save} title="Shortcut: Alt+S" className="flex-1 px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90 inline-flex items-center justify-center gap-2">
                 {existingMatch ? "Save Changes" : "Log Match"}
+                <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono opacity-70 bg-black/20 rounded px-1.5 py-0.5">Alt+S</span>
               </button>
               <button onClick={onClose} className="px-5 py-2.5 rounded-md border border-border text-muted-foreground hover:text-foreground text-sm">Cancel</button>
             </div>

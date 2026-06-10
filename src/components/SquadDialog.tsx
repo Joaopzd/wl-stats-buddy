@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { X, Search, ChevronLeft } from "lucide-react";
+import { X, Search, ChevronLeft, ChevronDown, ChevronUp } from "lucide-react";
 import { store } from "@/lib/store";
 import type { Player, WeekendLeague } from "@/lib/types";
 import { FORMATIONS, FORMATION_NAMES, positionFits, type FormationName, type FormationSlot } from "@/lib/formations";
@@ -26,6 +26,7 @@ export function SquadDialog({
   const [pickingSlot, setPickingSlot] = useState<FormationSlot | null>(null);
   const [pickingBench, setPickingBench] = useState(false);
   const [search, setSearch] = useState("");
+  const [benchOpen, setBenchOpen] = useState(true);
 
   const slots = FORMATIONS[formation].slots;
   const startingIds = useMemo(() => new Set(Object.values(assignments)), [assignments]);
@@ -121,6 +122,9 @@ export function SquadDialog({
   if (pickingSlot || pickingBench) {
     const filterPos = pickingSlot?.position;
     const candidates = allPlayers.filter((p) => {
+      // Hide archived players from the picker unless already on this squad.
+      const alreadyOnSquad = startingIds.has(p.id) || bench.includes(p.id);
+      if (p.isArchived && !alreadyOnSquad) return false;
       if (pickingSlot && !positionFits(p.position, pickingSlot.position)) return false;
       if (!pickingSlot && startingIds.has(p.id)) return false;
       if (search.trim() && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
@@ -209,48 +213,59 @@ export function SquadDialog({
             />
           </div>
 
-          {/* RIGHT: Bench list */}
+          {/* RIGHT: Bench list — collapsible */}
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
-                Bench ({bench.length})
-              </div>
+            <div className="flex items-center justify-between mb-2 gap-2">
               <button
-                onClick={() => setPickingBench(true)}
-                className="text-[11px] uppercase tracking-wider text-primary hover:opacity-80 font-bold"
+                type="button"
+                onClick={() => setBenchOpen((v) => !v)}
+                className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold hover:text-foreground transition"
+                aria-expanded={benchOpen}
               >
-                + Add to bench
+                {benchOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                Bench ({bench.length})
               </button>
+              {benchOpen && (
+                <button
+                  onClick={() => setPickingBench(true)}
+                  className="text-[11px] uppercase tracking-wider text-primary hover:opacity-80 font-bold"
+                >
+                  + Add to bench
+                </button>
+              )}
             </div>
-            {bench.length === 0 ? (
-              <div className="surface-card p-4 text-center text-muted-foreground text-xs">Empty bench</div>
-            ) : (
-              <div className="space-y-1.5">
-                {bench.map((id) => {
-                  const p = playersById.get(id);
-                  if (!p) return null;
-                  return (
-                    <HoverCard key={id} openDelay={100} closeDelay={80}>
-                      <HoverCardTrigger asChild>
-                        <div className="surface-card px-2.5 py-2 flex items-center gap-2.5 cursor-default">
-                          <RarityDot rarity={p.rarity} size={22} />
-                          <span className="font-display text-base text-primary stat-num w-8 text-center shrink-0 leading-none">{p.overall}</span>
-                          <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-10 text-center">{p.position}</span>
-                          <div className="text-xs font-semibold truncate flex-1 leading-tight">{p.name}</div>
-                          <button onClick={() => removeFromBench(id)} className="text-muted-foreground hover:text-destructive shrink-0">
-                            <X className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </HoverCardTrigger>
-                      <HoverCardContent side="left" className="w-auto p-2 bg-popover border-border">
-                        <PlayerCard name={p.name} overall={p.overall} position={p.position} rarity={p.rarity} imageUrl={p.imageUrl} size="lg" />
-                      </HoverCardContent>
-                    </HoverCard>
-                  );
-                })}
-              </div>
+            {benchOpen && (
+              bench.length === 0 ? (
+                <div className="surface-card p-4 text-center text-muted-foreground text-xs">Empty bench</div>
+              ) : (
+                <div className="space-y-1.5">
+                  {bench.map((id) => {
+                    const p = playersById.get(id);
+                    if (!p) return null;
+                    return (
+                      <HoverCard key={id} openDelay={100} closeDelay={80}>
+                        <HoverCardTrigger asChild>
+                          <div className="surface-card px-2.5 py-2 flex items-center gap-2.5 cursor-default">
+                            <RarityDot rarity={p.rarity} size={22} />
+                            <span className="font-display text-base text-primary stat-num w-8 text-center shrink-0 leading-none">{p.overall}</span>
+                            <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-10 text-center">{p.position}</span>
+                            <div className="text-xs font-semibold truncate flex-1 leading-tight">{p.name}</div>
+                            <button onClick={() => removeFromBench(id)} className="text-muted-foreground hover:text-destructive shrink-0">
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </HoverCardTrigger>
+                        <HoverCardContent side="left" className="w-auto p-2 bg-popover border-border">
+                          <PlayerCard name={p.name} overall={p.overall} position={p.position} rarity={p.rarity} imageUrl={p.imageUrl} size="lg" />
+                        </HoverCardContent>
+                      </HoverCard>
+                    );
+                  })}
+                </div>
+              )
             )}
           </div>
+
         </div>
       </div>
 

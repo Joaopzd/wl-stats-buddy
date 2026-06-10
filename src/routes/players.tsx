@@ -46,6 +46,7 @@ const RARITY_GROUPS: { label: string; items: Rarity[] }[] = [
       "Prime Heroes", "World Tour", "EOAE",
       "FUT Birthday Icon", "Heroes Ultimate Scream", "Journey of Nations", "National Pride",
       "Icon TOTY", "MH TOTS", "TOTS Highlights",
+      "UEFA Europa League", "UEFA Champions League", "UEFA Conference League",
     ],
   },
   { label: "Legends", items: ["Icon Base", "Hero Base"] },
@@ -75,6 +76,8 @@ function PlayersPage() {
   const [minCs, setMinCs] = useState<string>("");
   const [minRating, setMinRating] = useState<string>("");
   const [detailPlayer, setDetailPlayer] = useState<Player | null>(null);
+  type RosterView = "active" | "dev" | "archived";
+  const [rosterView, setRosterView] = useState<RosterView>("active");
 
   const toggleSort = (key: SortKey) => {
     if (sort === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -91,6 +94,10 @@ function PlayersPage() {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     let list = aggs;
+    // Roster view: Active (not archived), In Development (active w/ <9 matches), Archived.
+    if (rosterView === "active") list = list.filter((a) => !a.player.isArchived);
+    else if (rosterView === "dev") list = list.filter((a) => !a.player.isArchived && a.matches < 9);
+    else list = list.filter((a) => !!a.player.isArchived);
     if (q) {
       list = list.filter(
         (a) =>
@@ -135,7 +142,20 @@ function PlayersPage() {
       return r * dir;
     });
     return list;
-  }, [aggs, search, sort, sortDir, posFilter, rarityFilter, minOvr, minMatches, minGoals, minAssists, minGA, minMvp, minCs, minRating]);
+  }, [aggs, search, sort, sortDir, posFilter, rarityFilter, minOvr, minMatches, minGoals, minAssists, minGA, minMvp, minCs, minRating, rosterView]);
+
+
+  const counts = useMemo(() => {
+    const c = { active: 0, dev: 0, archived: 0 };
+    for (const a of aggs) {
+      if (a.player.isArchived) c.archived += 1;
+      else {
+        c.active += 1;
+        if (a.matches < 9) c.dev += 1;
+      }
+    }
+    return c;
+  }, [aggs]);
 
 
   return (
@@ -150,7 +170,32 @@ function PlayersPage() {
         </button>
       </div>
 
+      {/* Roster view tabs: Active / In Development / Archived */}
+      <div className="flex gap-1 bg-input border border-border rounded-md p-1 mb-4 max-w-xl">
+        {([
+          { key: "active", label: "Active Squad", n: counts.active },
+          { key: "dev", label: "In Development", n: counts.dev },
+          { key: "archived", label: "Archived", n: counts.archived },
+        ] as const).map((t) => {
+          const on = rosterView === t.key;
+          return (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setRosterView(t.key)}
+              className={`flex-1 py-1.5 px-3 rounded text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-1.5 ${
+                on ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t.label}
+              <span className={`stat-num font-mono text-[10px] px-1 rounded ${on ? "bg-primary-foreground/20" : "bg-secondary/60"}`}>{t.n}</span>
+            </button>
+          );
+        })}
+      </div>
+
       <div className="flex flex-wrap gap-3 mb-5">
+
         <div className="relative flex-1 min-w-[220px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input

@@ -57,9 +57,16 @@ export function ReportModal({
 
   const minMatches = Math.ceil(matches.length / 2);
   // Exclude goalkeepers — high goals-against in this game unfairly tanks their rating.
+  // Weak Link formula: blends average rating with G+A per game so a striker who
+  // had a poor stretch but recovered with contributions isn't unfairly tagged.
+  //   weakScore = avgRating * 1.0 + gaPerGame * 1.8   (lower = worse)
+  // A player with avg 6.2 and 0.6 G+A/game (≈ 7.28) outranks one with avg 6.4
+  // and 0.1 G+A/game (≈ 6.58), so contribution lifts a low-rated player.
+  const weakScore = (a: typeof aggs[number]) =>
+    (a.avgRating > 0 ? a.avgRating : 6) * 1.0 + a.gaPerGame * 1.8;
   const eligible = aggs.filter((a) => a.matches >= minMatches && a.player.position !== "GK");
   const under = eligible.length
-    ? [...eligible].sort((a, b) => a.avgRating - b.avgRating || a.gaPerGame - b.gaPerGame)[0]
+    ? [...eligible].sort((a, b) => weakScore(a) - weakScore(b) || a.avgRating - b.avgRating)[0]
     : null;
 
   const rank = rankFromWins(record.wins);

@@ -1,5 +1,7 @@
 import { useMemo } from "react";
-import { X, Trophy, Shield, Star, AlertTriangle, Info } from "lucide-react";
+import { X, Trophy, Shield, Star, AlertTriangle, Info, Archive, ArchiveRestore } from "lucide-react";
+import { store } from "@/lib/store";
+import { toast } from "sonner";
 import {
   Tooltip,
   TooltipContent,
@@ -67,16 +69,36 @@ export function PlayerDetailModal({
         onClick={(e) => e.stopPropagation()}
         className="surface-glow w-full max-w-2xl max-h-[92vh] overflow-y-auto"
       >
-        <div className="flex items-center justify-between px-5 py-3 border-b border-border/60">
-          <h2 className="font-display text-2xl tracking-wider truncate">
+        <div className="flex items-center justify-between gap-2 px-5 py-3 border-b border-border/60">
+          <h2 className="font-display text-2xl tracking-wider truncate flex items-center gap-2">
             {player.name}
+            {player.isArchived && (
+              <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border">
+                Archived
+              </span>
+            )}
           </h2>
-          <button
-            onClick={onClose}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                const next = !player.isArchived;
+                store.updatePlayer(player.id, { isArchived: next });
+                toast.success(next ? `${player.name} archived` : `${player.name} restored`);
+              }}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:border-primary/60 text-[11px] uppercase tracking-wider font-semibold"
+              title={player.isArchived ? "Restore to active roster" : "Move out of radar (keeps history)"}
+            >
+              {player.isArchived ? <ArchiveRestore className="h-3.5 w-3.5" /> : <Archive className="h-3.5 w-3.5" />}
+              {player.isArchived ? "Restore" : "Archive"}
+            </button>
+            <button
+              onClick={onClose}
+              className="text-muted-foreground hover:text-foreground p-1"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         <div className="p-5 grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-5">
