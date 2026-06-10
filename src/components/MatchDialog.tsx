@@ -98,7 +98,7 @@ export function MatchDialog({
         disconnect: true,
       };
       if (existingMatch) {
-        store.updateMatch(existingMatch.id, { scoreFor: 0, scoreAgainst: 1, platform, performances: [], ...flags } as never);
+        store.updateMatch(existingMatch.id, { scoreFor: 0, scoreAgainst: 1, platform, performances: [], ...flags });
         toast.success(`Match ${existingMatch.index} marked as disconnect`);
       } else {
         const m: Match = {
