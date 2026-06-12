@@ -32,6 +32,8 @@ function WLList() {
   const [creating, setCreating] = useState(false);
   const [num, setNum] = useState("");
   const [name, setName] = useState("");
+  const [wmId, setWmId] = useState<string | undefined>(undefined);
+  const [wmColor, setWmColor] = useState<string | undefined>(undefined);
   const [briefingOpen, setBriefingOpen] = useState(false);
   const [editingWL, setEditingWL] = useState<WeekendLeague | null>(null);
 
@@ -47,11 +49,15 @@ function WLList() {
       number: parsed,
       customName: name.trim() || undefined,
       squadPlayerIds: [],
+      watermarkId: wmId,
+      watermarkColor: wmColor,
       createdAt: Date.now(),
     });
     setCreating(false);
     setNum("");
     setName("");
+    setWmId(undefined);
+    setWmColor(undefined);
     toast.success(`${name.trim() || `WL #${parsed}`} created`);
   };
 
