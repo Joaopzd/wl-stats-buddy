@@ -25,6 +25,12 @@ import { v4 as uuid } from "uuid";
 import type { Match, Player, Position, Rarity } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
 import { rarityVisual } from "@/lib/format";
+import { getCrest } from "@/lib/crests";
+
+function getOpponentLabel(id?: string) {
+  const c = getCrest(id);
+  return c?.label ?? "Opponent";
+}
 
 export const Route = createFileRoute("/weekend-leagues/$wlId")({
   head: () => ({
