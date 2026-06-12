@@ -441,17 +441,7 @@ function WLDetail() {
             No matches yet.
           </div>
         ) : (
-          <div className="surface-card overflow-hidden divide-y divide-border/60">
-            {/* Header row */}
-            <div className="hidden sm:grid grid-cols-[2rem_7rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold bg-background/40">
-              <span>#</span>
-              <span className="text-center">Versus</span>
-              <span>Plat</span>
-              <span>Tags</span>
-              <span className="text-right">G</span>
-              <span className="text-right">A</span>
-              <span className="text-right pr-1">Act</span>
-            </div>
+          <div className="flex flex-col gap-2.5">
             {matches.map((m) => {
               const win = matchIsWin(m);
               const totalG = m.performances.reduce((s, p) => s + (p.goals || 0), 0);
@@ -463,53 +453,77 @@ function WLDetail() {
                   tabIndex={0}
                   onClick={() => setViewingMatch(m)}
                   onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewingMatch(m); } }}
-                  className={`grid grid-cols-[2rem_7rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-2 border-l-4 hover:bg-secondary/30 cursor-pointer transition ${win ? "border-l-[color:var(--success)]" : "border-l-destructive"}`}
+                  className="group relative rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm px-4 py-3 sm:px-5 sm:py-3.5 shadow-sm hover:shadow-[var(--shadow-glow)] hover:border-primary/40 hover:-translate-y-0.5 cursor-pointer transition-all duration-300 ease-in-out"
                   aria-label={`View match ${m.index} details`}
                 >
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
-                    M{m.index}
-                  </span>
-                  <div className="flex items-center justify-center gap-1.5 leading-none">
-                    <ClubCrest size={CREST_SIZE.list} overrideUrl={wl.clubCrestUrl} />
-                    <span className="font-display stat-num text-sm">
-                      <span className="text-foreground">{m.scoreFor}</span>
-                      <span className="text-muted-foreground/50 mx-0.5">–</span>
-                      <span className={!win ? "text-destructive" : "text-foreground"}>{m.scoreAgainst}</span>
-                    </span>
-                    <OpponentCrest id={m.opponentCrestId} size={CREST_SIZE.list} />
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    {/* Match # badge */}
+                    <div className="shrink-0 h-10 w-10 rounded-xl bg-secondary/60 border border-border/60 grid place-items-center font-display text-sm tracking-wider text-muted-foreground">
+                      <span className="text-[10px] leading-none uppercase tracking-wider opacity-70">M</span>
+                      <span className="text-base leading-none font-bold text-foreground -mt-0.5">{m.index}</span>
+                    </div>
+
+                    {/* Scoreline */}
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <ClubCrest size={CREST_SIZE.list} overrideUrl={wl.clubCrestUrl} />
+                      <div className="font-display stat-num text-xl sm:text-2xl leading-none">
+                        <span className="text-foreground">{m.scoreFor}</span>
+                        <span className="text-muted-foreground/40 mx-1">–</span>
+                        <span className={!win ? "text-destructive" : "text-foreground"}>{m.scoreAgainst}</span>
+                      </div>
+                      <OpponentCrest id={m.opponentCrestId} size={CREST_SIZE.list} />
+                      <div className="ml-1 hidden sm:flex items-center gap-1 flex-wrap min-w-0">
+                        <PlatformBadge platform={m.platform} size="xs" />
+                        {m.extraTime && <Tag tone="warn">ET</Tag>}
+                        {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
+                        {m.rageQuit && <Tag tone="rq">RQ</Tag>}
+                      </div>
+                    </div>
+
+                    {/* G / A inline */}
+                    <div className="hidden sm:flex items-baseline gap-3 text-[11px] uppercase tracking-wider font-semibold text-muted-foreground shrink-0">
+                      <span><span className="font-display stat-num text-base text-foreground mr-1">{totalG}</span>G</span>
+                      <span><span className="font-display stat-num text-base text-foreground mr-1">{totalA}</span>A</span>
+                    </div>
+
+                    {/* Soft status badge */}
+                    <div
+                      className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ease-in-out ${
+                        win
+                          ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
+                          : "border-rose-400/30 bg-rose-400/10 text-rose-300"
+                      }`}
+                    >
+                      <span className="text-sm leading-none">{win ? "+" : "−"}</span>
+                      {win ? "Win" : "Loss"}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setEditingMatch(m); setMatchOpen(true); }}
+                        className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all duration-300 ease-in-out"
+                        aria-label="Edit"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); if (confirm("Delete this match?")) { store.deleteMatch(m.id); toast.success("Deleted"); } }}
+                        className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-300 ease-in-out"
+                        aria-label="Delete"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex justify-center">
+
+                  {/* Mobile tags row */}
+                  <div className="sm:hidden mt-2 flex items-center gap-1.5 flex-wrap text-[11px] text-muted-foreground">
                     <PlatformBadge platform={m.platform} size="xs" />
-                  </div>
-                  <div className="flex items-center gap-1 flex-wrap min-w-0">
-                    <span className={`text-[11px] font-bold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>
-                      {win ? "W" : "L"}
-                    </span>
+                    <span className="font-mono">{totalG}G · {totalA}A</span>
                     {m.extraTime && <Tag tone="warn">ET</Tag>}
                     {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
                     {m.rageQuit && <Tag tone="rq">RQ</Tag>}
-                  </div>
-                  <span className="font-mono stat-num text-xs text-right text-foreground">
-                    {totalG}<span className="text-muted-foreground text-[8px] ml-0.5">G</span>
-                  </span>
-                  <span className="font-mono stat-num text-xs text-right text-foreground">
-                    {totalA}<span className="text-muted-foreground text-[8px] ml-0.5">A</span>
-                  </span>
-                  <div className="flex justify-end gap-0.5">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setEditingMatch(m); setMatchOpen(true); }}
-                      className="p-1 text-muted-foreground hover:text-foreground"
-                      aria-label="Edit"
-                    >
-                      <Pencil className="h-3 w-3" />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); if (confirm("Delete this match?")) { store.deleteMatch(m.id); toast.success("Deleted"); } }}
-                      className="p-1 text-muted-foreground hover:text-destructive"
-                      aria-label="Delete"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </button>
                   </div>
                 </div>
               );
