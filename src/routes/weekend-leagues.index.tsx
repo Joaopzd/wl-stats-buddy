@@ -138,7 +138,7 @@ function WLList() {
                 params={{ wlId: wl.id }}
                 className="surface-card p-5 group hover:border-primary/50 hover:shadow-[var(--shadow-glow)] transition-all relative overflow-hidden"
               >
-                <LeagueWatermark title={label} />
+                <LeagueWatermark title={label} markId={wl.watermarkId} color={wl.watermarkColor} />
                 <div className="absolute top-3 right-3 z-20 flex items-center gap-1">
                   <button
                     onClick={(e) => { e.preventDefault(); setEditingWL(wl); }}
