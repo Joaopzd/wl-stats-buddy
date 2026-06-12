@@ -201,10 +201,14 @@ function WLEditModal({ wl, onClose }: { wl: WeekendLeague; onClose: () => void }
   const currentCrest = useClubCrest();
   const [name, setName] = useState(wl.customName ?? "");
   const [applyCurrent, setApplyCurrent] = useState(false);
+  const [wmId, setWmId] = useState<string | undefined>(wl.watermarkId);
+  const [wmColor, setWmColor] = useState<string | undefined>(wl.watermarkColor);
 
   const save = () => {
     const patch: Partial<WeekendLeague> = {
       customName: name.trim() || undefined,
+      watermarkId: wmId,
+      watermarkColor: wmColor,
     };
     if (applyCurrent) {
       patch.clubName = currentName || undefined;
