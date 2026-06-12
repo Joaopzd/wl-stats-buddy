@@ -431,105 +431,116 @@ function WLDetail() {
       )}
 
 
-      <section>
-        <div className="flex items-baseline justify-between mb-3">
-          <h2 className="font-display text-2xl tracking-wider">Matches ({matches.length})</h2>
-          <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Tap to edit</span>
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Left column (2/3): Match feed */}
+        <div className="lg:col-span-2 min-w-0">
+          <div className="flex items-baseline justify-between mb-3">
+            <h2 className="font-display text-2xl tracking-wider">Matches ({matches.length})</h2>
+            <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Tap to edit</span>
+          </div>
+          {matches.length === 0 ? (
+            <div className="surface-card p-8 text-center text-muted-foreground text-sm">
+              No matches yet.
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2.5">
+              {matches.map((m) => {
+                const win = matchIsWin(m);
+                const totalG = m.performances.reduce((s, p) => s + (p.goals || 0), 0);
+                const totalA = m.performances.reduce((s, p) => s + (p.assists || 0), 0);
+                const oppLabel = getOpponentLabel(m.opponentCrestId);
+                return (
+                  <div
+                    key={m.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setViewingMatch(m)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewingMatch(m); } }}
+                    className="group relative rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm px-4 py-3.5 sm:px-5 sm:py-4 shadow-sm hover:shadow-[var(--shadow-glow)] hover:border-primary/40 hover:-translate-y-0.5 cursor-pointer transition-all duration-300 ease-in-out"
+                    aria-label={`View match ${m.index} details`}
+                  >
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      {/* Sequence number */}
+                      <div className="shrink-0 h-10 w-10 rounded-full bg-secondary/50 border border-border/60 grid place-items-center">
+                        <span className="font-display text-sm font-bold text-foreground/80 stat-num leading-none">{m.index}</span>
+                      </div>
+
+                      {/* Scoreline + opponent */}
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <ClubCrest size={CREST_SIZE.list} overrideUrl={wl.clubCrestUrl} />
+                        <div className="font-display stat-num text-2xl sm:text-[28px] leading-none tracking-tight">
+                          <span className="text-foreground">{m.scoreFor}</span>
+                          <span className="text-muted-foreground/40 mx-1.5">–</span>
+                          <span className={!win ? "text-destructive" : "text-foreground"}>{m.scoreAgainst}</span>
+                        </div>
+                        <OpponentCrest id={m.opponentCrestId} size={CREST_SIZE.list} />
+                        <div className="min-w-0 hidden sm:flex flex-col leading-tight">
+                          <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground font-semibold">vs</span>
+                          <span className="text-sm font-semibold truncate text-foreground/90">{oppLabel}</span>
+                        </div>
+                        <div className="ml-1 hidden md:flex items-center gap-1 flex-wrap min-w-0">
+                          <PlatformBadge platform={m.platform} size="xs" />
+                          {m.extraTime && <Tag tone="warn">ET</Tag>}
+                          {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
+                          {m.rageQuit && <Tag tone="rq">RQ</Tag>}
+                        </div>
+                      </div>
+
+                      {/* G / A inline */}
+                      <div className="hidden md:flex items-baseline gap-3 text-[11px] uppercase tracking-wider font-semibold text-muted-foreground shrink-0">
+                        <span><span className="font-display stat-num text-base text-foreground mr-1">{totalG}</span>G</span>
+                        <span><span className="font-display stat-num text-base text-foreground mr-1">{totalA}</span>A</span>
+                      </div>
+
+                      {/* Minimal status text-tag (no solid block) */}
+                      <div
+                        className={`shrink-0 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-[0.18em] transition-all duration-300 ease-in-out ${
+                          win ? "text-emerald-300" : "text-rose-300"
+                        }`}
+                      >
+                        <span className="text-base leading-none">{win ? "+" : "−"}</span>
+                        {win ? "Win" : "Loss"}
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-0.5 shrink-0">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setEditingMatch(m); setMatchOpen(true); }}
+                          className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all duration-300 ease-in-out"
+                          aria-label="Edit"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); if (confirm("Delete this match?")) { store.deleteMatch(m.id); toast.success("Deleted"); } }}
+                          className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-300 ease-in-out"
+                          aria-label="Delete"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Mobile tags row */}
+                    <div className="sm:hidden mt-2 flex items-center gap-1.5 flex-wrap text-[11px] text-muted-foreground">
+                      <PlatformBadge platform={m.platform} size="xs" />
+                      <span className="font-semibold text-foreground/80">vs {oppLabel}</span>
+                      <span className="font-mono">· {totalG}G · {totalA}A</span>
+                      {m.extraTime && <Tag tone="warn">ET</Tag>}
+                      {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
+                      {m.rageQuit && <Tag tone="rq">RQ</Tag>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-        {matches.length === 0 ? (
-          <div className="surface-card p-8 text-center text-muted-foreground text-sm">
-            No matches yet.
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2.5">
-            {matches.map((m) => {
-              const win = matchIsWin(m);
-              const totalG = m.performances.reduce((s, p) => s + (p.goals || 0), 0);
-              const totalA = m.performances.reduce((s, p) => s + (p.assists || 0), 0);
-              return (
-                <div
-                  key={m.id}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setViewingMatch(m)}
-                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewingMatch(m); } }}
-                  className="group relative rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm px-4 py-3 sm:px-5 sm:py-3.5 shadow-sm hover:shadow-[var(--shadow-glow)] hover:border-primary/40 hover:-translate-y-0.5 cursor-pointer transition-all duration-300 ease-in-out"
-                  aria-label={`View match ${m.index} details`}
-                >
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    {/* Match # badge */}
-                    <div className="shrink-0 h-10 w-10 rounded-xl bg-secondary/60 border border-border/60 grid place-items-center font-display text-sm tracking-wider text-muted-foreground">
-                      <span className="text-[10px] leading-none uppercase tracking-wider opacity-70">M</span>
-                      <span className="text-base leading-none font-bold text-foreground -mt-0.5">{m.index}</span>
-                    </div>
 
-                    {/* Scoreline */}
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <ClubCrest size={CREST_SIZE.list} overrideUrl={wl.clubCrestUrl} />
-                      <div className="font-display stat-num text-xl sm:text-2xl leading-none">
-                        <span className="text-foreground">{m.scoreFor}</span>
-                        <span className="text-muted-foreground/40 mx-1">–</span>
-                        <span className={!win ? "text-destructive" : "text-foreground"}>{m.scoreAgainst}</span>
-                      </div>
-                      <OpponentCrest id={m.opponentCrestId} size={CREST_SIZE.list} />
-                      <div className="ml-1 hidden sm:flex items-center gap-1 flex-wrap min-w-0">
-                        <PlatformBadge platform={m.platform} size="xs" />
-                        {m.extraTime && <Tag tone="warn">ET</Tag>}
-                        {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
-                        {m.rageQuit && <Tag tone="rq">RQ</Tag>}
-                      </div>
-                    </div>
-
-                    {/* G / A inline */}
-                    <div className="hidden sm:flex items-baseline gap-3 text-[11px] uppercase tracking-wider font-semibold text-muted-foreground shrink-0">
-                      <span><span className="font-display stat-num text-base text-foreground mr-1">{totalG}</span>G</span>
-                      <span><span className="font-display stat-num text-base text-foreground mr-1">{totalA}</span>A</span>
-                    </div>
-
-                    {/* Soft status badge */}
-                    <div
-                      className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ease-in-out ${
-                        win
-                          ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
-                          : "border-rose-400/30 bg-rose-400/10 text-rose-300"
-                      }`}
-                    >
-                      <span className="text-sm leading-none">{win ? "+" : "−"}</span>
-                      {win ? "Win" : "Loss"}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-0.5 shrink-0">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setEditingMatch(m); setMatchOpen(true); }}
-                        className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all duration-300 ease-in-out"
-                        aria-label="Edit"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); if (confirm("Delete this match?")) { store.deleteMatch(m.id); toast.success("Deleted"); } }}
-                        className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-300 ease-in-out"
-                        aria-label="Delete"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Mobile tags row */}
-                  <div className="sm:hidden mt-2 flex items-center gap-1.5 flex-wrap text-[11px] text-muted-foreground">
-                    <PlatformBadge platform={m.platform} size="xs" />
-                    <span className="font-mono">{totalG}G · {totalA}A</span>
-                    {m.extraTime && <Tag tone="warn">ET</Tag>}
-                    {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
-                    {m.rageQuit && <Tag tone="rq">RQ</Tag>}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        {/* Right column (1/3): Live Campaign Insights */}
+        <aside className="lg:col-span-1 min-w-0">
+          <LiveCampaignInsights matches={matches} squadAggs={squadAggs} />
+        </aside>
       </section>
 
       {squadOpen && (
