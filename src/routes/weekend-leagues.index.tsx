@@ -90,28 +90,33 @@ function WLList() {
       />
 
       {creating && (
-        <div className="surface-glow p-5 mb-6 grid sm:grid-cols-[140px_1fr_auto_auto] gap-3 items-end">
-          <div>
-            <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">WL Number</label>
-            <input
-              type="number"
-              value={num}
-              onChange={(e) => setNum(e.target.value)}
-              autoFocus
-              className="w-full bg-input border border-border rounded-md px-3 py-2 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+        <div className="surface-glow p-5 mb-6 space-y-4">
+          <div className="grid sm:grid-cols-[140px_1fr] gap-3">
+            <div>
+              <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">WL Number</label>
+              <input
+                type="number"
+                value={num}
+                onChange={(e) => setNum(e.target.value)}
+                autoFocus
+                className="w-full bg-input border border-border rounded-md px-3 py-2 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Custom Name (optional)</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. TOTS Premiere WL"
+                className="w-full bg-input border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Custom Name (optional)</label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. TOTS Premiere WL"
-              className="w-full bg-input border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+          <WatermarkPicker markId={wmId} color={wmColor} onMarkChange={setWmId} onColorChange={setWmColor} />
+          <div className="flex gap-2 justify-end">
+            <button onClick={() => setCreating(false)} className="px-4 py-2.5 rounded-md border border-border text-muted-foreground hover:text-foreground text-sm transition-all duration-300 ease-in-out">Cancel</button>
+            <button onClick={create} className="px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm transition-all duration-300 ease-in-out hover:opacity-90">Create</button>
           </div>
-          <button onClick={create} className="px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm">Create</button>
-          <button onClick={() => setCreating(false)} className="px-4 py-2.5 rounded-md border border-border text-muted-foreground hover:text-foreground text-sm">Cancel</button>
         </div>
       )}
 
