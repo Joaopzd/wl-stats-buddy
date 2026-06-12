@@ -271,6 +271,10 @@ function WLEditModal({ wl, onClose }: { wl: WeekendLeague; onClose: () => void }
               </span>
             </label>
           </div>
+
+          <div className="surface-card p-3">
+            <WatermarkPicker markId={wmId} color={wmColor} onMarkChange={setWmId} onColorChange={setWmColor} />
+          </div>
         </div>
         <div className="px-5 py-3 border-t border-border/60 flex gap-2">
           <button onClick={save} className="flex-1 px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90">
