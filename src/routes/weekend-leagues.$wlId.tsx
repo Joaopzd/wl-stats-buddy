@@ -1406,3 +1406,86 @@ function LiveReportSection(props: { wl: { id: string }; matches: Match[]; squadA
   );
 }
 
+function LiveCampaignInsights({ matches, squadAggs }: { matches: Match[]; squadAggs: PlayerAgg[] }) {
+  const topScorer = [...squadAggs].filter((a) => a.goals > 0).sort((a, b) => b.goals - a.goals || b.assists - a.assists)[0];
+  const topAssister = [...squadAggs].filter((a) => a.assists > 0).sort((a, b) => b.assists - a.assists || b.goals - a.goals)[0];
+  const recent = matches.slice(-5);
+
+  return (
+    <div className="lg:sticky lg:top-20 flex flex-col gap-3">
+      <div className="rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm shadow-sm overflow-hidden">
+        <div className="px-4 py-3 border-b border-border/60 flex items-center gap-2">
+          <Activity className="h-4 w-4 text-primary" />
+          <h3 className="font-display text-sm uppercase tracking-[0.25em]">Live Campaign Insights</h3>
+        </div>
+
+        {/* Top Scorer */}
+        <div className="px-4 py-3.5 border-b border-border/60">
+          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-1.5 flex items-center gap-1.5">
+            <SoccerBall size={11} /> Top Scorer
+          </div>
+          {topScorer ? (
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <div className="text-sm font-semibold truncate">{topScorer.player.name}</div>
+                <div className="text-[11px] text-muted-foreground font-mono">{topScorer.matches} MP · {topScorer.assists}A</div>
+              </div>
+              <div className="font-display stat-num text-3xl text-primary leading-none">{topScorer.goals}</div>
+            </div>
+          ) : (
+            <div className="text-xs text-muted-foreground">No goals yet</div>
+          )}
+        </div>
+
+        {/* Top Playmaker */}
+        <div className="px-4 py-3.5 border-b border-border/60">
+          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-1.5 flex items-center gap-1.5">
+            <Sparkles className="h-3 w-3" /> Top Playmaker
+          </div>
+          {topAssister ? (
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <div className="text-sm font-semibold truncate">{topAssister.player.name}</div>
+                <div className="text-[11px] text-muted-foreground font-mono">{topAssister.matches} MP · {topAssister.goals}G</div>
+              </div>
+              <div className="font-display stat-num text-3xl text-primary leading-none">{topAssister.assists}</div>
+            </div>
+          ) : (
+            <div className="text-xs text-muted-foreground">No assists yet</div>
+          )}
+        </div>
+
+        {/* Mini timeline */}
+        <div className="px-4 py-3.5">
+          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">Last 5 Matches</div>
+          {recent.length === 0 ? (
+            <div className="text-xs text-muted-foreground">No matches yet</div>
+          ) : (
+            <div className="flex items-center gap-1.5">
+              {recent.map((m) => {
+                const win = matchIsWin(m);
+                return (
+                  <div
+                    key={m.id}
+                    title={`M${m.index} · ${m.scoreFor}-${m.scoreAgainst}`}
+                    className={`h-7 flex-1 rounded-md grid place-items-center font-display stat-num text-[11px] font-bold transition-all duration-300 ${
+                      win
+                        ? "bg-emerald-400/15 text-emerald-300 border border-emerald-400/30"
+                        : "bg-rose-400/15 text-rose-300 border border-rose-400/30"
+                    }`}
+                  >
+                    {win ? "W" : "L"}
+                  </div>
+                );
+              })}
+              {Array.from({ length: Math.max(0, 5 - recent.length) }).map((_, i) => (
+                <div key={`empty-${i}`} className="h-7 flex-1 rounded-md border border-border/40 bg-background/30" />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
