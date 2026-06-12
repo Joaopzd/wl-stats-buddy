@@ -373,19 +373,35 @@ export interface ClubProfile {
 }
 
 export function deriveClubProfiles(wls: WeekendLeague[]): ClubProfile[] {
-  const map = new Map<string, ClubProfile>();
+  // Group by normalized club name only. The crest URL can legitimately change
+  // between WLs (re-upload, storage path vs data URL, signed URL refresh) for
+  // the same club identity — keying by URL caused duplicate profiles for what
+  // the user considers a single club. Name is normalized (trimmed + lowercased)
+  // so casing/whitespace tweaks don't fork the profile either.
+  const map = new Map<string, ClubProfile & { _displayName: string }>();
   for (const wl of wls) {
-    const name = (wl.clubName ?? "").trim();
+    const rawName = (wl.clubName ?? "").trim();
+    const key = rawName.toLowerCase();
     const crest = wl.clubCrestUrl ?? null;
-    const key = `${name}|${crest ?? ""}`;
     let p = map.get(key);
     if (!p) {
-      p = { id: key, name: name || "Unnamed Club", crestUrl: crest, wlIds: [] };
+      p = {
+        id: key || "__unnamed__",
+        name: rawName || "Unnamed Club",
+        _displayName: rawName,
+        crestUrl: crest,
+        wlIds: [],
+      };
       map.set(key, p);
+    } else if (crest && !p.crestUrl) {
+      // Prefer any crest we have over null.
+      p.crestUrl = crest;
     }
     p.wlIds.push(wl.id);
   }
-  return [...map.values()].sort((a, b) => b.wlIds.length - a.wlIds.length);
+  return [...map.values()]
+    .map(({ _displayName, ...p }) => p)
+    .sort((a, b) => b.wlIds.length - a.wlIds.length);
 }
 
 export type RankTier = "Elite" | "Champion" | "Contender" | "Unranked";
