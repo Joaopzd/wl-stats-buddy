@@ -8,6 +8,7 @@ import { Plus, ChevronRight, Trophy, Trash2, ClipboardList, GitCompareArrows, Pe
 import { RankBadge } from "@/components/RankBadge";
 import { CoachBriefingDialog } from "@/components/CoachBriefingDialog";
 import { LeagueWatermark } from "@/components/LeagueWatermark";
+import { WatermarkPicker } from "@/components/WatermarkPicker";
 import { ClubCrest } from "@/components/ClubCrest";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
