@@ -150,13 +150,14 @@ function WLDetail() {
         }
 
         return (
-          <div className="surface-glow overflow-hidden mb-6">
+          <div className="surface-glow overflow-hidden mb-6 relative">
+            <LeagueWatermark title={label} markId={wl.watermarkId} color={wl.watermarkColor} size={180} />
             {/* Top: identity + record */}
-            <div className="px-5 sm:px-7 pt-5 pb-4 flex items-start justify-between gap-5">
+            <div className="relative z-10 px-5 sm:px-7 pt-5 pb-4 flex items-start justify-between gap-5">
               <div className="min-w-0 flex-1">
                 <div className="text-[11px] uppercase tracking-[0.3em] text-primary font-bold mb-2 flex items-center gap-2">
                   <ClubCrest size={20} overrideUrl={wl.clubCrestUrl} />
-                  <span className="truncate">{wl.clubName || "My Club"} · WL #{wl.number}</span>
+                  <span className="truncate">{wl.clubName || "My Club"} · WL #{wl.number} · Active Campaign</span>
                 </div>
                 {editingName ? (
                   <div className="flex items-center gap-2">
@@ -172,10 +173,10 @@ function WLDetail() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 min-w-0">
-                    <h1 className="font-display text-2xl sm:text-3xl leading-tight truncate">{label}</h1>
+                    <h1 className="font-display text-3xl sm:text-4xl leading-tight truncate tracking-tight">{label}</h1>
                     <button
                       onClick={() => { setNameDraft(wl.customName ?? ""); setEditingName(true); }}
-                      className="p-1 text-muted-foreground hover:text-primary shrink-0"
+                      className="p-1 text-muted-foreground hover:text-primary shrink-0 transition-all duration-300 ease-in-out"
                       aria-label="Edit WL name"
                     >
                       <PencilIcon className="h-3.5 w-3.5" />
@@ -189,9 +190,6 @@ function WLDetail() {
                       {wl.formation}
                     </span>
                   )}
-                  <span className="text-[11px] text-muted-foreground font-mono uppercase tracking-wider">
-                    {record?.played ?? 0}/15 Played
-                  </span>
                 </div>
               </div>
 
@@ -226,8 +224,33 @@ function WLDetail() {
               </div>
             </div>
 
+            {/* Progress bar: matches played split by W/L, with remaining */}
+            {(() => {
+              const played = record?.played ?? 0;
+              const losses = record?.losses ?? 0;
+              const remaining = Math.max(0, 15 - played);
+              const pct = (n: number) => (n / 15) * 100;
+              return (
+                <div className="relative z-10 px-5 sm:px-7 pb-4">
+                  <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.25em] font-bold text-muted-foreground mb-1.5">
+                    <span>Campaign Progress</span>
+                    <span className="font-mono text-foreground/80">{played}<span className="text-muted-foreground/60">/15</span> · {remaining} left</span>
+                  </div>
+                  <div className="h-2.5 w-full rounded-full bg-background/60 border border-border/60 overflow-hidden flex">
+                    <div className="h-full bg-primary transition-all duration-300 ease-in-out" style={{ width: `${pct(wins)}%` }} />
+                    <div className="h-full bg-destructive/80 transition-all duration-300 ease-in-out" style={{ width: `${pct(losses)}%` }} />
+                  </div>
+                  <div className="mt-1.5 flex items-center gap-3 text-[10px] uppercase tracking-wider font-semibold">
+                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-primary" />Wins {wins}</span>
+                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-destructive/80" />Losses {losses}</span>
+                    <span className="flex items-center gap-1 text-muted-foreground"><span className="h-2 w-2 rounded-sm bg-background border border-border/60" />Remaining {remaining}</span>
+                  </div>
+                </div>
+              );
+            })()}
+
             {/* Middle: stats belt */}
-            <div className="grid grid-cols-3 border-y border-border/60 bg-background/40">
+            <div className="relative z-10 grid grid-cols-3 border-y border-border/60 bg-background/40">
               <BeltStat
                 icon={<SoccerBall size={16} />}
                 value={record?.goalsFor ?? 0}
@@ -252,22 +275,22 @@ function WLDetail() {
             </div>
 
             {/* Bottom: action row */}
-            <div className="px-4 sm:px-5 py-3 flex flex-wrap items-center gap-2.5">
+            <div className="relative z-10 px-4 sm:px-5 py-3 flex flex-wrap items-center gap-2.5">
               <button
                 onClick={() => setSquadOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-border bg-secondary/60 text-foreground font-semibold uppercase tracking-wider text-[11px] hover:bg-secondary transition"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-border bg-secondary/60 text-foreground font-semibold uppercase tracking-wider text-[11px] hover:bg-secondary transition-all duration-300 ease-in-out"
               >
                 <Users className="h-3.5 w-3.5" /> {squad.length ? "Edit Squad" : "Add Squad"}
               </button>
               <button
                 onClick={() => { setEditingMatch(null); setMatchOpen(true); }}
                 disabled={squad.length === 0 || matches.length >= 15}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-[11px] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-[var(--shadow-neon)] transition"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-[11px] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-[var(--shadow-neon)] transition-all duration-300 ease-in-out"
               >
                 <Plus className="h-3.5 w-3.5" /> Add Match{nextMatchIndex <= 15 && ` · ${nextMatchIndex}/15`}
               </button>
               {matches.length >= 15 && (
-                <button onClick={() => setReportOpen(true)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-primary/50 text-primary font-semibold uppercase tracking-wider text-[11px] hover:bg-primary/10 transition">
+                <button onClick={() => setReportOpen(true)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-primary/50 text-primary font-semibold uppercase tracking-wider text-[11px] hover:bg-primary/10 transition-all duration-300 ease-in-out">
                   View Report
                 </button>
               )}
