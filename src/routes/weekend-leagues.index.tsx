@@ -8,6 +8,7 @@ import { Plus, ChevronRight, Trophy, Trash2, ClipboardList, GitCompareArrows, Pe
 import { RankBadge } from "@/components/RankBadge";
 import { CoachBriefingDialog } from "@/components/CoachBriefingDialog";
 import { LeagueWatermark } from "@/components/LeagueWatermark";
+import { WatermarkPicker } from "@/components/WatermarkPicker";
 import { ClubCrest } from "@/components/ClubCrest";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
@@ -31,6 +32,8 @@ function WLList() {
   const [creating, setCreating] = useState(false);
   const [num, setNum] = useState("");
   const [name, setName] = useState("");
+  const [wmId, setWmId] = useState<string | undefined>(undefined);
+  const [wmColor, setWmColor] = useState<string | undefined>(undefined);
   const [briefingOpen, setBriefingOpen] = useState(false);
   const [editingWL, setEditingWL] = useState<WeekendLeague | null>(null);
 
@@ -46,11 +49,15 @@ function WLList() {
       number: parsed,
       customName: name.trim() || undefined,
       squadPlayerIds: [],
+      watermarkId: wmId,
+      watermarkColor: wmColor,
       createdAt: Date.now(),
     });
     setCreating(false);
     setNum("");
     setName("");
+    setWmId(undefined);
+    setWmColor(undefined);
     toast.success(`${name.trim() || `WL #${parsed}`} created`);
   };
 
@@ -83,28 +90,33 @@ function WLList() {
       />
 
       {creating && (
-        <div className="surface-glow p-5 mb-6 grid sm:grid-cols-[140px_1fr_auto_auto] gap-3 items-end">
-          <div>
-            <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">WL Number</label>
-            <input
-              type="number"
-              value={num}
-              onChange={(e) => setNum(e.target.value)}
-              autoFocus
-              className="w-full bg-input border border-border rounded-md px-3 py-2 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+        <div className="surface-glow p-5 mb-6 space-y-4">
+          <div className="grid sm:grid-cols-[140px_1fr] gap-3">
+            <div>
+              <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">WL Number</label>
+              <input
+                type="number"
+                value={num}
+                onChange={(e) => setNum(e.target.value)}
+                autoFocus
+                className="w-full bg-input border border-border rounded-md px-3 py-2 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Custom Name (optional)</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. TOTS Premiere WL"
+                className="w-full bg-input border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Custom Name (optional)</label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. TOTS Premiere WL"
-              className="w-full bg-input border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+          <WatermarkPicker markId={wmId} color={wmColor} onMarkChange={setWmId} onColorChange={setWmColor} />
+          <div className="flex gap-2 justify-end">
+            <button onClick={() => setCreating(false)} className="px-4 py-2.5 rounded-md border border-border text-muted-foreground hover:text-foreground text-sm transition-all duration-300 ease-in-out">Cancel</button>
+            <button onClick={create} className="px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm transition-all duration-300 ease-in-out hover:opacity-90">Create</button>
           </div>
-          <button onClick={create} className="px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm">Create</button>
-          <button onClick={() => setCreating(false)} className="px-4 py-2.5 rounded-md border border-border text-muted-foreground hover:text-foreground text-sm">Cancel</button>
         </div>
       )}
 
@@ -126,7 +138,7 @@ function WLList() {
                 params={{ wlId: wl.id }}
                 className="surface-card p-5 group hover:border-primary/50 hover:shadow-[var(--shadow-glow)] transition-all relative overflow-hidden"
               >
-                <LeagueWatermark title={label} />
+                <LeagueWatermark title={label} markId={wl.watermarkId} color={wl.watermarkColor} />
                 <div className="absolute top-3 right-3 z-20 flex items-center gap-1">
                   <button
                     onClick={(e) => { e.preventDefault(); setEditingWL(wl); }}
@@ -189,10 +201,14 @@ function WLEditModal({ wl, onClose }: { wl: WeekendLeague; onClose: () => void }
   const currentCrest = useClubCrest();
   const [name, setName] = useState(wl.customName ?? "");
   const [applyCurrent, setApplyCurrent] = useState(false);
+  const [wmId, setWmId] = useState<string | undefined>(wl.watermarkId);
+  const [wmColor, setWmColor] = useState<string | undefined>(wl.watermarkColor);
 
   const save = () => {
     const patch: Partial<WeekendLeague> = {
       customName: name.trim() || undefined,
+      watermarkId: wmId,
+      watermarkColor: wmColor,
     };
     if (applyCurrent) {
       patch.clubName = currentName || undefined;
@@ -254,6 +270,10 @@ function WLEditModal({ wl, onClose }: { wl: WeekendLeague; onClose: () => void }
                 <span className="text-muted-foreground">(escudo atual)</span>
               </span>
             </label>
+          </div>
+
+          <div className="surface-card p-3">
+            <WatermarkPicker markId={wmId} color={wmColor} onMarkChange={setWmId} onColorChange={setWmColor} />
           </div>
         </div>
         <div className="px-5 py-3 border-t border-border/60 flex gap-2">

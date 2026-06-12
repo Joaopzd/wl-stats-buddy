@@ -15,6 +15,7 @@ import { PlayerDetailModal } from "@/components/PlayerDetailModal";
 import { ClubCrest } from "@/components/ClubCrest";
 import { OpponentCrest } from "@/components/OpponentCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
+import { LeagueWatermark } from "@/components/LeagueWatermark";
 import { CREST_SIZE } from "@/lib/ui";
 import { FORMATIONS, type FormationSlot } from "@/lib/formations";
 import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Shield, ChevronDown, Sparkles, Flame, Snowflake, TrendingUp, TrendingDown, Activity } from "lucide-react";
@@ -150,13 +151,14 @@ function WLDetail() {
         }
 
         return (
-          <div className="surface-glow overflow-hidden mb-6">
+          <div className="surface-glow overflow-hidden mb-6 relative">
+            <LeagueWatermark title={label} markId={wl.watermarkId} color={wl.watermarkColor} size={180} />
             {/* Top: identity + record */}
-            <div className="px-5 sm:px-7 pt-5 pb-4 flex items-start justify-between gap-5">
+            <div className="relative z-10 px-5 sm:px-7 pt-5 pb-4 flex items-start justify-between gap-5">
               <div className="min-w-0 flex-1">
                 <div className="text-[11px] uppercase tracking-[0.3em] text-primary font-bold mb-2 flex items-center gap-2">
                   <ClubCrest size={20} overrideUrl={wl.clubCrestUrl} />
-                  <span className="truncate">{wl.clubName || "My Club"} · WL #{wl.number}</span>
+                  <span className="truncate">{wl.clubName || "My Club"} · WL #{wl.number} · Active Campaign</span>
                 </div>
                 {editingName ? (
                   <div className="flex items-center gap-2">
@@ -172,10 +174,10 @@ function WLDetail() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 min-w-0">
-                    <h1 className="font-display text-2xl sm:text-3xl leading-tight truncate">{label}</h1>
+                    <h1 className="font-display text-3xl sm:text-4xl leading-tight truncate tracking-tight">{label}</h1>
                     <button
                       onClick={() => { setNameDraft(wl.customName ?? ""); setEditingName(true); }}
-                      className="p-1 text-muted-foreground hover:text-primary shrink-0"
+                      className="p-1 text-muted-foreground hover:text-primary shrink-0 transition-all duration-300 ease-in-out"
                       aria-label="Edit WL name"
                     >
                       <PencilIcon className="h-3.5 w-3.5" />
@@ -189,9 +191,6 @@ function WLDetail() {
                       {wl.formation}
                     </span>
                   )}
-                  <span className="text-[11px] text-muted-foreground font-mono uppercase tracking-wider">
-                    {record?.played ?? 0}/15 Played
-                  </span>
                 </div>
               </div>
 
@@ -226,8 +225,33 @@ function WLDetail() {
               </div>
             </div>
 
+            {/* Progress bar: matches played split by W/L, with remaining */}
+            {(() => {
+              const played = record?.played ?? 0;
+              const losses = record?.losses ?? 0;
+              const remaining = Math.max(0, 15 - played);
+              const pct = (n: number) => (n / 15) * 100;
+              return (
+                <div className="relative z-10 px-5 sm:px-7 pb-4">
+                  <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.25em] font-bold text-muted-foreground mb-1.5">
+                    <span>Campaign Progress</span>
+                    <span className="font-mono text-foreground/80">{played}<span className="text-muted-foreground/60">/15</span> · {remaining} left</span>
+                  </div>
+                  <div className="h-2.5 w-full rounded-full bg-background/60 border border-border/60 overflow-hidden flex">
+                    <div className="h-full bg-primary transition-all duration-300 ease-in-out" style={{ width: `${pct(wins)}%` }} />
+                    <div className="h-full bg-destructive/80 transition-all duration-300 ease-in-out" style={{ width: `${pct(losses)}%` }} />
+                  </div>
+                  <div className="mt-1.5 flex items-center gap-3 text-[10px] uppercase tracking-wider font-semibold">
+                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-primary" />Wins {wins}</span>
+                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-destructive/80" />Losses {losses}</span>
+                    <span className="flex items-center gap-1 text-muted-foreground"><span className="h-2 w-2 rounded-sm bg-background border border-border/60" />Remaining {remaining}</span>
+                  </div>
+                </div>
+              );
+            })()}
+
             {/* Middle: stats belt */}
-            <div className="grid grid-cols-3 border-y border-border/60 bg-background/40">
+            <div className="relative z-10 grid grid-cols-3 border-y border-border/60 bg-background/40">
               <BeltStat
                 icon={<SoccerBall size={16} />}
                 value={record?.goalsFor ?? 0}
@@ -252,22 +276,22 @@ function WLDetail() {
             </div>
 
             {/* Bottom: action row */}
-            <div className="px-4 sm:px-5 py-3 flex flex-wrap items-center gap-2.5">
+            <div className="relative z-10 px-4 sm:px-5 py-3 flex flex-wrap items-center gap-2.5">
               <button
                 onClick={() => setSquadOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-border bg-secondary/60 text-foreground font-semibold uppercase tracking-wider text-[11px] hover:bg-secondary transition"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-border bg-secondary/60 text-foreground font-semibold uppercase tracking-wider text-[11px] hover:bg-secondary transition-all duration-300 ease-in-out"
               >
                 <Users className="h-3.5 w-3.5" /> {squad.length ? "Edit Squad" : "Add Squad"}
               </button>
               <button
                 onClick={() => { setEditingMatch(null); setMatchOpen(true); }}
                 disabled={squad.length === 0 || matches.length >= 15}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-[11px] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-[var(--shadow-neon)] transition"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-[11px] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-[var(--shadow-neon)] transition-all duration-300 ease-in-out"
               >
                 <Plus className="h-3.5 w-3.5" /> Add Match{nextMatchIndex <= 15 && ` · ${nextMatchIndex}/15`}
               </button>
               {matches.length >= 15 && (
-                <button onClick={() => setReportOpen(true)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-primary/50 text-primary font-semibold uppercase tracking-wider text-[11px] hover:bg-primary/10 transition">
+                <button onClick={() => setReportOpen(true)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-primary/50 text-primary font-semibold uppercase tracking-wider text-[11px] hover:bg-primary/10 transition-all duration-300 ease-in-out">
                   View Report
                 </button>
               )}
@@ -417,17 +441,7 @@ function WLDetail() {
             No matches yet.
           </div>
         ) : (
-          <div className="surface-card overflow-hidden divide-y divide-border/60">
-            {/* Header row */}
-            <div className="hidden sm:grid grid-cols-[2rem_7rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold bg-background/40">
-              <span>#</span>
-              <span className="text-center">Versus</span>
-              <span>Plat</span>
-              <span>Tags</span>
-              <span className="text-right">G</span>
-              <span className="text-right">A</span>
-              <span className="text-right pr-1">Act</span>
-            </div>
+          <div className="flex flex-col gap-2.5">
             {matches.map((m) => {
               const win = matchIsWin(m);
               const totalG = m.performances.reduce((s, p) => s + (p.goals || 0), 0);
@@ -439,53 +453,77 @@ function WLDetail() {
                   tabIndex={0}
                   onClick={() => setViewingMatch(m)}
                   onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewingMatch(m); } }}
-                  className={`grid grid-cols-[2rem_7rem_2.5rem_1fr_2.5rem_2.5rem_3.5rem] items-center gap-2 px-3 py-2 border-l-4 hover:bg-secondary/30 cursor-pointer transition ${win ? "border-l-[color:var(--success)]" : "border-l-destructive"}`}
+                  className="group relative rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm px-4 py-3 sm:px-5 sm:py-3.5 shadow-sm hover:shadow-[var(--shadow-glow)] hover:border-primary/40 hover:-translate-y-0.5 cursor-pointer transition-all duration-300 ease-in-out"
                   aria-label={`View match ${m.index} details`}
                 >
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
-                    M{m.index}
-                  </span>
-                  <div className="flex items-center justify-center gap-1.5 leading-none">
-                    <ClubCrest size={CREST_SIZE.list} overrideUrl={wl.clubCrestUrl} />
-                    <span className="font-display stat-num text-sm">
-                      <span className="text-foreground">{m.scoreFor}</span>
-                      <span className="text-muted-foreground/50 mx-0.5">–</span>
-                      <span className={!win ? "text-destructive" : "text-foreground"}>{m.scoreAgainst}</span>
-                    </span>
-                    <OpponentCrest id={m.opponentCrestId} size={CREST_SIZE.list} />
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    {/* Match # badge */}
+                    <div className="shrink-0 h-10 w-10 rounded-xl bg-secondary/60 border border-border/60 grid place-items-center font-display text-sm tracking-wider text-muted-foreground">
+                      <span className="text-[10px] leading-none uppercase tracking-wider opacity-70">M</span>
+                      <span className="text-base leading-none font-bold text-foreground -mt-0.5">{m.index}</span>
+                    </div>
+
+                    {/* Scoreline */}
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <ClubCrest size={CREST_SIZE.list} overrideUrl={wl.clubCrestUrl} />
+                      <div className="font-display stat-num text-xl sm:text-2xl leading-none">
+                        <span className="text-foreground">{m.scoreFor}</span>
+                        <span className="text-muted-foreground/40 mx-1">–</span>
+                        <span className={!win ? "text-destructive" : "text-foreground"}>{m.scoreAgainst}</span>
+                      </div>
+                      <OpponentCrest id={m.opponentCrestId} size={CREST_SIZE.list} />
+                      <div className="ml-1 hidden sm:flex items-center gap-1 flex-wrap min-w-0">
+                        <PlatformBadge platform={m.platform} size="xs" />
+                        {m.extraTime && <Tag tone="warn">ET</Tag>}
+                        {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
+                        {m.rageQuit && <Tag tone="rq">RQ</Tag>}
+                      </div>
+                    </div>
+
+                    {/* G / A inline */}
+                    <div className="hidden sm:flex items-baseline gap-3 text-[11px] uppercase tracking-wider font-semibold text-muted-foreground shrink-0">
+                      <span><span className="font-display stat-num text-base text-foreground mr-1">{totalG}</span>G</span>
+                      <span><span className="font-display stat-num text-base text-foreground mr-1">{totalA}</span>A</span>
+                    </div>
+
+                    {/* Soft status badge */}
+                    <div
+                      className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ease-in-out ${
+                        win
+                          ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
+                          : "border-rose-400/30 bg-rose-400/10 text-rose-300"
+                      }`}
+                    >
+                      <span className="text-sm leading-none">{win ? "+" : "−"}</span>
+                      {win ? "Win" : "Loss"}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setEditingMatch(m); setMatchOpen(true); }}
+                        className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all duration-300 ease-in-out"
+                        aria-label="Edit"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); if (confirm("Delete this match?")) { store.deleteMatch(m.id); toast.success("Deleted"); } }}
+                        className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-300 ease-in-out"
+                        aria-label="Delete"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex justify-center">
+
+                  {/* Mobile tags row */}
+                  <div className="sm:hidden mt-2 flex items-center gap-1.5 flex-wrap text-[11px] text-muted-foreground">
                     <PlatformBadge platform={m.platform} size="xs" />
-                  </div>
-                  <div className="flex items-center gap-1 flex-wrap min-w-0">
-                    <span className={`text-[11px] font-bold uppercase tracking-wider ${win ? "text-primary" : "text-destructive"}`}>
-                      {win ? "W" : "L"}
-                    </span>
+                    <span className="font-mono">{totalG}G · {totalA}A</span>
                     {m.extraTime && <Tag tone="warn">ET</Tag>}
                     {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
                     {m.rageQuit && <Tag tone="rq">RQ</Tag>}
-                  </div>
-                  <span className="font-mono stat-num text-xs text-right text-foreground">
-                    {totalG}<span className="text-muted-foreground text-[8px] ml-0.5">G</span>
-                  </span>
-                  <span className="font-mono stat-num text-xs text-right text-foreground">
-                    {totalA}<span className="text-muted-foreground text-[8px] ml-0.5">A</span>
-                  </span>
-                  <div className="flex justify-end gap-0.5">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setEditingMatch(m); setMatchOpen(true); }}
-                      className="p-1 text-muted-foreground hover:text-foreground"
-                      aria-label="Edit"
-                    >
-                      <Pencil className="h-3 w-3" />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); if (confirm("Delete this match?")) { store.deleteMatch(m.id); toast.success("Deleted"); } }}
-                      className="p-1 text-muted-foreground hover:text-destructive"
-                      aria-label="Delete"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </button>
                   </div>
                 </div>
               );

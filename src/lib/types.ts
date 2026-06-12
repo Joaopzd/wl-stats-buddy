@@ -159,6 +159,10 @@ export interface WeekendLeague {
   clubName?: string;
   /** Snapshot of the active club crest URL at the moment this WL was created. Frozen forever. */
   clubCrestUrl?: string | null;
+  /** Watermark element id (see lib/watermarks). Empty = auto from title. */
+  watermarkId?: string;
+  /** Hex color for the watermark element. */
+  watermarkColor?: string;
 }
 
 /** Convenience: render the user-facing label for a WL. */
