@@ -94,9 +94,9 @@ function PlayersPage() {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     let list = aggs;
-    // Roster view: Active (not archived), In Development (active w/ <9 matches), Archived.
-    if (rosterView === "active") list = list.filter((a) => !a.player.isArchived);
-    else if (rosterView === "dev") list = list.filter((a) => !a.player.isArchived && a.matches < 9);
+    // Roster view: Active (not archived, not in development), In Development (flagged), Archived.
+    if (rosterView === "active") list = list.filter((a) => !a.player.isArchived && !a.player.isInDevelopment);
+    else if (rosterView === "dev") list = list.filter((a) => !a.player.isArchived && !!a.player.isInDevelopment);
     else list = list.filter((a) => !!a.player.isArchived);
     if (q) {
       list = list.filter(
