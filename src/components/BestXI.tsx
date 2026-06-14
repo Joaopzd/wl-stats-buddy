@@ -9,6 +9,7 @@ import {
 import type { Match, Player, WeekendLeague, Rarity } from "@/lib/types";
 import { aggregateAllPlayers, type PlayerAgg } from "@/lib/stats";
 import { PlayerCard } from "@/components/PlayerCard";
+import { PositionBadge } from "@/components/PositionBadge";
 import { rarityVisual } from "@/lib/format";
 import {
   HoverCard,
