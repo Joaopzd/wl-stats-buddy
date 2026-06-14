@@ -183,12 +183,9 @@ export function PlayerDetailModal({
               <StatGrid agg={career} player={player} managerAvg={managerCareer.avg} managerCount={managerCareer.count} />
             </Section>
 
-            <Section
-              title={
-                lastWL
-                  ? `Last WL — ${wlLabel(lastWL.wl)}`
-                  : "Last WL"
-              }
+            <CollapsibleSection
+              title={lastWL ? `Last WL — ${wlLabel(lastWL.wl)}` : "Last WL"}
+              defaultOpen={true}
             >
               {lastAgg && lastAgg.matches > 0 ? (
                 <StatGrid agg={lastAgg} player={player} managerAvg={managerLast.avg} managerCount={managerLast.count} />
@@ -197,7 +194,7 @@ export function PlayerDetailModal({
                   Hasn't played a match yet.
                 </div>
               )}
-            </Section>
+            </CollapsibleSection>
           </div>
         </div>
       </div>
