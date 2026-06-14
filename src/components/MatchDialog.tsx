@@ -149,6 +149,7 @@ export function MatchDialog({
       xgFor: Math.max(0, Math.round(xgFor * 100) / 100),
       xgAgainst: Math.max(0, Math.round(xgAgainst * 100) / 100),
       disconnect: false,
+      connection,
     };
 
     if (existingMatch) {
