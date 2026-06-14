@@ -6,6 +6,7 @@ import { aggregatePlayer, isCleanSheetEligible, isGoalsConcededEligible } from "
 import { RatingDisplay } from "@/components/RatingDisplay";
 import { PlayerCard } from "@/components/PlayerCard";
 import { PlayerDetailModal } from "@/components/PlayerDetailModal";
+import { PositionBadge } from "@/components/PositionBadge";
 import { Plus, Trash2, Pencil, X, Search } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
