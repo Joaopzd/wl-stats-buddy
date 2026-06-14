@@ -207,6 +207,7 @@ export const raritySwatch = (r: Rarity): string => {
     "UEFA Europa League": "#010100",
     "UEFA Champions League": "#001ba0",
     "UEFA Conference League": "#041d0a",
+    Showdown: "#030700",
   };
   if (hexMap[r]) {
     // Rendered via inline style elsewhere; return a neutral utility for layout fallback.
