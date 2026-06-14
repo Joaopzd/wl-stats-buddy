@@ -562,8 +562,8 @@ function RatedCard({ agg, rank }: { agg: ReturnType<typeof aggregateAllPlayers>[
         <div className="min-w-0 flex-1">
           <div className={`text-[11px] uppercase tracking-[0.25em] font-bold ${medalText}`}>Rank #{rank}</div>
           <div className="font-display text-xl truncate mt-0.5">{agg.player.name}</div>
-          <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
-            {agg.player.position} · {agg.player.overall} OVR
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono flex items-center gap-1.5">
+            <PositionBadge position={agg.player.position} size="xs" /> {agg.player.overall} OVR
           </div>
           <div className="mt-3 flex items-baseline gap-1.5">
             <span className={`font-display stat-num text-4xl ${medalText}`}>{agg.avgRating.toFixed(2)}</span>
@@ -609,8 +609,8 @@ function LegendCard({
           />
           <div className="min-w-0 flex-1">
             <div className="font-display text-base truncate leading-tight">{agg.player.name}</div>
-            <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">
-              {agg.player.position} · {agg.player.overall} OVR
+            <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5 flex items-center gap-1.5">
+              <PositionBadge position={agg.player.position} size="xs" /> {agg.player.overall} OVR
             </div>
             <div className="mt-2 font-display stat-num text-2xl text-primary leading-none">{metric(agg)}</div>
             {sub && <div className="text-[11px] text-muted-foreground mt-1">{sub}</div>}
@@ -622,4 +622,41 @@ function LegendCard({
     </div>
   );
 }
+
+/** Collapsible card section used on the Dashboard. */
+function Collapsible({
+  title,
+  icon,
+  meta,
+  defaultOpen = true,
+  children,
+}: {
+  title: string;
+  icon?: React.ReactNode;
+  meta?: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className="surface-card mb-8 overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="w-full flex items-center justify-between gap-3 px-5 py-4 hover:bg-secondary/40 transition-all duration-300 ease-in-out"
+      >
+        <h3 className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
+          {icon} {title}
+        </h3>
+        <span className="flex items-center gap-2 text-[11px] text-muted-foreground">
+          {meta && <span>{meta}</span>}
+          <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
+        </span>
+      </button>
+      {open && <div className="px-5 pb-5">{children}</div>}
+    </section>
+  );
+}
+
 
