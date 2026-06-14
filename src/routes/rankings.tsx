@@ -225,8 +225,8 @@ function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
                       </span>
                     )}
                   </div>
-                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground truncate">
-                    {c.player.position} · {c.clutch.matches} clutch · {c.baseline.matches} total · {c.clutch.goals}G/{c.clutch.assists}A
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground truncate flex items-center gap-1.5">
+                    <PositionBadge position={c.player.position} size="xs" /> {c.clutch.matches} clutch · {c.baseline.matches} total · {c.clutch.goals}G/{c.clutch.assists}A
                   </div>
                 </div>
                 <div className="text-right shrink-0">
