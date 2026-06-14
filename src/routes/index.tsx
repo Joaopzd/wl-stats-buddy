@@ -417,8 +417,9 @@ function Dashboard() {
                       <div className="flex items-center gap-2 min-w-0">
                         {critical && <AlertTriangle className="h-3.5 w-3.5 text-warn-critical shrink-0" />}
                         <span className="font-semibold truncate">{a.player.name}</span>
+                        <PositionBadge position={a.player.position} size="xs" />
                         <span className="text-[11px] uppercase tracking-wider text-muted-foreground shrink-0">
-                          {a.player.position} · {a.matches} apps
+                          {a.matches} apps
                         </span>
                       </div>
                       <span className={`font-display stat-num text-lg ${critical ? "text-warn-critical" : "text-warn-caution"}`}>
@@ -498,8 +499,8 @@ function MVPCard({
             </span>
           </div>
           <div className="font-display text-2xl truncate mt-0.5">{agg.player.name}</div>
-          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-            {agg.player.position} · {agg.player.overall} OVR · {agg.player.rarity}
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+            <PositionBadge position={agg.player.position} size="xs" /> {agg.player.overall} OVR · {agg.player.rarity}
           </div>
           {/* Mini Player-of-the-Match stat row */}
           <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px]">
