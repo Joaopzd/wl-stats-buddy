@@ -35,6 +35,7 @@ export function MatchDialog({
   const [rageQuit, setRageQuit] = useState<boolean>(existingMatch?.rageQuit ?? false);
   const [rageQuitBy, setRageQuitBy] = useState<"us" | "them">(existingMatch?.rageQuitBy ?? (existingMatch?.rageQuit ? "them" : "them"));
   const [tactics, setTactics] = useState<MatchTactic[]>(existingMatch?.tactics ?? []);
+  const [connection, setConnection] = useState<number>(existingMatch?.connection ?? 5);
   const [possessionFor, setPossessionFor] = useState<number>(existingMatch?.possessionFor ?? 50);
   const [xgFor, setXgFor] = useState<number>(existingMatch?.xgFor ?? 0);
   const [xgAgainst, setXgAgainst] = useState<number>(existingMatch?.xgAgainst ?? 0);
