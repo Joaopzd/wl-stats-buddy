@@ -167,7 +167,7 @@ export function SquadDialog({
                   >
                     <RarityDot rarity={p.rarity} size={20} />
                     <span className="font-display text-xl text-primary stat-num w-9 text-center shrink-0">{p.overall}</span>
-                    <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1.5 py-0.5 rounded shrink-0 w-12 text-center">{p.position}</span>
+                    <PositionBadge position={p.position} />
                     <span className="font-semibold truncate flex-1">{p.name}</span>
                     {(inStarting || inBench) && (
                       <span className="text-[11px] uppercase tracking-wider text-primary font-bold shrink-0">
