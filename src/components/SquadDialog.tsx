@@ -4,6 +4,7 @@ import { store } from "@/lib/store";
 import type { Player, WeekendLeague } from "@/lib/types";
 import { FORMATIONS, FORMATION_NAMES, positionFits, type FormationName, type FormationSlot } from "@/lib/formations";
 import { PlayerCard } from "./PlayerCard";
+import { PositionBadge } from "./PositionBadge";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "./ui/hover-card";
 import { rarityVisual } from "@/lib/format";
 import { toast } from "sonner";
