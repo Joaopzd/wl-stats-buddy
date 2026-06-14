@@ -64,6 +64,8 @@ export interface Player {
   imageUrl?: string;
   /** When true, hide the player from the active roster but keep historical match data. */
   isArchived?: boolean;
+  /** Player is being trained / tested. Hidden from active roster, still searchable in WL squad picker. */
+  isInDevelopment?: boolean;
   createdAt: number;
 }
 
