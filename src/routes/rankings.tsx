@@ -7,6 +7,7 @@ import { RatingDisplay } from "@/components/RatingDisplay";
 import { Sparkles, Trophy, Shield, Info, Zap, AlertTriangle, Flame, TrendingDown, ChevronDown } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
+import { PositionBadge } from "@/components/PositionBadge";
 
 
 const MIN_MATCHES = 9;
