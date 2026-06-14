@@ -149,10 +149,8 @@ function PlayersPage() {
     const c = { active: 0, dev: 0, archived: 0 };
     for (const a of aggs) {
       if (a.player.isArchived) c.archived += 1;
-      else {
-        c.active += 1;
-        if (a.matches < 9) c.dev += 1;
-      }
+      else if (a.player.isInDevelopment) c.dev += 1;
+      else c.active += 1;
     }
     return c;
   }, [aggs]);
