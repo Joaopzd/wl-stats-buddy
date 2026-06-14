@@ -9,7 +9,6 @@ export type ThemeKey =
   | "sahara-dusk"
   | "burgundy-gold"
   | "ivory-charcoal"
-  | "burnt-slate"
   | "navy-champagne"
   | "forest-stone"
   | "bronze-pearl";
