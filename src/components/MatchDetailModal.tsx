@@ -239,23 +239,29 @@ export function MatchDetailModal({
               <div className="surface-card p-3 text-center text-xs text-muted-foreground">No participants logged</div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-                {ratings.map(({ perf, player }) => {
+                {ratings.map(({ perf, player }, idx) => {
                   const r = perf.rating ?? 0;
-                  const tone =
-                    r >= 6 ? "text-foreground" :
-                    r > 0 ? "text-destructive" :
-                    "text-muted-foreground";
+                  // Highlight top-3 ratings in the match
+                  const topRank = r > 0 && idx < 3 ? idx + 1 : 0;
+                  const topStyle =
+                    topRank === 1 ? { ring: "border-amber-400/70 bg-amber-400/10", text: "text-amber-300" } :
+                    topRank === 2 ? { ring: "border-zinc-300/60 bg-zinc-300/10", text: "text-zinc-200" } :
+                    topRank === 3 ? { ring: "border-amber-700/60 bg-amber-700/10", text: "text-amber-500" } :
+                    null;
+                  const tone = topStyle
+                    ? topStyle.text
+                    : r >= 6 ? "text-foreground"
+                    : r > 0 ? "text-destructive"
+                    : "text-muted-foreground";
                   return (
                     <div
                       key={perf.playerId}
-                      className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-background/50 border border-border/60"
+                      className={`flex items-center gap-2 px-2 py-1.5 rounded-md border ${topStyle ? topStyle.ring : "bg-background/50 border-border/60"}`}
                     >
                       <span className="font-display text-base text-foreground stat-num w-7 text-center shrink-0 leading-none">
                         {player!.overall}
                       </span>
-                      <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">
-                        {player!.position}
-                      </span>
+                      <PositionBadge position={player!.position} size="xs" />
                       <div className="text-[12px] font-semibold truncate flex-1 leading-tight">{player!.name}</div>
                       <span className="text-[11px] font-mono text-muted-foreground tabular-nums">
                         {perf.goals}G {perf.assists}A
