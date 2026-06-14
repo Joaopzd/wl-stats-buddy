@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { X, Trophy, Shield, Star, AlertTriangle, Info, Archive, ArchiveRestore } from "lucide-react";
+import { X, Trophy, Shield, Star, AlertTriangle, Info, Archive, ArchiveRestore, FlaskConical } from "lucide-react";
+import { PositionBadge } from "@/components/PositionBadge";
 import { store } from "@/lib/store";
 import { toast } from "sonner";
 import {
