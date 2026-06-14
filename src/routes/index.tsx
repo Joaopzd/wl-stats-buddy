@@ -1,14 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { StatTile } from "@/components/StatTile";
 import { useMatches, usePlayers, useWLs } from "@/lib/store";
 import { aggregateAllPlayers, aggregatePlayer, matchFlagTotals, performanceStatus, platformRecords, rankFromWins, UNDERPERFORM_MIN_MATCHES, wlRecord } from "@/lib/stats";
-import { Trophy, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, Gamepad2, Users, Crown, AlertTriangle, Zap, Flag as FlagIcon, DoorOpen } from "lucide-react";
+import { Trophy, Shield, Star, Award, Plus, TrendingUp, TrendingDown, Sparkles, Gamepad2, Users, Crown, AlertTriangle, Zap, Flag as FlagIcon, DoorOpen, ChevronDown, Activity } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 import { WLTrendsChart } from "@/components/WLTrendsChart";
-import { AICoach } from "@/components/AICoach";
+import { PositionBadge } from "@/components/PositionBadge";
 
 import { RankBadge } from "@/components/RankBadge";
 import { ClubCrest } from "@/components/ClubCrest";
@@ -48,9 +47,27 @@ function Dashboard() {
   }, [wls, matches]);
 
   const totals = useMemo(() => {
-    let gf = 0, ga = 0;
-    for (const m of matches) { gf += m.scoreFor; ga += m.scoreAgainst; }
-    return { gf, ga };
+    let gf = 0, ga = 0, wins = 0, losses = 0;
+    let possSum = 0, possCount = 0;
+    let xgForSum = 0, xgForCount = 0;
+    let xgAgSum = 0, xgAgCount = 0;
+    for (const m of matches) {
+      gf += m.scoreFor; ga += m.scoreAgainst;
+      // Inline win check (avoid extra import)
+      const win = m.penalties ? m.penaltyWinner === "us" : m.scoreFor > m.scoreAgainst;
+      if (win) wins += 1; else losses += 1;
+      if (typeof m.possessionFor === "number") { possSum += m.possessionFor; possCount += 1; }
+      if (typeof m.xgFor === "number" && m.xgFor > 0) { xgForSum += m.xgFor; xgForCount += 1; }
+      if (typeof m.xgAgainst === "number" && m.xgAgainst > 0) { xgAgSum += m.xgAgainst; xgAgCount += 1; }
+    }
+    return {
+      gf, ga, wins, losses,
+      avgPoss: possCount ? possSum / possCount : null,
+      possCount,
+      avgXgFor: xgForCount ? xgForSum / xgForCount : null,
+      avgXgAg: xgAgCount ? xgAgSum / xgAgCount : null,
+      xgCount: Math.max(xgForCount, xgAgCount),
+    };
   }, [matches]);
 
   const platformStats = useMemo(() => platformRecords(matches), [matches]);
