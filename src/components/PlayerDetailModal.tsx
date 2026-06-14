@@ -138,7 +138,10 @@ export function PlayerDetailModal({
           <div className="min-w-0 space-y-4 sm:pl-2">
             <div className="grid grid-cols-3 gap-2">
               <Meta label="OVR" value={String(player.overall)} accent />
-              <Meta label="Pos" value={player.position} />
+              <div className="rounded-md border border-border/60 bg-background/40 px-2 py-1.5">
+                <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold">Pos</div>
+                <div className="mt-1"><PositionBadge position={player.position} size="md" /></div>
+              </div>
               <Meta label="Rarity" value={player.rarity} small />
             </div>
 
