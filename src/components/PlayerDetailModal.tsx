@@ -246,6 +246,31 @@ function Section({
   );
 }
 
+function CollapsibleSection({
+  title,
+  defaultOpen = true,
+  children,
+}: {
+  title: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between mb-1.5 text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold hover:text-foreground"
+      >
+        <span>{title}</span>
+        {open ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+      </button>
+      {open && children}
+    </div>
+  );
+}
+
 function StatGrid({
   agg,
   player,
