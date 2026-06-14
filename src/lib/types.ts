@@ -135,6 +135,8 @@ export interface Match {
   xgAgainst?: number;
   /** Match ended in a disconnect — auto-loss, no per-player stats counted. */
   disconnect?: boolean;
+  /** Match connection quality, 0 (unplayable) → 5 (no delay). Optional for legacy matches. */
+  connection?: number;
   createdAt: number;
 }
 
