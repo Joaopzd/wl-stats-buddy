@@ -401,7 +401,7 @@ function WLDetail() {
                     {squadAggs.map((a) => (
                       <div key={a.player.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-background/50 border border-border/60">
                         <span className="font-display text-base text-foreground stat-num w-7 text-center shrink-0 leading-none">{a.player.overall}</span>
-                        <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{a.player.position}</span>
+                        <PositionBadge position={a.player.position} size="xs" />
                         <div className="min-w-0 flex-1">
                           <div className="text-[11px] font-semibold truncate leading-tight">{a.player.name}</div>
                           <div className="text-[11px] text-muted-foreground font-mono leading-tight">
@@ -779,7 +779,7 @@ function BenchList({ benchIds, players, onPick }: { benchIds: string[]; players:
                 <PlayerCard name={p.name} overall={p.overall} position={p.position} rarity={p.rarity} imageUrl={p.imageUrl} size="xs" />
                 <div className="min-w-0 flex-1">
                   <div className="text-[11px] font-semibold truncate leading-tight">{p.name}</div>
-                  <div className="text-[11px] text-muted-foreground font-mono leading-tight">{p.overall} · {p.position}</div>
+                  <div className="text-[11px] text-muted-foreground font-mono leading-tight flex items-center gap-1"><PositionBadge position={p.position} size="xs" /> {p.overall}</div>
                 </div>
               </button>
             );
@@ -1172,9 +1172,7 @@ function LiveWLReport({
           {weakest ? (
             <>
               <div className="font-display text-lg mt-1 truncate">{weakest.player.name}</div>
-              <div className="text-[11px] font-mono text-muted-foreground">
-                {weakest.player.position} · {weakest.matches}MP · avg {weakest.avgRating.toFixed(2)}
-              </div>
+              <div className="text-[11px] font-mono text-muted-foreground flex items-center gap-1"><PositionBadge position={weakest.player.position} size="xs" /> {weakest.matches}MP · avg {weakest.avgRating.toFixed(2)}</div>
             </>
           ) : (
             <div className="text-xs text-muted-foreground mt-2">Need 3+ rated apps.</div>
