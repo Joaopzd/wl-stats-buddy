@@ -1231,9 +1231,7 @@ function LiveWLReport({
             {ranked.map((a, i) => (
               <div key={a.player.id} className="flex items-center gap-2 py-2 text-sm">
                 <span className="font-display stat-num text-base w-6 text-center text-muted-foreground">{i + 1}</span>
-                <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded w-9 text-center shrink-0">
-                  {a.player.position}
-                </span>
+                <PositionBadge position={a.player.position} size="xs" />
                 <span className="font-semibold truncate flex-1">{a.player.name}</span>
                 <span className="font-mono text-xs text-foreground tabular-nums">
                   {a.goals}<span className="text-muted-foreground/60">G</span>·{a.assists}<span className="text-muted-foreground/60">A</span>
