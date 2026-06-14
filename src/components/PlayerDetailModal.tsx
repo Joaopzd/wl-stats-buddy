@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { X, Trophy, Shield, Star, AlertTriangle, Info, Archive, ArchiveRestore, FlaskConical } from "lucide-react";
+import { useMemo, useState } from "react";
+import { X, Trophy, Shield, Star, AlertTriangle, Info, Archive, ArchiveRestore, FlaskConical, ChevronDown, ChevronUp } from "lucide-react";
 import { PositionBadge } from "@/components/PositionBadge";
 import { store } from "@/lib/store";
 import { toast } from "sonner";
@@ -183,12 +183,9 @@ export function PlayerDetailModal({
               <StatGrid agg={career} player={player} managerAvg={managerCareer.avg} managerCount={managerCareer.count} />
             </Section>
 
-            <Section
-              title={
-                lastWL
-                  ? `Last WL — ${wlLabel(lastWL.wl)}`
-                  : "Last WL"
-              }
+            <CollapsibleSection
+              title={lastWL ? `Last WL — ${wlLabel(lastWL.wl)}` : "Last WL"}
+              defaultOpen={true}
             >
               {lastAgg && lastAgg.matches > 0 ? (
                 <StatGrid agg={lastAgg} player={player} managerAvg={managerLast.avg} managerCount={managerLast.count} />
@@ -197,7 +194,7 @@ export function PlayerDetailModal({
                   Hasn't played a match yet.
                 </div>
               )}
-            </Section>
+            </CollapsibleSection>
           </div>
         </div>
       </div>
@@ -245,6 +242,31 @@ function Section({
         {title}
       </div>
       {children}
+    </div>
+  );
+}
+
+function CollapsibleSection({
+  title,
+  defaultOpen = true,
+  children,
+}: {
+  title: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between mb-1.5 text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold hover:text-foreground"
+      >
+        <span>{title}</span>
+        {open ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+      </button>
+      {open && children}
     </div>
   );
 }
