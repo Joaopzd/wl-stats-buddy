@@ -99,6 +99,7 @@ export function MatchDialog({
         xgFor: undefined as number | undefined,
         xgAgainst: undefined as number | undefined,
         disconnect: true,
+        connection,
       };
       if (existingMatch) {
         store.updateMatch(existingMatch.id, { scoreFor: 0, scoreAgainst: 1, platform, performances: [], ...flags });
