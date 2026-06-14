@@ -1,17 +1,19 @@
 import type { Platform } from "@/lib/types";
+import ps5Asset from "@/assets/ps5.jpg.asset.json";
+import xboxAsset from "@/assets/xbox.jpg.asset.json";
+import pcAsset from "@/assets/pc.jpg.asset.json";
 
 /** Brand background HEX per platform. Applied everywhere a platform is shown. */
 export const PLATFORM_BG: Record<Platform, string> = {
   PS5: "#00439C",
   Xbox: "#107C10",
-  PC: "#FCFAF6",
+  PC: "#0A0A0A",
 };
 
-/** Foreground color tuned for legibility against each background. */
-export const PLATFORM_FG: Record<Platform, string> = {
-  PS5: "#FFFFFF",
-  Xbox: "#FFFFFF",
-  PC: "#0A0A0A",
+const LOGO: Record<Platform, string> = {
+  PS5: ps5Asset.url,
+  Xbox: xboxAsset.url,
+  PC: pcAsset.url,
 };
 
 interface Props {
@@ -21,18 +23,23 @@ interface Props {
 }
 
 export function PlatformBadge({ platform, size = "sm", className = "" }: Props) {
-  const sizeCls =
-    size === "xs"
-      ? "text-[9px] px-1.5 py-0.5"
-      : size === "md"
-      ? "text-[11px] px-2.5 py-1"
-      : "text-[10px] px-2 py-0.5";
+  const dim =
+    size === "xs" ? { box: "h-4 px-1.5", img: 12 } :
+    size === "md" ? { box: "h-7 px-2.5", img: 22 } :
+    { box: "h-5 px-2", img: 16 };
   return (
     <span
-      className={`inline-flex items-center justify-center font-mono font-bold uppercase tracking-wider rounded border border-black/20 ${sizeCls} ${className}`}
-      style={{ backgroundColor: PLATFORM_BG[platform], color: PLATFORM_FG[platform] }}
+      title={platform}
+      className={`inline-flex items-center justify-center rounded border border-black/20 overflow-hidden ${dim.box} ${className}`}
+      style={{ backgroundColor: PLATFORM_BG[platform] }}
     >
-      {platform}
+      <img
+        src={LOGO[platform]}
+        alt={platform}
+        height={dim.img}
+        style={{ height: dim.img, width: "auto", objectFit: "contain" }}
+        draggable={false}
+      />
     </span>
   );
 }

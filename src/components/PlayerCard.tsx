@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import type { Rarity } from "@/lib/types";
+import type { Position, Rarity } from "@/lib/types";
 import { rarityVisual } from "@/lib/format";
+import { positionBadgeStyle } from "@/lib/positionGroup";
 
 export function PlayerCard({
   name,
@@ -12,7 +13,7 @@ export function PlayerCard({
 }: {
   name: string;
   overall: number;
-  position: string;
+  position: Position;
   rarity: Rarity;
   imageUrl?: string;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
@@ -59,8 +60,13 @@ export function PlayerCard({
           <div className="flex items-baseline gap-0.5 leading-none">
             <span className={size === "xs" ? "text-xs" : size === "lg" ? "text-2xl" : size === "xl" ? "text-4xl" : "text-base"}>{overall}</span>
           </div>
-          <div className={`leading-none opacity-90 ${size === "lg" ? "text-base" : size === "xl" ? "text-xl" : ""}`}>
-            <span>{position}</span>
+          <div className={`leading-none ${size === "lg" ? "text-base" : size === "xl" ? "text-xl" : ""}`}>
+            <span
+              className="inline-block rounded px-1 border font-bold"
+              style={positionBadgeStyle(position)}
+            >
+              {position}
+            </span>
           </div>
           <div className={`${size === "xs" ? "text-[7px]" : size === "lg" ? "text-xs" : size === "xl" ? "text-sm" : "text-[8px]"} truncate max-w-full uppercase tracking-tight`}>
             {name.split(" ").slice(-1)[0]}
