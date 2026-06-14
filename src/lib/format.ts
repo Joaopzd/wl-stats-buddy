@@ -129,6 +129,8 @@ export const rarityVisual = (r: Rarity): RarityVisual => {
       return solid("#001ba0", "#0365e9");
     case "UEFA Conference League":
       return solid("#041d0a", "#1ac145");
+    case "Showdown":
+      return solid("#030700", "#c6d76f");
 
     // ===== Legends (kept) =====
     case "Icon Base":
