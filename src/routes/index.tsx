@@ -183,7 +183,8 @@ function Dashboard() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          {/* Top tiles: Last WL + All-time Best */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div className="surface-card p-4 border-l-4 border-l-primary">
               <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-1.5">
                 <Trophy className="h-3.5 w-3.5" /> {lastWL ? `WL #${lastWL.number}` : "Last WL"}
@@ -210,36 +211,120 @@ function Dashboard() {
                   : <span className="text-[11px] text-muted-foreground">—</span>}
               </div>
             </div>
-            <StatTile label="Goals scored" value={totals.gf} icon={<SoccerBall size={56} strokeWidth={1.2} />} />
-            <StatTile label="Goals conceded" value={totals.ga} icon={<Shield />} />
           </div>
 
+          {/* Cumulative Performance — wins/losses/goals/GD all in one hero panel */}
           {(() => {
             const gd = totals.gf - totals.ga;
             const positive = gd >= 0;
+            const totalMatches = totals.wins + totals.losses;
+            const winRate = totalMatches ? Math.round((totals.wins / totalMatches) * 100) : 0;
             return (
-              <div className="surface-card p-5 mb-8 flex items-center justify-between gap-4 border-l-4" style={{ borderLeftColor: positive ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
-                <div>
-                  <div className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
-                    {positive ? <TrendingUp className="h-3.5 w-3.5 text-primary" /> : <TrendingDown className="h-3.5 w-3.5 text-destructive" />}
-                    Cumulative Goal Difference
+              <section className="surface-glow mb-8 overflow-hidden">
+                <div className="px-5 sm:px-7 pt-5 pb-3 flex items-baseline justify-between gap-3 border-b border-border/60">
+                  <div>
+                    <div className="text-[11px] uppercase tracking-[0.3em] text-primary font-bold flex items-center gap-2">
+                      <Activity className="h-3.5 w-3.5" /> Cumulative Performance
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Across {wls.length} WL{wls.length === 1 ? "" : "s"} · {matches.length} matches
+                    </div>
                   </div>
-                  <div className="text-xs text-muted-foreground mt-1">Across all {wls.length} WL{wls.length === 1 ? "" : "s"} · {matches.length} matches</div>
+                  <div className="text-right">
+                    <div className="font-display stat-num text-3xl text-foreground leading-none">{winRate}%</div>
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1 font-bold">Win Rate</div>
+                  </div>
                 </div>
-                <div className={`font-display text-5xl stat-num ${positive ? "text-primary" : "text-destructive"}`}>
-                  {positive ? "+" : ""}{gd}
+
+                {/* Wins / Losses big number row */}
+                <div className="grid grid-cols-2 border-b border-border/60">
+                  <div className="px-5 py-4 flex items-center gap-3">
+                    <Trophy className="h-5 w-5 text-primary shrink-0" />
+                    <div>
+                      <div className="font-display stat-num text-4xl sm:text-5xl text-primary leading-none">{totals.wins}</div>
+                      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mt-1 font-bold">Wins</div>
+                    </div>
+                  </div>
+                  <div className="px-5 py-4 flex items-center gap-3 border-l border-border/60">
+                    <TrendingDown className="h-5 w-5 text-destructive shrink-0" />
+                    <div>
+                      <div className="font-display stat-num text-4xl sm:text-5xl text-destructive leading-none">{totals.losses}</div>
+                      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mt-1 font-bold">Losses</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+
+                {/* Goals belt: scored / conceded / GD */}
+                <div className="grid grid-cols-3 bg-background/40">
+                  <div className="px-4 py-3.5 flex items-center gap-2.5">
+                    <SoccerBall size={18} className="text-primary shrink-0" />
+                    <div>
+                      <div className="font-display stat-num text-2xl text-foreground leading-none">{totals.gf}</div>
+                      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mt-1 font-bold">Scored</div>
+                    </div>
+                  </div>
+                  <div className="px-4 py-3.5 flex items-center gap-2.5 border-l border-border/60">
+                    <Shield className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div>
+                      <div className="font-display stat-num text-2xl text-foreground leading-none">{totals.ga}</div>
+                      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mt-1 font-bold">Conceded</div>
+                    </div>
+                  </div>
+                  <div className="px-4 py-3.5 flex items-center gap-2.5 border-l border-border/60">
+                    {positive
+                      ? <TrendingUp className="h-4 w-4 text-primary shrink-0" />
+                      : <TrendingDown className="h-4 w-4 text-destructive shrink-0" />}
+                    <div>
+                      <div className={`font-display stat-num text-2xl leading-none ${positive ? "text-primary" : "text-destructive"}`}>
+                        {positive ? "+" : ""}{gd}
+                      </div>
+                      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mt-1 font-bold">Goal Diff</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Advanced averages: possession + xG */}
+                <div className="grid grid-cols-3 border-t border-border/60">
+                  <div className="px-4 py-3">
+                    <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+                      <Activity className="h-3 w-3 text-primary" /> Avg Possession
+                    </div>
+                    <div className="font-display stat-num text-xl mt-0.5 leading-none">
+                      {totals.avgPoss === null ? "—" : `${Math.round(totals.avgPoss)}%`}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground mt-1 font-mono">
+                      {totals.possCount ? `${totals.possCount} logged` : "no data"}
+                    </div>
+                  </div>
+                  <div className="px-4 py-3 border-l border-border/60">
+                    <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+                      <TrendingUp className="h-3 w-3 text-primary" /> Avg xG · You
+                    </div>
+                    <div className="font-display stat-num text-xl mt-0.5 leading-none text-primary">
+                      {totals.avgXgFor === null ? "—" : totals.avgXgFor.toFixed(2)}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground mt-1 font-mono">per match</div>
+                  </div>
+                  <div className="px-4 py-3 border-l border-border/60">
+                    <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+                      <TrendingDown className="h-3 w-3 text-destructive" /> Avg xG · Against
+                    </div>
+                    <div className="font-display stat-num text-xl mt-0.5 leading-none text-destructive">
+                      {totals.avgXgAg === null ? "—" : totals.avgXgAg.toFixed(2)}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground mt-1 font-mono">per match</div>
+                  </div>
+                </div>
+              </section>
             );
           })()}
 
-          <div className="surface-card p-5 mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
-                <Gamepad2 className="h-3.5 w-3.5 text-primary" /> Platform Performance
-              </h3>
-              <span className="text-[11px] text-muted-foreground">Win rate by platform</span>
-            </div>
+          <Collapsible
+            title="Platform Performance"
+            icon={<Gamepad2 className="h-3.5 w-3.5 text-primary" />}
+            meta="Win rate by platform"
+            defaultOpen={false}
+          >
             <div className="grid grid-cols-3 gap-3">
               {platformStats.map((p) => {
                 const pct = Math.round(p.winRate * 100);
@@ -250,7 +335,6 @@ function Dashboard() {
                   <div key={p.platform} className="rounded-md border border-border/60 bg-background/40 p-3">
                     <div className="flex items-baseline justify-between">
                       <PlatformBadge platform={p.platform} size="sm" />
-
                       <div className={`font-display stat-num text-2xl ${color}`}>
                         {p.played === 0 ? "—" : `${pct}%`}
                       </div>
@@ -264,16 +348,15 @@ function Dashboard() {
                   </div>
                 );
               })}
-          </div>
-          </div>
-
-          <div className="surface-card p-5 mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
-                <FlagIcon className="h-3.5 w-3.5 text-primary" /> Match Flags
-              </h3>
-              <span className="text-[11px] text-muted-foreground">Across {flags.played} match{flags.played === 1 ? "" : "es"}</span>
             </div>
+          </Collapsible>
+
+          <Collapsible
+            title="Match Flags"
+            icon={<FlagIcon className="h-3.5 w-3.5 text-primary" />}
+            meta={`Across ${flags.played} match${flags.played === 1 ? "" : "es"}`}
+            defaultOpen={false}
+          >
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="rounded-md border border-border/60 bg-background/40 p-3">
                 <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
@@ -308,11 +391,11 @@ function Dashboard() {
                 <div className="text-[11px] text-muted-foreground mt-1">times I quit early</div>
               </div>
             </div>
-          </div>
+          </Collapsible>
 
           {wlMVP && lastWL && <MVPCard agg={wlMVP} wlNumber={lastWL.number} />}
 
-          <AICoach wls={wls} matches={matches} players={players} />
+
 
           <WLTrendsChart wls={wls} matches={matches} />
 
