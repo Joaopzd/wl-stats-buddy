@@ -303,8 +303,8 @@ function Leaderboard({
                   <div className="font-semibold text-xs mt-2 truncate w-full" title={a.player.name}>
                     {a.player.name}
                   </div>
-                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">
-                    {a.player.position} · {a.matches}MP
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5 flex items-center justify-center gap-1.5">
+                    <PositionBadge position={a.player.position} size="xs" /> {a.matches}MP
                   </div>
                 </div>
               );
