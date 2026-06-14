@@ -290,7 +290,7 @@ function PlayersPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="p-3 hidden sm:table-cell"><span className="font-mono text-xs">{a.player.position}</span></td>
+                    <td className="p-3 hidden sm:table-cell"><PositionBadge position={a.player.position} /></td>
                     <td className="p-3 hidden sm:table-cell stat-num">{a.player.overall}</td>
                     <td className="p-3 text-right stat-num">{a.matches}</td>
                     <td className="p-3 text-right stat-num text-primary font-semibold">{a.goals}</td>
