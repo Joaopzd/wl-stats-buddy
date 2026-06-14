@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { X, Zap, Flag as FlagIcon, AlertTriangle, ListChecks, ChevronDown, ChevronUp, Activity, Target, WifiOff } from "lucide-react";
+import { X, Zap, Flag as FlagIcon, AlertTriangle, ChevronDown, ChevronUp, Activity, Target, WifiOff, Signal } from "lucide-react";
+import { PositionBadge } from "./PositionBadge";
 import { store } from "@/lib/store";
 import type { Match, MatchPlayerStat, MatchTactic, Platform, PenaltyWinner, Player, WeekendLeague } from "@/lib/types";
 import { MATCH_TACTICS, wlLabel } from "@/lib/types";
