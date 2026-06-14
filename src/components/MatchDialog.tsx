@@ -597,5 +597,50 @@ function PossessionXgSection({
   );
 }
 
+const CONNECTION_LABELS = [
+  "Unplayable",
+  "Very laggy",
+  "Laggy",
+  "OK",
+  "Minor hiccups",
+  "Smooth",
+];
+
+function ConnectionBar({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const tone = (v: number) =>
+    v <= 1 ? "bg-destructive text-destructive-foreground border-destructive"
+    : v === 2 ? "bg-warn-critical/80 text-white border-warn-critical"
+    : v === 3 ? "bg-warn-caution/80 text-black border-warn-caution"
+    : v === 4 ? "bg-emerald-500/30 text-emerald-200 border-emerald-500/60"
+    : "bg-emerald-500 text-emerald-50 border-emerald-600";
+  return (
+    <div className="pt-1">
+      <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
+        <Signal className="h-3 w-3" /> Connection Quality
+        <span className="text-primary font-mono normal-case tracking-normal">· {value}/5 · {CONNECTION_LABELS[value]}</span>
+      </div>
+      <div className="grid grid-cols-6 gap-1">
+        {[0, 1, 2, 3, 4, 5].map((v) => {
+          const on = value === v;
+          return (
+            <button
+              key={v}
+              type="button"
+              onClick={() => onChange(v)}
+              title={CONNECTION_LABELS[v]}
+              className={`h-9 rounded border text-sm font-display stat-num transition ${
+                on ? tone(v) + " shadow-inner" : "bg-background/40 text-muted-foreground border-border hover:text-foreground"
+              }`}
+            >
+              {v}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+
 
 
