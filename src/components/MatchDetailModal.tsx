@@ -90,6 +90,20 @@ export function MatchDetailModal({
               <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[8rem] text-center">
                 {clubName || "My Club"}
               </div>
+              {scorers.length > 0 && (
+                <div className="flex items-start gap-1 max-w-[10rem] text-[10px] leading-tight text-foreground/90 font-semibold justify-center">
+                  <SoccerBall size={10} className="mt-[2px] text-primary shrink-0" />
+                  <span className="text-center">
+                    {scorers.map((s, i) => (
+                      <span key={s.player!.id}>
+                        {s.player!.name.split(" ").slice(-1)[0]}
+                        {s.goals > 1 ? ` (${s.goals})` : ""}
+                        {i < scorers.length - 1 ? ", " : ""}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+              )}
             </div>
             <div className="flex items-baseline justify-center gap-2 sm:gap-3">
               <span className="text-5xl sm:text-6xl stat-num text-foreground">{match.scoreFor}</span>
