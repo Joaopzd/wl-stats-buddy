@@ -90,6 +90,20 @@ export function MatchDetailModal({
               <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[8rem] text-center">
                 {clubName || "My Club"}
               </div>
+              {scorers.length > 0 && (
+                <div className="flex items-start gap-1 max-w-[10rem] text-[10px] leading-tight text-foreground/90 font-semibold justify-center">
+                  <SoccerBall size={10} className="mt-[2px] text-primary shrink-0" />
+                  <span className="text-center">
+                    {scorers.map((s, i) => (
+                      <span key={s.player!.id}>
+                        {s.player!.name.split(" ").slice(-1)[0]}
+                        {s.goals > 1 ? ` (${s.goals})` : ""}
+                        {i < scorers.length - 1 ? ", " : ""}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+              )}
             </div>
             <div className="flex items-baseline justify-center gap-2 sm:gap-3">
               <span className="text-5xl sm:text-6xl stat-num text-foreground">{match.scoreFor}</span>
@@ -154,23 +168,33 @@ export function MatchDetailModal({
             </div>
           )}
 
-          {/* Goals & Assists summary */}
-          <div className="grid sm:grid-cols-2 gap-3">
-            <SummaryList
-              icon={<SoccerBall size={14} />}
-              label="Goals"
-              empty="No goals"
-              items={scorers.map((s) => ({ name: s.player!.name, count: s.goals }))}
-              tone="primary"
-            />
-            <SummaryList
-              icon={<SoccerBoot size={14} />}
-              label="Assists"
-              empty="No assists"
-              items={assisters.map((a) => ({ name: a.player!.name, count: a.assists }))}
-              tone="info"
-            />
-          </div>
+          {/* Goals & Assists — compact one-liner */}
+          {(scorers.length > 0 || assisters.length > 0) && (
+            <div className="surface-card px-3 py-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]">
+              <span className="inline-flex items-center gap-1.5 text-primary font-bold uppercase tracking-wider">
+                <SoccerBall size={12} /> {match.scoreFor}
+              </span>
+              {scorers.length > 0 && (
+                <span className="text-foreground/90 truncate">
+                  {scorers
+                    .map((s) => `${s.player!.name}${s.goals > 1 ? ` (${s.goals})` : ""}`)
+                    .join(", ")}
+                </span>
+              )}
+              {assisters.length > 0 && (
+                <>
+                  <span className="inline-flex items-center gap-1.5 text-sky-300 font-bold uppercase tracking-wider">
+                    <SoccerBoot size={12} /> {assisters.reduce((s, a) => s + a.assists, 0)}
+                  </span>
+                  <span className="text-muted-foreground truncate">
+                    {assisters
+                      .map((a) => `${a.player!.name}${a.assists > 1 ? ` (${a.assists})` : ""}`)
+                      .join(", ")}
+                  </span>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Player ratings */}
           <div>
