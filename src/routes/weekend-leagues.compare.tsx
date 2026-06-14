@@ -7,6 +7,7 @@ import { aggregatePlayer, matchIsWin, rankFromWins, wlRecord } from "@/lib/stats
 import { wlLabel } from "@/lib/types";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
 import { RankBadge } from "@/components/RankBadge";
+import { PositionBadge } from "@/components/PositionBadge";
 
 export const Route = createFileRoute("/weekend-leagues/compare")({
   head: () => ({
@@ -225,7 +226,7 @@ function PlayerEvolutionTable({
                 <td className="px-3 py-2 sticky left-0 bg-background/80 backdrop-blur">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="font-display stat-num text-base text-foreground w-7 text-center shrink-0">{player.overall}</span>
-                    <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">{player.position}</span>
+                    <PositionBadge position={player.position} size="xs" />
                     <span className="text-[12px] font-semibold truncate">{player.name}</span>
                   </div>
                 </td>

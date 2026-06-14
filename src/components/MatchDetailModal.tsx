@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { X, Star, Zap, Flag as FlagIcon, AlertTriangle, Trophy, Pencil } from "lucide-react";
+import { useState } from "react";
+import { X, Star, Zap, Flag as FlagIcon, AlertTriangle, Trophy, Pencil, ChevronDown } from "lucide-react";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
 import { matchIsWin } from "@/lib/stats";
 import { ClubCrest } from "./ClubCrest";
@@ -7,6 +8,7 @@ import { OpponentCrest } from "./OpponentCrest";
 import { PlatformBadge } from "./PlatformBadge";
 import { SoccerBall } from "./icons/SoccerBall";
 import { SoccerBoot } from "./icons/SoccerBoot";
+import { PositionBadge } from "./PositionBadge";
 import { useClubName, useOpponentName } from "@/lib/store";
 import { CREST_SIZE } from "@/lib/ui";
 
@@ -24,6 +26,7 @@ export function MatchDetailModal({
   onClose: () => void;
   onEdit?: () => void;
 }) {
+  const [gaOpen, setGaOpen] = useState(false);
   const playersById = new Map(players.map((p) => [p.id, p]));
   const win = matchIsWin(match);
   const liveClubName = useClubName();
@@ -91,8 +94,8 @@ export function MatchDetailModal({
                 {clubName || "My Club"}
               </div>
               {scorers.length > 0 && (
-                <div className="flex items-start gap-1 max-w-[10rem] text-[10px] leading-tight text-foreground/90 font-semibold justify-center">
-                  <SoccerBall size={10} className="mt-[2px] text-primary shrink-0" />
+                <div className="flex items-start gap-1.5 max-w-[12rem] text-sm leading-tight text-foreground font-semibold justify-center">
+                  <SoccerBall size={14} className="mt-[3px] text-primary shrink-0" />
                   <span className="text-center">
                     {scorers.map((s, i) => (
                       <span key={s.player!.id}>
@@ -159,8 +162,8 @@ export function MatchDetailModal({
                 <div className="flex-1 min-w-0">
                   <div className="text-[11px] uppercase tracking-[0.25em] font-bold text-amber-300">MVP</div>
                   <div className="font-display text-xl truncate">{mvpPlayer.name}</div>
-                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
-                    {mvpPlayer.position} · {mvpPlayer.overall} · {mvp.goals}G {mvp.assists}A
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono flex items-center gap-1.5">
+                    <PositionBadge position={mvpPlayer.position} size="xs" /> {mvpPlayer.overall} · {mvp.goals}G {mvp.assists}A
                   </div>
                 </div>
                 <div className="font-display text-3xl stat-num text-amber-300">{mvp.rating.toFixed(1)}</div>
@@ -168,30 +171,61 @@ export function MatchDetailModal({
             </div>
           )}
 
-          {/* Goals & Assists — compact one-liner */}
+          {/* Goals & Assists — collapsible, two separate cards, starts minimized */}
           {(scorers.length > 0 || assisters.length > 0) && (
-            <div className="surface-card px-3 py-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]">
-              <span className="inline-flex items-center gap-1.5 text-primary font-bold uppercase tracking-wider">
-                <SoccerBall size={12} /> {match.scoreFor}
-              </span>
-              {scorers.length > 0 && (
-                <span className="text-foreground/90 truncate">
-                  {scorers
-                    .map((s) => `${s.player!.name}${s.goals > 1 ? ` (${s.goals})` : ""}`)
-                    .join(", ")}
+            <div className="surface-card overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setGaOpen((v) => !v)}
+                className="w-full flex items-center justify-between gap-2 px-3 py-2 hover:bg-secondary/40 transition text-left"
+                aria-expanded={gaOpen}
+              >
+                <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold">
+                  Goals & Assists
                 </span>
-              )}
-              {assisters.length > 0 && (
-                <>
-                  <span className="inline-flex items-center gap-1.5 text-sky-300 font-bold uppercase tracking-wider">
-                    <SoccerBoot size={12} /> {assisters.reduce((s, a) => s + a.assists, 0)}
-                  </span>
-                  <span className="text-muted-foreground truncate">
-                    {assisters
-                      .map((a) => `${a.player!.name}${a.assists > 1 ? ` (${a.assists})` : ""}`)
-                      .join(", ")}
-                  </span>
-                </>
+                <span className="flex items-center gap-2 text-[11px] text-muted-foreground font-mono">
+                  <span className="inline-flex items-center gap-1 text-primary"><SoccerBall size={11} /> {match.scoreFor}</span>
+                  <span className="inline-flex items-center gap-1 text-sky-300"><SoccerBoot size={11} /> {assisters.reduce((s, a) => s + a.assists, 0)}</span>
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${gaOpen ? "rotate-180" : ""}`} />
+                </span>
+              </button>
+              {gaOpen && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 px-3 pb-3">
+                  <div className="rounded-md border border-border/60 bg-background/40 p-3">
+                    <div className="text-[11px] uppercase tracking-[0.25em] font-bold mb-2 flex items-center gap-1.5 text-primary">
+                      <SoccerBall size={12} /> Goals · {match.scoreFor}
+                    </div>
+                    {scorers.length === 0 ? (
+                      <div className="text-[11px] text-muted-foreground">No goal scorers</div>
+                    ) : (
+                      <ul className="space-y-1">
+                        {scorers.map((s) => (
+                          <li key={s.player!.id} className="flex items-center justify-between text-[12px]">
+                            <span className="truncate font-semibold">{s.player!.name}</span>
+                            <span className="stat-num font-mono text-primary ml-2 shrink-0">×{s.goals}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                  <div className="rounded-md border border-border/60 bg-background/40 p-3">
+                    <div className="text-[11px] uppercase tracking-[0.25em] font-bold mb-2 flex items-center gap-1.5 text-sky-300">
+                      <SoccerBoot size={12} /> Assists · {assisters.reduce((s, a) => s + a.assists, 0)}
+                    </div>
+                    {assisters.length === 0 ? (
+                      <div className="text-[11px] text-muted-foreground">No assists</div>
+                    ) : (
+                      <ul className="space-y-1">
+                        {assisters.map((a) => (
+                          <li key={a.player!.id} className="flex items-center justify-between text-[12px]">
+                            <span className="truncate font-semibold">{a.player!.name}</span>
+                            <span className="stat-num font-mono text-sky-300 ml-2 shrink-0">×{a.assists}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           )}
@@ -205,23 +239,29 @@ export function MatchDetailModal({
               <div className="surface-card p-3 text-center text-xs text-muted-foreground">No participants logged</div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-                {ratings.map(({ perf, player }) => {
+                {ratings.map(({ perf, player }, idx) => {
                   const r = perf.rating ?? 0;
-                  const tone =
-                    r >= 6 ? "text-foreground" :
-                    r > 0 ? "text-destructive" :
-                    "text-muted-foreground";
+                  // Highlight top-3 ratings in the match
+                  const topRank = r > 0 && idx < 3 ? idx + 1 : 0;
+                  const topStyle =
+                    topRank === 1 ? { ring: "border-amber-400/70 bg-amber-400/10", text: "text-amber-300" } :
+                    topRank === 2 ? { ring: "border-zinc-300/60 bg-zinc-300/10", text: "text-zinc-200" } :
+                    topRank === 3 ? { ring: "border-amber-700/60 bg-amber-700/10", text: "text-amber-500" } :
+                    null;
+                  const tone = topStyle
+                    ? topStyle.text
+                    : r >= 6 ? "text-foreground"
+                    : r > 0 ? "text-destructive"
+                    : "text-muted-foreground";
                   return (
                     <div
                       key={perf.playerId}
-                      className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-background/50 border border-border/60"
+                      className={`flex items-center gap-2 px-2 py-1.5 rounded-md border ${topStyle ? topStyle.ring : "bg-background/50 border-border/60"}`}
                     >
                       <span className="font-display text-base text-foreground stat-num w-7 text-center shrink-0 leading-none">
                         {player!.overall}
                       </span>
-                      <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-9 text-center">
-                        {player!.position}
-                      </span>
+                      <PositionBadge position={player!.position} size="xs" />
                       <div className="text-[12px] font-semibold truncate flex-1 leading-tight">{player!.name}</div>
                       <span className="text-[11px] font-mono text-muted-foreground tabular-nums">
                         {perf.goals}G {perf.assists}A
