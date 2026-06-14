@@ -141,8 +141,8 @@ function StatsCard({ a }: { a: PlayerAgg }) {
   return (
     <>
       <div className="font-display text-base truncate">{a.player.name}</div>
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">
-        {a.player.position} · {a.player.overall} OVR · {a.player.rarity}
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
+        <PositionBadge position={a.player.position} size="xs" /> {a.player.overall} OVR · {a.player.rarity}
       </div>
       <dl className="grid grid-cols-2 gap-y-1 text-xs">
         <dt className="text-muted-foreground">Games</dt>
