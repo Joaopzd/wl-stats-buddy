@@ -8,7 +8,7 @@ import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import { ClubCrest } from "./ClubCrest";
 import { OpponentCrest } from "./OpponentCrest";
-import { PLATFORM_BG, PLATFORM_FG } from "./PlatformBadge";
+import { PlatformBadge } from "./PlatformBadge";
 import { CREST_SIZE } from "@/lib/ui";
 
 const PLATFORMS: Platform[] = ["PC", "PS5", "Xbox"];
@@ -236,10 +236,10 @@ export function MatchDialog({
                       key={p}
                       type="button"
                       onClick={() => setPlatform(p)}
-                      className={`flex-1 py-2 rounded text-xs font-bold uppercase tracking-wider transition border ${isActive ? "border-black/20 shadow-inner" : "border-transparent text-muted-foreground hover:text-foreground"}`}
-                      style={isActive ? { backgroundColor: PLATFORM_BG[p], color: PLATFORM_FG[p] } : undefined}
+                      className={`flex-1 py-2 rounded grid place-items-center transition border ${isActive ? "border-primary/40 bg-secondary/40 shadow-inner" : "border-transparent opacity-50 hover:opacity-100"}`}
+                      aria-label={p}
                     >
-                      {p}
+                      <PlatformBadge platform={p} size="md" />
                     </button>
                   );
                 })}
