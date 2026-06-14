@@ -254,9 +254,9 @@ export function MatchDialog({
               >
                 <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-2">
                   Match details
-                  {(extraTime || penalties || rageQuit || disconnect || tactics.length > 0) && (
+                  {(extraTime || penalties || rageQuit || disconnect || connection < 5) && (
                     <span className="text-primary font-mono normal-case tracking-normal">
-                      ·{extraTime ? " ET" : ""}{penalties ? " PEN" : ""}{rageQuit ? " RQ" : ""}{disconnect ? " DC" : ""}{tactics.length ? ` ${tactics.length}T` : ""}
+                      ·{extraTime ? " ET" : ""}{penalties ? " PEN" : ""}{rageQuit ? " RQ" : ""}{disconnect ? " DC" : ""}{connection < 5 ? ` NET ${connection}/5` : ""}
                     </span>
                   )}
                 </span>
