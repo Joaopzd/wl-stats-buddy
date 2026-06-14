@@ -287,9 +287,7 @@ export function BestXI({
                         <span className="font-display text-base text-primary stat-num w-8 text-center shrink-0 leading-none">
                           {a.player.overall}
                         </span>
-                        <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-10 text-center">
-                          {a.player.position}
-                        </span>
+                        <PositionBadge position={a.player.position} size="xs" />
                         <div className="text-xs font-semibold truncate flex-1 leading-tight">{a.player.name}</div>
                         <span className="font-mono text-[11px] text-primary shrink-0">{a.avgRating.toFixed(2)}</span>
                       </div>
