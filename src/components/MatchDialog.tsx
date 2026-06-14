@@ -46,6 +46,7 @@ export function MatchDialog({
   );
   const toggleTactic = (t: MatchTactic) =>
     setTactics((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]));
+  void toggleTactic;
 
   const startingIdSet = new Set(Object.values(wl.startingAssignments ?? {}));
   const [perfs, setPerfs] = useState<Record<string, MatchPlayerStat & { played: boolean }>>(() => {
