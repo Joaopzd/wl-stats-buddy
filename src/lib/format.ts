@@ -26,7 +26,7 @@ export const rarityVisual = (r: Rarity): RarityVisual => {
     case "TOTW":
       return { className: "bg-gradient-to-br from-zinc-950 to-black text-yellow-300 border border-yellow-300/80" };
     case "Path to Glory":
-      return solid("#351858", "#57cb37");
+      return solid("#57cb37", "#351858");
 
     // ===== Solid palettes from the brief =====
     case "Cornerstone":
@@ -129,6 +129,8 @@ export const rarityVisual = (r: Rarity): RarityVisual => {
       return solid("#001ba0", "#0365e9");
     case "UEFA Conference League":
       return solid("#041d0a", "#1ac145");
+    case "Showdown":
+      return solid("#030700", "#c6d76f");
 
     // ===== Legends (kept) =====
     case "Icon Base":
@@ -201,10 +203,11 @@ export const raritySwatch = (r: Rarity): string => {
     "Icon TOTY": "#f7f7f3",
     "MH TOTS": "#6d92ea",
     "TOTS Highlights": "#5e315d",
-    "Path to Glory": "#351858",
+    "Path to Glory": "#57cb37",
     "UEFA Europa League": "#010100",
     "UEFA Champions League": "#001ba0",
     "UEFA Conference League": "#041d0a",
+    Showdown: "#030700",
   };
   if (hexMap[r]) {
     // Rendered via inline style elsewhere; return a neutral utility for layout fallback.

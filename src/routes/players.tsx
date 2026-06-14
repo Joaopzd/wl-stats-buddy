@@ -6,6 +6,7 @@ import { aggregatePlayer, isCleanSheetEligible, isGoalsConcededEligible } from "
 import { RatingDisplay } from "@/components/RatingDisplay";
 import { PlayerCard } from "@/components/PlayerCard";
 import { PlayerDetailModal } from "@/components/PlayerDetailModal";
+import { PositionBadge } from "@/components/PositionBadge";
 import { Plus, Trash2, Pencil, X, Search } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
@@ -94,9 +95,9 @@ function PlayersPage() {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     let list = aggs;
-    // Roster view: Active (not archived), In Development (active w/ <9 matches), Archived.
-    if (rosterView === "active") list = list.filter((a) => !a.player.isArchived);
-    else if (rosterView === "dev") list = list.filter((a) => !a.player.isArchived && a.matches < 9);
+    // Roster view: Active (not archived, not in development), In Development (flagged), Archived.
+    if (rosterView === "active") list = list.filter((a) => !a.player.isArchived && !a.player.isInDevelopment);
+    else if (rosterView === "dev") list = list.filter((a) => !a.player.isArchived && !!a.player.isInDevelopment);
     else list = list.filter((a) => !!a.player.isArchived);
     if (q) {
       list = list.filter(
@@ -149,10 +150,8 @@ function PlayersPage() {
     const c = { active: 0, dev: 0, archived: 0 };
     for (const a of aggs) {
       if (a.player.isArchived) c.archived += 1;
-      else {
-        c.active += 1;
-        if (a.matches < 9) c.dev += 1;
-      }
+      else if (a.player.isInDevelopment) c.dev += 1;
+      else c.active += 1;
     }
     return c;
   }, [aggs]);
@@ -291,7 +290,7 @@ function PlayersPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="p-3 hidden sm:table-cell"><span className="font-mono text-xs">{a.player.position}</span></td>
+                    <td className="p-3 hidden sm:table-cell"><PositionBadge position={a.player.position} /></td>
                     <td className="p-3 hidden sm:table-cell stat-num">{a.player.overall}</td>
                     <td className="p-3 text-right stat-num">{a.matches}</td>
                     <td className="p-3 text-right stat-num text-primary font-semibold">{a.goals}</td>

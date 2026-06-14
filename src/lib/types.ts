@@ -47,6 +47,7 @@ export type Rarity =
   | "UEFA Europa League"
   | "UEFA Champions League"
   | "UEFA Conference League"
+  | "Showdown"
   // Legends
   | "Icon Base"
   | "Hero Base";
@@ -63,6 +64,8 @@ export interface Player {
   imageUrl?: string;
   /** When true, hide the player from the active roster but keep historical match data. */
   isArchived?: boolean;
+  /** Player is being trained / tested. Hidden from active roster, still searchable in WL squad picker. */
+  isInDevelopment?: boolean;
   createdAt: number;
 }
 
@@ -132,6 +135,8 @@ export interface Match {
   xgAgainst?: number;
   /** Match ended in a disconnect — auto-loss, no per-player stats counted. */
   disconnect?: boolean;
+  /** Match connection quality, 0 (unplayable) → 5 (no delay). Optional for legacy matches. */
+  connection?: number;
   createdAt: number;
 }
 

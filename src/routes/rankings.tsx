@@ -7,6 +7,7 @@ import { RatingDisplay } from "@/components/RatingDisplay";
 import { Sparkles, Trophy, Shield, Info, Zap, AlertTriangle, Flame, TrendingDown, ChevronDown } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
+import { PositionBadge } from "@/components/PositionBadge";
 
 
 const MIN_MATCHES = 9;
@@ -224,8 +225,8 @@ function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
                       </span>
                     )}
                   </div>
-                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground truncate">
-                    {c.player.position} · {c.clutch.matches} clutch · {c.baseline.matches} total · {c.clutch.goals}G/{c.clutch.assists}A
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground truncate flex items-center gap-1.5">
+                    <PositionBadge position={c.player.position} size="xs" /> {c.clutch.matches} clutch · {c.baseline.matches} total · {c.clutch.goals}G/{c.clutch.assists}A
                   </div>
                 </div>
                 <div className="text-right shrink-0">
@@ -302,8 +303,8 @@ function Leaderboard({
                   <div className="font-semibold text-xs mt-2 truncate w-full" title={a.player.name}>
                     {a.player.name}
                   </div>
-                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">
-                    {a.player.position} · {a.matches}MP
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5 flex items-center justify-center gap-1.5">
+                    <PositionBadge position={a.player.position} size="xs" /> {a.matches}MP
                   </div>
                 </div>
               );
@@ -330,8 +331,8 @@ function Leaderboard({
                         {status === "critical" && <AlertTriangle className="h-3 w-3 text-warn-critical shrink-0" />}
                         {a.player.name}
                       </div>
-                      <div className="text-[11px] uppercase tracking-wider text-muted-foreground truncate">
-                        {a.player.position} · {a.player.overall} · {a.matches} apps
+                      <div className="text-[11px] uppercase tracking-wider text-muted-foreground truncate flex items-center gap-1.5">
+                        <PositionBadge position={a.player.position} size="xs" /> {a.player.overall} · {a.matches} apps
                       </div>
                     </div>
                     <div className="font-display text-lg stat-num text-primary shrink-0">{metric(a)}</div>

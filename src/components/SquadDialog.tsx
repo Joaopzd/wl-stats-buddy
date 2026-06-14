@@ -4,6 +4,7 @@ import { store } from "@/lib/store";
 import type { Player, WeekendLeague } from "@/lib/types";
 import { FORMATIONS, FORMATION_NAMES, positionFits, type FormationName, type FormationSlot } from "@/lib/formations";
 import { PlayerCard } from "./PlayerCard";
+import { PositionBadge } from "./PositionBadge";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "./ui/hover-card";
 import { rarityVisual } from "@/lib/format";
 import { toast } from "sonner";
@@ -166,7 +167,7 @@ export function SquadDialog({
                   >
                     <RarityDot rarity={p.rarity} size={20} />
                     <span className="font-display text-xl text-primary stat-num w-9 text-center shrink-0">{p.overall}</span>
-                    <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1.5 py-0.5 rounded shrink-0 w-12 text-center">{p.position}</span>
+                    <PositionBadge position={p.position} />
                     <span className="font-semibold truncate flex-1">{p.name}</span>
                     {(inStarting || inBench) && (
                       <span className="text-[11px] uppercase tracking-wider text-primary font-bold shrink-0">
@@ -248,7 +249,7 @@ export function SquadDialog({
                           <div className="surface-card px-2.5 py-2 flex items-center gap-2.5 cursor-default">
                             <RarityDot rarity={p.rarity} size={22} />
                             <span className="font-display text-base text-primary stat-num w-8 text-center shrink-0 leading-none">{p.overall}</span>
-                            <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground bg-secondary px-1 py-0.5 rounded shrink-0 w-10 text-center">{p.position}</span>
+                            <PositionBadge position={p.position} size="xs" />
                             <div className="text-xs font-semibold truncate flex-1 leading-tight">{p.name}</div>
                             <button onClick={() => removeFromBench(id)} className="text-muted-foreground hover:text-destructive shrink-0">
                               <X className="h-3.5 w-3.5" />

@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { X, Zap, Flag as FlagIcon, AlertTriangle, ListChecks, ChevronDown, ChevronUp, Activity, Target, WifiOff } from "lucide-react";
+import { X, Zap, Flag as FlagIcon, AlertTriangle, ChevronDown, ChevronUp, Activity, Target, WifiOff, Signal } from "lucide-react";
+import { PositionBadge } from "./PositionBadge";
 import { store } from "@/lib/store";
 import type { Match, MatchPlayerStat, MatchTactic, Platform, PenaltyWinner, Player, WeekendLeague } from "@/lib/types";
-import { MATCH_TACTICS, wlLabel } from "@/lib/types";
+import { wlLabel } from "@/lib/types";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import { ClubCrest } from "./ClubCrest";
@@ -34,6 +35,7 @@ export function MatchDialog({
   const [rageQuit, setRageQuit] = useState<boolean>(existingMatch?.rageQuit ?? false);
   const [rageQuitBy, setRageQuitBy] = useState<"us" | "them">(existingMatch?.rageQuitBy ?? (existingMatch?.rageQuit ? "them" : "them"));
   const [tactics, setTactics] = useState<MatchTactic[]>(existingMatch?.tactics ?? []);
+  const [connection, setConnection] = useState<number>(existingMatch?.connection ?? 5);
   const [possessionFor, setPossessionFor] = useState<number>(existingMatch?.possessionFor ?? 50);
   const [xgFor, setXgFor] = useState<number>(existingMatch?.xgFor ?? 0);
   const [xgAgainst, setXgAgainst] = useState<number>(existingMatch?.xgAgainst ?? 0);
@@ -44,6 +46,7 @@ export function MatchDialog({
   );
   const toggleTactic = (t: MatchTactic) =>
     setTactics((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]));
+  void toggleTactic;
 
   const startingIdSet = new Set(Object.values(wl.startingAssignments ?? {}));
   const [perfs, setPerfs] = useState<Record<string, MatchPlayerStat & { played: boolean }>>(() => {
@@ -96,6 +99,7 @@ export function MatchDialog({
         xgFor: undefined as number | undefined,
         xgAgainst: undefined as number | undefined,
         disconnect: true,
+        connection,
       };
       if (existingMatch) {
         store.updateMatch(existingMatch.id, { scoreFor: 0, scoreAgainst: 1, platform, performances: [], ...flags });
@@ -145,6 +149,7 @@ export function MatchDialog({
       xgFor: Math.max(0, Math.round(xgFor * 100) / 100),
       xgAgainst: Math.max(0, Math.round(xgAgainst * 100) / 100),
       disconnect: false,
+      connection,
     };
 
     if (existingMatch) {
@@ -251,9 +256,9 @@ export function MatchDialog({
               >
                 <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold flex items-center gap-2">
                   Match details
-                  {(extraTime || penalties || rageQuit || disconnect || tactics.length > 0) && (
+                  {(extraTime || penalties || rageQuit || disconnect || connection < 5) && (
                     <span className="text-primary font-mono normal-case tracking-normal">
-                      ·{extraTime ? " ET" : ""}{penalties ? " PEN" : ""}{rageQuit ? " RQ" : ""}{disconnect ? " DC" : ""}{tactics.length ? ` ${tactics.length}T` : ""}
+                      ·{extraTime ? " ET" : ""}{penalties ? " PEN" : ""}{rageQuit ? " RQ" : ""}{disconnect ? " DC" : ""}{connection < 5 ? ` NET ${connection}/5` : ""}
                     </span>
                   )}
                 </span>
@@ -302,34 +307,8 @@ export function MatchDialog({
                     </div>
                   )}
 
-                  {/* Tactical notes — multi-select */}
-                  <div className="pt-1">
-                    <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
-                      <ListChecks className="h-3 w-3" /> Tactical Notes
-                      {tactics.length > 0 && (
-                        <span className="text-primary font-mono normal-case tracking-normal">· {tactics.length} selected</span>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {MATCH_TACTICS.map((t) => {
-                        const on = tactics.includes(t);
-                        return (
-                          <button
-                            key={t}
-                            type="button"
-                            onClick={() => toggleTactic(t)}
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold uppercase tracking-wider transition border ${
-                              on
-                                ? "bg-primary/20 text-primary border-primary/60"
-                                : "bg-background/40 text-muted-foreground border-border hover:text-foreground"
-                            }`}
-                          >
-                            {t}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                  {/* Connection quality 0–5 */}
+                  <ConnectionBar value={connection} onChange={setConnection} />
                 </div>
               )}
             </div>
@@ -395,7 +374,7 @@ export function MatchDialog({
                           </button>
                           <div className="min-w-0">
                             <div className="text-sm font-semibold truncate leading-tight">{p.name}</div>
-                            <div className="text-[11px] text-muted-foreground font-mono">{p.position} · {p.overall}</div>
+                            <div className="text-[11px] text-muted-foreground font-mono flex items-center gap-1.5"><PositionBadge position={p.position} size="xs" /> {p.overall}</div>
                           </div>
                           <NumBox v={perf.goals} on={(v) => update(p.id, { goals: v })} disabled={!perf.played} accent />
                           <NumBox v={perf.assists} on={(v) => update(p.id, { assists: v })} disabled={!perf.played} />
@@ -617,6 +596,51 @@ function PossessionXgSection({
     </div>
   );
 }
+
+const CONNECTION_LABELS = [
+  "Unplayable",
+  "Very laggy",
+  "Laggy",
+  "OK",
+  "Minor hiccups",
+  "Smooth",
+];
+
+function ConnectionBar({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const tone = (v: number) =>
+    v <= 1 ? "bg-destructive text-destructive-foreground border-destructive"
+    : v === 2 ? "bg-warn-critical/80 text-white border-warn-critical"
+    : v === 3 ? "bg-warn-caution/80 text-black border-warn-caution"
+    : v === 4 ? "bg-emerald-500/30 text-emerald-200 border-emerald-500/60"
+    : "bg-emerald-500 text-emerald-50 border-emerald-600";
+  return (
+    <div className="pt-1">
+      <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
+        <Signal className="h-3 w-3" /> Connection Quality
+        <span className="text-primary font-mono normal-case tracking-normal">· {value}/5 · {CONNECTION_LABELS[value]}</span>
+      </div>
+      <div className="grid grid-cols-6 gap-1">
+        {[0, 1, 2, 3, 4, 5].map((v) => {
+          const on = value === v;
+          return (
+            <button
+              key={v}
+              type="button"
+              onClick={() => onChange(v)}
+              title={CONNECTION_LABELS[v]}
+              className={`h-9 rounded border text-sm font-display stat-num transition ${
+                on ? tone(v) + " shadow-inner" : "bg-background/40 text-muted-foreground border-border hover:text-foreground"
+              }`}
+            >
+              {v}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 
 
 

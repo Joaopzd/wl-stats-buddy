@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { X, Trophy, Shield, Star, AlertTriangle, Info, Archive, ArchiveRestore } from "lucide-react";
+import { X, Trophy, Shield, Star, AlertTriangle, Info, Archive, ArchiveRestore, FlaskConical } from "lucide-react";
+import { PositionBadge } from "@/components/PositionBadge";
 import { store } from "@/lib/store";
 import { toast } from "sonner";
 import {
@@ -77,13 +78,32 @@ export function PlayerDetailModal({
                 Archived
               </span>
             )}
+            {player.isInDevelopment && !player.isArchived && (
+              <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent/15 text-accent border border-accent/40">
+                In Development
+              </span>
+            )}
           </h2>
           <div className="flex items-center gap-1 shrink-0">
             <button
               type="button"
               onClick={() => {
+                const next = !player.isInDevelopment;
+                store.updatePlayer(player.id, { isInDevelopment: next, ...(next ? { isArchived: false } : {}) });
+                toast.success(next ? `${player.name} marked In Development` : `${player.name} moved back to active`);
+              }}
+              disabled={player.isArchived}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:border-accent/60 text-[11px] uppercase tracking-wider font-semibold disabled:opacity-40 disabled:hover:border-border disabled:hover:text-muted-foreground"
+              title={player.isInDevelopment ? "Move back to active roster" : "Mark as in development / testing (still searchable in WL squad)"}
+            >
+              <FlaskConical className="h-3.5 w-3.5" />
+              {player.isInDevelopment ? "Active" : "In Dev"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
                 const next = !player.isArchived;
-                store.updatePlayer(player.id, { isArchived: next });
+                store.updatePlayer(player.id, { isArchived: next, ...(next ? { isInDevelopment: false } : {}) });
                 toast.success(next ? `${player.name} archived` : `${player.name} restored`);
               }}
               className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:border-primary/60 text-[11px] uppercase tracking-wider font-semibold"
@@ -118,7 +138,10 @@ export function PlayerDetailModal({
           <div className="min-w-0 space-y-4 sm:pl-2">
             <div className="grid grid-cols-3 gap-2">
               <Meta label="OVR" value={String(player.overall)} accent />
-              <Meta label="Pos" value={player.position} />
+              <div className="rounded-md border border-border/60 bg-background/40 px-2 py-1.5">
+                <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold">Pos</div>
+                <div className="mt-1"><PositionBadge position={player.position} size="md" /></div>
+              </div>
               <Meta label="Rarity" value={player.rarity} small />
             </div>
 
