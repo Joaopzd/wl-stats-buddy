@@ -5,6 +5,8 @@ import { useMatches, usePlayers, useWLs, store } from "@/lib/store";
 import { aggregatePlayer, bestStreak, currentWinStreak, matchIsWin, rankFromWins, wlRecord, type PlayerAgg } from "@/lib/stats";
 
 import { SquadDialog } from "@/components/SquadDialog";
+import { AICoach } from "@/components/AICoach";
+import { PositionBadge } from "@/components/PositionBadge";
 import { MatchDialog } from "@/components/MatchDialog";
 import { MatchDetailModal } from "@/components/MatchDetailModal";
 import { ReportModal } from "@/components/ReportModal";
@@ -425,6 +427,12 @@ function WLDetail() {
           squadAggs={squadAggs}
         />
       )}
+
+      {matches.length > 0 && !wl.closed && (
+        <AICoach wls={[wl]} matches={allMatches} players={players} />
+      )}
+
+
 
 
 
