@@ -47,6 +47,7 @@ export type Rarity =
   | "UEFA Europa League"
   | "UEFA Champions League"
   | "UEFA Conference League"
+  | "Showdown"
   // Legends
   | "Icon Base"
   | "Hero Base";
