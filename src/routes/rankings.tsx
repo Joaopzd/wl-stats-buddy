@@ -331,8 +331,8 @@ function Leaderboard({
                         {status === "critical" && <AlertTriangle className="h-3 w-3 text-warn-critical shrink-0" />}
                         {a.player.name}
                       </div>
-                      <div className="text-[11px] uppercase tracking-wider text-muted-foreground truncate">
-                        {a.player.position} · {a.player.overall} · {a.matches} apps
+                      <div className="text-[11px] uppercase tracking-wider text-muted-foreground truncate flex items-center gap-1.5">
+                        <PositionBadge position={a.player.position} size="xs" /> {a.player.overall} · {a.matches} apps
                       </div>
                     </div>
                     <div className="font-display text-lg stat-num text-primary shrink-0">{metric(a)}</div>
