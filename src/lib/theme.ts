@@ -329,43 +329,7 @@ export const THEMES: Record<ThemeKey, ThemeDef> = {
       "--shadow-card": "0 6px 24px -10px oklch(0.20 0.003 80 / 0.22), 0 2px 6px -2px oklch(0.20 0.003 80 / 0.10)",
     },
   },
-  "burnt-slate": {
-    key: "burnt-slate",
-    label: "Burnt Orange & Slate",
-    description: "Burnt orange · slate gray",
-    swatches: ["#A73E18", "#353A3E", "#D6D2CC"],
-    bodyBg:
-      "radial-gradient(ellipse 70% 45% at 50% -10%, oklch(0.45 0.02 240 / 0.10), transparent), radial-gradient(ellipse 55% 35% at 85% 100%, oklch(0.55 0.17 38 / 0.10), transparent)",
-    vars: {
-      "--background": "oklch(0.36 0.13 38)",
-      "--foreground": "oklch(0.96 0.012 80)",
-      "--card": "oklch(0.40 0.13 38)",
-      "--card-foreground": "oklch(0.96 0.012 80)",
-      "--popover": "oklch(0.38 0.13 38)",
-      "--popover-foreground": "oklch(0.96 0.012 80)",
-      "--primary": "oklch(0.40 0.014 240)",
-      "--primary-foreground": "oklch(0.97 0.005 80)",
-      "--secondary": "oklch(0.44 0.13 38)",
-      "--secondary-foreground": "oklch(0.96 0.012 80)",
-      "--muted": "oklch(0.44 0.11 38)",
-      "--muted-foreground": "oklch(0.86 0.025 80)",
-      "--accent": "oklch(0.78 0.04 80)",
-      "--accent-foreground": "oklch(0.32 0.13 38)",
-      "--destructive": "oklch(0.55 0.22 18)",
-      "--destructive-foreground": "oklch(0.98 0.005 80)",
-      "--success": "oklch(0.70 0.16 145)",
-      "--success-foreground": "oklch(0.32 0.13 38)",
-      "--border": "oklch(0.52 0.10 38 / 0.6)",
-      "--input": "oklch(0.42 0.13 38)",
-      "--ring": "oklch(0.40 0.014 240)",
-      "--gradient-primary":
-        "linear-gradient(135deg, oklch(0.40 0.014 240), oklch(0.55 0.018 240))",
-      "--gradient-card":
-        "linear-gradient(160deg, oklch(0.42 0.13 38), oklch(0.34 0.13 38))",
-      "--gradient-hero":
-        "radial-gradient(ellipse at top, oklch(0.40 0.014 240 / 0.18), transparent 60%), linear-gradient(180deg, oklch(0.38 0.13 38), oklch(0.32 0.12 38))",
-    },
-  },
+  
   "navy-champagne": {
     key: "navy-champagne",
     label: "Navy & Champagne",
