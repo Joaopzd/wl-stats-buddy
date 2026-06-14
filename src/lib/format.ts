@@ -203,7 +203,7 @@ export const raritySwatch = (r: Rarity): string => {
     "Icon TOTY": "#f7f7f3",
     "MH TOTS": "#6d92ea",
     "TOTS Highlights": "#5e315d",
-    "Path to Glory": "#351858",
+    "Path to Glory": "#57cb37",
     "UEFA Europa League": "#010100",
     "UEFA Champions League": "#001ba0",
     "UEFA Conference League": "#041d0a",
