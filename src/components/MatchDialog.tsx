@@ -374,7 +374,7 @@ export function MatchDialog({
                           </button>
                           <div className="min-w-0">
                             <div className="text-sm font-semibold truncate leading-tight">{p.name}</div>
-                            <div className="text-[11px] text-muted-foreground font-mono">{p.position} · {p.overall}</div>
+                            <div className="text-[11px] text-muted-foreground font-mono flex items-center gap-1.5"><PositionBadge position={p.position} size="xs" /> {p.overall}</div>
                           </div>
                           <NumBox v={perf.goals} on={(v) => update(p.id, { goals: v })} disabled={!perf.played} accent />
                           <NumBox v={perf.assists} on={(v) => update(p.id, { assists: v })} disabled={!perf.played} />
