@@ -294,6 +294,14 @@ function WLDetail() {
                 <Users className="h-3.5 w-3.5" /> {squad.length ? "Edit Squad" : "Add Squad"}
               </button>
               <button
+                onClick={() => setTacticsOpen(true)}
+                disabled={!wl.formation}
+                title={wl.formation ? "Configure tactics" : "Pick a formation first"}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-border bg-secondary/60 text-foreground font-semibold uppercase tracking-wider text-[11px] hover:bg-secondary disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 ease-in-out"
+              >
+                <Sparkles className="h-3.5 w-3.5" /> Tactics
+              </button>
+              <button
                 onClick={() => { setEditingMatch(null); setMatchOpen(true); }}
                 disabled={squad.length === 0 || matches.length >= 15}
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-[11px] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-[var(--shadow-neon)] transition-all duration-300 ease-in-out"
