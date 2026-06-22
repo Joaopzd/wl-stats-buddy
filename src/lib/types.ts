@@ -187,6 +187,9 @@ export interface WLTactics {
   defensiveApproach: number;
   /** Map playerId → role/focus. */
   playerRoles: Record<string, PlayerTactics>;
+}
+
+
 
 /** Convenience: render the user-facing label for a WL. */
 export function wlLabel(wl: Pick<WeekendLeague, "number" | "customName">): string {
