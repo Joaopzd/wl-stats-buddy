@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Position, Rarity } from "@/lib/types";
-import { rarityVisual } from "@/lib/format";
+import { rarityVisual, rarityIcon } from "@/lib/format";
 import { positionBadgeStyle } from "@/lib/positionGroup";
 
 export function PlayerCard({
@@ -43,6 +43,18 @@ export function PlayerCard({
       style={showImage && loaded ? undefined : v.style}
       title={`${name} · ${rarity}`}
     >
+      {size !== "xs" && (() => {
+        const Icon = rarityIcon(rarity);
+        const iconSz = size === "lg" || size === "xl" ? 14 : 10;
+        return (
+          <div
+            className="absolute top-0.5 left-0.5 z-10 rounded-full bg-black/55 backdrop-blur-sm p-0.5 flex items-center justify-center"
+            aria-hidden
+          >
+            <Icon size={iconSz} className="text-white" strokeWidth={2.4} />
+          </div>
+        );
+      })()}
       {showImage && (
         <img
           src={imageUrl}

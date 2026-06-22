@@ -1,5 +1,64 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, ComponentType } from "react";
+import {
+  Circle, Crown, Trophy, Star, Shield, Swords, Cake, Sparkles, TrendingUp,
+  Flame, Snowflake, Music, Rocket, Heart, Award, Zap, Globe, Sun, Moon,
+  Compass, Medal, Gem, Wind, Cloud, Drama, Castle, Target, Hexagon,
+  type LucideProps,
+} from "lucide-react";
 import type { Rarity } from "./types";
+
+/** Distinct Lucide icon per rarity for badges in cards, pickers and lists. */
+export const rarityIcon = (r: Rarity): ComponentType<LucideProps> => {
+  switch (r) {
+    case "Gold": return Medal;
+    case "Silver": return Medal;
+    case "Bronze": return Medal;
+    case "TOTW": return Star;
+    case "TOTY": return Trophy;
+    case "TOTS": return Crown;
+    case "FUT Champions TOTS": return Crown;
+    case "MH TOTS": return Crown;
+    case "TOTS Highlights": return Crown;
+    case "Future Stars": return Sparkles;
+    case "FUT Birthday": return Cake;
+    case "FUT Birthday Icon": return Cake;
+    case "Path to Glory": return TrendingUp;
+    case "Showdown": return Swords;
+    case "Thunderstruck": return Zap;
+    case "Winter Wildcards": return Snowflake;
+    case "Ultimate Scream": return Drama;
+    case "Heroes Ultimate Scream": return Drama;
+    case "Prime Heroes": return Award;
+    case "Joga Bonito": return Music;
+    case "World Tour": return Globe;
+    case "Journey of Nations": return Compass;
+    case "National Pride": return Shield;
+    case "Trophy Titans": return Trophy;
+    case "Knockout Royalty": return Crown;
+    case "Time Warp": return Moon;
+    case "EOAE": return Sun;
+    case "FoF Captains": return Castle;
+    case "FoF Answer the Call": return Rocket;
+    case "FC Pro Live": return Target;
+    case "Fantasy FC": return Hexagon;
+    case "Ratings Reload": return Wind;
+    case "Cornerstone": return Castle;
+    case "Unbreakables": return Shield;
+    case "Evo": return Cloud;
+    case "UEFA Primetime": return Star;
+    case "UEFA RTTF": return Star;
+    case "UEFA Champions League": return Trophy;
+    case "UEFA Europa League": return Trophy;
+    case "UEFA Conference League": return Trophy;
+    case "Icon Base": return Gem;
+    case "Hero Base": return Heart;
+    case "Icon TOTY": return Gem;
+    case "FOF: Greats of The Game Icon": return Gem;
+    case "FOF: Greats of The Game Hero": return Shield;
+    default: return Circle;
+  }
+};
+
 
 /** Visual style for a player card. Combines tailwind classes with optional inline style for bespoke palettes. */
 export interface RarityVisual {

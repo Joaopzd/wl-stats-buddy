@@ -1,52 +1,61 @@
-# Plano de Implementação
+# Plano
 
-Trabalho dividido em 3 blocos. Posso entregar tudo em sequência, mas confirmo antes de começar.
+## 1. Raridades não aparecendo
 
-## Bloco A — Sub Impact & Win Rates (rápido, UI apenas)
+Causa: as raridades novas (FOF: Greats of The Game Icon/Hero) foram adicionadas ao type `Rarity` e ao `format.ts`, mas **não** foram incluídas no `RARITY_GROUPS` em `src/routes/players.tsx` — por isso não aparecem no Add Player. Showdown está lá; FOF está faltando.
 
-1. **Club Legends (`src/routes/rankings.tsx`)**: adicionar nova categoria "Sub Impact" usando `computeSubImpact` já existente em `stats.ts`. Top N substitutos por impacto.
-2. **Report final de WL (`src/components/ReportModal.tsx`)**: incluir seção/linha "Best Sub Impact" com o jogador de maior impacto naquela WL.
-3. **Detalhes da carta (`src/components/PlayerDetailModal.tsx`)**:
-   - Adicionar **Sub Impact** ao `StatGrid` (carreira e última WL).
-   - Adicionar **Win Rate %** = wins / matches.
-4. **Aba Club (`src/routes/club.tsx`)**: card com **Win Rate do clube** = somatório de matches vencidas / total de matches (todas as WLs, excluindo LAB — ver Bloco C).
+**Correção:** acrescentar as duas FOF ao grupo "Specials / Promos" em `RARITY_GROUPS`.
 
-## Bloco B — Migração de Schema para isolamento LAB
+## 2. Ícones distintos por raridade
 
-Adicionar coluna `session_type text default 'WL'` nas tabelas `weekend_leagues` e `matches`. Valores: `'WL'` ou `'LAB'`. Index parcial para acelerar filtros.
+Adicionar em `src/lib/format.ts` uma função `rarityIcon(r)` que retorna um componente Lucide por raridade (TOTS → `Crown`, TOTY → `Trophy`, FOF Icon → `Star`, FOF Hero → `Shield`, Showdown → `Swords`, FUT Birthday → `Cake`, Future Stars → `Sparkles`, Path to Glory → `TrendingUp`, etc.). Default: `Circle`.
 
-```sql
-ALTER TABLE public.weekend_leagues ADD COLUMN session_type text NOT NULL DEFAULT 'WL';
-ALTER TABLE public.matches ADD COLUMN session_type text NOT NULL DEFAULT 'WL';
-CREATE INDEX idx_matches_session_type ON public.matches(user_id, session_type);
-CREATE INDEX idx_wls_session_type ON public.weekend_leagues(user_id, session_type);
+Exibir o ícone em:
+- `PlayerCard.tsx` — pequeno badge no canto superior esquerdo (tamanhos sm+).
+- Player picker em `players.tsx` — ao lado do swatch e na opção selecionada.
+- WL detail (`weekend-leagues.$wlId.tsx`) — na linha de cada jogador.
+
+## 3. Botão "Tactics" + Modal (EA FC FC IQ style)
+
+### Modelo de dados (persistido em `WeekendLeague.tactics`)
+
+```ts
+type BuildUpStyle = "Balance" | "Counter Attack" | "Short Pass";
+interface PlayerTactics { role: string; focus: string; }
+interface WLTactics {
+  buildUpStyle: BuildUpStyle;        // default Balance
+  defensiveApproach: number;         // 1–100, default 50
+  playerRoles: Record<string, PlayerTactics>; // playerId → {role, focus}
+}
 ```
 
-No store local (`src/lib/store.ts`) e nos tipos (`src/lib/types.ts`), adicionar `sessionType: "WL" | "LAB"` em `WeekendLeague` e `Match` (default `"WL"`).
+Persistência: usa `store.updateWL(id, { tactics })` (já grava JSON em `weekend_leagues.data`).
 
-**Regra estrita**: criar helper `filterWL(matches)` e `filterWLs(wls)` em `stats.ts`. Todas as agregações de Dashboard / MVP da Semana / Club Legends / Best XI / Club Win Rate passam por esse filtro. Apenas a aba PZD Lab vê dados `LAB`.
+### Componentes novos
 
-## Bloco C — Nova aba PZD Lab
+- `src/lib/tactics.ts` — mapas de role/focus por grupo posicional (GK, CB, FB, CDM/CM, CAM, Wide, ST), defaults, label do defensive approach (Deep-Lying / Balance / High Press / Aggressive Press), build-up styles + ícones, helper `roleOptionsFor(position)`.
+- `src/components/TacticsDialog.tsx` — Dialog (shadcn) com:
+  - Header com toggle "View Mode" ↔ "Edit Mode" por aba.
+  - `Tabs` (3): **Summary**, **Tactical Information**, **Player Roles**.
+  - **Summary**: pequeno pitch 2D (SVG/divs), cada nó mostra "Nome • Role [Focus]", card lateral com Build Up + Defensive Approach.
+  - **Tactical Information**: lista de botões para Build Up Style (ícones Lucide: `Scale`, `Zap`, `Send`); slider 1–100 para Defensive Approach com badge dinâmica (ícones por faixa: `Shield`, `Scale`, `ArrowUp`, `Flame`).
+  - **Player Roles (FC IQ)**: mesmo pitch; em View Mode, hover/tooltip mostra Role+Focus; em Edit Mode, click abre `Sheet` lateral com selects de Role e Focus filtrados pelo grupo da posição.
+- Botão **Tactics** na linha de ações do WL detail (junto a Edit Squad / Add Match), abrindo o dialog. Salva on-change via `store.updateWL`.
 
-1. **Nav (`src/components/AppShell.tsx`)**: adicionar link "PZD Lab" com ícone `FlaskConical`.
-2. **Rota nova `src/routes/pzd-lab.tsx`**:
-   - Botão "Add Test Match" abre dialog simplificado.
-   - Campos: Match Type (`Rivals Test` / `Friendly` / `Qualifiers`), Formation (texto livre ou dropdown das formações existentes), Result/Score, e por jogador: G, A, Rating.
-   - Lista de test matches recentes, mini-leaderboard isolado (top jogadores por avg rating + G+A apenas dos LAB matches).
-3. **Lab Notes por jogador**: nova tabela ou JSON. Mais simples: tabela `player_lab_notes (user_id, player_id, notes text, updated_at)` com RLS. Editor inline na seção PZD Lab do jogador.
-4. **Reuso**: criar `LabMatchDialog` derivado de `MatchDialog` mas sem WL/squad — apenas escolhe jogadores avulsos do roster, marca starter/sub se quiser, salva com `sessionType: "LAB"` e `wlId` = um WL "virtual" LAB por usuário (criado automaticamente, `sessionType: "LAB"`, `number: 0`).
+### Visual
 
-## Detalhes técnicos
+- Paleta da casa (off-white background do dialog, accent Blue #302681 e Green #30503A para ações/badges).
+- Pitch 2D reaproveita a geometria de `FORMATIONS[wl.formation].slots` (x/y %).
+- Transições com classes Tailwind (`transition-all duration-200`).
 
-- **Filtro central**: em `aggregatePlayer`, `aggregateWL`, e nos seletores do Dashboard, aplicar `matches.filter(m => (m.sessionType ?? "WL") === "WL")` antes de qualquer cálculo. Mesmo para `wls`.
-- **Migração de dados**: registros antigos ficam `'WL'` por causa do `DEFAULT`. Sem perda.
-- **Win rate do clube**: derivar de matches WL. `wins = matches.filter(m => m.scoreFor > m.scoreAgainst || (m.penalties && m.penaltyWinner === 'us')).length`.
-- **Sub Impact em rankings**: filtrar jogadores com `subMatches >= 2` para evitar ruído de amostra única.
+## Arquivos a tocar
 
-## Confirmar antes de codar
+- `src/lib/types.ts` — `BuildUpStyle`, `PlayerTactics`, `WLTactics`; campo `tactics?: WLTactics` em `WeekendLeague`.
+- `src/lib/format.ts` — `rarityIcon()`.
+- `src/lib/tactics.ts` — **novo**, mapas e helpers.
+- `src/components/TacticsDialog.tsx` — **novo**.
+- `src/components/PlayerCard.tsx` — render do ícone.
+- `src/routes/players.tsx` — adicionar FOF ao `RARITY_GROUPS` + ícone na option/picker.
+- `src/routes/weekend-leagues.$wlId.tsx` — botão "Tactics" + montar dialog; ícone de raridade na lista do squad.
 
-Vou:
-1. Rodar a migração SQL acima (pede sua aprovação).
-2. Editar ~10 arquivos (rankings, ReportModal, PlayerDetailModal, club, store, types, stats, AppShell) + criar 2 novos (rota pzd-lab + LabMatchDialog).
-
-Posso seguir? Ou prefere fatiar em entregas menores (ex: Bloco A primeiro, depois B+C)?
+Nenhuma mudança de schema no Supabase necessária (tudo dentro do JSON `data`).

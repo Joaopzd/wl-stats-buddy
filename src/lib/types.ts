@@ -170,7 +170,26 @@ export interface WeekendLeague {
   watermarkId?: string;
   /** Hex color for the watermark element. */
   watermarkColor?: string;
+  /** Tactical setup (FC IQ style). */
+  tactics?: WLTactics;
 }
+
+export type BuildUpStyle = "Balance" | "Counter Attack" | "Short Pass";
+
+export interface PlayerTactics {
+  role: string;
+  focus: string;
+}
+
+export interface WLTactics {
+  buildUpStyle: BuildUpStyle;
+  /** Defensive approach 1–100. */
+  defensiveApproach: number;
+  /** Map playerId → role/focus. */
+  playerRoles: Record<string, PlayerTactics>;
+}
+
+
 
 /** Convenience: render the user-facing label for a WL. */
 export function wlLabel(wl: Pick<WeekendLeague, "number" | "customName">): string {
