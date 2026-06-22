@@ -5,6 +5,7 @@ import { useMatches, usePlayers, useWLs, store } from "@/lib/store";
 import { aggregatePlayer, bestStreak, currentWinStreak, matchIsWin, rankFromWins, wlRecord, type PlayerAgg } from "@/lib/stats";
 
 import { SquadDialog } from "@/components/SquadDialog";
+import { TacticsDialog } from "@/components/TacticsDialog";
 import { AICoach } from "@/components/AICoach";
 import { PositionBadge } from "@/components/PositionBadge";
 import { MatchDialog } from "@/components/MatchDialog";
