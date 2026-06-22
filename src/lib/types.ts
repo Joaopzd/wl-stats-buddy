@@ -48,6 +48,8 @@ export type Rarity =
   | "UEFA Champions League"
   | "UEFA Conference League"
   | "Showdown"
+  | "FOF: Greats of The Game Icon"
+  | "FOF: Greats of The Game Hero"
   // Legends
   | "Icon Base"
   | "Hero Base";

@@ -131,6 +131,10 @@ export const rarityVisual = (r: Rarity): RarityVisual => {
       return solid("#041d0a", "#1ac145");
     case "Showdown":
       return solid("#030700", "#c6d76f");
+    case "FOF: Greats of The Game Icon":
+      return solid("#e7f5f4", "#5bd1f8");
+    case "FOF: Greats of The Game Hero":
+      return solid("#6926e9", "#43c3fa");
 
     // ===== Legends (kept) =====
     case "Icon Base":
@@ -208,6 +212,8 @@ export const raritySwatch = (r: Rarity): string => {
     "UEFA Champions League": "#001ba0",
     "UEFA Conference League": "#041d0a",
     Showdown: "#030700",
+    "FOF: Greats of The Game Icon": "#e7f5f4",
+    "FOF: Greats of The Game Hero": "#6926e9",
   };
   if (hexMap[r]) {
     // Rendered via inline style elsewhere; return a neutral utility for layout fallback.
