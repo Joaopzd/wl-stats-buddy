@@ -48,6 +48,7 @@ const RARITY_GROUPS: { label: string; items: Rarity[] }[] = [
       "FUT Birthday Icon", "Heroes Ultimate Scream", "Journey of Nations", "National Pride",
       "Icon TOTY", "MH TOTS", "TOTS Highlights",
       "UEFA Europa League", "UEFA Champions League", "UEFA Conference League", "Showdown",
+      "FOF: Greats of The Game Icon", "FOF: Greats of The Game Hero",
     ],
   },
   { label: "Legends", items: ["Icon Base", "Hero Base"] },
