@@ -463,30 +463,37 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
             <div className="mt-3">
               {(() => {
                 const v = rarityVisual(rarity);
+                const Icon = rarityIcon(rarity);
                 return (
                   <div
-                    className={`inline-block px-3 py-2 rounded-md font-display text-sm tracking-wider ${v.className}`}
+                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-md font-display text-sm tracking-wider ${v.className}`}
                     style={v.style}
                   >
+                    <Icon size={16} strokeWidth={2.4} />
                     PREVIEW · {rarity}
                   </div>
                 );
               })()}
             </div>
             <div className="mt-3 flex flex-wrap gap-1.5">
-              {ALL_RARITIES.map((r) => (
-                <button
-                  type="button"
-                  key={r}
-                  onClick={() => setRarity(r)}
-                  title={r}
-                  aria-label={r}
-                  style={raritySwatchStyle(r)}
-                  className={`h-5 w-5 rounded-full border ${raritySwatch(r)} transition ${
-                    rarity === r ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : "opacity-80 hover:opacity-100"
-                  }`}
-                />
-              ))}
+              {ALL_RARITIES.map((r) => {
+                const Icon = rarityIcon(r);
+                return (
+                  <button
+                    type="button"
+                    key={r}
+                    onClick={() => setRarity(r)}
+                    title={r}
+                    aria-label={r}
+                    style={raritySwatchStyle(r)}
+                    className={`h-6 w-6 rounded-full border ${raritySwatch(r)} transition flex items-center justify-center ${
+                      rarity === r ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : "opacity-80 hover:opacity-100"
+                    }`}
+                  >
+                    <Icon size={11} strokeWidth={2.6} className="text-white mix-blend-difference" />
+                  </button>
+                );
+              })}
             </div>
           </Field>
           <Field label="Card Image (optional)">
