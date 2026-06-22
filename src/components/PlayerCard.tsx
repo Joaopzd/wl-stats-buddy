@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Position, Rarity } from "@/lib/types";
-import { rarityVisual } from "@/lib/format";
+import { rarityVisual, rarityIcon } from "@/lib/format";
 import { positionBadgeStyle } from "@/lib/positionGroup";
 
 export function PlayerCard({
