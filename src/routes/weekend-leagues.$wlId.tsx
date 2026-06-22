@@ -64,6 +64,7 @@ function WLDetail() {
   const wl = wls.find((w) => w.id === wlId);
 
   const [squadOpen, setSquadOpen] = useState(false);
+  const [tacticsOpen, setTacticsOpen] = useState(false);
   const [matchOpen, setMatchOpen] = useState(false);
   const [editingMatch, setEditingMatch] = useState<Match | null>(null);
   const [viewingMatch, setViewingMatch] = useState<Match | null>(null);
