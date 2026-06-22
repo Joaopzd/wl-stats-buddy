@@ -574,6 +574,12 @@ function WLDetail() {
           onClose={() => setSquadOpen(false)}
         />
       )}
+      <TacticsDialog
+        wl={wl}
+        players={players}
+        open={tacticsOpen}
+        onClose={() => setTacticsOpen(false)}
+      />
       {matchOpen && (
         <MatchDialog
           wl={wl}
