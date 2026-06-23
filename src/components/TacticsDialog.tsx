@@ -140,7 +140,7 @@ export function TacticsDialog({
                           className="rounded-lg border p-4 flex flex-col items-center gap-2 text-center transition-all duration-200 disabled:cursor-default"
                           style={{
                             backgroundColor: active ? ACCENT_BLUE : "#fff",
-                            color: active ? "#fff" : "#27272a",
+                            color: active ? "var(--primary-foreground)" : "#27272a",
                             borderColor: active ? ACCENT_BLUE : "#e4e4e7",
                             opacity: !editInfo && !active ? 0.6 : 1,
                           }}
@@ -354,7 +354,7 @@ function RoleEditSheet({
                     className="px-3 py-1.5 rounded-full text-xs font-semibold border transition"
                     style={{
                       backgroundColor: active ? ACCENT_BLUE : "#fff",
-                      color: active ? "#fff" : "#27272a",
+                      color: active ? "var(--primary-foreground)" : "#27272a",
                       borderColor: active ? ACCENT_BLUE : "#d4d4d8",
                     }}
                   >
@@ -377,7 +377,7 @@ function RoleEditSheet({
                     className="px-3 py-1.5 rounded-full text-xs font-semibold border transition"
                     style={{
                       backgroundColor: active ? ACCENT_GREEN : "#fff",
-                      color: active ? "#fff" : "#27272a",
+                      color: active ? "var(--primary-foreground)" : "#27272a",
                       borderColor: active ? ACCENT_GREEN : "#d4d4d8",
                     }}
                   >
