@@ -239,7 +239,7 @@ function ModeToggle({ edit, setEdit }: { edit: boolean; setEdit: (v: boolean) =>
         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider border transition-all duration-200"
         style={{
           backgroundColor: edit ? ACCENT_GREEN : "#fff",
-          color: edit ? "#fff" : "#27272a",
+          color: edit ? "var(--primary-foreground)" : "#27272a",
           borderColor: edit ? ACCENT_GREEN : "#d4d4d8",
         }}
       >
