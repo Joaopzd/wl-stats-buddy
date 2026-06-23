@@ -17,8 +17,9 @@ import {
 } from "@/lib/tactics";
 import { PositionBadge } from "./PositionBadge";
 
-const ACCENT_BLUE = "#302681";
-const ACCENT_GREEN = "#30503A";
+const ACCENT_BLUE = "hsl(var(--primary, 240 60% 33%))";
+const ACCENT_GREEN = "hsl(var(--primary, 240 60% 33%))";
+
 
 export function TacticsDialog({
   wl,
