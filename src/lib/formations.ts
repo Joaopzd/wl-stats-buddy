@@ -102,6 +102,26 @@ export const FORMATIONS: Record<FormationName, Formation> = {
       ...row(["ST", "ST"], 14, "F"),
     ],
   },
+  "4-1-4-1": {
+    name: "4-1-4-1",
+    slots: [
+      gk(),
+      ...row(["LB", "CB", "CB", "RB"], 74, "D"),
+      ...row(["CDM"], 56, "DM"),
+      ...row(["LM", "CM", "CM", "RM"], 40, "M"),
+      ...row(["ST"], 14, "F"),
+    ],
+  },
+  "4-4-1-1": {
+    name: "4-4-1-1",
+    slots: [
+      gk(),
+      ...row(["LB", "CB", "CB", "RB"], 74, "D"),
+      ...row(["LM", "CM", "CM", "RM"], 52, "M"),
+      ...row(["CAM"], 30, "AM"),
+      ...row(["ST"], 12, "F"),
+    ],
+  },
   "3-5-2": {
     name: "3-5-2",
     slots: [
