@@ -233,8 +233,8 @@ function PlayersPage() {
       ) : (
         <div className="surface-card overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-secondary/60 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+            <table className="w-full text-sm tabular-nums [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap">
+              <thead className="bg-secondary/60 text-[11px] uppercase tracking-[0.2em] text-muted-foreground sticky top-0 z-10">
                 <tr>
                   <th className="text-left p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("name")}>Player{sortIndicator("name")}</th>
                   <th className="text-left p-3 font-semibold hidden sm:table-cell cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("pos")}>Pos{sortIndicator("pos")}</th>
