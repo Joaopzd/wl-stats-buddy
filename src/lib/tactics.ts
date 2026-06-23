@@ -1,4 +1,4 @@
-import { Scale, Zap, Send, Shield, ArrowUp, Flame, type LucideIcon } from "lucide-react";
+import { Scale, Zap, Repeat, Shield, ArrowUp, Flame, type LucideIcon } from "lucide-react";
 import type { BuildUpStyle, Position, WLTactics } from "./types";
 
 /** Group used for picking available roles/focuses. */
