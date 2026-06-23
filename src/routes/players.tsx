@@ -383,10 +383,22 @@ function PlayersPage() {
 function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: () => void }) {
   const [name, setName] = useState(existing?.name ?? "");
   const [position, setPosition] = useState<Position>(existing?.position ?? "ST");
+  const [secondaryPositions, setSecondaryPositions] = useState<Position[]>(existing?.secondaryPositions ?? []);
   const [overall, setOverall] = useState<number>(existing?.overall ?? 85);
   const [rarity, setRarity] = useState<Rarity>(existing?.rarity ?? "Gold");
   const [imageUrl, setImageUrl] = useState<string>(existing?.imageUrl ?? "");
   const [previewBroken, setPreviewBroken] = useState(false);
+
+  const toggleSecondary = (p: Position) => {
+    setSecondaryPositions((prev) => {
+      if (prev.includes(p)) return prev.filter((x) => x !== p);
+      if (prev.length >= 4) {
+        toast.error("Máximo de 4 posições secundárias");
+        return prev;
+      }
+      return [...prev, p];
+    });
+  };
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -399,6 +411,7 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
     const patch = {
       name: name.trim(),
       position,
+      secondaryPositions: secondaryPositions.filter((p) => p !== position),
       overall,
       rarity,
       imageUrl: trimmedUrl || undefined,
