@@ -126,7 +126,13 @@ export function SquadDialog({
       // Hide archived players from the picker unless already on this squad.
       const alreadyOnSquad = startingIds.has(p.id) || bench.includes(p.id);
       if (p.isArchived && !alreadyOnSquad) return false;
-      if (pickingSlot && !positionFits(p.position, pickingSlot.position)) return false;
+      if (pickingSlot) {
+        const slotPos = pickingSlot.position;
+        const fits =
+          positionFits(p.position, slotPos) ||
+          (p.secondaryPositions ?? []).some((sp) => positionFits(sp, slotPos));
+        if (!fits) return false;
+      }
       if (!pickingSlot && startingIds.has(p.id)) return false;
       if (search.trim() && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
