@@ -3,9 +3,12 @@ import type { Position } from "./types";
 export type FormationName =
   | "4-4-2"
   | "4-3-3"
+  | "4-3-3 (1)"
   | "4-2-3-1"
   | "4-3-2-1"
   | "4-1-2-1-2"
+  | "4-1-4-1"
+  | "4-4-1-1"
   | "3-5-2"
   | "3-4-3"
   | "5-3-2"
@@ -58,6 +61,16 @@ export const FORMATIONS: Record<FormationName, Formation> = {
       ...row(["LW", "ST", "RW"], 18, "F"),
     ],
   },
+  "4-3-3 (1)": {
+    name: "4-3-3 (1)",
+    slots: [
+      gk(),
+      ...row(["LB", "CB", "CB", "RB"], 72, "D"),
+      ...row(["CM", "CM"], 54, "M"),
+      ...row(["CAM"], 36, "AM"),
+      ...row(["LW", "ST", "RW"], 16, "F"),
+    ],
+  },
   "4-2-3-1": {
     name: "4-2-3-1",
     slots: [
@@ -87,6 +100,26 @@ export const FORMATIONS: Record<FormationName, Formation> = {
       ...row(["CM", "CM"], 44, "M"),
       ...row(["CAM"], 30, "AM"),
       ...row(["ST", "ST"], 14, "F"),
+    ],
+  },
+  "4-1-4-1": {
+    name: "4-1-4-1",
+    slots: [
+      gk(),
+      ...row(["LB", "CB", "CB", "RB"], 74, "D"),
+      ...row(["CDM"], 56, "DM"),
+      ...row(["LM", "CM", "CM", "RM"], 40, "M"),
+      ...row(["ST"], 14, "F"),
+    ],
+  },
+  "4-4-1-1": {
+    name: "4-4-1-1",
+    slots: [
+      gk(),
+      ...row(["LB", "CB", "CB", "RB"], 74, "D"),
+      ...row(["LM", "CM", "CM", "RM"], 52, "M"),
+      ...row(["CAM"], 30, "AM"),
+      ...row(["ST"], 12, "F"),
     ],
   },
   "3-5-2": {

@@ -60,6 +60,8 @@ export interface Player {
   id: string;
   name: string;
   position: Position;
+  /** Up to 4 secondary positions the player can also play. */
+  secondaryPositions?: Position[];
   overall: number;
   rarity: Rarity;
   /** Optional direct URL to a player card image (e.g. Futbin / EA). Falls back to the rarity card when empty or broken. */

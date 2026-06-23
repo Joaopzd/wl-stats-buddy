@@ -383,10 +383,22 @@ function PlayersPage() {
 function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: () => void }) {
   const [name, setName] = useState(existing?.name ?? "");
   const [position, setPosition] = useState<Position>(existing?.position ?? "ST");
+  const [secondaryPositions, setSecondaryPositions] = useState<Position[]>(existing?.secondaryPositions ?? []);
   const [overall, setOverall] = useState<number>(existing?.overall ?? 85);
   const [rarity, setRarity] = useState<Rarity>(existing?.rarity ?? "Gold");
   const [imageUrl, setImageUrl] = useState<string>(existing?.imageUrl ?? "");
   const [previewBroken, setPreviewBroken] = useState(false);
+
+  const toggleSecondary = (p: Position) => {
+    setSecondaryPositions((prev) => {
+      if (prev.includes(p)) return prev.filter((x) => x !== p);
+      if (prev.length >= 4) {
+        toast.error("Máximo de 4 posições secundárias");
+        return prev;
+      }
+      return [...prev, p];
+    });
+  };
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -399,6 +411,7 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
     const patch = {
       name: name.trim(),
       position,
+      secondaryPositions: secondaryPositions.filter((p) => p !== position),
       overall,
       rarity,
       imageUrl: trimmedUrl || undefined,
@@ -446,6 +459,29 @@ function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: (
               <input type="number" min={1} max={99} value={overall} onChange={(e) => setOverall(parseInt(e.target.value) || 0)} className="w-full bg-input border border-border rounded-md px-3 py-2 stat-num" />
             </Field>
           </div>
+          <Field label={`Posições Secundárias (até 4) — ${secondaryPositions.filter((p) => p !== position).length}/4`}>
+            <div className="flex flex-wrap gap-1.5">
+              {POSITIONS.filter((p) => p !== position).map((p) => {
+                const active = secondaryPositions.includes(p);
+                const disabled = !active && secondaryPositions.length >= 4;
+                return (
+                  <button
+                    type="button"
+                    key={p}
+                    onClick={() => toggleSecondary(p)}
+                    disabled={disabled}
+                    className={`px-2.5 py-1 rounded-md text-xs font-semibold border transition ${
+                      active
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-input border-border text-muted-foreground hover:text-foreground"
+                    } ${disabled ? "opacity-40 cursor-not-allowed" : ""}`}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
+            </div>
+          </Field>
           <Field label="Card Rarity">
             <select
               value={rarity}
