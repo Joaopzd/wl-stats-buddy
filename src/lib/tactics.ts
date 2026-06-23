@@ -82,7 +82,7 @@ export function defaultPlayerTactics(p: Position) {
 export const BUILD_UP_STYLES: { value: BuildUpStyle; icon: LucideIcon; description: string }[] = [
   { value: "Balance", icon: Scale, description: "Adaptive shape, mixed tempo" },
   { value: "Counter Attack", icon: Zap, description: "Sit deep, break fast" },
-  { value: "Short Pass", icon: Send, description: "Possession, patient build-up" },
+  { value: "Short Pass", icon: Repeat, description: "Tiki-Taka, possession circles" },
 ];
 
 export interface DefApproachStep {
@@ -93,7 +93,7 @@ export interface DefApproachStep {
 
 export function defensiveApproachLabel(value: number): DefApproachStep {
   if (value <= 30) return { label: "Deep-Lying", icon: Shield, color: "#1e40af" };
-  if (value <= 70) return { label: "Balance", icon: Scale, color: "#30503A" };
+  if (value <= 60) return { label: "Balance", icon: Scale, color: "#30503A" };
   if (value <= 90) return { label: "High Press", icon: ArrowUp, color: "#b45309" };
   return { label: "Aggressive Press", icon: Flame, color: "#b91c1c" };
 }
