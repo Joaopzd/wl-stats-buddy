@@ -233,8 +233,8 @@ function PlayersPage() {
       ) : (
         <div className="surface-card overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-secondary/60 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+            <table className="w-full text-sm tabular-nums [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap">
+              <thead className="bg-secondary/60 text-[11px] uppercase tracking-[0.2em] text-muted-foreground sticky top-0 z-10">
                 <tr>
                   <th className="text-left p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("name")}>Player{sortIndicator("name")}</th>
                   <th className="text-left p-3 font-semibold hidden sm:table-cell cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("pos")}>Pos{sortIndicator("pos")}</th>
@@ -279,14 +279,14 @@ function PlayersPage() {
               <tbody>
                 {filtered.map((a) => (
                   <tr key={a.player.id} onClick={() => setDetailPlayer(a.player)} className="border-t border-border/40 hover:bg-secondary/30 cursor-pointer">
-                    <td className="p-3">
-                      <div className="flex items-center gap-3">
-                        <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} imageUrl={a.player.imageUrl} size="lg" />
+                    <td className="p-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} imageUrl={a.player.imageUrl} size="sm" />
                         <div className="min-w-0">
-                          <div className="font-semibold truncate">{a.player.name}</div>
+                          <div className="font-semibold truncate leading-tight">{a.player.name}</div>
                           <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className={`h-2 w-2 rounded-full ${raritySwatch(a.player.rarity)}`} style={raritySwatchStyle(a.player.rarity)} />
-                            <span className="text-[11px] uppercase tracking-wider text-muted-foreground">{a.player.rarity}</span>
+                            <span className={`h-2 w-2 rounded-full shrink-0 ${raritySwatch(a.player.rarity)}`} style={raritySwatchStyle(a.player.rarity)} />
+                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">{a.player.rarity}</span>
                           </div>
                         </div>
                       </div>

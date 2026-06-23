@@ -126,7 +126,13 @@ export function SquadDialog({
       // Hide archived players from the picker unless already on this squad.
       const alreadyOnSquad = startingIds.has(p.id) || bench.includes(p.id);
       if (p.isArchived && !alreadyOnSquad) return false;
-      if (pickingSlot && !positionFits(p.position, pickingSlot.position)) return false;
+      if (pickingSlot) {
+        const slotPos = pickingSlot.position;
+        const fits =
+          positionFits(p.position, slotPos) ||
+          (p.secondaryPositions ?? []).some((sp) => positionFits(sp, slotPos));
+        if (!fits) return false;
+      }
       if (!pickingSlot && startingIds.has(p.id)) return false;
       if (search.trim() && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
@@ -159,6 +165,11 @@ export function SquadDialog({
               {candidates.map((p) => {
                 const inStarting = startingIds.has(p.id);
                 const inBench = bench.includes(p.id);
+                const slotPos = pickingSlot?.position;
+                const isSecondaryMatch =
+                  !!slotPos &&
+                  !positionFits(p.position, slotPos) &&
+                  (p.secondaryPositions ?? []).some((sp) => positionFits(sp, slotPos));
                 return (
                   <button
                     key={p.id}
@@ -168,7 +179,19 @@ export function SquadDialog({
                     <RarityDot rarity={p.rarity} size={20} />
                     <span className="font-display text-xl text-primary stat-num w-9 text-center shrink-0">{p.overall}</span>
                     <PositionBadge position={p.position} />
+                    {p.secondaryPositions && p.secondaryPositions.length > 0 && (
+                      <span className="flex items-center gap-1 shrink-0">
+                        {p.secondaryPositions.map((sp) => (
+                          <PositionBadge key={sp} position={sp} size="xs" />
+                        ))}
+                      </span>
+                    )}
                     <span className="font-semibold truncate flex-1">{p.name}</span>
+                    {isSecondaryMatch && (
+                      <span className="text-[10px] uppercase tracking-wider text-accent font-bold shrink-0">
+                        Secondary
+                      </span>
+                    )}
                     {(inStarting || inBench) && (
                       <span className="text-[11px] uppercase tracking-wider text-primary font-bold shrink-0">
                         {inStarting ? "Starting" : "Bench"}
