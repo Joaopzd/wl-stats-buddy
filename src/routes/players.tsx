@@ -234,7 +234,7 @@ function PlayersPage() {
         <div className="surface-card">
           <div className="w-full">
             <table className="w-full text-sm tabular-nums [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap">
-              <thead className="bg-secondary text-[11px] uppercase tracking-[0.2em] text-muted-foreground sticky top-0 z-20 shadow-[0_1px_0_var(--border)]">
+              <thead className="bg-secondary text-[11px] uppercase tracking-[0.2em] text-muted-foreground sticky top-[104px] md:top-16 z-20 shadow-[0_1px_0_var(--border)]">
                 <tr>
                   <th className="text-left p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("name")}>Player{sortIndicator("name")}</th>
                   <th className="text-left p-3 font-semibold hidden sm:table-cell cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("pos")}>Pos{sortIndicator("pos")}</th>
