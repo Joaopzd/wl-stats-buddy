@@ -113,7 +113,7 @@ export function TacticsDialog({
                     value={`${defensiveApproachLabel(tactics.defensiveApproach).label} (${tactics.defensiveApproach})`}
                     accent={defensiveApproachLabel(tactics.defensiveApproach).color}
                   />
-                  <div className="rounded-lg bg-white border border-border p-4">
+                  <div className="rounded-lg bg-card border border-border p-4">
                     <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">Formation</div>
                     <div className="font-display text-2xl tracking-wider">{formation}</div>
                   </div>
@@ -160,7 +160,7 @@ export function TacticsDialog({
                     const step = defensiveApproachLabel(tactics.defensiveApproach);
                     const Icon = step.icon;
                     return (
-                      <div className="rounded-lg border border-border bg-white p-5 space-y-4">
+                      <div className="rounded-lg border border-border bg-card p-5 space-y-4">
                         <div className="flex items-center justify-between">
                           <span
                             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-white font-semibold text-sm"
@@ -252,7 +252,7 @@ function ModeToggle({ edit, setEdit }: { edit: boolean; setEdit: (v: boolean) =>
 
 function InfoCard({ label, value, accent }: { label: string; value: string; accent: string }) {
   return (
-    <div className="rounded-lg bg-white border border-border p-4">
+    <div className="rounded-lg bg-card border border-border p-4">
       <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-1">{label}</div>
       <div className="font-display text-xl tracking-wider" style={{ color: accent }}>{value}</div>
     </div>
@@ -299,7 +299,7 @@ function Pitch({
               <PositionBadge position={info.position as never} className="mb-1 text-[9px] px-1 py-0" />
             )}
             <div
-              className="w-full rounded-md bg-white/95 text-foreground px-1 py-1 shadow-md"
+              className="w-full rounded-md bg-card/95 text-foreground px-1 py-1 shadow-md"
               style={{ borderTop: `3px solid ${ACCENT_BLUE}` }}
             >
               <div className="font-display tracking-wider text-[11px] leading-tight truncate">{info.name}</div>
