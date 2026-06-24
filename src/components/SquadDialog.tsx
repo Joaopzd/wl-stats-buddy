@@ -43,6 +43,8 @@ export function SquadDialog({
 
   const assignSlot = (playerId: string) => {
     if (!pickingSlot) return;
+    const displacedStarterId = assignments[pickingSlot.id];
+    const wasOnBench = bench.includes(playerId);
     setAssignments((s) => {
       const next = { ...s };
       for (const [k, v] of Object.entries(next)) {
@@ -51,7 +53,15 @@ export function SquadDialog({
       next[pickingSlot.id] = playerId;
       return next;
     });
-    setBench((b) => b.filter((id) => id !== playerId));
+    setBench((b) => {
+      let next = b.filter((id) => id !== playerId);
+      // If we displaced a starter and the new player came from the bench,
+      // swap: send the displaced starter to the bench in the freed spot.
+      if (wasOnBench && displacedStarterId && displacedStarterId !== playerId && !next.includes(displacedStarterId)) {
+        next = [...next, displacedStarterId];
+      }
+      return next;
+    });
     setPickingSlot(null);
     setSearch("");
   };
@@ -201,7 +211,9 @@ export function SquadDialog({
                     )}
                     {(inStarting || inBench) && (
                       <span className="text-[10px] uppercase tracking-wider text-primary font-bold shrink-0">
-                        {inStarting ? (pickingBench ? "↓ Swap" : "Starting") : "Bench"}
+                        {inStarting
+                          ? (pickingBench ? "↓ Swap" : "Starting")
+                          : (pickingSlot && assignments[pickingSlot.id] ? "↑ Swap" : "Bench")}
                       </span>
                     )}
                   </button>
