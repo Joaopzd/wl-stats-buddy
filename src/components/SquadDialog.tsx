@@ -65,9 +65,16 @@ export function SquadDialog({
   };
 
   const addToBench = (playerId: string) => {
+    // If the player is currently a starter, swap them down to the bench
+    // by clearing their slot assignment before adding to bench.
     if (startingIds.has(playerId)) {
-      toast.error("Already in starting 11");
-      return;
+      setAssignments((s) => {
+        const next = { ...s };
+        for (const [k, v] of Object.entries(next)) {
+          if (v === playerId) delete next[k];
+        }
+        return next;
+      });
     }
     setBench((b) => (b.includes(playerId) ? b : [...b, playerId]));
     setPickingBench(false);
@@ -133,7 +140,7 @@ export function SquadDialog({
           (p.secondaryPositions ?? []).some((sp) => positionFits(sp, slotPos));
         if (!fits) return false;
       }
-      if (!pickingSlot && startingIds.has(p.id)) return false;
+      if (!pickingSlot && startingIds.has(p.id) && bench.includes(p.id)) return false;
       if (search.trim() && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
@@ -142,7 +149,7 @@ export function SquadDialog({
       <Shell
         onClose={() => { setPickingSlot(null); setPickingBench(false); setSearch(""); }}
         title={pickingSlot ? `Assign ${pickingSlot.position}` : "Add to Bench"}
-        subtitle={pickingSlot ? `Slot ${pickingSlot.id}` : `${bench.length} on the bench`}
+        subtitle={pickingSlot ? `Slot ${pickingSlot.id}` : `${bench.length} on the bench · pick a starter to swap`}
       >
         <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
@@ -174,27 +181,27 @@ export function SquadDialog({
                   <button
                     key={p.id}
                     onClick={() => (pickingSlot ? assignSlot(p.id) : addToBench(p.id))}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-md border border-border bg-card text-left transition hover:border-primary hover:bg-primary/5"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md border border-border bg-card text-left transition hover:border-primary hover:bg-primary/5"
                   >
-                    <RarityDot rarity={p.rarity} size={20} />
-                    <span className="font-display text-xl text-primary stat-num w-9 text-center shrink-0">{p.overall}</span>
-                    <PositionBadge position={p.position} />
+                    <RarityDot rarity={p.rarity} size={24} />
+                    <span className="font-display text-2xl text-primary stat-num w-10 text-center shrink-0 leading-none">{p.overall}</span>
+                    <PositionBadge position={p.position} size="md" />
                     {p.secondaryPositions && p.secondaryPositions.length > 0 && (
                       <span className="flex items-center gap-1 shrink-0">
                         {p.secondaryPositions.map((sp) => (
-                          <PositionBadge key={sp} position={sp} size="xs" />
+                          <PositionBadge key={sp} position={sp} size="xs" className="opacity-70" />
                         ))}
                       </span>
                     )}
-                    <span className="font-semibold truncate flex-1">{p.name}</span>
+                    <span className="font-display text-lg font-semibold truncate flex-1 tracking-wide leading-tight">{p.name}</span>
                     {isSecondaryMatch && (
                       <span className="text-[10px] uppercase tracking-wider text-accent font-bold shrink-0">
                         Secondary
                       </span>
                     )}
                     {(inStarting || inBench) && (
-                      <span className="text-[11px] uppercase tracking-wider text-primary font-bold shrink-0">
-                        {inStarting ? "Starting" : "Bench"}
+                      <span className="text-[10px] uppercase tracking-wider text-primary font-bold shrink-0">
+                        {inStarting ? (pickingBench ? "↓ Swap" : "Starting") : "Bench"}
                       </span>
                     )}
                   </button>
