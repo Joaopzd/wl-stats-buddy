@@ -71,21 +71,21 @@ export function TacticsDialog({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-5xl max-h-[92vh] overflow-y-auto p-0 bg-[#FAFAF7] text-zinc-900 border-zinc-200">
+      <DialogContent className="max-w-5xl max-h-[92vh] overflow-y-auto p-0 bg-card text-card-foreground border-border">
         <DialogHeader className="px-6 pt-6 pb-2">
-          <DialogTitle className="flex items-center gap-2 font-display tracking-wider text-zinc-900">
+          <DialogTitle className="flex items-center gap-2 font-display tracking-wider text-foreground">
             <Sparkles className="h-5 w-5" style={{ color: ACCENT_BLUE }} />
             Tactics — {wl.customName || `WL #${wl.number}`}
           </DialogTitle>
         </DialogHeader>
 
         {!formation ? (
-          <div className="p-10 text-center text-sm text-zinc-600">
+          <div className="p-10 text-center text-sm text-muted-foreground">
             Pick a formation in <span className="font-semibold">Edit Squad</span> first to configure tactics.
           </div>
         ) : (
           <Tabs defaultValue="summary" className="px-6 pb-6">
-            <TabsList className="grid w-full grid-cols-3 bg-zinc-200/60">
+            <TabsList className="grid w-full grid-cols-3 bg-secondary">
               <TabsTrigger value="summary">Summary</TabsTrigger>
               <TabsTrigger value="info">Tactical Information</TabsTrigger>
               <TabsTrigger value="roles">Player Roles</TabsTrigger>
@@ -113,8 +113,8 @@ export function TacticsDialog({
                     value={`${defensiveApproachLabel(tactics.defensiveApproach).label} (${tactics.defensiveApproach})`}
                     accent={defensiveApproachLabel(tactics.defensiveApproach).color}
                   />
-                  <div className="rounded-lg bg-white border border-zinc-200 p-4">
-                    <div className="text-[11px] uppercase tracking-[0.25em] text-zinc-500 font-bold mb-2">Formation</div>
+                  <div className="rounded-lg bg-white border border-border p-4">
+                    <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">Formation</div>
                     <div className="font-display text-2xl tracking-wider">{formation}</div>
                   </div>
                 </div>
@@ -126,7 +126,7 @@ export function TacticsDialog({
               <ModeToggle edit={editInfo} setEdit={setEditInfo} />
               <div className="space-y-6 mt-3">
                 <section>
-                  <h3 className="font-display tracking-wider text-sm mb-3 text-zinc-700 uppercase">Build Up Style</h3>
+                  <h3 className="font-display tracking-wider text-sm mb-3 text-foreground uppercase">Build Up Style</h3>
                   <div className="grid sm:grid-cols-3 gap-2">
                     {BUILD_UP_STYLES.map((opt) => {
                       const Icon = opt.icon;
@@ -139,9 +139,9 @@ export function TacticsDialog({
                           onClick={() => update({ buildUpStyle: opt.value as BuildUpStyle })}
                           className="rounded-lg border p-4 flex flex-col items-center gap-2 text-center transition-all duration-200 disabled:cursor-default"
                           style={{
-                            backgroundColor: active ? ACCENT_BLUE : "#fff",
-                            color: active ? "var(--primary-foreground)" : "#27272a",
-                            borderColor: active ? ACCENT_BLUE : "#e4e4e7",
+                            backgroundColor: active ? ACCENT_BLUE : "var(--card)",
+                            color: active ? "var(--primary-foreground)" : "var(--foreground)",
+                            borderColor: active ? ACCENT_BLUE : "var(--border)",
                             opacity: !editInfo && !active ? 0.6 : 1,
                           }}
                         >
@@ -155,12 +155,12 @@ export function TacticsDialog({
                 </section>
 
                 <section>
-                  <h3 className="font-display tracking-wider text-sm mb-3 text-zinc-700 uppercase">Defensive Approach</h3>
+                  <h3 className="font-display tracking-wider text-sm mb-3 text-foreground uppercase">Defensive Approach</h3>
                   {(() => {
                     const step = defensiveApproachLabel(tactics.defensiveApproach);
                     const Icon = step.icon;
                     return (
-                      <div className="rounded-lg border border-zinc-200 bg-white p-5 space-y-4">
+                      <div className="rounded-lg border border-border bg-white p-5 space-y-4">
                         <div className="flex items-center justify-between">
                           <span
                             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-white font-semibold text-sm"
@@ -179,7 +179,7 @@ export function TacticsDialog({
                           value={[tactics.defensiveApproach]}
                           onValueChange={(v) => update({ defensiveApproach: v[0] })}
                         />
-                        <div className="flex justify-between text-[11px] text-zinc-500 font-mono">
+                        <div className="flex justify-between text-[11px] text-muted-foreground font-mono">
                           <span>Deep-Lying</span>
                           <span>Balance</span>
                           <span>High Press</span>
@@ -211,7 +211,7 @@ export function TacticsDialog({
                   }}
                 />
                 {editRoles && (
-                  <p className="text-center text-xs text-zinc-500 mt-3">Click a player on the pitch to edit their role and focus.</p>
+                  <p className="text-center text-xs text-muted-foreground mt-3">Click a player on the pitch to edit their role and focus.</p>
                 )}
               </div>
             </TabsContent>
@@ -238,9 +238,9 @@ function ModeToggle({ edit, setEdit }: { edit: boolean; setEdit: (v: boolean) =>
         onClick={() => setEdit(!edit)}
         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider border transition-all duration-200"
         style={{
-          backgroundColor: edit ? ACCENT_GREEN : "#fff",
-          color: edit ? "var(--primary-foreground)" : "#27272a",
-          borderColor: edit ? ACCENT_GREEN : "#d4d4d8",
+          backgroundColor: edit ? ACCENT_GREEN : "var(--card)",
+          color: edit ? "var(--primary-foreground)" : "var(--foreground)",
+          borderColor: edit ? ACCENT_GREEN : "var(--border)",
         }}
       >
         {edit ? <Pencil className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
@@ -252,8 +252,8 @@ function ModeToggle({ edit, setEdit }: { edit: boolean; setEdit: (v: boolean) =>
 
 function InfoCard({ label, value, accent }: { label: string; value: string; accent: string }) {
   return (
-    <div className="rounded-lg bg-white border border-zinc-200 p-4">
-      <div className="text-[11px] uppercase tracking-[0.25em] text-zinc-500 font-bold mb-1">{label}</div>
+    <div className="rounded-lg bg-white border border-border p-4">
+      <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-1">{label}</div>
       <div className="font-display text-xl tracking-wider" style={{ color: accent }}>{value}</div>
     </div>
   );
@@ -270,7 +270,7 @@ function Pitch({
 }) {
   return (
     <div
-      className="relative w-full rounded-xl border border-zinc-300 overflow-hidden"
+      className="relative w-full rounded-xl border border-border overflow-hidden"
       style={{
         aspectRatio: "3 / 4",
         background:
@@ -299,11 +299,11 @@ function Pitch({
               <PositionBadge position={info.position as never} className="mb-1 text-[9px] px-1 py-0" />
             )}
             <div
-              className="w-full rounded-md bg-white/95 text-zinc-900 px-1 py-1 shadow-md"
+              className="w-full rounded-md bg-white/95 text-foreground px-1 py-1 shadow-md"
               style={{ borderTop: `3px solid ${ACCENT_BLUE}` }}
             >
               <div className="font-display tracking-wider text-[11px] leading-tight truncate">{info.name}</div>
-              <div className="text-[9px] text-zinc-600 leading-tight truncate">{info.sub}</div>
+              <div className="text-[9px] text-muted-foreground leading-tight truncate">{info.sub}</div>
             </div>
           </button>
         );
@@ -333,7 +333,7 @@ function RoleEditSheet({
   const spec = ROLE_SPECS[roleGroupFor(player.position)];
   return (
     <Sheet open={!!player} onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="right" className="bg-[#FAFAF7] text-zinc-900 border-zinc-200">
+      <SheetContent side="right" className="bg-card text-card-foreground border-border">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <PositionBadge position={player.position} />
@@ -342,7 +342,7 @@ function RoleEditSheet({
         </SheetHeader>
         <div className="mt-6 space-y-5">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.25em] text-zinc-500 font-bold mb-2">Role</div>
+            <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">Role</div>
             <div className="flex flex-wrap gap-2">
               {spec.roles.map((r) => {
                 const active = tactics.role === r;
@@ -353,9 +353,9 @@ function RoleEditSheet({
                     onClick={() => onChange({ ...tactics, role: r })}
                     className="px-3 py-1.5 rounded-full text-xs font-semibold border transition"
                     style={{
-                      backgroundColor: active ? ACCENT_BLUE : "#fff",
-                      color: active ? "var(--primary-foreground)" : "#27272a",
-                      borderColor: active ? ACCENT_BLUE : "#d4d4d8",
+                      backgroundColor: active ? ACCENT_BLUE : "var(--card)",
+                      color: active ? "var(--primary-foreground)" : "var(--foreground)",
+                      borderColor: active ? ACCENT_BLUE : "var(--border)",
                     }}
                   >
                     {r}
@@ -365,7 +365,7 @@ function RoleEditSheet({
             </div>
           </div>
           <div>
-            <div className="text-[11px] uppercase tracking-[0.25em] text-zinc-500 font-bold mb-2">Focus</div>
+            <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2">Focus</div>
             <div className="flex flex-wrap gap-2">
               {spec.focuses.map((f) => {
                 const active = tactics.focus === f;
@@ -376,9 +376,9 @@ function RoleEditSheet({
                     onClick={() => onChange({ ...tactics, focus: f })}
                     className="px-3 py-1.5 rounded-full text-xs font-semibold border transition"
                     style={{
-                      backgroundColor: active ? ACCENT_GREEN : "#fff",
-                      color: active ? "var(--primary-foreground)" : "#27272a",
-                      borderColor: active ? ACCENT_GREEN : "#d4d4d8",
+                      backgroundColor: active ? ACCENT_GREEN : "var(--card)",
+                      color: active ? "var(--primary-foreground)" : "var(--foreground)",
+                      borderColor: active ? ACCENT_GREEN : "var(--border)",
                     }}
                   >
                     {f}
