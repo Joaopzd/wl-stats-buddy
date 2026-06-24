@@ -181,27 +181,27 @@ export function SquadDialog({
                   <button
                     key={p.id}
                     onClick={() => (pickingSlot ? assignSlot(p.id) : addToBench(p.id))}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-md border border-border bg-card text-left transition hover:border-primary hover:bg-primary/5"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md border border-border bg-card text-left transition hover:border-primary hover:bg-primary/5"
                   >
-                    <RarityDot rarity={p.rarity} size={20} />
-                    <span className="font-display text-xl text-primary stat-num w-9 text-center shrink-0">{p.overall}</span>
-                    <PositionBadge position={p.position} />
+                    <RarityDot rarity={p.rarity} size={24} />
+                    <span className="font-display text-2xl text-primary stat-num w-10 text-center shrink-0 leading-none">{p.overall}</span>
+                    <PositionBadge position={p.position} size="md" />
                     {p.secondaryPositions && p.secondaryPositions.length > 0 && (
                       <span className="flex items-center gap-1 shrink-0">
                         {p.secondaryPositions.map((sp) => (
-                          <PositionBadge key={sp} position={sp} size="xs" />
+                          <PositionBadge key={sp} position={sp} size="xs" className="opacity-70" />
                         ))}
                       </span>
                     )}
-                    <span className="font-semibold truncate flex-1">{p.name}</span>
+                    <span className="font-display text-lg font-semibold truncate flex-1 tracking-wide leading-tight">{p.name}</span>
                     {isSecondaryMatch && (
                       <span className="text-[10px] uppercase tracking-wider text-accent font-bold shrink-0">
                         Secondary
                       </span>
                     )}
                     {(inStarting || inBench) && (
-                      <span className="text-[11px] uppercase tracking-wider text-primary font-bold shrink-0">
-                        {inStarting ? "Starting" : "Bench"}
+                      <span className="text-[10px] uppercase tracking-wider text-primary font-bold shrink-0">
+                        {inStarting ? (pickingBench ? "↓ Swap" : "Starting") : "Bench"}
                       </span>
                     )}
                   </button>
