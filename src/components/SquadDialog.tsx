@@ -211,7 +211,9 @@ export function SquadDialog({
                     )}
                     {(inStarting || inBench) && (
                       <span className="text-[10px] uppercase tracking-wider text-primary font-bold shrink-0">
-                        {inStarting ? (pickingBench ? "↓ Swap" : "Starting") : "Bench"}
+                        {inStarting
+                          ? (pickingBench ? "↓ Swap" : "Starting")
+                          : (pickingSlot && assignments[pickingSlot.id] ? "↑ Swap" : "Bench")}
                       </span>
                     )}
                   </button>
