@@ -140,7 +140,7 @@ export function SquadDialog({
           (p.secondaryPositions ?? []).some((sp) => positionFits(sp, slotPos));
         if (!fits) return false;
       }
-      if (!pickingSlot && startingIds.has(p.id)) return false;
+      if (!pickingSlot && startingIds.has(p.id) && bench.includes(p.id)) return false;
       if (search.trim() && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
@@ -149,7 +149,7 @@ export function SquadDialog({
       <Shell
         onClose={() => { setPickingSlot(null); setPickingBench(false); setSearch(""); }}
         title={pickingSlot ? `Assign ${pickingSlot.position}` : "Add to Bench"}
-        subtitle={pickingSlot ? `Slot ${pickingSlot.id}` : `${bench.length} on the bench`}
+        subtitle={pickingSlot ? `Slot ${pickingSlot.id}` : `${bench.length} on the bench · pick a starter to swap`}
       >
         <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
