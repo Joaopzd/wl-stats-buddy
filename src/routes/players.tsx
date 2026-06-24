@@ -231,10 +231,10 @@ function PlayersPage() {
           {players.length === 0 ? "No players yet. Add your first player to start tracking." : "No players match your filters."}
         </div>
       ) : (
-        <div className="surface-card overflow-hidden">
-          <div className="overflow-x-auto">
+        <div className="surface-card">
+          <div className="overflow-x-auto rounded-[inherit]">
             <table className="w-full text-sm tabular-nums [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap">
-              <thead className="bg-secondary/60 text-[11px] uppercase tracking-[0.2em] text-muted-foreground sticky top-0 z-10">
+              <thead className="bg-secondary text-[11px] uppercase tracking-[0.2em] text-muted-foreground sticky top-0 z-20 shadow-[0_1px_0_var(--border)]">
                 <tr>
                   <th className="text-left p-3 font-semibold cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("name")}>Player{sortIndicator("name")}</th>
                   <th className="text-left p-3 font-semibold hidden sm:table-cell cursor-pointer select-none hover:text-foreground" onClick={() => toggleSort("pos")}>Pos{sortIndicator("pos")}</th>
