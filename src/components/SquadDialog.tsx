@@ -65,9 +65,16 @@ export function SquadDialog({
   };
 
   const addToBench = (playerId: string) => {
+    // If the player is currently a starter, swap them down to the bench
+    // by clearing their slot assignment before adding to bench.
     if (startingIds.has(playerId)) {
-      toast.error("Already in starting 11");
-      return;
+      setAssignments((s) => {
+        const next = { ...s };
+        for (const [k, v] of Object.entries(next)) {
+          if (v === playerId) delete next[k];
+        }
+        return next;
+      });
     }
     setBench((b) => (b.includes(playerId) ? b : [...b, playerId]));
     setPickingBench(false);
