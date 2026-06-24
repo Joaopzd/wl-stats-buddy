@@ -232,7 +232,7 @@ function PlayersPage() {
         </div>
       ) : (
         <div className="surface-card">
-          <div className="overflow-x-auto rounded-[inherit]">
+          <div className="w-full">
             <table className="w-full text-sm tabular-nums [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap">
               <thead className="bg-secondary text-[11px] uppercase tracking-[0.2em] text-muted-foreground sticky top-0 z-20 shadow-[0_1px_0_var(--border)]">
                 <tr>
