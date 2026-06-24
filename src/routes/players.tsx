@@ -280,8 +280,8 @@ function PlayersPage() {
                 {filtered.map((a) => (
                   <tr key={a.player.id} onClick={() => setDetailPlayer(a.player)} className="border-t border-border/40 hover:bg-secondary/30 cursor-pointer">
                     <td className="p-2">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} imageUrl={a.player.imageUrl} size="sm" />
+                      <div className="flex items-center gap-3 min-w-0">
+                        <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} imageUrl={a.player.imageUrl} size="md" />
                         <div className="min-w-0">
                           <div className="font-semibold truncate leading-tight">{a.player.name}</div>
                           <div className="flex items-center gap-1.5 mt-0.5">
