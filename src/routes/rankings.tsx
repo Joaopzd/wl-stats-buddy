@@ -235,8 +235,8 @@ function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
                     <span className="text-foreground">{c.clutch.avgRating.toFixed(2)}</span>
                     <span className="text-muted-foreground text-xs"> vs {c.baseline.avgRating.toFixed(2)}</span>
                   </div>
-                  <div className={`text-[11px] font-mono ${deltaTone}`}>
-                    {sign}{delta.toFixed(2)}
+                  <div className={`text-[11px] font-mono ${deltaTone}`} title={`Score = rating Δ ${delta >= 0 ? "+" : ""}${delta.toFixed(2)} + 1.5× G+A/game Δ ${c.gaPerGameDelta >= 0 ? "+" : ""}${c.gaPerGameDelta.toFixed(2)}`}>
+                    {sign}{score.toFixed(2)} <span className="text-muted-foreground/70">score</span>
                   </div>
                 </div>
               </li>
