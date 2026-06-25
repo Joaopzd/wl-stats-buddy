@@ -74,7 +74,7 @@ function RankingsPage() {
       players
         .map((p) => clutchAggregate(p, matches))
         .filter((c) => c.clutch.matches >= CLUTCH_MIN_MATCHES && c.clutch.ratedMatches > 0)
-        .sort((a, b) => b.ratingDelta - a.ratingDelta || b.clutch.avgRating - a.clutch.avgRating)
+        .sort((a, b) => b.clutchScore - a.clutchScore || b.ratingDelta - a.ratingDelta || b.clutch.avgRating - a.clutch.avgRating)
         .slice(0, 10),
     [players, matches],
   );
@@ -191,8 +191,9 @@ function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
               rank === 3 ? "text-amber-700" :
               "text-muted-foreground";
             const delta = c.ratingDelta;
-            const deltaTone = delta >= 0.0001 ? "text-primary" : delta <= -0.0001 ? "text-destructive" : "text-muted-foreground";
-            const sign = delta > 0 ? "+" : "";
+            const score = c.clutchScore;
+            const deltaTone = score >= 0.0001 ? "text-primary" : score <= -0.0001 ? "text-destructive" : "text-muted-foreground";
+            const sign = score > 0 ? "+" : "";
             return (
               <li
                 key={c.player.id}
@@ -234,8 +235,8 @@ function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
                     <span className="text-foreground">{c.clutch.avgRating.toFixed(2)}</span>
                     <span className="text-muted-foreground text-xs"> vs {c.baseline.avgRating.toFixed(2)}</span>
                   </div>
-                  <div className={`text-[11px] font-mono ${deltaTone}`}>
-                    {sign}{delta.toFixed(2)}
+                  <div className={`text-[11px] font-mono ${deltaTone}`} title={`Score = rating Δ ${delta >= 0 ? "+" : ""}${delta.toFixed(2)} + 1.5× G+A/game Δ ${c.gaPerGameDelta >= 0 ? "+" : ""}${c.gaPerGameDelta.toFixed(2)}`}>
+                    {sign}{score.toFixed(2)} <span className="text-muted-foreground/70">score</span>
                   </div>
                 </div>
               </li>

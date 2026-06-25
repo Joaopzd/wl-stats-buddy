@@ -475,7 +475,7 @@ function ClutchFactor({ squad, matches }: { squad: Player[]; matches: Match[] })
       const aBadged = a.badge ? 1 : 0;
       const bBadged = b.badge ? 1 : 0;
       if (aBadged !== bBadged) return bBadged - aBadged;
-      return b.ratingDelta - a.ratingDelta || b.clutch.avgRating - a.clutch.avgRating;
+      return b.clutchScore - a.clutchScore || b.ratingDelta - a.ratingDelta || b.clutch.avgRating - a.clutch.avgRating;
     });
 
   if (rows.length === 0) return null;
@@ -501,8 +501,9 @@ function ClutchFactor({ squad, matches }: { squad: Player[]; matches: Match[] })
       <div className="space-y-1.5">
         {rows.map((c) => {
           const delta = c.ratingDelta;
-          const deltaTone = delta >= 0.0001 ? "text-primary" : delta <= -0.0001 ? "text-destructive" : "text-muted-foreground";
-          const deltaSign = delta > 0 ? "+" : "";
+          const score = c.clutchScore;
+          const deltaTone = score >= 0.0001 ? "text-primary" : score <= -0.0001 ? "text-destructive" : "text-muted-foreground";
+          const scoreSign = score > 0 ? "+" : "";
           return (
             <div
               key={c.player.id}
@@ -544,8 +545,11 @@ function ClutchFactor({ squad, matches }: { squad: Player[]; matches: Match[] })
                 <span className="text-muted-foreground"> vs </span>
                 <span className="text-muted-foreground">{c.baseline.avgRating > 0 ? c.baseline.avgRating.toFixed(2) : "—"}</span>
                 {c.clutch.ratedMatches > 0 && c.baseline.ratedMatches > 0 && (
-                  <span className={`ml-1.5 text-[11px] font-mono ${deltaTone}`}>
-                    {deltaSign}{delta.toFixed(2)}
+                  <span
+                    className={`ml-1.5 text-[11px] font-mono ${deltaTone}`}
+                    title={`Score = rating Δ ${delta >= 0 ? "+" : ""}${delta.toFixed(2)} + 1.5× G+A/game Δ ${c.gaPerGameDelta >= 0 ? "+" : ""}${c.gaPerGameDelta.toFixed(2)}`}
+                  >
+                    {scoreSign}{score.toFixed(2)}
                   </span>
                 )}
               </div>
