@@ -545,8 +545,11 @@ function ClutchFactor({ squad, matches }: { squad: Player[]; matches: Match[] })
                 <span className="text-muted-foreground"> vs </span>
                 <span className="text-muted-foreground">{c.baseline.avgRating > 0 ? c.baseline.avgRating.toFixed(2) : "—"}</span>
                 {c.clutch.ratedMatches > 0 && c.baseline.ratedMatches > 0 && (
-                  <span className={`ml-1.5 text-[11px] font-mono ${deltaTone}`}>
-                    {deltaSign}{delta.toFixed(2)}
+                  <span
+                    className={`ml-1.5 text-[11px] font-mono ${deltaTone}`}
+                    title={`Score = rating Δ ${delta >= 0 ? "+" : ""}${delta.toFixed(2)} + 1.5× G+A/game Δ ${c.gaPerGameDelta >= 0 ? "+" : ""}${c.gaPerGameDelta.toFixed(2)}`}
+                  >
+                    {scoreSign}{score.toFixed(2)}
                   </span>
                 )}
               </div>
