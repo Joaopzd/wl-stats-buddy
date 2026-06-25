@@ -74,7 +74,7 @@ function RankingsPage() {
       players
         .map((p) => clutchAggregate(p, matches))
         .filter((c) => c.clutch.matches >= CLUTCH_MIN_MATCHES && c.clutch.ratedMatches > 0)
-        .sort((a, b) => b.ratingDelta - a.ratingDelta || b.clutch.avgRating - a.clutch.avgRating)
+        .sort((a, b) => b.clutchScore - a.clutchScore || b.ratingDelta - a.ratingDelta || b.clutch.avgRating - a.clutch.avgRating)
         .slice(0, 10),
     [players, matches],
   );
