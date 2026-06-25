@@ -54,15 +54,17 @@ export const CLUTCH_MIN_INDEX = 11;
 export const CLUTCH_MAX_INDEX = 15;
 /** Minimum high-pressure appearances required before a clutch badge is awarded. */
 export const CLUTCH_MIN_MATCHES = 5;
-/** Rating drop (clutch avg vs baseline avg) that earns a Pressure Drop badge. */
+/** Composite clutch score drop (rating + G/A weighted) that earns a Pressure Drop badge. */
 export const CLUTCH_DROP_DELTA = -1.0;
+/** Weight applied to (G+A per game) delta when composing the clutch score. */
+export const CLUTCH_GA_WEIGHT = 1.5;
 
 /** Human-readable tooltip explaining the Clutch King badge rule. */
 export const CLUTCH_KING_TOOLTIP =
-  `Clutch King — Awarded when a player has at least ${CLUTCH_MIN_MATCHES} appearances in the high-pressure stretch (matches ${CLUTCH_MIN_INDEX}–${CLUTCH_MAX_INDEX}) and their average rating in those matches is equal to or higher than their overall baseline.`;
+  `Clutch King — Awarded when a player has at least ${CLUTCH_MIN_MATCHES} appearances in the high-pressure stretch (matches ${CLUTCH_MIN_INDEX}–${CLUTCH_MAX_INDEX}) and their composite clutch score (rating delta + ${CLUTCH_GA_WEIGHT}× G+A/game delta vs baseline) is positive.`;
 /** Human-readable tooltip explaining the Pressure Drop badge rule. */
 export const CLUTCH_DROP_TOOLTIP =
-  `Pressure Drop — Awarded when a player has at least ${CLUTCH_MIN_MATCHES} appearances in the high-pressure stretch (matches ${CLUTCH_MIN_INDEX}–${CLUTCH_MAX_INDEX}) and their average rating drops by ${Math.abs(CLUTCH_DROP_DELTA).toFixed(1)} or more vs their overall baseline.`;
+  `Pressure Drop — Awarded when a player has at least ${CLUTCH_MIN_MATCHES} appearances in matches ${CLUTCH_MIN_INDEX}–${CLUTCH_MAX_INDEX} and their composite clutch score (rating + ${CLUTCH_GA_WEIGHT}× G+A/game vs baseline) drops by ${Math.abs(CLUTCH_DROP_DELTA).toFixed(1)} or more.`;
 
 export function isClutchMatch(m: Match): boolean {
   return m.index >= CLUTCH_MIN_INDEX && m.index <= CLUTCH_MAX_INDEX;
@@ -84,6 +86,10 @@ export interface ClutchAgg {
   clutch: ClutchSplit;
   /** clutch.avgRating - baseline.avgRating; 0 when either side has no rated matches. */
   ratingDelta: number;
+  /** (clutch G+A/game) - (baseline G+A/game); 0 when either side has no matches. */
+  gaPerGameDelta: number;
+  /** Composite ranking score: ratingDelta + CLUTCH_GA_WEIGHT × gaPerGameDelta. */
+  clutchScore: number;
   /** Awarded only when clutch.matches >= CLUTCH_MIN_MATCHES and both sides have a rating. */
   badge: ClutchBadge;
 }
@@ -103,16 +109,21 @@ export function clutchAggregate(player: Player, matches: Match[]): ClutchAgg {
   const clutch = aggregatePlayer(player, matches.filter(isClutchMatch));
   const bothRated = baseline.ratedMatches > 0 && clutch.ratedMatches > 0;
   const ratingDelta = bothRated ? clutch.avgRating - baseline.avgRating : 0;
+  const gaPerGameDelta =
+    baseline.matches > 0 && clutch.matches > 0 ? clutch.gaPerGame - baseline.gaPerGame : 0;
+  const clutchScore = ratingDelta + CLUTCH_GA_WEIGHT * gaPerGameDelta;
   let badge: ClutchBadge = null;
   if (clutch.matches >= CLUTCH_MIN_MATCHES && bothRated) {
-    if (ratingDelta <= CLUTCH_DROP_DELTA) badge = "drop";
-    else if (clutch.avgRating >= baseline.avgRating) badge = "king";
+    if (clutchScore <= CLUTCH_DROP_DELTA) badge = "drop";
+    else if (clutchScore > 0) badge = "king";
   }
   return {
     player,
     baseline: toSplit(baseline),
     clutch: toSplit(clutch),
     ratingDelta,
+    gaPerGameDelta,
+    clutchScore,
     badge,
   };
 }
