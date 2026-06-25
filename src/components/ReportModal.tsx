@@ -501,8 +501,9 @@ function ClutchFactor({ squad, matches }: { squad: Player[]; matches: Match[] })
       <div className="space-y-1.5">
         {rows.map((c) => {
           const delta = c.ratingDelta;
-          const deltaTone = delta >= 0.0001 ? "text-primary" : delta <= -0.0001 ? "text-destructive" : "text-muted-foreground";
-          const deltaSign = delta > 0 ? "+" : "";
+          const score = c.clutchScore;
+          const deltaTone = score >= 0.0001 ? "text-primary" : score <= -0.0001 ? "text-destructive" : "text-muted-foreground";
+          const scoreSign = score > 0 ? "+" : "";
           return (
             <div
               key={c.player.id}
