@@ -191,8 +191,9 @@ function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
               rank === 3 ? "text-amber-700" :
               "text-muted-foreground";
             const delta = c.ratingDelta;
-            const deltaTone = delta >= 0.0001 ? "text-primary" : delta <= -0.0001 ? "text-destructive" : "text-muted-foreground";
-            const sign = delta > 0 ? "+" : "";
+            const score = c.clutchScore;
+            const deltaTone = score >= 0.0001 ? "text-primary" : score <= -0.0001 ? "text-destructive" : "text-muted-foreground";
+            const sign = score > 0 ? "+" : "";
             return (
               <li
                 key={c.player.id}
