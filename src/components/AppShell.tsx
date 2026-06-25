@@ -1,5 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { LayoutDashboard, Trophy, Users, Sparkles, Shield } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { SettingsMenu } from "./SettingsMenu";
 import { AuthButton } from "./AuthButton";
 import logoAsset from "@/assets/pitchside-logo.png.asset.json";
