@@ -15,9 +15,22 @@ const links = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const loc = useLocation();
+  const headerRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const update = () => {
+      document.documentElement.style.setProperty("--app-header-h", `${el.offsetHeight}px`);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    window.addEventListener("resize", update);
+    return () => { ro.disconnect(); window.removeEventListener("resize", update); };
+  }, []);
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-40 border-b border-border/60 backdrop-blur-xl bg-background/70">
+      <header ref={headerRef} className="sticky top-0 z-40 border-b border-border/60 backdrop-blur-xl bg-background/70">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2.5 group">
             <img
