@@ -475,7 +475,7 @@ function ClutchFactor({ squad, matches }: { squad: Player[]; matches: Match[] })
       const aBadged = a.badge ? 1 : 0;
       const bBadged = b.badge ? 1 : 0;
       if (aBadged !== bBadged) return bBadged - aBadged;
-      return b.ratingDelta - a.ratingDelta || b.clutch.avgRating - a.clutch.avgRating;
+      return b.clutchScore - a.clutchScore || b.ratingDelta - a.ratingDelta || b.clutch.avgRating - a.clutch.avgRating;
     });
 
   if (rows.length === 0) return null;
