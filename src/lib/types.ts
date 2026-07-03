@@ -50,6 +50,7 @@ export type Rarity =
   | "Showdown"
   | "FOF: Greats of The Game Icon"
   | "FOF: Greats of The Game Hero"
+  | "FOF: Glory Hunters"
   // Legends
   | "Icon Base"
   | "Hero Base";
