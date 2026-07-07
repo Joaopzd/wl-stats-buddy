@@ -171,6 +171,9 @@ export function MatchDetailModal({
             </div>
           )}
 
+          {/* Match Stats — For vs Against */}
+          <MatchStatsCompare match={match} />
+
           {/* Goals & Assists — collapsible, two separate cards, starts minimized */}
           {(scorers.length > 0 || assisters.length > 0) && (
             <div className="surface-card overflow-hidden">
@@ -309,6 +312,86 @@ function Tag({ children, tone, icon }: { children: React.ReactNode; tone: "warn"
       {icon}
       {children}
     </span>
+  );
+}
+
+function MatchStatsCompare({ match }: { match: Match }) {
+  const rows: {
+    label: string;
+    forVal: number | undefined;
+    againstVal: number | undefined;
+    format: (n: number) => string;
+    higherIsBetter: boolean;
+  }[] = [
+    {
+      label: "Possession",
+      forVal: typeof match.possessionFor === "number" ? match.possessionFor : undefined,
+      againstVal:
+        typeof match.possessionFor === "number" ? 100 - match.possessionFor : undefined,
+      format: (n: number) => `${Math.round(n)}%`,
+      higherIsBetter: true,
+    },
+    {
+      label: "xG",
+      forVal: typeof match.xgFor === "number" ? match.xgFor : undefined,
+      againstVal: typeof match.xgAgainst === "number" ? match.xgAgainst : undefined,
+      format: (n: number) => n.toFixed(2),
+      higherIsBetter: true,
+    },
+    {
+      label: "Passes",
+      forVal: typeof match.passesFor === "number" ? match.passesFor : undefined,
+      againstVal: typeof match.passesAgainst === "number" ? match.passesAgainst : undefined,
+      format: (n: number) => String(Math.round(n)),
+      higherIsBetter: true,
+    },
+    {
+      label: "Shots",
+      forVal: typeof match.shotsFor === "number" ? match.shotsFor : undefined,
+      againstVal: typeof match.shotsAgainst === "number" ? match.shotsAgainst : undefined,
+      format: (n: number) => String(Math.round(n)),
+      higherIsBetter: true,
+    },
+  ].filter((r) => r.forVal !== undefined || r.againstVal !== undefined);
+
+  if (rows.length === 0) return null;
+
+  return (
+    <div className="surface-card p-3">
+      <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-3">
+        Match Stats
+      </div>
+      <div className="space-y-2.5">
+        {rows.map((r) => {
+          const f = r.forVal ?? 0;
+          const a = r.againstVal ?? 0;
+          const total = f + a;
+          const fPct = total > 0 ? (f / total) * 100 : 50;
+          const aPct = total > 0 ? (a / total) * 100 : 50;
+          const fWins = r.forVal !== undefined && r.againstVal !== undefined && (r.higherIsBetter ? f > a : f < a);
+          const aWins = r.forVal !== undefined && r.againstVal !== undefined && (r.higherIsBetter ? a > f : a < f);
+          return (
+            <div key={r.label}>
+              <div className="flex items-center justify-between text-[11px] mb-1">
+                <span className={`font-mono stat-num tabular-nums ${fWins ? "text-primary font-bold" : "text-foreground/80"}`}>
+                  {r.forVal !== undefined ? r.format(r.forVal) : "—"}
+                </span>
+                <span className="uppercase tracking-wider text-muted-foreground font-bold">
+                  {r.label}
+                </span>
+                <span className={`font-mono stat-num tabular-nums ${aWins ? "text-destructive font-bold" : "text-foreground/80"}`}>
+                  {r.againstVal !== undefined ? r.format(r.againstVal) : "—"}
+                </span>
+              </div>
+              <div className="h-1.5 w-full rounded-full bg-background/60 border border-border/60 overflow-hidden flex">
+                <div className="h-full bg-primary transition-all" style={{ width: `${fPct}%` }} />
+                <div className="h-full bg-destructive/70 transition-all" style={{ width: `${aPct}%` }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
