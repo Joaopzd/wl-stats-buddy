@@ -622,6 +622,14 @@ function PossessionXgSection({
             <XgInput label="xG (You)" icon={<Target className="h-3 w-3 text-primary" />} value={xgFor} onChange={setXgFor} accent />
             <XgInput label="xG (Opponent)" icon={<Target className="h-3 w-3 text-muted-foreground" />} value={xgAgainst} onChange={setXgAgainst} />
           </div>
+          <div className="grid grid-cols-2 gap-3 pt-1">
+            <IntInput label="Passes (You)" icon={<Repeat className="h-3 w-3 text-primary" />} value={passesFor} onChange={setPassesFor} accent />
+            <IntInput label="Passes (Opponent)" icon={<Repeat className="h-3 w-3 text-muted-foreground" />} value={passesAgainst} onChange={setPassesAgainst} />
+          </div>
+          <div className="grid grid-cols-2 gap-3 pt-1">
+            <IntInput label="Shots (You)" icon={<Crosshair className="h-3 w-3 text-primary" />} value={shotsFor} onChange={setShotsFor} accent />
+            <IntInput label="Shots (Opponent)" icon={<Crosshair className="h-3 w-3 text-muted-foreground" />} value={shotsAgainst} onChange={setShotsAgainst} />
+          </div>
         </div>
       )}
     </div>
