@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { X, Zap, Flag as FlagIcon, AlertTriangle, ChevronDown, ChevronUp, Activity, Target, WifiOff, Signal } from "lucide-react";
+import { X, Zap, Flag as FlagIcon, AlertTriangle, ChevronDown, ChevronUp, Activity, Target, WifiOff, Signal, Repeat, Crosshair } from "lucide-react";
 import { PositionBadge } from "./PositionBadge";
 import { store } from "@/lib/store";
 import type { Match, MatchPlayerStat, MatchTactic, Platform, PenaltyWinner, Player, WeekendLeague } from "@/lib/types";
@@ -541,7 +541,10 @@ function XgInput({ label, icon, value, onChange, accent }: { label: string; icon
 }
 
 function PossessionXgSection({
-  possessionFor, setPossessionFor, xgFor, setXgFor, xgAgainst, setXgAgainst, defaultOpen,
+  possessionFor, setPossessionFor, xgFor, setXgFor, xgAgainst, setXgAgainst,
+  passesFor, setPassesFor, passesAgainst, setPassesAgainst,
+  shotsFor, setShotsFor, shotsAgainst, setShotsAgainst,
+  defaultOpen,
 }: {
   possessionFor: number;
   setPossessionFor: (v: number) => void;
@@ -549,6 +552,14 @@ function PossessionXgSection({
   setXgFor: (v: number) => void;
   xgAgainst: number;
   setXgAgainst: (v: number) => void;
+  passesFor: number;
+  setPassesFor: (v: number) => void;
+  passesAgainst: number;
+  setPassesAgainst: (v: number) => void;
+  shotsFor: number;
+  setShotsFor: (v: number) => void;
+  shotsAgainst: number;
+  setShotsAgainst: (v: number) => void;
   defaultOpen: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
