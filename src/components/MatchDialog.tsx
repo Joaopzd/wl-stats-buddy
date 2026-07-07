@@ -39,6 +39,10 @@ export function MatchDialog({
   const [possessionFor, setPossessionFor] = useState<number>(existingMatch?.possessionFor ?? 50);
   const [xgFor, setXgFor] = useState<number>(existingMatch?.xgFor ?? 0);
   const [xgAgainst, setXgAgainst] = useState<number>(existingMatch?.xgAgainst ?? 0);
+  const [passesFor, setPassesFor] = useState<number>(existingMatch?.passesFor ?? 0);
+  const [passesAgainst, setPassesAgainst] = useState<number>(existingMatch?.passesAgainst ?? 0);
+  const [shotsFor, setShotsFor] = useState<number>(existingMatch?.shotsFor ?? 0);
+  const [shotsAgainst, setShotsAgainst] = useState<number>(existingMatch?.shotsAgainst ?? 0);
   const [disconnect, setDisconnect] = useState<boolean>(existingMatch?.disconnect ?? false);
   // Minimized by default for a cleaner add-match flow; opens on demand.
   const [detailsOpen, setDetailsOpen] = useState<boolean>(

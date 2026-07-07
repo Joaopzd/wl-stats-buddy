@@ -14,8 +14,8 @@ import { ClubCrest } from "@/components/ClubCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
 import { PlayerCard } from "@/components/PlayerCard";
 import { useClubName } from "@/lib/store";
-import { raritySwatch, raritySwatchStyle, rarityIcon } from "@/lib/format";
-import type { Rarity } from "@/lib/types";
+
+
 
 
 
@@ -76,15 +76,8 @@ function Dashboard() {
   const platformStats = useMemo(() => platformRecords(matches), [matches]);
   const flags = useMemo(() => matchFlagTotals(matches), [matches]);
 
-  // Squad composition: player count per rarity (active roster only).
-  const rarityCounts = useMemo(() => {
-    const counts = new Map<Rarity, number>();
-    for (const p of players) {
-      if (p.isArchived || p.isInDevelopment) continue;
-      counts.set(p.rarity, (counts.get(p.rarity) ?? 0) + 1);
-    }
-    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
-  }, [players]);
+
+
 
   const aggs = useMemo(() => aggregateAllPlayers(players, matches), [players, matches]);
   const mostApps = useMemo(() => [...aggs].filter(a => a.matches > 0).sort((a, b) => b.matches - a.matches)[0], [aggs]);
