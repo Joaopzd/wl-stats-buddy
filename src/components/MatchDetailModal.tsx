@@ -171,6 +171,9 @@ export function MatchDetailModal({
             </div>
           )}
 
+          {/* Match Stats — For vs Against */}
+          <MatchStatsCompare match={match} />
+
           {/* Goals & Assists — collapsible, two separate cards, starts minimized */}
           {(scorers.length > 0 || assisters.length > 0) && (
             <div className="surface-card overflow-hidden">
