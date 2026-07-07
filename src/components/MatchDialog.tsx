@@ -325,7 +325,7 @@ export function MatchDialog({
               )}
             </div>
 
-            {/* Possession & xG — collapsible */}
+            {/* Possession, xG, Passes & Shots — collapsible */}
             <PossessionXgSection
               possessionFor={possessionFor}
               setPossessionFor={setPossessionFor}
@@ -333,7 +333,15 @@ export function MatchDialog({
               setXgFor={setXgFor}
               xgAgainst={xgAgainst}
               setXgAgainst={setXgAgainst}
-              defaultOpen={!!(existingMatch && (existingMatch.possessionFor != null || (existingMatch.xgFor ?? 0) > 0 || (existingMatch.xgAgainst ?? 0) > 0))}
+              passesFor={passesFor}
+              setPassesFor={setPassesFor}
+              passesAgainst={passesAgainst}
+              setPassesAgainst={setPassesAgainst}
+              shotsFor={shotsFor}
+              setShotsFor={setShotsFor}
+              shotsAgainst={shotsAgainst}
+              setShotsAgainst={setShotsAgainst}
+              defaultOpen={!!(existingMatch && (existingMatch.possessionFor != null || (existingMatch.xgFor ?? 0) > 0 || (existingMatch.xgAgainst ?? 0) > 0 || (existingMatch.passesFor ?? 0) > 0 || (existingMatch.passesAgainst ?? 0) > 0 || (existingMatch.shotsFor ?? 0) > 0 || (existingMatch.shotsAgainst ?? 0) > 0))}
             />
 
 
