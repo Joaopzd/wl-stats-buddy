@@ -226,32 +226,6 @@ function Dashboard() {
             </div>
           </div>
 
-          {rarityCounts.length > 0 && (
-            <Collapsible
-              title="Squad by Rarity"
-              icon={<Users className="h-3.5 w-3.5 text-primary" />}
-              meta={`${rarityCounts.reduce((s, [, c]) => s + c, 0)} players · ${rarityCounts.length} rarit${rarityCounts.length === 1 ? "y" : "ies"}`}
-              defaultOpen={true}
-            >
-              <div className="flex flex-wrap gap-2">
-                {rarityCounts.map(([r, count]) => {
-                  const Icon = rarityIcon(r);
-                  const swStyle = raritySwatchStyle(r);
-                  return (
-                    <div key={r} className="inline-flex items-center gap-2 rounded-md border border-border/60 bg-background/40 px-2.5 py-1.5">
-                      <span
-                        className={`h-3 w-3 rounded-full shrink-0 ${swStyle ? "border-2" : raritySwatch(r)}`}
-                        style={swStyle ?? undefined}
-                      />
-                      <Icon className="h-3 w-3 text-muted-foreground shrink-0" />
-                      <span className="text-xs font-medium truncate max-w-[140px]">{r}</span>
-                      <span className="font-display stat-num text-sm text-primary">{count}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </Collapsible>
-          )}
 
           {/* Cumulative Performance — wins/losses/goals/GD all in one hero panel */}
           {(() => {
