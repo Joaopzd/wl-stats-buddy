@@ -328,28 +328,28 @@ function MatchStatsCompare({ match }: { match: Match }) {
       forVal: typeof match.possessionFor === "number" ? match.possessionFor : undefined,
       againstVal:
         typeof match.possessionFor === "number" ? 100 - match.possessionFor : undefined,
-      format: (n) => `${Math.round(n)}%`,
+      format: (n: number) => `${Math.round(n)}%`,
       higherIsBetter: true,
     },
     {
       label: "xG",
       forVal: typeof match.xgFor === "number" ? match.xgFor : undefined,
       againstVal: typeof match.xgAgainst === "number" ? match.xgAgainst : undefined,
-      format: (n) => n.toFixed(2),
+      format: (n: number) => n.toFixed(2),
       higherIsBetter: true,
     },
     {
       label: "Passes",
       forVal: typeof match.passesFor === "number" ? match.passesFor : undefined,
       againstVal: typeof match.passesAgainst === "number" ? match.passesAgainst : undefined,
-      format: (n) => String(Math.round(n)),
+      format: (n: number) => String(Math.round(n)),
       higherIsBetter: true,
     },
     {
       label: "Shots",
       forVal: typeof match.shotsFor === "number" ? match.shotsFor : undefined,
       againstVal: typeof match.shotsAgainst === "number" ? match.shotsAgainst : undefined,
-      format: (n) => String(Math.round(n)),
+      format: (n: number) => String(Math.round(n)),
       higherIsBetter: true,
     },
   ].filter((r) => r.forVal !== undefined || r.againstVal !== undefined);
