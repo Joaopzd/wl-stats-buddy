@@ -645,6 +645,31 @@ const CONNECTION_LABELS = [
   "Smooth",
 ];
 
+function IntInput({ label, icon, value, onChange, accent }: { label: string; icon: React.ReactNode; value: number; onChange: (v: number) => void; accent?: boolean }) {
+  return (
+    <div>
+      <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
+        {icon} {label}
+      </span>
+      <input
+        type="number"
+        inputMode="numeric"
+        min={0}
+        step={1}
+        value={value}
+        onFocus={(e) => e.target.select()}
+        onChange={(e) => {
+          const v = e.target.value;
+          if (v === "") return onChange(0);
+          onChange(Math.max(0, parseInt(v) || 0));
+        }}
+        className={`w-full h-10 bg-input border border-border rounded-md text-center stat-num text-lg font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${accent ? "text-primary" : ""}`}
+      />
+    </div>
+  );
+}
+
+
 function ConnectionBar({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const tone = (v: number) =>
     v <= 1 ? "bg-destructive text-destructive-foreground border-destructive"
