@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { X, Zap, Flag as FlagIcon, AlertTriangle, ChevronDown, ChevronUp, Activity, Target, WifiOff, Signal } from "lucide-react";
+import { X, Zap, Flag as FlagIcon, AlertTriangle, ChevronDown, ChevronUp, Activity, Target, WifiOff, Signal, Repeat, Crosshair } from "lucide-react";
 import { PositionBadge } from "./PositionBadge";
 import { store } from "@/lib/store";
 import type { Match, MatchPlayerStat, MatchTactic, Platform, PenaltyWinner, Player, WeekendLeague } from "@/lib/types";
@@ -39,6 +39,10 @@ export function MatchDialog({
   const [possessionFor, setPossessionFor] = useState<number>(existingMatch?.possessionFor ?? 50);
   const [xgFor, setXgFor] = useState<number>(existingMatch?.xgFor ?? 0);
   const [xgAgainst, setXgAgainst] = useState<number>(existingMatch?.xgAgainst ?? 0);
+  const [passesFor, setPassesFor] = useState<number>(existingMatch?.passesFor ?? 0);
+  const [passesAgainst, setPassesAgainst] = useState<number>(existingMatch?.passesAgainst ?? 0);
+  const [shotsFor, setShotsFor] = useState<number>(existingMatch?.shotsFor ?? 0);
+  const [shotsAgainst, setShotsAgainst] = useState<number>(existingMatch?.shotsAgainst ?? 0);
   const [disconnect, setDisconnect] = useState<boolean>(existingMatch?.disconnect ?? false);
   // Minimized by default for a cleaner add-match flow; opens on demand.
   const [detailsOpen, setDetailsOpen] = useState<boolean>(
@@ -98,6 +102,10 @@ export function MatchDialog({
         possessionFor: undefined as number | undefined,
         xgFor: undefined as number | undefined,
         xgAgainst: undefined as number | undefined,
+        passesFor: undefined as number | undefined,
+        passesAgainst: undefined as number | undefined,
+        shotsFor: undefined as number | undefined,
+        shotsAgainst: undefined as number | undefined,
         disconnect: true,
         connection,
       };
@@ -148,6 +156,10 @@ export function MatchDialog({
       possessionFor: Math.max(0, Math.min(100, Math.round(possessionFor))),
       xgFor: Math.max(0, Math.round(xgFor * 100) / 100),
       xgAgainst: Math.max(0, Math.round(xgAgainst * 100) / 100),
+      passesFor: Math.max(0, Math.round(passesFor)) || undefined,
+      passesAgainst: Math.max(0, Math.round(passesAgainst)) || undefined,
+      shotsFor: Math.max(0, Math.round(shotsFor)) || undefined,
+      shotsAgainst: Math.max(0, Math.round(shotsAgainst)) || undefined,
       disconnect: false,
       connection,
     };
@@ -313,7 +325,7 @@ export function MatchDialog({
               )}
             </div>
 
-            {/* Possession & xG — collapsible */}
+            {/* Possession, xG, Passes & Shots — collapsible */}
             <PossessionXgSection
               possessionFor={possessionFor}
               setPossessionFor={setPossessionFor}
@@ -321,7 +333,15 @@ export function MatchDialog({
               setXgFor={setXgFor}
               xgAgainst={xgAgainst}
               setXgAgainst={setXgAgainst}
-              defaultOpen={!!(existingMatch && (existingMatch.possessionFor != null || (existingMatch.xgFor ?? 0) > 0 || (existingMatch.xgAgainst ?? 0) > 0))}
+              passesFor={passesFor}
+              setPassesFor={setPassesFor}
+              passesAgainst={passesAgainst}
+              setPassesAgainst={setPassesAgainst}
+              shotsFor={shotsFor}
+              setShotsFor={setShotsFor}
+              shotsAgainst={shotsAgainst}
+              setShotsAgainst={setShotsAgainst}
+              defaultOpen={!!(existingMatch && (existingMatch.possessionFor != null || (existingMatch.xgFor ?? 0) > 0 || (existingMatch.xgAgainst ?? 0) > 0 || (existingMatch.passesFor ?? 0) > 0 || (existingMatch.passesAgainst ?? 0) > 0 || (existingMatch.shotsFor ?? 0) > 0 || (existingMatch.shotsAgainst ?? 0) > 0))}
             />
 
 
@@ -521,7 +541,10 @@ function XgInput({ label, icon, value, onChange, accent }: { label: string; icon
 }
 
 function PossessionXgSection({
-  possessionFor, setPossessionFor, xgFor, setXgFor, xgAgainst, setXgAgainst, defaultOpen,
+  possessionFor, setPossessionFor, xgFor, setXgFor, xgAgainst, setXgAgainst,
+  passesFor, setPassesFor, passesAgainst, setPassesAgainst,
+  shotsFor, setShotsFor, shotsAgainst, setShotsAgainst,
+  defaultOpen,
 }: {
   possessionFor: number;
   setPossessionFor: (v: number) => void;
@@ -529,6 +552,14 @@ function PossessionXgSection({
   setXgFor: (v: number) => void;
   xgAgainst: number;
   setXgAgainst: (v: number) => void;
+  passesFor: number;
+  setPassesFor: (v: number) => void;
+  passesAgainst: number;
+  setPassesAgainst: (v: number) => void;
+  shotsFor: number;
+  setShotsFor: (v: number) => void;
+  shotsAgainst: number;
+  setShotsAgainst: (v: number) => void;
   defaultOpen: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -591,6 +622,14 @@ function PossessionXgSection({
             <XgInput label="xG (You)" icon={<Target className="h-3 w-3 text-primary" />} value={xgFor} onChange={setXgFor} accent />
             <XgInput label="xG (Opponent)" icon={<Target className="h-3 w-3 text-muted-foreground" />} value={xgAgainst} onChange={setXgAgainst} />
           </div>
+          <div className="grid grid-cols-2 gap-3 pt-1">
+            <IntInput label="Passes (You)" icon={<Repeat className="h-3 w-3 text-primary" />} value={passesFor} onChange={setPassesFor} accent />
+            <IntInput label="Passes (Opponent)" icon={<Repeat className="h-3 w-3 text-muted-foreground" />} value={passesAgainst} onChange={setPassesAgainst} />
+          </div>
+          <div className="grid grid-cols-2 gap-3 pt-1">
+            <IntInput label="Shots (You)" icon={<Crosshair className="h-3 w-3 text-primary" />} value={shotsFor} onChange={setShotsFor} accent />
+            <IntInput label="Shots (Opponent)" icon={<Crosshair className="h-3 w-3 text-muted-foreground" />} value={shotsAgainst} onChange={setShotsAgainst} />
+          </div>
         </div>
       )}
     </div>
@@ -605,6 +644,31 @@ const CONNECTION_LABELS = [
   "Minor hiccups",
   "Smooth",
 ];
+
+function IntInput({ label, icon, value, onChange, accent }: { label: string; icon: React.ReactNode; value: number; onChange: (v: number) => void; accent?: boolean }) {
+  return (
+    <div>
+      <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1.5">
+        {icon} {label}
+      </span>
+      <input
+        type="number"
+        inputMode="numeric"
+        min={0}
+        step={1}
+        value={value}
+        onFocus={(e) => e.target.select()}
+        onChange={(e) => {
+          const v = e.target.value;
+          if (v === "") return onChange(0);
+          onChange(Math.max(0, parseInt(v) || 0));
+        }}
+        className={`w-full h-10 bg-input border border-border rounded-md text-center stat-num text-lg font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${accent ? "text-primary" : ""}`}
+      />
+    </div>
+  );
+}
+
 
 function ConnectionBar({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const tone = (v: number) =>

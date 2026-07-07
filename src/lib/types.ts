@@ -139,6 +139,14 @@ export interface Match {
   xgFor?: number;
   /** Expected Goals for the opponent. */
   xgAgainst?: number;
+  /** Total passes attempted/completed by the user's team. */
+  passesFor?: number;
+  /** Total passes attempted/completed by the opponent. */
+  passesAgainst?: number;
+  /** Total shots (finalizações) taken by the user's team. */
+  shotsFor?: number;
+  /** Total shots taken by the opponent. */
+  shotsAgainst?: number;
   /** Match ended in a disconnect — auto-loss, no per-player stats counted. */
   disconnect?: boolean;
   /** Match connection quality, 0 (unplayable) → 5 (no delay). Optional for legacy matches. */
