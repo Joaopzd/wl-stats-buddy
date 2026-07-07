@@ -102,6 +102,10 @@ export function MatchDialog({
         possessionFor: undefined as number | undefined,
         xgFor: undefined as number | undefined,
         xgAgainst: undefined as number | undefined,
+        passesFor: undefined as number | undefined,
+        passesAgainst: undefined as number | undefined,
+        shotsFor: undefined as number | undefined,
+        shotsAgainst: undefined as number | undefined,
         disconnect: true,
         connection,
       };
@@ -152,6 +156,10 @@ export function MatchDialog({
       possessionFor: Math.max(0, Math.min(100, Math.round(possessionFor))),
       xgFor: Math.max(0, Math.round(xgFor * 100) / 100),
       xgAgainst: Math.max(0, Math.round(xgAgainst * 100) / 100),
+      passesFor: Math.max(0, Math.round(passesFor)) || undefined,
+      passesAgainst: Math.max(0, Math.round(passesAgainst)) || undefined,
+      shotsFor: Math.max(0, Math.round(shotsFor)) || undefined,
+      shotsAgainst: Math.max(0, Math.round(shotsAgainst)) || undefined,
       disconnect: false,
       connection,
     };
