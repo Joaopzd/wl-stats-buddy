@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Trophy, Flame, Star, TrendingDown, X, LayoutGrid, TrendingUp, Shield, Crown, Zap, ChevronDown, Target, Activity } from "lucide-react";
+import { Trophy, Flame, Star, TrendingDown, X, LayoutGrid, TrendingUp, Shield, Crown, Zap, ChevronDown, Target, Activity, ClipboardEdit } from "lucide-react";
 import { SoccerBall } from "./icons/SoccerBall";
 import { SoccerBoot } from "./icons/SoccerBoot";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
@@ -12,6 +12,8 @@ import { RankBadge } from "@/components/RankBadge";
 import { ClubCrest } from "@/components/ClubCrest";
 import { OpponentCrest } from "@/components/OpponentCrest";
 import { store, useOpponentName } from "@/lib/store";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 /** 0, 0.5, 1.0 … 10.0 — values offered in the Manager Rating dropdown. */
 const MANAGER_RATING_OPTIONS = Array.from({ length: 21 }, (_, i) => i * 0.5);
@@ -262,6 +264,12 @@ export function ReportModal({
             <ClutchFactor squad={squad} matches={matches} />
           </CollapsibleSection>
 
+          <CollapsibleSection title="Player Averages" icon={<Star className="h-3.5 w-3.5 text-primary" />} defaultOpen>
+            <PlayerAveragesGrid aggs={aggs} />
+          </CollapsibleSection>
+
+          <CoachNotes wl={wl} />
+
           <div className="flex gap-3 mt-6">
             <button onClick={onClose} className="flex-1 px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-bold uppercase tracking-wider text-sm hover:opacity-90">
               Close Report
@@ -272,6 +280,83 @@ export function ReportModal({
           </div>
         </div>
       </motion.div>
+    </div>
+  );
+}
+
+/** Free-form tactical notes captured after the WL closes. */
+function CoachNotes({ wl }: { wl: WeekendLeague }) {
+  const [draft, setDraft] = useState(wl.coachNotes ?? "");
+  const [saving, setSaving] = useState(false);
+  const dirty = draft !== (wl.coachNotes ?? "");
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await store.updateWL(wl.id, { coachNotes: draft.trim() || undefined });
+      toast.success("Coach notes saved");
+    } catch {
+      toast.error("Could not save notes");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="mt-4 rounded-lg border border-border bg-secondary/20 overflow-hidden">
+      <div className="px-4 py-3 flex items-center gap-1.5 border-b border-border/40">
+        <ClipboardEdit className="h-3.5 w-3.5 text-primary" />
+        <span className="text-[11px] uppercase tracking-[0.25em] font-bold text-foreground">
+          Coach's Tactical Notes
+        </span>
+      </div>
+      <div className="p-3 space-y-2">
+        <Textarea
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder="What worked, what didn't, formation tweaks, mental notes for next WL..."
+          rows={4}
+          className="text-sm resize-y"
+        />
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={save}
+            disabled={!dirty || saving}
+            className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-[11px] font-bold uppercase tracking-wider hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {saving ? "Saving…" : "Save Notes"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Compact grid of average rating per player across the WL. */
+function PlayerAveragesGrid({ aggs }: { aggs: ReturnType<typeof aggregatePlayer>[] }) {
+  const rows = [...aggs]
+    .filter((a) => a.matches > 0)
+    .sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+  if (!rows.length) return <div className="text-xs text-muted-foreground text-center py-3">No rated appearances.</div>;
+  return (
+    <div className="p-3 grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+      {rows.map((a, i) => {
+        const tone =
+          a.avgRating >= 7.5 ? "text-primary" :
+          a.avgRating >= 6.5 ? "text-foreground" :
+          a.avgRating > 0 ? "text-destructive" : "text-muted-foreground";
+        return (
+          <div key={a.player.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-background/50 border border-border/50">
+            <span className="text-[11px] font-mono text-muted-foreground w-5 text-center">{i + 1}</span>
+            <span className="text-xs font-semibold truncate flex-1">{a.player.name}</span>
+            <span className="text-[11px] text-muted-foreground font-mono">{a.matches}MP</span>
+            <span className={`font-display stat-num text-base w-12 text-right ${tone}`}>
+              {a.avgRating > 0 ? a.avgRating.toFixed(2) : "—"}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
