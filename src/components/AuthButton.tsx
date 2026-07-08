@@ -8,7 +8,7 @@ import { toast } from "sonner";
 const PENDING_KEY = "fc26_pending_anon_migration";
 
 /** Tracks current session and renders sign-in / sign-out control. */
-export function AuthButton() {
+export function AuthButton({ compact = false }: { compact?: boolean }) {
   const [email, setEmail] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [isAnon, setIsAnon] = useState<boolean>(true);
