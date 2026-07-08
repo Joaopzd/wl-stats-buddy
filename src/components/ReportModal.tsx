@@ -391,8 +391,8 @@ function StatBar({
   );
 }
 
-function CollapsibleSection({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
+function CollapsibleSection({ title, icon, children, defaultOpen = false }: { title: string; icon: React.ReactNode; children: React.ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="mt-4 rounded-lg border border-border bg-secondary/20 overflow-hidden">
       <button
