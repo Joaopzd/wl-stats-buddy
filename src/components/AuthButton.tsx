@@ -8,7 +8,7 @@ import { toast } from "sonner";
 const PENDING_KEY = "fc26_pending_anon_migration";
 
 /** Tracks current session and renders sign-in / sign-out control. */
-export function AuthButton() {
+export function AuthButton({ compact = false }: { compact?: boolean }) {
   const [email, setEmail] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [isAnon, setIsAnon] = useState<boolean>(true);
@@ -61,6 +61,20 @@ export function AuthButton() {
   };
 
   if (isAnon) {
+    if (compact) {
+      return (
+        <button
+          type="button"
+          onClick={signIn}
+          disabled={loading}
+          className="h-9 w-9 grid place-items-center rounded-md border border-border/60 text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition disabled:opacity-50"
+          title="Entrar com Google"
+          aria-label="Entrar com Google"
+        >
+          <LogIn className="h-4 w-4" />
+        </button>
+      );
+    }
     return (
       <button
         type="button"
@@ -77,19 +91,21 @@ export function AuthButton() {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className={`flex items-center gap-2 ${compact ? "flex-col" : ""}`}>
+      {!compact && (
+        <Link
+          to="/account"
+          className="hidden sm:flex items-center gap-1.5 text-xs text-foreground hover:text-primary max-w-[180px] truncate font-semibold uppercase tracking-wider"
+          title="Ver conta"
+        >
+          <UserIcon className="h-3.5 w-3.5 shrink-0" />
+          <span className="truncate">{username ?? email ?? "Conta"}</span>
+        </Link>
+      )}
       <Link
         to="/account"
-        className="hidden sm:flex items-center gap-1.5 text-xs text-foreground hover:text-primary max-w-[180px] truncate font-semibold uppercase tracking-wider"
-        title="Ver conta"
-      >
-        <UserIcon className="h-3.5 w-3.5 shrink-0" />
-        <span className="truncate">{username ?? email ?? "Conta"}</span>
-      </Link>
-      <Link
-        to="/account"
-        className="sm:hidden h-9 w-9 grid place-items-center rounded-md border border-border/60 text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition"
-        title="Conta"
+        className={`${compact ? "" : "sm:hidden"} h-9 w-9 grid place-items-center rounded-md border border-border/60 text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition`}
+        title={compact ? (username ?? email ?? "Conta") : "Conta"}
         aria-label="Conta"
       >
         <UserIcon className="h-4 w-4" />

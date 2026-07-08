@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { LayoutDashboard, Trophy, Users, Sparkles, Shield } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SettingsMenu } from "./SettingsMenu";
 import { AuthButton } from "./AuthButton";
 import logoAsset from "@/assets/pitchside-logo.png.asset.json";
@@ -27,6 +27,17 @@ const links = [
   { to: "/rankings", label: "Club Legends", icon: Sparkles },
   { to: "/club", label: "Club", icon: Shield },
 ] as const;
+
+const SIDEBAR_COOKIE_NAME = "sidebar_state";
+
+function readSidebarCookie(): boolean {
+  if (typeof document === "undefined") return true;
+  const match = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${SIDEBAR_COOKIE_NAME}=`));
+  if (!match) return true;
+  return match.split("=")[1] === "true";
+}
 
 function AppSidebar() {
   const loc = useLocation();
@@ -90,9 +101,9 @@ function AppSidebar() {
       </SidebarContent>
       <SidebarFooter className="border-t border-border/60">
         <div
-          className={`flex ${collapsed ? "flex-col" : "flex-row"} items-center gap-2`}
+          className={`flex ${collapsed ? "flex-col items-center" : "flex-row items-center"} gap-2 w-full min-w-0`}
         >
-          <AuthButton />
+          <AuthButton compact={collapsed} />
           <SettingsMenu />
         </div>
       </SidebarFooter>
@@ -102,6 +113,12 @@ function AppSidebar() {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const headerRef = useRef<HTMLElement>(null);
+  const [defaultOpen, setDefaultOpen] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    setDefaultOpen(readSidebarCookie());
+  }, []);
+
   useEffect(() => {
     const el = headerRef.current;
     if (!el) return;
@@ -120,8 +137,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       window.removeEventListener("resize", update);
     };
   }, []);
+
+  // Wait for the cookie read before mounting SidebarProvider so we don't
+  // flash the wrong state and then remount when the value arrives.
+  if (defaultOpen === null) {
+    return null;
+  }
+
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
       <SidebarInset className="min-h-screen flex flex-col">
         <header

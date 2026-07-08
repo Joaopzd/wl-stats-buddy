@@ -184,6 +184,8 @@ export interface WeekendLeague {
   watermarkColor?: string;
   /** Tactical setup (FC IQ style). */
   tactics?: WLTactics;
+  /** Coach's tactical notes captured on the post-WL final report. */
+  coachNotes?: string;
 }
 
 export type BuildUpStyle = "Balance" | "Counter Attack" | "Short Pass";
