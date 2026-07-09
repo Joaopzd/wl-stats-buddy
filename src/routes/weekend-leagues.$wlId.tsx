@@ -20,6 +20,7 @@ import { OpponentCrest } from "@/components/OpponentCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
 import { LeagueWatermark } from "@/components/LeagueWatermark";
 import { CREST_SIZE } from "@/lib/ui";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { FORMATIONS, type FormationSlot } from "@/lib/formations";
 import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Shield, ChevronDown, Sparkles, Flame, Snowflake, TrendingUp, TrendingDown, Activity } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
@@ -319,6 +320,14 @@ function WLDetail() {
         );
       })()}
 
+      <Tabs defaultValue="overview" className="mb-6">
+        <TabsList className="grid grid-cols-3 w-full max-w-2xl">
+          <TabsTrigger value="overview">Campaign Overview</TabsTrigger>
+          <TabsTrigger value="matches">Matches</TabsTrigger>
+          <TabsTrigger value="squad">Squad Analytics</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="mt-6 space-y-6">
       <section className="mb-8">
         {squad.length === 0 ? (
           <>
@@ -446,6 +455,10 @@ function WLDetail() {
 
 
 
+      <LiveCampaignInsights matches={matches} squadAggs={squadAggs} />
+        </TabsContent>
+
+        <TabsContent value="matches" className="mt-6 space-y-6">
       {matches.length > 0 && (
         <TimelineSection
           matches={matches}
@@ -455,9 +468,8 @@ function WLDetail() {
       )}
 
 
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Left column (2/3): Match feed */}
-        <div className="lg:col-span-2 min-w-0">
+      <section>
+        <div className="min-w-0">
           <div className="flex items-baseline justify-between mb-3">
             <h2 className="font-display text-2xl tracking-wider">Matches ({matches.length})</h2>
             <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Tap to edit</span>
@@ -560,12 +572,13 @@ function WLDetail() {
             </div>
           )}
         </div>
-
-        {/* Right column (1/3): Live Campaign Insights */}
-        <aside className="lg:col-span-1 min-w-0">
-          <LiveCampaignInsights matches={matches} squadAggs={squadAggs} />
-        </aside>
       </section>
+        </TabsContent>
+
+        <TabsContent value="squad" className="mt-6">
+          <SquadAnalyticsTable squadAggs={squadAggs} />
+        </TabsContent>
+      </Tabs>
 
       {squadOpen && (
         <SquadDialog
@@ -1509,3 +1522,99 @@ function LiveCampaignInsights({ matches, squadAggs }: { matches: Match[]; squadA
   );
 }
 
+
+type SortKey = "name" | "matches" | "goals" | "assists" | "ga" | "avgRating" | "mvpCount";
+
+function SquadAnalyticsTable({ squadAggs }: { squadAggs: PlayerAgg[] }) {
+  const [sortKey, setSortKey] = useState<SortKey>("avgRating");
+  const [dir, setDir] = useState<"asc" | "desc">("desc");
+
+  const sorted = useMemo(() => {
+    const arr = [...squadAggs];
+    arr.sort((a, b) => {
+      let av: number | string;
+      let bv: number | string;
+      if (sortKey === "name") {
+        av = a.player.name.toLowerCase();
+        bv = b.player.name.toLowerCase();
+      } else {
+        av = a[sortKey] as number;
+        bv = b[sortKey] as number;
+      }
+      if (av < bv) return dir === "asc" ? -1 : 1;
+      if (av > bv) return dir === "asc" ? 1 : -1;
+      return 0;
+    });
+    return arr;
+  }, [squadAggs, sortKey, dir]);
+
+  const toggle = (k: SortKey) => {
+    if (sortKey === k) setDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSortKey(k); setDir(k === "name" ? "asc" : "desc"); }
+  };
+
+  const Th = ({ k, label, align = "left" }: { k: SortKey; label: string; align?: "left" | "right" }) => (
+    <th
+      onClick={() => toggle(k)}
+      className={`px-2 py-2 text-[10px] uppercase tracking-[0.18em] font-bold text-muted-foreground cursor-pointer select-none hover:text-foreground transition ${align === "right" ? "text-right" : "text-left"}`}
+    >
+      {label}{sortKey === k && <span className="ml-1 text-primary">{dir === "asc" ? "▲" : "▼"}</span>}
+    </th>
+  );
+
+  if (squadAggs.length === 0) {
+    return (
+      <div className="surface-card p-8 text-center text-muted-foreground text-sm">
+        No squad players yet.
+      </div>
+    );
+  }
+
+  return (
+    <div className="surface-card overflow-hidden">
+      <div className="px-4 py-3 border-b border-border/60 flex items-center justify-between">
+        <h3 className="font-display text-xl tracking-wider">Squad Analytics</h3>
+        <span className="text-[11px] text-muted-foreground uppercase tracking-wider">Click headers to sort</span>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-secondary/40 border-b border-border/60">
+            <tr>
+              <Th k="name" label="Player" />
+              <th className="px-2 py-2 text-[10px] uppercase tracking-[0.18em] font-bold text-muted-foreground">Pos</th>
+              <Th k="matches" label="MP" align="right" />
+              <Th k="goals" label="G" align="right" />
+              <Th k="assists" label="A" align="right" />
+              <Th k="ga" label="G+A" align="right" />
+              <Th k="avgRating" label="Avg" align="right" />
+              <Th k="mvpCount" label="MVP" align="right" />
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map((a) => (
+              <tr key={a.player.id} className="border-b border-border/40 hover:bg-secondary/30 transition">
+                <td className="px-2 py-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-display text-base stat-num text-foreground w-7 text-center shrink-0 leading-none">{a.player.overall}</span>
+                    <span className="text-sm font-semibold truncate">{a.player.name}</span>
+                  </div>
+                </td>
+                <td className="px-2 py-2">
+                  <PositionBadge position={a.player.position} size="xs" />
+                </td>
+                <td className="px-2 py-2 text-right font-mono">{a.matches}</td>
+                <td className="px-2 py-2 text-right font-mono">{a.goals}</td>
+                <td className="px-2 py-2 text-right font-mono">{a.assists}</td>
+                <td className="px-2 py-2 text-right font-mono font-semibold">{a.ga}</td>
+                <td className="px-2 py-2 text-right font-mono font-semibold">
+                  {a.avgRating > 0 ? a.avgRating.toFixed(2) : "—"}
+                </td>
+                <td className="px-2 py-2 text-right font-mono text-amber-300">{a.mvpCount || "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
