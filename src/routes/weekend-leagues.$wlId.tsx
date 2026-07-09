@@ -20,6 +20,7 @@ import { OpponentCrest } from "@/components/OpponentCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
 import { LeagueWatermark } from "@/components/LeagueWatermark";
 import { CREST_SIZE } from "@/lib/ui";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { FORMATIONS, type FormationSlot } from "@/lib/formations";
 import { ArrowLeft, Plus, Users, Pencil, Trash2, Pencil as PencilIcon, Check, Trophy, X as XIcon, Shield, ChevronDown, Sparkles, Flame, Snowflake, TrendingUp, TrendingDown, Activity } from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
@@ -319,6 +320,14 @@ function WLDetail() {
         );
       })()}
 
+      <Tabs defaultValue="overview" className="mb-6">
+        <TabsList className="grid grid-cols-3 w-full max-w-2xl">
+          <TabsTrigger value="overview">Campaign Overview</TabsTrigger>
+          <TabsTrigger value="matches">Matches</TabsTrigger>
+          <TabsTrigger value="squad">Squad Analytics</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="mt-6 space-y-6">
       <section className="mb-8">
         {squad.length === 0 ? (
           <>
@@ -446,6 +455,10 @@ function WLDetail() {
 
 
 
+      <LiveCampaignInsights matches={matches} squadAggs={squadAggs} />
+        </TabsContent>
+
+        <TabsContent value="matches" className="mt-6 space-y-6">
       {matches.length > 0 && (
         <TimelineSection
           matches={matches}
@@ -455,9 +468,8 @@ function WLDetail() {
       )}
 
 
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Left column (2/3): Match feed */}
-        <div className="lg:col-span-2 min-w-0">
+      <section>
+        <div className="min-w-0">
           <div className="flex items-baseline justify-between mb-3">
             <h2 className="font-display text-2xl tracking-wider">Matches ({matches.length})</h2>
             <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Tap to edit</span>
@@ -560,12 +572,13 @@ function WLDetail() {
             </div>
           )}
         </div>
-
-        {/* Right column (1/3): Live Campaign Insights */}
-        <aside className="lg:col-span-1 min-w-0">
-          <LiveCampaignInsights matches={matches} squadAggs={squadAggs} />
-        </aside>
       </section>
+        </TabsContent>
+
+        <TabsContent value="squad" className="mt-6">
+          <SquadAnalyticsTable squadAggs={squadAggs} />
+        </TabsContent>
+      </Tabs>
 
       {squadOpen && (
         <SquadDialog
