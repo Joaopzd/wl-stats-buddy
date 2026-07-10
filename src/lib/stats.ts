@@ -516,14 +516,21 @@ export interface HistoricLeaders {
 export function historicLeaders(players: Player[], matches: Match[]): HistoricLeaders {
   const aggs = aggregateAllPlayers(players, matches).filter((a) => a.matches > 0);
   const totalMatches = matches.length;
+  // Spec: filter out players with < 50% of matches played.
   const minRatingApps = Math.max(1, Math.ceil(totalMatches * 0.5));
-  const byGoals = [...aggs].sort((a, b) => b.goals - a.goals);
-  const byAssists = [...aggs].sort((a, b) => b.assists - a.assists);
-  const byGA = [...aggs].sort((a, b) => b.ga - a.ga);
-  const byApps = [...aggs].sort((a, b) => b.matches - a.matches);
+  const byGoals = [...aggs].sort((a, b) => b.goals - a.goals || b.ga - a.ga || b.matches - a.matches);
+  const byAssists = [...aggs].sort((a, b) => b.assists - a.assists || b.ga - a.ga || b.matches - a.matches);
+  const byGA = [...aggs].sort((a, b) => b.ga - a.ga || b.goals - a.goals || b.matches - a.matches);
+  const byApps = [...aggs].sort((a, b) => b.matches - a.matches || b.ga - a.ga);
   const topRated = aggs
     .filter((a) => a.matches >= minRatingApps && a.ratedMatches > 0 && a.avgRating > 0)
-    .sort((a, b) => b.avgRating - a.avgRating)
+    .sort(
+      (a, b) =>
+        b.avgRating - a.avgRating ||
+        b.ratedMatches - a.ratedMatches ||
+        b.matches - a.matches ||
+        b.ga - a.ga,
+    )
     .slice(0, 3);
   return {
     topScorer: byGoals[0] ?? null,
@@ -532,5 +539,28 @@ export function historicLeaders(players: Player[], matches: Match[]): HistoricLe
     mostApps: byApps[0] ?? null,
     topRated,
   };
+}
+
+/**
+ * Consecutive WL absences counted from the newest WL backwards.
+ * A player is considered "absent" from a WL if they have zero match
+ * performances in it. Players created after a WL are exempt (loop stops).
+ */
+export function consecutiveWLAbsence(
+  player: Player,
+  wls: WeekendLeague[],
+  matches: Match[],
+): number {
+  const sorted = [...wls].sort((a, b) => b.number - a.number);
+  let absent = 0;
+  for (const wl of sorted) {
+    if (player.createdAt > wl.createdAt) break;
+    const played = matches.some(
+      (m) => m.wlId === wl.id && m.performances.some((p) => p.playerId === player.id),
+    );
+    if (played) break;
+    absent += 1;
+  }
+  return absent;
 }
 
