@@ -139,11 +139,17 @@ function SettingsPage() {
           </ul>
         </section>
 
-        {/* Active Club Profile */}
+        {/* Club & Opponents — grouped identity management */}
         <section className="surface-card p-5">
           <h2 className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-4">
-            Active Club Profile
+            Club &amp; Opponents
           </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Active Club Profile */}
+            <div className="md:pr-6 md:border-r md:border-border/60">
+              <h3 className="text-[11px] uppercase tracking-[0.25em] text-primary font-bold mb-4">
+                Active Club Profile
+              </h3>
 
           <label className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
             Club Name
