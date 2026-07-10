@@ -210,7 +210,7 @@ function Dashboard() {
             <h3 className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
               <Star className="h-3.5 w-3.5 text-primary" /> Top 3 · Highest Avg Rating
             </h3>
-            <span className="text-[10px] text-muted-foreground">Min. 50% of career matches</span>
+            <TopRatedInfo totalMatches={matches.length} />
           </div>
           {leaders.topRated.length === 0 ? (
             <div className="surface-card p-5 text-sm text-muted-foreground text-center">
