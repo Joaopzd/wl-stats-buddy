@@ -680,7 +680,7 @@ function ClubLegends({
             id: a.player.id,
             name: a.player.name,
             value: a.matches,
-            sub: `${a.wins}W · ${a.losses}L`,
+            sub: `${a.wins}W · ${a.matches - a.wins}L`,
           }))}
         />
         <LegendBoard
