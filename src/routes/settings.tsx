@@ -234,13 +234,13 @@ function SettingsPage() {
           <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
             ⓘ Editar aqui cria automaticamente um novo perfil para próximas WLs. WLs antigas mantêm o perfil original (visível na aba Club).
           </p>
-        </section>
+            </div>
 
-        {/* Opponent Configuration */}
-        <section className="surface-card p-5 lg:col-span-2">
-          <h2 className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-4">
-            Opponent Configuration
-          </h2>
+            {/* Opponent Configuration */}
+            <div>
+              <h3 className="text-[11px] uppercase tracking-[0.25em] text-primary font-bold mb-4">
+                Opponent Configuration
+              </h3>
 
           <div className="grid sm:grid-cols-2 gap-6">
             <div>
