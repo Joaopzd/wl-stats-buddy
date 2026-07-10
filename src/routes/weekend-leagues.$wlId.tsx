@@ -458,7 +458,7 @@ function WLDetail() {
       <LiveCampaignInsights matches={matches} squadAggs={squadAggs} />
         </TabsContent>
 
-        <TabsContent value="matches" className="mt-6 space-y-6">
+        <TabsContent value="matches" className="mt-4 space-y-4">
       {matches.length > 0 && (
         <TimelineSection
           matches={matches}
@@ -470,8 +470,8 @@ function WLDetail() {
 
       <section>
         <div className="min-w-0">
-          <div className="flex items-baseline justify-between mb-3">
-            <h2 className="font-display text-2xl tracking-wider">Matches ({matches.length})</h2>
+          <div className="flex items-baseline justify-between mb-2">
+            <h2 className="font-display text-xl tracking-wider">Matches ({matches.length})</h2>
             <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Tap to edit</span>
           </div>
           {matches.length === 0 ? (
@@ -479,7 +479,7 @@ function WLDetail() {
               No matches yet.
             </div>
           ) : (
-            <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-2 max-h-[65vh] overflow-y-auto pr-1 scroll-accent">
               {matches.map((m) => {
                 const win = matchIsWin(m);
                 const totalG = m.performances.reduce((s, p) => s + (p.goals || 0), 0);
