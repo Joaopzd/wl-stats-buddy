@@ -70,26 +70,45 @@ function score(a: PlayerAgg): number {
   return a.avgRating * 1.0 + a.gaPerGame * 0.5;
 }
 
+/** Positions the player is eligible for by their primary + secondary roles. */
+function playerEligiblePositions(p: Player): Set<Position> {
+  const s = new Set<Position>();
+  s.add(p.position);
+  for (const sec of p.secondaryPositions ?? []) s.add(sec);
+  return s;
+}
+
 function pickBestXI(
   formation: Formation,
   aggs: PlayerAgg[],
   positionsPlayed: Map<string, Set<string>>,
+  opts: { mode: BestXIMode; minMatches: number },
 ): SelectionResult {
-  const eligible = aggs.filter((a) => a.matches >= MIN_MATCHES);
+  const eligible = aggs.filter((a) => a.matches >= opts.minMatches);
   const used = new Set<string>();
   const starting: SelectionResult["starting"] = [];
+
+  const eligibleForSlot = (a: PlayerAgg, slotPos: Position): boolean => {
+    if (opts.mode === "bestWL") {
+      const played = positionsPlayed.get(a.player.id);
+      if (!played || played.size === 0) return positionFits(a.player.position, slotPos);
+      return played.has(slotPos);
+    }
+    // topRated / formation: use primary + secondary positions with positionFits fallback.
+    const roles = playerEligiblePositions(a.player);
+    if (roles.has(slotPos)) return true;
+    return positionFits(a.player.position, slotPos);
+  };
 
   for (const slot of formation.slots) {
     const candidates = eligible
       .filter((a) => !used.has(a.player.id))
-      .filter((a) => {
-        const played = positionsPlayed.get(a.player.id);
-        if (!played || played.size === 0) {
-          return positionFits(a.player.position, slot.position);
-        }
-        return played.has(slot.position);
-      })
+      .filter((a) => eligibleForSlot(a, slot.position))
       .sort((a, b) => {
+        // In topRated/formation modes, prioritise raw avg rating.
+        if (opts.mode !== "bestWL") {
+          if (b.avgRating !== a.avgRating) return b.avgRating - a.avgRating;
+        }
         const sa = score(a);
         const sb = score(b);
         if (sb !== sa) return sb - sa;
@@ -114,6 +133,30 @@ function pickBestXI(
     .slice(0, 7);
 
   return { starting, bench };
+}
+
+/** Formation & starters snapshot from the highest-wins WL. */
+function bestWLSnapshot(
+  wls: WeekendLeague[],
+  matches: Match[],
+): { formation: FormationName; startersByPos: Map<string, string> } | null {
+  let best: WeekendLeague | null = null;
+  let bestWins = -1;
+  for (const wl of wls) {
+    const r = wlRecord(wl, matches);
+    if (r.wins > bestWins) {
+      bestWins = r.wins;
+      best = wl;
+    }
+  }
+  if (!best || !best.formation) return null;
+  const map = new Map<string, string>();
+  if (best.startingAssignments) {
+    for (const [slotId, pid] of Object.entries(best.startingAssignments)) {
+      if (pid) map.set(slotId, pid as string);
+    }
+  }
+  return { formation: best.formation, startersByPos: map };
 }
 
 /** Disc filled with the player's rarity palette. */
