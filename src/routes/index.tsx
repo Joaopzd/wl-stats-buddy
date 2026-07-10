@@ -6,8 +6,6 @@ import {
   aggregateAllTime,
   historicLeaders,
   platformRecords,
-  rankFromWins,
-  wlLabel as _unused,
 } from "@/lib/stats";
 import { wlLabel } from "@/lib/types";
 import {
