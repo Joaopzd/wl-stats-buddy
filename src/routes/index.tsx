@@ -206,22 +206,7 @@ function Dashboard() {
             <LeaderPodium label="Most Apps" agg={leaders.mostApps} metric={(a) => `${a.matches}`} sub="appearances" icon={<Trophy className="h-3.5 w-3.5 text-primary" />} />
           </div>
 
-          <div className="mb-2 flex items-baseline justify-between">
-            <h3 className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
-              <Star className="h-3.5 w-3.5 text-primary" /> Top 3 · Highest Avg Rating
-            </h3>
-          </div>
-          {leaders.topRated.length === 0 ? (
-            <div className="surface-card p-5 text-sm text-muted-foreground text-center">
-              Not enough rated appearances yet.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {leaders.topRated.map((a, i) => (
-                <RatedPodium key={a.player.id} agg={a} rank={i + 1} />
-              ))}
-            </div>
-          )}
+          <TopRatedBoard rows={leaders.topRated} />
           <TopRatedDetailsPanel totalMatches={matches.length} />
         </>
       )}
