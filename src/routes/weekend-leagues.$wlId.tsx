@@ -322,12 +322,12 @@ function WLDetail() {
 
       <Tabs defaultValue="overview" className="mb-6">
         <TabsList className="grid grid-cols-3 w-full max-w-2xl">
-          <TabsTrigger value="overview">Campaign Overview</TabsTrigger>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="matches">Matches</TabsTrigger>
-          <TabsTrigger value="squad">Squad Analytics</TabsTrigger>
+          <TabsTrigger value="squad">Squad</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="mt-6 space-y-6">
+        <TabsContent value="overview" className="mt-4 space-y-4">
       <section className="mb-8">
         {squad.length === 0 ? (
           <>
