@@ -242,8 +242,6 @@ function SettingsPage() {
                 Opponent Configuration
               </h3>
 
-          <div className="grid sm:grid-cols-2 gap-6">
-            <div>
               <label className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
                 Opponent Name
               </label>
@@ -256,78 +254,79 @@ function SettingsPage() {
                 onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
                 className="w-full h-10 px-3 rounded-md bg-input border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
-            </div>
 
-            <div className="flex items-center gap-4">
-              {crestPreview ? (
-                <div className="relative">
-                  <div className="inline-grid place-items-center rounded-full overflow-hidden bg-background/60 border border-primary/70 shrink-0" style={{ width: 56, height: 56 }}>
-                    <img src={crestPreview} alt="Opponent crest preview" className="h-14 w-14 object-contain" draggable={false} />
+              <div className="mt-4 flex items-center gap-4">
+                {crestPreview ? (
+                  <div className="relative">
+                    <div className="inline-grid place-items-center rounded-full overflow-hidden bg-background/60 border border-primary/70 shrink-0" style={{ width: 56, height: 56 }}>
+                      <img src={crestPreview} alt="Opponent crest preview" className="h-14 w-14 object-contain" draggable={false} />
+                    </div>
+                    <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-primary ring-2 ring-background" aria-hidden />
                   </div>
-                  <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-primary ring-2 ring-background" aria-hidden />
-                </div>
-              ) : (
-                <OpponentCrest size={56} />
-              )}
-              <div className="min-w-0 flex-1">
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-                  Opponent Crest
-                </div>
-                <div className="text-[11px] text-muted-foreground truncate">
-                  {crestPreview ? "Preview ready — confirm to save" : opponentCrest ? "Custom crest in use" : "Using default crest"}
-                </div>
-                <div className="mt-2 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => fileRef.current?.click()}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-primary text-primary-foreground text-[11px] font-bold uppercase tracking-wider hover:opacity-90"
-                  >
-                    <Upload className="h-3 w-3" /> {opponentCrest ? "Replace" : "Upload"}
-                  </button>
-                  {crestPreview && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={saveCrestPreview}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded border border-primary text-primary text-[11px] font-bold uppercase tracking-wider hover:bg-primary/10"
-                      >
-                        Save
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setCrestPreview(null)}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded border border-border text-muted-foreground text-[11px] font-bold uppercase tracking-wider hover:text-foreground"
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  )}
-                  {opponentCrest && !crestPreview && (
+                ) : (
+                  <OpponentCrest size={56} />
+                )}
+                <div className="min-w-0 flex-1">
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                    Opponent Crest
+                  </div>
+                  <div className="text-[11px] text-muted-foreground truncate">
+                    {crestPreview ? "Preview ready — confirm to save" : opponentCrest ? "Custom crest in use" : "Using default crest"}
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-2">
                     <button
                       type="button"
-                      onClick={async () => { await store.setOpponentCrest(null); toast.success("Crest reset"); }}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded border border-border text-muted-foreground text-[11px] font-bold uppercase tracking-wider hover:text-destructive"
+                      onClick={() => fileRef.current?.click()}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-primary text-primary-foreground text-[11px] font-bold uppercase tracking-wider hover:opacity-90"
                     >
-                      <Trash2 className="h-3 w-3" /> Reset
+                      <Upload className="h-3 w-3" /> {opponentCrest ? "Replace" : "Upload"}
                     </button>
-                  )}
+                    {crestPreview && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={saveCrestPreview}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded border border-primary text-primary text-[11px] font-bold uppercase tracking-wider hover:bg-primary/10"
+                        >
+                          Save
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCrestPreview(null)}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded border border-border text-muted-foreground text-[11px] font-bold uppercase tracking-wider hover:text-foreground"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    )}
+                    {opponentCrest && !crestPreview && (
+                      <button
+                        type="button"
+                        onClick={async () => { await store.setOpponentCrest(null); toast.success("Crest reset"); }}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded border border-border text-muted-foreground text-[11px] font-bold uppercase tracking-wider hover:text-destructive"
+                      >
+                        <Trash2 className="h-3 w-3" /> Reset
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) onPickFile(f);
+                  e.target.value = "";
+                }}
+              />
             </div>
           </div>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) onPickFile(f);
-              e.target.value = "";
-            }}
-          />
         </section>
       </div>
     </AppShell>
   );
 }
+
