@@ -463,3 +463,74 @@ export function rankBadgeClasses(rank: WLRank): string {
       return "rank-badge rank-badge--unranked bg-secondary text-muted-foreground border-border";
   }
 }
+
+// ============ All-time / dashboard helpers ============
+
+export interface AllTimeSummary {
+  wins: number;
+  losses: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  goalDiff: number;
+  winRate: number;
+  bestResult: { wl: WeekendLeague; wins: number } | null;
+  bestRank: WLRank;
+  currentRank: WLRank;
+}
+
+export function aggregateAllTime(wls: WeekendLeague[], matches: Match[]): AllTimeSummary {
+  let wins = 0, losses = 0, gf = 0, ga = 0;
+  for (const m of matches) {
+    gf += m.scoreFor; ga += m.scoreAgainst;
+    if (matchIsWin(m)) wins += 1; else losses += 1;
+  }
+  let best: { wl: WeekendLeague; wins: number } | null = null;
+  for (const wl of wls) {
+    const r = wlRecord(wl, matches);
+    if (!best || r.wins > best.wins) best = { wl, wins: r.wins };
+  }
+  const sorted = [...wls].sort((a, b) => b.number - a.number);
+  const last = sorted[0];
+  const played = wins + losses;
+  return {
+    wins,
+    losses,
+    goalsFor: gf,
+    goalsAgainst: ga,
+    goalDiff: gf - ga,
+    winRate: played ? wins / played : 0,
+    bestResult: best,
+    bestRank: best ? rankFromWins(best.wins) : "Unranked",
+    currentRank: last ? rankFromWins(wlRecord(last, matches).wins) : "Unranked",
+  };
+}
+
+export interface HistoricLeaders {
+  topScorer: PlayerAgg | null;
+  topAssister: PlayerAgg | null;
+  topContrib: PlayerAgg | null;
+  mostApps: PlayerAgg | null;
+  topRated: PlayerAgg[];
+}
+
+export function historicLeaders(players: Player[], matches: Match[]): HistoricLeaders {
+  const aggs = aggregateAllPlayers(players, matches).filter((a) => a.matches > 0);
+  const totalMatches = matches.length;
+  const minRatingApps = Math.max(1, Math.ceil(totalMatches * 0.5));
+  const byGoals = [...aggs].sort((a, b) => b.goals - a.goals);
+  const byAssists = [...aggs].sort((a, b) => b.assists - a.assists);
+  const byGA = [...aggs].sort((a, b) => b.ga - a.ga);
+  const byApps = [...aggs].sort((a, b) => b.matches - a.matches);
+  const topRated = aggs
+    .filter((a) => a.matches >= minRatingApps && a.ratedMatches > 0 && a.avgRating > 0)
+    .sort((a, b) => b.avgRating - a.avgRating)
+    .slice(0, 3);
+  return {
+    topScorer: byGoals[0] ?? null,
+    topAssister: byAssists[0] ?? null,
+    topContrib: byGA[0] ?? null,
+    mostApps: byApps[0] ?? null,
+    topRated,
+  };
+}
+

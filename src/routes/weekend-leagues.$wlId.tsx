@@ -162,10 +162,10 @@ function WLDetail() {
         }
 
         return (
-          <div className="surface-glow overflow-hidden mb-6 relative">
-            <LeagueWatermark title={label} markId={wl.watermarkId} color={wl.watermarkColor} size={180} />
+          <div className="surface-glow overflow-hidden mb-4 relative">
+            <LeagueWatermark title={label} markId={wl.watermarkId} color={wl.watermarkColor} size={140} />
             {/* Top: identity + record */}
-            <div className="relative z-10 px-5 sm:px-7 pt-5 pb-4 flex items-start justify-between gap-5">
+            <div className="relative z-10 px-4 sm:px-5 pt-4 pb-3 flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
                 <div className="text-[11px] uppercase tracking-[0.3em] text-primary font-bold mb-2 flex items-center gap-2">
                   <ClubCrest size={20} overrideUrl={wl.clubCrestUrl} />
@@ -211,14 +211,14 @@ function WLDetail() {
                   <Trophy className="h-3 w-3 text-primary" /> Record
                 </div>
                 <div className="flex items-baseline gap-1.5 justify-end leading-none">
-                  <span className="font-display text-5xl sm:text-6xl stat-num text-primary inline-flex items-baseline gap-1">
+                  <span className="font-display text-4xl sm:text-5xl stat-num text-primary inline-flex items-baseline gap-1">
                     {wins}
                     {streak >= 2 && (
                       <WinStreakFire streak={streak} />
                     )}
                   </span>
-                  <span className="font-display text-3xl text-muted-foreground/40">–</span>
-                  <span className="font-display text-5xl sm:text-6xl stat-num text-destructive/90 inline-flex items-baseline gap-1">
+                  <span className="font-display text-2xl text-muted-foreground/40">–</span>
+                  <span className="font-display text-4xl sm:text-5xl stat-num text-destructive/90 inline-flex items-baseline gap-1">
                     {record?.losses ?? 0}
                     {lossStreak >= 2 && <LossStreakIce streak={lossStreak} />}
                   </span>
@@ -322,12 +322,12 @@ function WLDetail() {
 
       <Tabs defaultValue="overview" className="mb-6">
         <TabsList className="grid grid-cols-3 w-full max-w-2xl">
-          <TabsTrigger value="overview">Campaign Overview</TabsTrigger>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="matches">Matches</TabsTrigger>
-          <TabsTrigger value="squad">Squad Analytics</TabsTrigger>
+          <TabsTrigger value="squad">Squad</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="mt-6 space-y-6">
+        <TabsContent value="overview" className="mt-4 space-y-4">
       <section className="mb-8">
         {squad.length === 0 ? (
           <>
@@ -458,7 +458,7 @@ function WLDetail() {
       <LiveCampaignInsights matches={matches} squadAggs={squadAggs} />
         </TabsContent>
 
-        <TabsContent value="matches" className="mt-6 space-y-6">
+        <TabsContent value="matches" className="mt-4 space-y-4">
       {matches.length > 0 && (
         <TimelineSection
           matches={matches}
@@ -470,8 +470,8 @@ function WLDetail() {
 
       <section>
         <div className="min-w-0">
-          <div className="flex items-baseline justify-between mb-3">
-            <h2 className="font-display text-2xl tracking-wider">Matches ({matches.length})</h2>
+          <div className="flex items-baseline justify-between mb-2">
+            <h2 className="font-display text-xl tracking-wider">Matches ({matches.length})</h2>
             <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Tap to edit</span>
           </div>
           {matches.length === 0 ? (
@@ -479,7 +479,7 @@ function WLDetail() {
               No matches yet.
             </div>
           ) : (
-            <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-2 max-h-[65vh] overflow-y-auto pr-1 scroll-accent">
               {matches.map((m) => {
                 const win = matchIsWin(m);
                 const totalG = m.performances.reduce((s, p) => s + (p.goals || 0), 0);
@@ -575,8 +575,10 @@ function WLDetail() {
       </section>
         </TabsContent>
 
-        <TabsContent value="squad" className="mt-6">
-          <SquadAnalyticsTable squadAggs={squadAggs} />
+        <TabsContent value="squad" className="mt-4">
+          <div className="max-h-[70vh] overflow-y-auto pr-1 scroll-accent">
+            <SquadAnalyticsTable squadAggs={squadAggs} />
+          </div>
         </TabsContent>
       </Tabs>
 
