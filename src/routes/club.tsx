@@ -643,7 +643,7 @@ function MiniStat({ label, value, tone }: { label: string; value: number | strin
   );
 }
 
-// ---------- Club Legends (fluid, high-contrast) ----------
+// ---------- Club Legends (fluid, aligned) ----------
 function ClubLegends({
   players,
   matches,
@@ -654,7 +654,9 @@ function ClubLegends({
   const boards = useMemo(() => {
     const aggs = players.map((p) => aggregatePlayer(p, matches)).filter((a) => a.matches > 0);
     const top = (key: "matches" | "goals" | "assists") =>
-      [...aggs].sort((a, b) => (b[key] as number) - (a[key] as number) || b.matches - a.matches).slice(0, 5);
+      [...aggs]
+        .sort((a, b) => (b[key] as number) - (a[key] as number) || b.matches - a.matches)
+        .slice(0, 5);
     return { apps: top("matches"), goals: top("goals"), assists: top("assists") };
   }, [players, matches]);
 
@@ -665,49 +667,139 @@ function ClubLegends({
       <h2 className="font-display text-2xl tracking-wider mb-1 flex items-center gap-2">
         <Trophy className="h-5 w-5 text-primary" /> Club Legends
       </h2>
-      <p className="text-xs text-muted-foreground mb-4">All-time leaderboards for the loyalists, the scorers and the creators.</p>
+      <p className="text-xs text-muted-foreground mb-4">
+        All-time leaderboards for the loyalists, the scorers and the creators.
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <LegendBoard title="Appearances" accent="primary" icon={<Users className="h-4 w-4" />} rows={boards.apps.map((a) => ({ id: a.player.id, name: a.player.name, value: a.matches, sub: `${a.wins}W` }))} />
-        <LegendBoard title="Goals" accent="accent" icon={<SoccerBall size={16} />} rows={boards.goals.map((a) => ({ id: a.player.id, name: a.player.name, value: a.goals, sub: `${a.matches} MP` }))} />
-        <LegendBoard title="Assists" accent="amber" icon={<SoccerBoot size={16} />} rows={boards.assists.map((a) => ({ id: a.player.id, name: a.player.name, value: a.assists, sub: `${a.matches} MP` }))} />
+        <LegendBoard
+          title="Appearances"
+          unit="apps"
+          accent="primary"
+          icon={<Users className="h-4 w-4" />}
+          rows={boards.apps.map((a) => ({
+            id: a.player.id,
+            name: a.player.name,
+            value: a.matches,
+            sub: `${a.wins}W · ${a.losses}L`,
+          }))}
+        />
+        <LegendBoard
+          title="Goals"
+          unit="goals"
+          accent="accent"
+          icon={<SoccerBall size={16} />}
+          rows={boards.goals.map((a) => ({
+            id: a.player.id,
+            name: a.player.name,
+            value: a.goals,
+            sub: `${a.matches} apps`,
+          }))}
+        />
+        <LegendBoard
+          title="Assists"
+          unit="assists"
+          accent="amber"
+          icon={<SoccerBoot size={16} />}
+          rows={boards.assists.map((a) => ({
+            id: a.player.id,
+            name: a.player.name,
+            value: a.assists,
+            sub: `${a.matches} apps`,
+          }))}
+        />
       </div>
     </section>
   );
 }
 
-interface LegendRow { id: string; name: string; value: number; sub: string }
+interface LegendRow {
+  id: string;
+  name: string;
+  value: number;
+  sub: string;
+}
 
-function LegendBoard({ title, icon, rows, accent }: { title: string; icon: React.ReactNode; rows: LegendRow[]; accent: "primary" | "accent" | "amber" }) {
-  const border = accent === "primary" ? "border-l-primary" : accent === "accent" ? "border-l-accent" : "border-l-amber-400";
-  const heroColor = accent === "primary" ? "text-primary" : accent === "accent" ? "text-accent" : "text-amber-300";
-  const bar = accent === "primary" ? "bg-primary" : accent === "accent" ? "bg-accent" : "bg-amber-400";
+function LegendBoard({
+  title,
+  unit,
+  icon,
+  rows,
+  accent,
+}: {
+  title: string;
+  unit: string;
+  icon: React.ReactNode;
+  rows: LegendRow[];
+  accent: "primary" | "accent" | "amber";
+}) {
+  const heroColor =
+    accent === "primary" ? "text-primary" : accent === "accent" ? "text-accent" : "text-amber-300";
+  const bar =
+    accent === "primary" ? "bg-primary" : accent === "accent" ? "bg-accent" : "bg-amber-400";
+  const border =
+    accent === "primary"
+      ? "border-t-primary/70"
+      : accent === "accent"
+        ? "border-t-accent/70"
+        : "border-t-amber-400/70";
   const max = rows.reduce((m, r) => Math.max(m, r.value), 0) || 1;
   const hero = rows[0];
+  const rest = rows.slice(1);
   return (
-    <div className={`surface-card p-4 border-l-4 ${border}`}>
+    <div className={`surface-card border-t-2 ${border} p-4 flex flex-col`}>
       <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
-        {icon} {title}
+        <span className={heroColor}>{icon}</span> {title}
       </div>
+
+      {/* Hero */}
       {hero && (
-        <div className="mt-2 flex items-baseline gap-2">
-          <span className={`font-display stat-num text-4xl leading-none ${heroColor}`}>{hero.value}</span>
-          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">by</span>
-          <span className="font-display text-base truncate">{hero.name}</span>
+        <div className="mt-3 pb-3 border-b border-border/50">
+          <div className="flex items-baseline gap-2 min-w-0">
+            <span className={`font-display stat-num text-4xl leading-none ${heroColor} shrink-0`}>
+              {hero.value}
+            </span>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">
+              {unit}
+            </span>
+          </div>
+          <div className="mt-1.5 flex items-center gap-2 min-w-0">
+            <span className={`text-[10px] font-mono font-bold ${heroColor} shrink-0`}>#1</span>
+            <span className="font-display text-sm truncate flex-1 min-w-0">{hero.name}</span>
+            <span className="text-[10px] text-muted-foreground font-mono shrink-0">{hero.sub}</span>
+          </div>
         </div>
       )}
-      <ol className="mt-3 space-y-1.5">
-        {rows.map((r, i) => (
-          <li key={r.id} className="flex items-center gap-2 text-xs">
-            <span className={`w-4 text-center font-mono font-bold ${i === 0 ? heroColor : "text-muted-foreground"}`}>#{i + 1}</span>
-            <span className="font-semibold truncate flex-1">{r.name}</span>
-            <span className="text-[10px] text-muted-foreground font-mono shrink-0">{r.sub}</span>
-            <div className="w-16 h-1.5 bg-secondary/60 rounded overflow-hidden shrink-0">
-              <div className={`h-full ${bar}`} style={{ width: `${(r.value / max) * 100}%` }} />
-            </div>
-            <span className="font-mono stat-num text-sm w-8 text-right shrink-0">{r.value}</span>
+
+      {/* Rest */}
+      <ol className="mt-3 space-y-2 flex-1">
+        {rest.map((r, i) => {
+          const pct = (r.value / max) * 100;
+          const rank = i + 2;
+          return (
+            <li key={r.id} className="flex flex-col gap-1">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="w-5 text-center font-mono font-bold text-muted-foreground text-[11px] shrink-0">
+                  #{rank}
+                </span>
+                <span className="font-semibold text-sm truncate flex-1 min-w-0">{r.name}</span>
+                <span className="font-mono stat-num text-sm shrink-0 tabular-nums">{r.value}</span>
+              </div>
+              <div className="flex items-center gap-2 pl-7">
+                <div className="h-1 flex-1 bg-secondary/60 rounded overflow-hidden">
+                  <div className={`h-full ${bar} opacity-70`} style={{ width: `${pct}%` }} />
+                </div>
+                <span className="text-[10px] text-muted-foreground font-mono shrink-0">{r.sub}</span>
+              </div>
+            </li>
+          );
+        })}
+        {rest.length === 0 && (
+          <li className="text-[11px] text-muted-foreground text-center py-2">
+            Only one qualifying player yet.
           </li>
-        ))}
+        )}
       </ol>
     </div>
   );
 }
+
