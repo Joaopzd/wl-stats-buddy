@@ -98,7 +98,7 @@ function SettingsPage() {
     <AppShell>
       <h1 className="font-display text-3xl tracking-wider mb-6">Settings</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="space-y-6">
         {/* Theme Palette */}
         <section className="surface-card p-5">
           <h2 className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-4">
