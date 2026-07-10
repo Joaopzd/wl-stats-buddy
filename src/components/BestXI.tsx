@@ -329,7 +329,7 @@ export function BestXI({
           <div>
             <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold mb-2 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <Trophy className="h-3.5 w-3.5 text-primary" /> Starting XI · {formationName}
+                <Trophy className="h-3.5 w-3.5 text-primary" /> Starting XI · {activeFormationName}
               </span>
               <span>{filledCount}/11</span>
             </div>
