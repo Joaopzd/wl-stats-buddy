@@ -713,15 +713,18 @@ function ClubLegends({
 
   return (
     <section className="mt-10">
-      <div className="mb-3 flex items-baseline justify-between gap-3">
+      <div className="mb-4 pb-3 border-b border-border/60 flex items-baseline justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-primary" /> Club Legends
+          <div className="text-[10px] uppercase tracking-[0.35em] text-primary font-bold flex items-center gap-1.5">
+            <Trophy className="h-3.5 w-3.5" /> Club Legends
+          </div>
+          <h2 className="font-display text-xl sm:text-2xl tracking-wider mt-1">
+            All-Time Leaderboards
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            All-time leaderboards — loyalists, scorers and creators.
-          </p>
         </div>
+        <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold hidden sm:block">
+          Loyalists · Scorers · Creators
+        </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -731,7 +734,6 @@ function ClubLegends({
             title={cat.title}
             unit={cat.unit}
             icon={cat.icon}
-            accent={cat.accent}
             rows={cat.rows}
           />
         ))}
@@ -752,92 +754,109 @@ function LegendBoard({
   unit,
   icon,
   rows,
-  accent,
 }: {
   title: string;
   unit: string;
   icon: React.ReactNode;
   rows: LegendRow[];
-  accent: "primary" | "accent" | "amber";
 }) {
-  const heroColor =
-    accent === "primary" ? "text-primary" : accent === "accent" ? "text-accent" : "text-amber-300";
-  const bar =
-    accent === "primary" ? "bg-primary" : accent === "accent" ? "bg-accent" : "bg-amber-400";
-  const border =
-    accent === "primary"
-      ? "border-l-primary/70"
-      : accent === "accent"
-        ? "border-l-accent/70"
-        : "border-l-amber-400/70";
   const max = rows.reduce((m, r) => Math.max(m, r.value), 0) || 1;
   const hero = rows[0];
   const rest = rows.slice(1);
 
   return (
-    <div className={`surface-card border-l-4 ${border} p-4 flex flex-col min-w-0`}>
+    <div className="surface-card p-4 sm:p-5 flex flex-col min-w-0">
       {/* Header */}
-      <div className="flex items-center justify-between gap-2 min-w-0">
-        <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5 min-w-0">
-          <span className={`${heroColor} shrink-0`}>{icon}</span>
+      <div className="flex items-center justify-between gap-2 pb-3 border-b border-border/50 min-w-0">
+        <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2 min-w-0">
+          <span className="text-primary shrink-0">{icon}</span>
           <span className="truncate">{title}</span>
         </div>
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono shrink-0">
-          Top {rows.length}
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-mono shrink-0">
+          {unit}
         </span>
       </div>
 
-      {/* Hero row */}
+      {/* Hero row — the #1 */}
       {hero && (
-        <div className="mt-3 pb-3 border-b border-border/50 flex items-center gap-3 min-w-0">
-          <span
-            className={`font-display stat-num text-3xl sm:text-4xl leading-none ${heroColor} shrink-0 tabular-nums`}
-          >
-            {hero.value}
-          </span>
+        <div className="mt-4 flex items-end justify-between gap-3 min-w-0">
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className={`text-[10px] font-mono font-bold ${heroColor} shrink-0`}>#1</span>
-              <span className="font-display text-sm truncate">{hero.name}</span>
-            </div>
+            <div className="text-[9px] uppercase tracking-[0.3em] text-primary font-bold">Leader</div>
+            <div className="font-display text-base sm:text-lg truncate mt-0.5">{hero.name}</div>
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5 truncate">
-              {hero.sub} · {unit}
+              {hero.sub}
             </div>
+          </div>
+          <div className="font-display stat-num text-4xl sm:text-5xl leading-none text-foreground tabular-nums shrink-0">
+            {hero.value}
           </div>
         </div>
       )}
 
-      {/* Rest */}
-      <ol className="mt-3 space-y-2 flex-1">
-        {rest.map((r, i) => {
-          const pct = (r.value / max) * 100;
-          const rank = i + 2;
-          return (
-            <li key={r.id} className="flex items-center gap-2 min-w-0">
-              <span className="w-5 text-center font-mono font-bold text-muted-foreground text-[11px] shrink-0">
-                #{rank}
-              </span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2 min-w-0">
-                  <span className="font-semibold text-xs sm:text-sm truncate min-w-0">{r.name}</span>
-                  <span className="font-mono stat-num text-xs sm:text-sm shrink-0 tabular-nums">
-                    {r.value}
-                  </span>
-                </div>
-                <div className="mt-1 h-1 bg-secondary/60 rounded overflow-hidden">
-                  <div className={`h-full ${bar} opacity-70`} style={{ width: `${pct}%` }} />
-                </div>
-              </div>
-            </li>
-          );
-        })}
-        {rest.length === 0 && (
+      {/* Progress-bar leaderboard */}
+      <ol className="mt-4 pt-3 border-t border-border/40 space-y-2.5 flex-1">
+        {hero && (
+          <LegendBar rank={1} name={hero.name} value={hero.value} max={max} highlighted />
+        )}
+        {rest.map((r, i) => (
+          <LegendBar key={r.id} rank={i + 2} name={r.name} value={r.value} max={max} />
+        ))}
+        {rows.length === 0 && (
           <li className="text-[11px] text-muted-foreground text-center py-2">
-            Only one qualifying player yet.
+            No qualifying players yet.
           </li>
         )}
       </ol>
     </div>
+  );
+}
+
+function LegendBar({
+  rank,
+  name,
+  value,
+  max,
+  highlighted = false,
+}: {
+  rank: number;
+  name: string;
+  value: number;
+  max: number;
+  highlighted?: boolean;
+}) {
+  const pct = Math.max(2, (value / max) * 100);
+  return (
+    <li className="flex items-center gap-2.5 min-w-0">
+      <span
+        className={`w-6 text-center font-mono text-[10px] font-bold shrink-0 ${
+          highlighted ? "text-primary" : "text-muted-foreground/70"
+        }`}
+      >
+        {String(rank).padStart(2, "0")}
+      </span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between gap-2 min-w-0">
+          <span
+            className={`text-xs sm:text-[13px] truncate min-w-0 ${
+              highlighted ? "font-semibold text-foreground" : "text-foreground/80"
+            }`}
+          >
+            {name}
+          </span>
+          <span className="font-mono stat-num text-xs sm:text-[13px] shrink-0 tabular-nums text-foreground/90">
+            {value}
+          </span>
+        </div>
+        <div className="mt-1 h-[3px] bg-secondary/50 rounded-full overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all ${
+              highlighted ? "bg-primary" : "bg-foreground/25"
+            }`}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </div>
+    </li>
   );
 }
 
