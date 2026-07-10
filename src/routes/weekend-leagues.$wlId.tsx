@@ -162,10 +162,10 @@ function WLDetail() {
         }
 
         return (
-          <div className="surface-glow overflow-hidden mb-6 relative">
-            <LeagueWatermark title={label} markId={wl.watermarkId} color={wl.watermarkColor} size={180} />
+          <div className="surface-glow overflow-hidden mb-4 relative">
+            <LeagueWatermark title={label} markId={wl.watermarkId} color={wl.watermarkColor} size={140} />
             {/* Top: identity + record */}
-            <div className="relative z-10 px-5 sm:px-7 pt-5 pb-4 flex items-start justify-between gap-5">
+            <div className="relative z-10 px-4 sm:px-5 pt-4 pb-3 flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
                 <div className="text-[11px] uppercase tracking-[0.3em] text-primary font-bold mb-2 flex items-center gap-2">
                   <ClubCrest size={20} overrideUrl={wl.clubCrestUrl} />
