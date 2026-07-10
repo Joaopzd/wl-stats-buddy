@@ -375,7 +375,28 @@ function PlayersPage() {
                       )}
                     </td>
                     <td className="p-3 text-right whitespace-nowrap">
-
+                      <div className="inline-flex items-center gap-0.5 mr-1 rounded border border-border bg-input p-0.5 align-middle" onClick={(e) => e.stopPropagation()}>
+                        {([
+                          { key: "active" as const, icon: <Activity className="h-3 w-3" />, title: "Active" },
+                          { key: "dev" as const, icon: <Sparkles className="h-3 w-3" />, title: "In Development" },
+                          { key: "archived" as const, icon: <Archive className="h-3 w-3" />, title: "Archived" },
+                        ]).map((s) => {
+                          const cur: RosterView = a.player.isArchived ? "archived" : a.player.isInDevelopment ? "dev" : "active";
+                          const on = cur === s.key;
+                          return (
+                            <button
+                              key={s.key}
+                              type="button"
+                              title={s.title}
+                              aria-label={s.title}
+                              onClick={() => setStatus(a.player, s.key)}
+                              className={`p-1 rounded transition ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                            >
+                              {s.icon}
+                            </button>
+                          );
+                        })}
+                      </div>
                       <button onClick={(e) => { e.stopPropagation(); setEditing(a.player); }} className="p-1.5 text-muted-foreground hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
                       <button
                         onClick={(e) => {
