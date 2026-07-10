@@ -25,7 +25,7 @@ import {
   Medal,
   Info,
 } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 import { WLTrendsChart } from "@/components/WLTrendsChart";
@@ -210,7 +210,6 @@ function Dashboard() {
             <h3 className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2">
               <Star className="h-3.5 w-3.5 text-primary" /> Top 3 · Highest Avg Rating
             </h3>
-            <TopRatedInfo totalMatches={matches.length} />
           </div>
           {leaders.topRated.length === 0 ? (
             <div className="surface-card p-5 text-sm text-muted-foreground text-center">
@@ -223,6 +222,7 @@ function Dashboard() {
               ))}
             </div>
           )}
+          <TopRatedDetailsPanel totalMatches={matches.length} />
         </>
       )}
     </AppShell>
@@ -346,47 +346,73 @@ function RatedPodium({ agg, rank }: { agg: PlayerAgg; rank: number }) {
   );
 }
 
-function TopRatedInfo({ totalMatches }: { totalMatches: number }) {
+function TopRatedDetailsPanel({ totalMatches }: { totalMatches: number }) {
   const minApps = Math.max(1, Math.ceil(totalMatches * 0.5));
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground transition font-semibold"
-          aria-label="How is the top-rated player calculated?"
-        >
-          <Info className="h-3 w-3" /> How this is ranked
-        </button>
-      </PopoverTrigger>
-      <PopoverContent align="end" className="w-80 text-xs leading-relaxed">
-        <div className="font-display text-sm tracking-wider mb-2 flex items-center gap-1.5">
-          <Star className="h-3.5 w-3.5 text-primary" /> Best player by rating
-        </div>
-        <ul className="space-y-2 text-muted-foreground">
-          <li>
-            <span className="text-foreground font-semibold">Rating window:</span> career-wide average across
-            every match the player has a rating logged for (matches with no rating are ignored in the average
-            but still count toward appearances).
-          </li>
-          <li>
-            <span className="text-foreground font-semibold">Participation gate:</span> must have played at
-            least <span className="text-foreground font-mono">{minApps}</span> of{" "}
-            <span className="text-foreground font-mono">{totalMatches}</span> career matches (≥ 50%), and at
-            least one match with a rating recorded.
-          </li>
-          <li>
-            <span className="text-foreground font-semibold">Tie-breakers:</span>
-            <ol className="list-decimal ml-4 mt-1 space-y-0.5">
+    <div className="surface-card mt-4 p-4 sm:p-5 border-l-4 border-l-primary/70">
+      <div className="flex items-center gap-2 mb-3">
+        <Info className="h-4 w-4 text-primary" />
+        <h4 className="font-display text-sm sm:text-base tracking-wider">
+          How the best player by rating is calculated
+        </h4>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <DetailBlock
+          title="Rating window"
+          icon={<Star className="h-3.5 w-3.5 text-primary" />}
+          body={
+            <>
+              Career-wide average across every match with a rating logged. Matches without a
+              rating are ignored in the average but still count as appearances.
+            </>
+          }
+        />
+        <DetailBlock
+          title="Participation gate"
+          icon={<Percent className="h-3.5 w-3.5 text-primary" />}
+          body={
+            <>
+              Must have played at least{" "}
+              <span className="text-foreground font-mono">{minApps}</span> of{" "}
+              <span className="text-foreground font-mono">{totalMatches}</span> career matches
+              (≥ 50%) and have at least one rated match.
+            </>
+          }
+        />
+        <DetailBlock
+          title="Tie-breakers"
+          icon={<Medal className="h-3.5 w-3.5 text-primary" />}
+          body={
+            <ol className="list-decimal ml-4 space-y-0.5">
               <li>Higher average rating</li>
               <li>More rated matches</li>
               <li>More total appearances</li>
               <li>More goal contributions (G+A)</li>
             </ol>
-          </li>
-        </ul>
-      </PopoverContent>
-    </Popover>
+          }
+        />
+      </div>
+    </div>
   );
 }
+
+function DetailBlock({
+  title,
+  icon,
+  body,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  body: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-md border border-border/60 bg-secondary/30 p-3">
+      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+        {icon} {title}
+      </div>
+      <div className="text-xs text-muted-foreground mt-1.5 leading-relaxed">{body}</div>
+    </div>
+  );
+}
+
 
