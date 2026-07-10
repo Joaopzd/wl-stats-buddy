@@ -345,3 +345,48 @@ function RatedPodium({ agg, rank }: { agg: PlayerAgg; rank: number }) {
     </div>
   );
 }
+
+function TopRatedInfo({ totalMatches }: { totalMatches: number }) {
+  const minApps = Math.max(1, Math.ceil(totalMatches * 0.5));
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground transition font-semibold"
+          aria-label="How is the top-rated player calculated?"
+        >
+          <Info className="h-3 w-3" /> How this is ranked
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-80 text-xs leading-relaxed">
+        <div className="font-display text-sm tracking-wider mb-2 flex items-center gap-1.5">
+          <Star className="h-3.5 w-3.5 text-primary" /> Best player by rating
+        </div>
+        <ul className="space-y-2 text-muted-foreground">
+          <li>
+            <span className="text-foreground font-semibold">Rating window:</span> career-wide average across
+            every match the player has a rating logged for (matches with no rating are ignored in the average
+            but still count toward appearances).
+          </li>
+          <li>
+            <span className="text-foreground font-semibold">Participation gate:</span> must have played at
+            least <span className="text-foreground font-mono">{minApps}</span> of{" "}
+            <span className="text-foreground font-mono">{totalMatches}</span> career matches (≥ 50%), and at
+            least one match with a rating recorded.
+          </li>
+          <li>
+            <span className="text-foreground font-semibold">Tie-breakers:</span>
+            <ol className="list-decimal ml-4 mt-1 space-y-0.5">
+              <li>Higher average rating</li>
+              <li>More rated matches</li>
+              <li>More total appearances</li>
+              <li>More goal contributions (G+A)</li>
+            </ol>
+          </li>
+        </ul>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
