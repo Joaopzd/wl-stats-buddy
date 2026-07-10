@@ -643,7 +643,7 @@ function MiniStat({ label, value, tone }: { label: string; value: number | strin
   );
 }
 
-// ---------- Club Legends (fluid, aligned) ----------
+// ---------- Club Legends (fluid, aligned with app grid) ----------
 function ClubLegends({
   players,
   matches,
@@ -662,51 +662,79 @@ function ClubLegends({
 
   if (boards.apps.length === 0) return null;
 
+  const categories: Array<{
+    key: "apps" | "goals" | "assists";
+    title: string;
+    unit: string;
+    icon: React.ReactNode;
+    accent: "primary" | "accent" | "amber";
+    rows: LegendRow[];
+  }> = [
+    {
+      key: "apps",
+      title: "Appearances",
+      unit: "apps",
+      icon: <Users className="h-4 w-4" />,
+      accent: "primary",
+      rows: boards.apps.map((a) => ({
+        id: a.player.id,
+        name: a.player.name,
+        value: a.matches,
+        sub: `${a.wins}W · ${a.matches - a.wins}L`,
+      })),
+    },
+    {
+      key: "goals",
+      title: "Goals",
+      unit: "goals",
+      icon: <SoccerBall size={16} />,
+      accent: "accent",
+      rows: boards.goals.map((a) => ({
+        id: a.player.id,
+        name: a.player.name,
+        value: a.goals,
+        sub: `${a.matches} apps`,
+      })),
+    },
+    {
+      key: "assists",
+      title: "Assists",
+      unit: "assists",
+      icon: <SoccerBoot size={16} />,
+      accent: "amber",
+      rows: boards.assists.map((a) => ({
+        id: a.player.id,
+        name: a.player.name,
+        value: a.assists,
+        sub: `${a.matches} apps`,
+      })),
+    },
+  ];
+
   return (
     <section className="mt-10">
-      <h2 className="font-display text-2xl tracking-wider mb-1 flex items-center gap-2">
-        <Trophy className="h-5 w-5 text-primary" /> Club Legends
-      </h2>
-      <p className="text-xs text-muted-foreground mb-4">
-        All-time leaderboards for the loyalists, the scorers and the creators.
-      </p>
+      <div className="mb-3 flex items-baseline justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-primary" /> Club Legends
+          </h2>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            All-time leaderboards — loyalists, scorers and creators.
+          </p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <LegendBoard
-          title="Appearances"
-          unit="apps"
-          accent="primary"
-          icon={<Users className="h-4 w-4" />}
-          rows={boards.apps.map((a) => ({
-            id: a.player.id,
-            name: a.player.name,
-            value: a.matches,
-            sub: `${a.wins}W · ${a.matches - a.wins}L`,
-          }))}
-        />
-        <LegendBoard
-          title="Goals"
-          unit="goals"
-          accent="accent"
-          icon={<SoccerBall size={16} />}
-          rows={boards.goals.map((a) => ({
-            id: a.player.id,
-            name: a.player.name,
-            value: a.goals,
-            sub: `${a.matches} apps`,
-          }))}
-        />
-        <LegendBoard
-          title="Assists"
-          unit="assists"
-          accent="amber"
-          icon={<SoccerBoot size={16} />}
-          rows={boards.assists.map((a) => ({
-            id: a.player.id,
-            name: a.player.name,
-            value: a.assists,
-            sub: `${a.matches} apps`,
-          }))}
-        />
+        {categories.map((cat) => (
+          <LegendBoard
+            key={cat.key}
+            title={cat.title}
+            unit={cat.unit}
+            icon={cat.icon}
+            accent={cat.accent}
+            rows={cat.rows}
+          />
+        ))}
       </div>
     </section>
   );
@@ -738,34 +766,43 @@ function LegendBoard({
     accent === "primary" ? "bg-primary" : accent === "accent" ? "bg-accent" : "bg-amber-400";
   const border =
     accent === "primary"
-      ? "border-t-primary/70"
+      ? "border-l-primary/70"
       : accent === "accent"
-        ? "border-t-accent/70"
-        : "border-t-amber-400/70";
+        ? "border-l-accent/70"
+        : "border-l-amber-400/70";
   const max = rows.reduce((m, r) => Math.max(m, r.value), 0) || 1;
   const hero = rows[0];
   const rest = rows.slice(1);
+
   return (
-    <div className={`surface-card border-t-2 ${border} p-4 flex flex-col`}>
-      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
-        <span className={heroColor}>{icon}</span> {title}
+    <div className={`surface-card border-l-4 ${border} p-4 flex flex-col min-w-0`}>
+      {/* Header */}
+      <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5 min-w-0">
+          <span className={`${heroColor} shrink-0`}>{icon}</span>
+          <span className="truncate">{title}</span>
+        </div>
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono shrink-0">
+          Top {rows.length}
+        </span>
       </div>
 
-      {/* Hero */}
+      {/* Hero row */}
       {hero && (
-        <div className="mt-3 pb-3 border-b border-border/50">
-          <div className="flex items-baseline gap-2 min-w-0">
-            <span className={`font-display stat-num text-4xl leading-none ${heroColor} shrink-0`}>
-              {hero.value}
-            </span>
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">
-              {unit}
-            </span>
-          </div>
-          <div className="mt-1.5 flex items-center gap-2 min-w-0">
-            <span className={`text-[10px] font-mono font-bold ${heroColor} shrink-0`}>#1</span>
-            <span className="font-display text-sm truncate flex-1 min-w-0">{hero.name}</span>
-            <span className="text-[10px] text-muted-foreground font-mono shrink-0">{hero.sub}</span>
+        <div className="mt-3 pb-3 border-b border-border/50 flex items-center gap-3 min-w-0">
+          <span
+            className={`font-display stat-num text-3xl sm:text-4xl leading-none ${heroColor} shrink-0 tabular-nums`}
+          >
+            {hero.value}
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className={`text-[10px] font-mono font-bold ${heroColor} shrink-0`}>#1</span>
+              <span className="font-display text-sm truncate">{hero.name}</span>
+            </div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5 truncate">
+              {hero.sub} · {unit}
+            </div>
           </div>
         </div>
       )}
@@ -776,19 +813,20 @@ function LegendBoard({
           const pct = (r.value / max) * 100;
           const rank = i + 2;
           return (
-            <li key={r.id} className="flex flex-col gap-1">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="w-5 text-center font-mono font-bold text-muted-foreground text-[11px] shrink-0">
-                  #{rank}
-                </span>
-                <span className="font-semibold text-sm truncate flex-1 min-w-0">{r.name}</span>
-                <span className="font-mono stat-num text-sm shrink-0 tabular-nums">{r.value}</span>
-              </div>
-              <div className="flex items-center gap-2 pl-7">
-                <div className="h-1 flex-1 bg-secondary/60 rounded overflow-hidden">
+            <li key={r.id} className="flex items-center gap-2 min-w-0">
+              <span className="w-5 text-center font-mono font-bold text-muted-foreground text-[11px] shrink-0">
+                #{rank}
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2 min-w-0">
+                  <span className="font-semibold text-xs sm:text-sm truncate min-w-0">{r.name}</span>
+                  <span className="font-mono stat-num text-xs sm:text-sm shrink-0 tabular-nums">
+                    {r.value}
+                  </span>
+                </div>
+                <div className="mt-1 h-1 bg-secondary/60 rounded overflow-hidden">
                   <div className={`h-full ${bar} opacity-70`} style={{ width: `${pct}%` }} />
                 </div>
-                <span className="text-[10px] text-muted-foreground font-mono shrink-0">{r.sub}</span>
               </div>
             </li>
           );
@@ -802,4 +840,5 @@ function LegendBoard({
     </div>
   );
 }
+
 
