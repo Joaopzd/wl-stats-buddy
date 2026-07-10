@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers, useWLs, useStoreLoading, store } from "@/lib/store";
-import { aggregatePlayer, isCleanSheetEligible, isGoalsConcededEligible } from "@/lib/stats";
+import { aggregatePlayer, consecutiveWLAbsence, isCleanSheetEligible, isGoalsConcededEligible } from "@/lib/stats";
 import { RatingDisplay } from "@/components/RatingDisplay";
 import { PlayerCard } from "@/components/PlayerCard";
 import { PlayerDetailModal } from "@/components/PlayerDetailModal";
 import { PositionBadge } from "@/components/PositionBadge";
-import { Plus, Trash2, Pencil, X, Search } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Search, Archive, Activity, Sparkles } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import type { Player, Position, Rarity } from "@/lib/types";
