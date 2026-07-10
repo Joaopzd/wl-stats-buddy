@@ -301,32 +301,92 @@ function LeaderPodium({
   );
 }
 
-function RatedPodium({ agg, rank }: { agg: PlayerAgg; rank: number }) {
-  const medalText =
-    rank === 1 ? "text-amber-300" :
-    rank === 2 ? "text-zinc-200" :
-    "text-amber-500";
-  const border =
-    rank === 1 ? "border-amber-400/60" :
-    rank === 2 ? "border-zinc-300/50" :
-    "border-amber-700/50";
+function TopRatedBoard({ rows }: { rows: PlayerAgg[] }) {
+  if (rows.length === 0) {
+    return (
+      <div className="surface-card p-5 text-sm text-muted-foreground text-center">
+        <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center justify-center gap-1.5 mb-2">
+          <Star className="h-3.5 w-3.5 text-primary" /> Highest Avg Rating
+        </div>
+        Not enough rated appearances yet.
+      </div>
+    );
+  }
+  const hero = rows[0];
+  const max = 10; // rating scale ceiling
   return (
-    <div className={`surface-card relative overflow-hidden p-4 border-l-4 ${border}`}>
-      <div className={`absolute -top-2 -right-2 font-display text-[3.5rem] leading-none opacity-10 ${medalText} pointer-events-none select-none`}>
-        #{rank}
+    <div className="surface-card p-4 sm:p-5 flex flex-col min-w-0">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-2 pb-3 border-b border-border/50 min-w-0">
+        <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2 min-w-0">
+          <Star className="h-3.5 w-3.5 text-primary shrink-0" />
+          <span className="truncate">Highest Avg Rating</span>
+        </div>
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-mono shrink-0">
+          career avg
+        </span>
       </div>
-      <div className={`text-[10px] uppercase tracking-[0.25em] font-bold ${medalText}`}>Rank #{rank}</div>
-      <div className="font-display text-base truncate mt-1">{agg.player.name}</div>
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5 flex items-center gap-1.5">
-        <PositionBadge position={agg.player.position} size="xs" /> {agg.player.overall} OVR
+
+      {/* Hero */}
+      <div className="mt-4 flex items-end justify-between gap-3 min-w-0">
+        <div className="min-w-0 flex-1">
+          <div className="text-[9px] uppercase tracking-[0.3em] text-primary font-bold">Leader</div>
+          <div className="font-display text-base sm:text-lg truncate mt-0.5">{hero.player.name}</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5 flex items-center gap-1.5 truncate">
+            <PositionBadge position={hero.player.position} size="xs" />
+            <span className="truncate">
+              {hero.player.overall} OVR · {hero.ratedMatches} rated · {hero.matches} apps
+            </span>
+          </div>
+        </div>
+        <div className="font-display stat-num text-4xl sm:text-5xl leading-none text-foreground tabular-nums shrink-0">
+          {hero.avgRating.toFixed(2)}
+        </div>
       </div>
-      <div className="mt-2 flex items-baseline gap-1.5">
-        <span className={`font-display stat-num text-3xl leading-none ${medalText}`}>{agg.avgRating.toFixed(2)}</span>
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">avg</span>
-      </div>
-      <div className="text-[10px] text-muted-foreground mt-0.5 font-mono">
-        {agg.ratedMatches} rated · {agg.matches} apps
-      </div>
+
+      {/* Distribution bars */}
+      <ol className="mt-4 pt-3 border-t border-border/40 space-y-2.5">
+        {rows.map((a, i) => {
+          const highlighted = i === 0;
+          const pct = Math.max(4, Math.min(100, (a.avgRating / max) * 100));
+          return (
+            <li key={a.player.id} className="flex items-center gap-2.5 min-w-0">
+              <span
+                className={`w-6 text-center font-mono text-[10px] font-bold shrink-0 ${
+                  highlighted ? "text-primary" : "text-muted-foreground/70"
+                }`}
+              >
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2 min-w-0">
+                  <span
+                    className={`text-xs sm:text-[13px] truncate min-w-0 ${
+                      highlighted ? "font-semibold text-foreground" : "text-foreground/80"
+                    }`}
+                  >
+                    {a.player.name}
+                  </span>
+                  <span className="font-mono stat-num text-xs sm:text-[13px] shrink-0 tabular-nums text-foreground/90">
+                    {a.avgRating.toFixed(2)}
+                  </span>
+                </div>
+                <div className="mt-1 h-[3px] bg-secondary/50 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all ${
+                      highlighted ? "bg-primary" : "bg-foreground/25"
+                    }`}
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+                <div className="mt-0.5 text-[10px] text-muted-foreground/80 font-mono truncate">
+                  {a.ratedMatches} rated · {a.matches} apps
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
     </div>
   );
 }
