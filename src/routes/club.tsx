@@ -548,3 +548,166 @@ function XgTile({ label, value, count, icon, accent, danger }: { label: string; 
   );
 }
 
+
+// ---------- Club Eras timeline ----------
+function ClubEras({
+  profiles,
+  wls,
+  matches,
+  players,
+}: {
+  profiles: ClubProfile[];
+  wls: import("@/lib/types").WeekendLeague[];
+  matches: import("@/lib/types").Match[];
+  players: import("@/lib/types").Player[];
+}) {
+  const eras = useMemo(() => {
+    return profiles.map((p) => {
+      const eraWls = wls.filter((w) => p.wlIds.includes(w.id));
+      const wlIds = new Set(p.wlIds);
+      const eraMatches = matches.filter((m) => wlIds.has(m.wlId));
+      let wins = 0, losses = 0, gf = 0, ga = 0, bestWins = 0;
+      for (const m of eraMatches) {
+        gf += m.scoreFor; ga += m.scoreAgainst;
+        if (matchIsWin(m)) wins += 1; else losses += 1;
+      }
+      for (const wl of eraWls) {
+        const r = wlRecord(wl, eraMatches);
+        if (r.wins > bestWins) bestWins = r.wins;
+      }
+      const scorerTally = new Map<string, number>();
+      for (const m of eraMatches) for (const perf of m.performances) {
+        scorerTally.set(perf.playerId, (scorerTally.get(perf.playerId) ?? 0) + perf.goals);
+      }
+      let topScorerId: string | null = null; let topGoals = 0;
+      for (const [pid, g] of scorerTally) if (g > topGoals) { topGoals = g; topScorerId = pid; }
+      const topScorer = topScorerId ? players.find((pl) => pl.id === topScorerId) ?? null : null;
+      const numbers = eraWls.map((w) => w.number).sort((a, b) => a - b);
+      const span = numbers.length ? { first: numbers[0], last: numbers[numbers.length - 1] } : null;
+      return { profile: p, wls: eraWls, wins, losses, gf, ga, bestWins, bestRank: rankFromWins(bestWins), topScorer, topGoals, span };
+    }).sort((a, b) => (b.span?.last ?? 0) - (a.span?.last ?? 0));
+  }, [profiles, wls, matches, players]);
+
+  if (eras.length === 0) return null;
+
+  return (
+    <section className="mt-10">
+      <h2 className="font-display text-2xl tracking-wider mb-1 flex items-center gap-2">
+        <Globe className="h-5 w-5 text-primary" /> Club Eras
+      </h2>
+      <p className="text-xs text-muted-foreground mb-4">
+        Cada identidade (nome + escudo) usada em campanhas anteriores vira uma era da história do clube.
+      </p>
+      <ol className="relative border-l border-border/60 ml-3 space-y-4">
+        {eras.map((e) => (
+          <li key={e.profile.id} className="pl-5 relative">
+            <span className="absolute -left-[7px] top-3 h-3 w-3 rounded-full bg-primary shadow-[var(--shadow-neon)]" />
+            <div className="surface-card p-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <ClubCrest size={40} overrideUrl={e.profile.crestUrl} />
+                <div className="flex-1 min-w-0">
+                  <div className="font-display text-lg tracking-wider truncate">{e.profile.name}</div>
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
+                    {e.span ? `WL #${e.span.first}${e.span.last !== e.span.first ? ` – #${e.span.last}` : ""}` : "—"} · {e.wls.length} WL{e.wls.length === 1 ? "" : "s"}
+                  </div>
+                </div>
+                <RankBadge rank={e.bestRank} size="sm" />
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-3 text-xs">
+                <MiniStat label="Wins" value={e.wins} tone="primary" />
+                <MiniStat label="Losses" value={e.losses} tone="danger" />
+                <MiniStat label="GF" value={e.gf} />
+                <MiniStat label="GA" value={e.ga} />
+                <MiniStat label="Best" value={`${e.bestWins}W`} />
+              </div>
+              {e.topScorer && (
+                <div className="mt-2 text-[11px] text-muted-foreground">
+                  Top scorer: <span className="text-foreground font-semibold">{e.topScorer.name}</span> · {e.topGoals} goals
+                </div>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function MiniStat({ label, value, tone }: { label: string; value: number | string; tone?: "primary" | "danger" }) {
+  const color = tone === "primary" ? "text-primary" : tone === "danger" ? "text-destructive" : "text-foreground";
+  return (
+    <div className="rounded bg-secondary/40 border border-border/50 px-2 py-1.5">
+      <div className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold">{label}</div>
+      <div className={`font-display stat-num text-lg leading-none ${color}`}>{value}</div>
+    </div>
+  );
+}
+
+// ---------- Club Legends (fluid, high-contrast) ----------
+function ClubLegends({
+  players,
+  matches,
+}: {
+  players: import("@/lib/types").Player[];
+  matches: import("@/lib/types").Match[];
+}) {
+  const boards = useMemo(() => {
+    const aggs = players.map((p) => aggregatePlayer(p, matches)).filter((a) => a.matches > 0);
+    const top = (key: "matches" | "goals" | "assists") =>
+      [...aggs].sort((a, b) => (b[key] as number) - (a[key] as number) || b.matches - a.matches).slice(0, 5);
+    return { apps: top("matches"), goals: top("goals"), assists: top("assists") };
+  }, [players, matches]);
+
+  if (boards.apps.length === 0) return null;
+
+  return (
+    <section className="mt-10">
+      <h2 className="font-display text-2xl tracking-wider mb-1 flex items-center gap-2">
+        <Trophy className="h-5 w-5 text-primary" /> Club Legends
+      </h2>
+      <p className="text-xs text-muted-foreground mb-4">All-time leaderboards for the loyalists, the scorers and the creators.</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <LegendBoard title="Appearances" accent="primary" icon={<Users className="h-4 w-4" />} rows={boards.apps.map((a) => ({ id: a.player.id, name: a.player.name, value: a.matches, sub: `${a.wins}W` }))} />
+        <LegendBoard title="Goals" accent="accent" icon={<SoccerBall size={16} />} rows={boards.goals.map((a) => ({ id: a.player.id, name: a.player.name, value: a.goals, sub: `${a.matches} MP` }))} />
+        <LegendBoard title="Assists" accent="amber" icon={<SoccerBoot size={16} />} rows={boards.assists.map((a) => ({ id: a.player.id, name: a.player.name, value: a.assists, sub: `${a.matches} MP` }))} />
+      </div>
+    </section>
+  );
+}
+
+interface LegendRow { id: string; name: string; value: number; sub: string }
+
+function LegendBoard({ title, icon, rows, accent }: { title: string; icon: React.ReactNode; rows: LegendRow[]; accent: "primary" | "accent" | "amber" }) {
+  const border = accent === "primary" ? "border-l-primary" : accent === "accent" ? "border-l-accent" : "border-l-amber-400";
+  const heroColor = accent === "primary" ? "text-primary" : accent === "accent" ? "text-accent" : "text-amber-300";
+  const bar = accent === "primary" ? "bg-primary" : accent === "accent" ? "bg-accent" : "bg-amber-400";
+  const max = rows.reduce((m, r) => Math.max(m, r.value), 0) || 1;
+  const hero = rows[0];
+  return (
+    <div className={`surface-card p-4 border-l-4 ${border}`}>
+      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold flex items-center gap-1.5">
+        {icon} {title}
+      </div>
+      {hero && (
+        <div className="mt-2 flex items-baseline gap-2">
+          <span className={`font-display stat-num text-4xl leading-none ${heroColor}`}>{hero.value}</span>
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">by</span>
+          <span className="font-display text-base truncate">{hero.name}</span>
+        </div>
+      )}
+      <ol className="mt-3 space-y-1.5">
+        {rows.map((r, i) => (
+          <li key={r.id} className="flex items-center gap-2 text-xs">
+            <span className={`w-4 text-center font-mono font-bold ${i === 0 ? heroColor : "text-muted-foreground"}`}>#{i + 1}</span>
+            <span className="font-semibold truncate flex-1">{r.name}</span>
+            <span className="text-[10px] text-muted-foreground font-mono shrink-0">{r.sub}</span>
+            <div className="w-16 h-1.5 bg-secondary/60 rounded overflow-hidden shrink-0">
+              <div className={`h-full ${bar}`} style={{ width: `${(r.value / max) * 100}%` }} />
+            </div>
+            <span className="font-mono stat-num text-sm w-8 text-right shrink-0">{r.value}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
