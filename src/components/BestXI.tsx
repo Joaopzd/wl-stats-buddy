@@ -1,13 +1,14 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   FORMATIONS,
+  FORMATION_NAMES,
   type Formation,
   type FormationName,
   type FormationSlot,
   positionFits,
 } from "@/lib/formations";
-import type { Match, Player, WeekendLeague, Rarity } from "@/lib/types";
-import { aggregateAllPlayers, type PlayerAgg } from "@/lib/stats";
+import type { Match, Player, WeekendLeague, Rarity, Position } from "@/lib/types";
+import { aggregateAllPlayers, wlRecord, type PlayerAgg } from "@/lib/stats";
 import { PlayerCard } from "@/components/PlayerCard";
 import { PositionBadge } from "@/components/PositionBadge";
 import { rarityVisual } from "@/lib/format";
@@ -16,9 +17,12 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Trophy, Star, Users, Info } from "lucide-react";
+import { Trophy, Star, Users, Info, Award, Layers } from "lucide-react";
 
 const MIN_MATCHES = 9;
+const MIN_MATCHES_TOP_RATED = 5;
+
+type BestXIMode = "bestWL" | "topRated" | "formation";
 
 /** Find the most-used formation across saved squads. Defaults to 4-3-3. */
 export function mostUsedFormation(wls: WeekendLeague[]): FormationName {
