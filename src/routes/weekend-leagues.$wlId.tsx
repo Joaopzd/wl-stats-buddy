@@ -575,8 +575,10 @@ function WLDetail() {
       </section>
         </TabsContent>
 
-        <TabsContent value="squad" className="mt-6">
-          <SquadAnalyticsTable squadAggs={squadAggs} />
+        <TabsContent value="squad" className="mt-4">
+          <div className="max-h-[70vh] overflow-y-auto pr-1 scroll-accent">
+            <SquadAnalyticsTable squadAggs={squadAggs} />
+          </div>
         </TabsContent>
       </Tabs>
 
