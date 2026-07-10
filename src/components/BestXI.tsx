@@ -1,13 +1,14 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   FORMATIONS,
+  FORMATION_NAMES,
   type Formation,
   type FormationName,
   type FormationSlot,
   positionFits,
 } from "@/lib/formations";
-import type { Match, Player, WeekendLeague, Rarity } from "@/lib/types";
-import { aggregateAllPlayers, type PlayerAgg } from "@/lib/stats";
+import type { Match, Player, WeekendLeague, Rarity, Position } from "@/lib/types";
+import { aggregateAllPlayers, wlRecord, type PlayerAgg } from "@/lib/stats";
 import { PlayerCard } from "@/components/PlayerCard";
 import { PositionBadge } from "@/components/PositionBadge";
 import { rarityVisual } from "@/lib/format";
@@ -16,9 +17,12 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Trophy, Star, Users, Info } from "lucide-react";
+import { Trophy, Star, Users, Info, Award, Layers } from "lucide-react";
 
 const MIN_MATCHES = 9;
+const MIN_MATCHES_TOP_RATED = 5;
+
+type BestXIMode = "bestWL" | "topRated" | "formation";
 
 /** Find the most-used formation across saved squads. Defaults to 4-3-3. */
 export function mostUsedFormation(wls: WeekendLeague[]): FormationName {
@@ -66,26 +70,45 @@ function score(a: PlayerAgg): number {
   return a.avgRating * 1.0 + a.gaPerGame * 0.5;
 }
 
+/** Positions the player is eligible for by their primary + secondary roles. */
+function playerEligiblePositions(p: Player): Set<Position> {
+  const s = new Set<Position>();
+  s.add(p.position);
+  for (const sec of p.secondaryPositions ?? []) s.add(sec);
+  return s;
+}
+
 function pickBestXI(
   formation: Formation,
   aggs: PlayerAgg[],
   positionsPlayed: Map<string, Set<string>>,
+  opts: { mode: BestXIMode; minMatches: number },
 ): SelectionResult {
-  const eligible = aggs.filter((a) => a.matches >= MIN_MATCHES);
+  const eligible = aggs.filter((a) => a.matches >= opts.minMatches);
   const used = new Set<string>();
   const starting: SelectionResult["starting"] = [];
+
+  const eligibleForSlot = (a: PlayerAgg, slotPos: Position): boolean => {
+    if (opts.mode === "bestWL") {
+      const played = positionsPlayed.get(a.player.id);
+      if (!played || played.size === 0) return positionFits(a.player.position, slotPos);
+      return played.has(slotPos);
+    }
+    // topRated / formation: use primary + secondary positions with positionFits fallback.
+    const roles = playerEligiblePositions(a.player);
+    if (roles.has(slotPos)) return true;
+    return positionFits(a.player.position, slotPos);
+  };
 
   for (const slot of formation.slots) {
     const candidates = eligible
       .filter((a) => !used.has(a.player.id))
-      .filter((a) => {
-        const played = positionsPlayed.get(a.player.id);
-        if (!played || played.size === 0) {
-          return positionFits(a.player.position, slot.position);
-        }
-        return played.has(slot.position);
-      })
+      .filter((a) => eligibleForSlot(a, slot.position))
       .sort((a, b) => {
+        // In topRated/formation modes, prioritise raw avg rating.
+        if (opts.mode !== "bestWL") {
+          if (b.avgRating !== a.avgRating) return b.avgRating - a.avgRating;
+        }
         const sa = score(a);
         const sb = score(b);
         if (sb !== sa) return sb - sa;
@@ -110,6 +133,30 @@ function pickBestXI(
     .slice(0, 7);
 
   return { starting, bench };
+}
+
+/** Formation & starters snapshot from the highest-wins WL. */
+function bestWLSnapshot(
+  wls: WeekendLeague[],
+  matches: Match[],
+): { formation: FormationName; startersByPos: Map<string, string> } | null {
+  let best: WeekendLeague | null = null;
+  let bestWins = -1;
+  for (const wl of wls) {
+    const r = wlRecord(wl, matches);
+    if (r.wins > bestWins) {
+      bestWins = r.wins;
+      best = wl;
+    }
+  }
+  if (!best || !best.formation) return null;
+  const map = new Map<string, string>();
+  if (best.startingAssignments) {
+    for (const [slotId, pid] of Object.entries(best.startingAssignments)) {
+      if (pid) map.set(slotId, pid as string);
+    }
+  }
+  return { formation: best.formation, startersByPos: map };
 }
 
 /** Disc filled with the player's rarity palette. */
@@ -172,28 +219,109 @@ export function BestXI({
   matches: Match[];
   wls: WeekendLeague[];
 }) {
-  const formationName = useMemo(() => mostUsedFormation(wls), [wls]);
-  const formation = FORMATIONS[formationName];
+  const defaultFormation = useMemo(() => mostUsedFormation(wls), [wls]);
+  const snapshot = useMemo(() => bestWLSnapshot(wls, matches), [wls, matches]);
+  const [mode, setMode] = useState<BestXIMode>("bestWL");
+  const [formationChoice, setFormationChoice] = useState<FormationName>(defaultFormation);
+
+  const activeFormationName: FormationName =
+    mode === "bestWL" ? snapshot?.formation ?? defaultFormation : formationChoice;
+  const formation = FORMATIONS[activeFormationName];
+
   const aggs = useMemo(() => aggregateAllPlayers(players, matches), [players, matches]);
   const positionsPlayed = useMemo(() => positionsPlayedByPlayer(wls), [wls]);
-  const { starting, bench } = useMemo(
-    () => pickBestXI(formation, aggs, positionsPlayed),
-    [formation, aggs, positionsPlayed],
-  );
+
+  const { starting, bench } = useMemo(() => {
+    // "bestWL" mode: pin snapshot starters to slots when available; fill gaps with best rated.
+    if (mode === "bestWL" && snapshot) {
+      const used = new Set<string>();
+      const st: SelectionResult["starting"] = [];
+      const aggById = new Map(aggs.map((a) => [a.player.id, a] as const));
+      for (const slot of formation.slots) {
+        const pid = snapshot.startersByPos.get(slot.id);
+        const pinned = pid ? aggById.get(pid) ?? null : null;
+        if (pinned) used.add(pinned.player.id);
+        st.push({ slot, agg: pinned });
+      }
+      // Fill any empty slots by best-rated eligible.
+      const eligible = aggs.filter((a) => a.matches >= MIN_MATCHES_TOP_RATED);
+      for (const s of st) {
+        if (s.agg) continue;
+        const pick = eligible
+          .filter((a) => !used.has(a.player.id))
+          .filter((a) => positionFits(a.player.position, s.slot.position) || playerEligiblePositions(a.player).has(s.slot.position))
+          .sort((a, b) => b.avgRating - a.avgRating || b.matches - a.matches)[0];
+        if (pick) {
+          used.add(pick.player.id);
+          s.agg = pick;
+        }
+      }
+      const bench = eligible
+        .filter((a) => !used.has(a.player.id))
+        .sort((a, b) => b.avgRating - a.avgRating || b.matches - a.matches)
+        .slice(0, 7);
+      return { starting: st, bench };
+    }
+    const minM = mode === "bestWL" ? MIN_MATCHES : MIN_MATCHES_TOP_RATED;
+    return pickBestXI(formation, aggs, positionsPlayed, { mode, minMatches: minM });
+  }, [mode, snapshot, formation, aggs, positionsPlayed]);
 
   const filledCount = starting.filter((s) => s.agg).length;
 
+  const modeCopy =
+    mode === "bestWL"
+      ? snapshot
+        ? `Snapshot from your best WL result (${activeFormationName}).`
+        : "No WL results yet — showing top rated by position."
+      : mode === "topRated"
+      ? `Highest career avg rating per slot (min ${MIN_MATCHES_TOP_RATED} apps).`
+      : `Custom formation using highest-rated eligible players.`;
+
   return (
     <section className="mt-10">
-      <h2 className="font-display text-2xl tracking-wider mb-1 flex items-center gap-2">
-        <Star className="h-5 w-5 text-primary" /> All-Time Best XI
-      </h2>
+      <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+        <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
+          <Star className="h-5 w-5 text-primary" /> Best Squad View
+        </h2>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex gap-0.5 bg-input border border-border rounded-md p-0.5">
+            {([
+              { key: "bestWL" as BestXIMode, label: "Best WL", icon: <Trophy className="h-3 w-3" /> },
+              { key: "topRated" as BestXIMode, label: "Top Rated", icon: <Award className="h-3 w-3" /> },
+              { key: "formation" as BestXIMode, label: "Formation", icon: <Layers className="h-3 w-3" /> },
+            ]).map((m) => {
+              const on = mode === m.key;
+              return (
+                <button
+                  key={m.key}
+                  type="button"
+                  onClick={() => setMode(m.key)}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition ${
+                    on ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {m.icon} {m.label}
+                </button>
+              );
+            })}
+          </div>
+          {mode === "formation" && (
+            <select
+              value={formationChoice}
+              onChange={(e) => setFormationChoice(e.target.value as FormationName)}
+              className="bg-input border border-border rounded-md px-2 py-1 text-[11px] font-semibold"
+            >
+              {FORMATION_NAMES.map((f) => (
+                <option key={f} value={f}>{f}</option>
+              ))}
+            </select>
+          )}
+        </div>
+      </div>
       <p className="text-xs text-muted-foreground mb-4 inline-flex items-center gap-1.5">
-        <Info className="h-3 w-3 text-primary" />
-        Default formation:{" "}
-        <span className="text-foreground font-semibold">{formationName}</span> ·
-        most-used in your saved squads. Min {MIN_MATCHES} matches per player.
+        <Info className="h-3 w-3 text-primary" /> {modeCopy}
       </p>
+
 
       <div className="surface-card p-4 sm:p-5">
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-5">
@@ -201,7 +329,7 @@ export function BestXI({
           <div>
             <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold mb-2 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <Trophy className="h-3.5 w-3.5 text-primary" /> Starting XI · {formationName}
+                <Trophy className="h-3.5 w-3.5 text-primary" /> Starting XI · {activeFormationName}
               </span>
               <span>{filledCount}/11</span>
             </div>

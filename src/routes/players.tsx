@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers, useWLs, useStoreLoading, store } from "@/lib/store";
-import { aggregatePlayer, isCleanSheetEligible, isGoalsConcededEligible } from "@/lib/stats";
+import { aggregatePlayer, consecutiveWLAbsence, isCleanSheetEligible, isGoalsConcededEligible } from "@/lib/stats";
 import { RatingDisplay } from "@/components/RatingDisplay";
 import { PlayerCard } from "@/components/PlayerCard";
 import { PlayerDetailModal } from "@/components/PlayerDetailModal";
 import { PositionBadge } from "@/components/PositionBadge";
-import { Plus, Trash2, Pencil, X, Search } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Search, Archive, Activity, Sparkles } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import type { Player, Position, Rarity } from "@/lib/types";
@@ -156,6 +156,43 @@ function PlayersPage() {
     }
     return c;
   }, [aggs]);
+
+  // Auto-archive: any active/dev player absent from the two most recent WLs
+  // gets flipped to Archived. Runs once per (players, wls, matches) change.
+  const autoArchiveRan = useRef<string>("");
+  useEffect(() => {
+    if (loading) return;
+    if (wls.length < 2) return;
+    const scanKey = `${wls.length}:${wls.map((w) => w.id).join(",")}:${players.length}`;
+    if (autoArchiveRan.current === scanKey) return;
+    autoArchiveRan.current = scanKey;
+    const toArchive: Player[] = [];
+    for (const p of players) {
+      if (p.isArchived) continue;
+      if (consecutiveWLAbsence(p, wls, matches) >= 2) toArchive.push(p);
+    }
+    if (toArchive.length === 0) return;
+    for (const p of toArchive) {
+      store.updatePlayer(p.id, { isArchived: true, isInDevelopment: false });
+    }
+    toast.info(
+      `${toArchive.length} player${toArchive.length === 1 ? "" : "s"} auto-archived after 2 WL absence`,
+    );
+  }, [players, wls, matches, loading]);
+
+  const setStatus = (p: Player, status: RosterView) => {
+    const patch =
+      status === "active"
+        ? { isArchived: false, isInDevelopment: false }
+        : status === "dev"
+        ? { isArchived: false, isInDevelopment: true }
+        : { isArchived: true, isInDevelopment: false };
+    store.updatePlayer(p.id, patch);
+    toast.success(
+      status === "active" ? `${p.name} → Active Squad` : status === "dev" ? `${p.name} → In Development` : `${p.name} → Archived`,
+    );
+  };
+
 
 
   return (
@@ -338,7 +375,28 @@ function PlayersPage() {
                       )}
                     </td>
                     <td className="p-3 text-right whitespace-nowrap">
-
+                      <div className="inline-flex items-center gap-0.5 mr-1 rounded border border-border bg-input p-0.5 align-middle" onClick={(e) => e.stopPropagation()}>
+                        {([
+                          { key: "active" as const, icon: <Activity className="h-3 w-3" />, title: "Active" },
+                          { key: "dev" as const, icon: <Sparkles className="h-3 w-3" />, title: "In Development" },
+                          { key: "archived" as const, icon: <Archive className="h-3 w-3" />, title: "Archived" },
+                        ]).map((s) => {
+                          const cur: RosterView = a.player.isArchived ? "archived" : a.player.isInDevelopment ? "dev" : "active";
+                          const on = cur === s.key;
+                          return (
+                            <button
+                              key={s.key}
+                              type="button"
+                              title={s.title}
+                              aria-label={s.title}
+                              onClick={() => setStatus(a.player, s.key)}
+                              className={`p-1 rounded transition ${on ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                            >
+                              {s.icon}
+                            </button>
+                          );
+                        })}
+                      </div>
                       <button onClick={(e) => { e.stopPropagation(); setEditing(a.player); }} className="p-1.5 text-muted-foreground hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
                       <button
                         onClick={(e) => {
