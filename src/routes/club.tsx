@@ -290,6 +290,10 @@ function ClubPage() {
         </div>
       )}
 
+      <ClubEras profiles={profiles} wls={wls} matches={matches} players={players} />
+
+      <ClubLegends players={players} matches={scopedMatches} />
+
       <BestXI players={players} matches={scopedMatches} wls={scopedWLs} />
 
       {editingProfile && (
