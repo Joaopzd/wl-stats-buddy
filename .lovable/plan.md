@@ -1,64 +1,55 @@
-# Overhaul: WL List, WL Detail, Settings & Main Dashboard
 
-## 1. WL List page (`src/routes/weekend-leagues.index.tsx`)
-Cleaner, more scannable, with a live preview panel.
+## 1. Dashboard Charts — Interactive Tooltips + Filters
+**File:** `src/components/WLTrendsChart.tsx` (+ small consumer wiring in `src/routes/index.tsx`)
 
-- Replace the 3-column card grid with a **split layout**:
-  - Left: compact list of WLs (dense rows: badge with WL number, custom name, W-L record, mini form dots for last 5 matches, rank chip).
-  - Right (sticky, hidden on mobile — falls back to full list): **Preview panel** of the hovered/selected WL showing crest, name, big W-L, GF/GA, rank badge, form timeline, top scorer, and a "Open WL" button.
-- Selection is local state (defaults to most recent WL). Row click on desktop = select preview; row "Open" button or double-click = navigate.
-- Keep Create/Compare/Briefing actions in the header.
-- Keep edit/delete inline on each row (icon-only, no card clutter).
-- Remove the large watermark from list rows (kept only in preview panel) to reduce visual noise.
+- Keep the existing custom tooltip (already interactive), enhance with cursor line + focused dot + smooth transitions.
+- Add a compact filter bar above the two charts:
+  - **Platform filter** (segmented: All / PC / PS5 / Xbox) — filters the underlying matches used to compute each WL's aggregates.
+  - **Date range** — "Last 5", "Last 10", "Last 20", "All" (operates on WL number descending, keeps chronological order in the chart).
+- Recompute per-WL aggregates from the filtered match set (a WL with zero filtered matches is dropped from the series).
+- Persist filter selection to `localStorage` under `wl:dashboardTrendFilters`.
 
-## 2. WL Detail (`src/routes/weekend-leagues.$wlId.tsx`)
-Make it fit within a single viewport with minimal scrolling; more organic flow.
+## 2. Dashboard — Top Rated Podium
+**File:** `src/routes/index.tsx` (+ `historicLeaders` in `src/lib/stats.ts`)
 
-- Compress the sticky header (crest + name + record on one line; actions collapse into a compact row).
-- Convert the current 3 tabs (Overview / Matches / Squad Analytics) into a **denser single view**:
-  - Row A: KPI strip (Wins, Losses, GF, GA, GD, Rank) — small tiles, one line.
-  - Row B (2 columns on lg): left = Matches Timeline (scrollable inside a fixed-height panel `max-h-[420px] overflow-y-auto`); right = Squad Analytics table (also `max-h-[420px] overflow-y-auto`).
-  - Row C: Advanced match aggregates (Possession, xG, Passes, Shots) as a compact strip.
-- Remove the tabs component — keep everything visible; internal scroll instead of page scroll.
-- Trim excessive padding/margins; use `text-sm` for tables; reduce card gaps.
+- Verify `historicLeaders.topRated` produces the 3 highest career avg-rating players filtered to ≥ 50% of total matches AND `ratedMatches > 0`.
+- Current threshold uses `Math.max(1, Math.ceil(totalMatches * 0.5))` on `matches` (appearances). Confirm that's what renders; if the podium is empty/wrong on small samples, relax to `ratedMatches >= 0.5 * totalMatches` OR clarify with the user. Right now the rule already matches the spec — I'll double-check the render sort/order and tie-breaking (avgRating desc → ratedMatches desc → matches desc) and add tie-breakers if missing.
 
-## 3. Settings (`src/routes/settings.tsx`)
-Group Active Club Profile and Opponent Configuration side-by-side.
+## 3. Players Database — Status Segmentation + Auto-Archive
+**Files:** `src/routes/players.tsx`, `src/lib/types.ts` (already has `isArchived`, `isInDevelopment`), `src/lib/store.ts` (helper), `src/lib/stats.ts` (absence calc)
 
-- Wrap the two blocks in a single `grid md:grid-cols-2 gap-6` section titled "Club & Opponents", so users manage identity and rivals together.
-- Keep Theme Palette above as its own section.
+- Rework `/players` into 3 tabs (shadcn `Tabs`): **Active Squad**, **In Development**, **Archived**. Counts shown as badges on each tab.
+- Segmentation rule:
+  - `Archived` → `isArchived === true`
+  - `In Development` → `isInDevelopment === true && !isArchived`
+  - `Active Squad` → the rest
+- **Auto-archive rule** (client-side, runs on `/players` mount and after any WL save):
+  - Compute each player's last WL appearance (max `wl.number` where the player has ≥ 1 match performance in that WL).
+  - If the two most recent WLs (by `number`) both exist and the player has no appearance in either, and player is not already `isArchived`, flip `isArchived = true` (persisted through existing store update). New players (`createdAt` after the older of the 2 WLs) are exempt.
+  - Log a small toast summary "N players auto-archived after 2 WL absence".
+- **Manual toggle**: on each player row/card add a compact status control (Segmented: Active / Dev / Archived) that updates `isArchived`/`isInDevelopment` via store. Clearing Archive resets absence tracking implicitly (next scan won't re-archive unless still absent — that's intended; noted in tooltip).
 
-## 4. Main Dashboard (`src/routes/index.tsx`) — 4-tier rebuild
-Replace the current landing with stacked analytical tiers. Remove the "Raridades" block (already requested previously; ensure it stays out).
+## 4. Club Hub — Eras Timeline + Best XI Modes
+**Files:** `src/routes/club.tsx`, `src/components/BestXI.tsx`
 
-### Tier 1 — General Performance Summary
-Grid of tiles across all WLs:
-- Total Wins, Total Losses, Goals Scored, Goals Conceded, Cumulative GD, Winning Effectiveness % (W/(W+L)), All-Time Best Result (highest wins in a single WL, with WL label), Best Rank, Current Rank (rank of latest WL).
+- **Eras timeline**: derive "eras" from `deriveClubProfiles(wls)`. For each club profile show a horizontal timeline card with: crest, name, WL count, span (first → last WL number), aggregate W-L, GF/GA, best rank achieved, top scorer in that era. Rendered as vertical stacked cards with a left rail dot/line for premium timeline feel.
+- **Best Squad View** (extends existing `BestXI`):
+  - Toggle group with 3 modes:
+    1. **Best WL** (default) — starters from the highest-wins WL, using that WL's snapshot squad/formation.
+    2. **Top Rated / Position** — for each pitch slot pick the player with highest career avg rating eligible for that position (respects `secondaryPositions`; min ratedMatches guard e.g. 5).
+    3. **Formation** — dropdown of available formations (`src/lib/formations.ts`) applying Top Rated logic to that shape.
+  - Render on the existing pitch layout used by `BestXI` (reuse component; add `mode` + `formationId` props).
 
-### Tier 2 — Platform Analytics & AI Insights
-- **Platform breakdown** cards: for each of PC / PS5 / Xbox aggregate matches where opponent platform matches — show W-L, Win %, GF-GA. Use existing `PlatformBadge`.
-- **Dynamic AI banner**: reuse `runCoach` server fn in "analysis" mode fed with a compact "recent trend" payload (last 3 WLs). Render a slim banner with the `summary` + a rotating actionable tip. Auto-run on mount (guard w/ cache-in-state; add refresh button). Handle 429/402 gracefully.
+## 5. Club Legends Tab — Fluid Redesign
+**File:** likely a section inside `src/routes/club.tsx` (existing "legends" area). If not present, add a `<ClubLegends>` component consumed by `club.tsx`.
 
-### Tier 3 — Visual Analytics (Charts)
-Responsive charts (recharts — already used in `WLTrendsChart`):
-- **Goals Trend**: per-WL GF vs GA line/area.
-- **Wins Evolution**: per-WL wins bar/line with cumulative wins line.
-Two-column on lg, stacked on mobile.
-
-### Tier 4 — Historic Leaders Roll
-Minimalist podium widgets:
-- #1 Top Scorer, #1 Top Assister, #1 Top G+A, #1 Most Appearances.
-- Top 3 Highest Avg Rating — filter players whose `matches` >= 50% of total matches played across all WLs.
-Small podium cards with crest/avatar-less minimal layout (name, position, stat number, sub-label).
-
-Helpers needed in `src/lib/stats.ts`:
-- `aggregateAllTime(wls, matches)` → totals, best result, best/current rank.
-- `platformSplit(matches)` → per-platform W-L-GF-GA.
-- `historicLeaders(players, matches)` → single leaders + top-3 rating with participation gate.
-- `perWLTrend(wls, matches)` → chart data.
+- Rebuild as a fluid, high-contrast board:
+  - Three hero cards side-by-side (grid, collapses to stack on mobile) for **All-Time Appearances**, **All-Time Goals**, **All-Time Assists** — big number, player crest/name, tier accent, subtle glow.
+  - Secondary strip: Top 5 lists for each category with rank chips, mini bars for relative scale.
+  - Uses semantic tokens (`primary`, `accent`, `destructive` for contrast); no hardcoded colors.
 
 ## Technical notes
-- No schema changes.
-- Files touched: `weekend-leagues.index.tsx`, `weekend-leagues.$wlId.tsx`, `settings.tsx`, `index.tsx`, `stats.ts`. New small component: `DashboardAIBanner.tsx`.
-- Keep semantic tokens; no hardcoded colors.
-- Preserve existing behaviors (edit modal, watermark picker, match dialogs, coach briefing).
+- All persistence uses existing store patterns (`updatePlayer`) — no schema changes.
+- Auto-archive is deterministic and idempotent; toast only when it flips someone.
+- Charts filter state is local + localStorage; no server round-trip.
+- All new UI uses semantic tokens per project rules.
