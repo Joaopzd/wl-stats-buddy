@@ -2,13 +2,28 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers } from "@/lib/store";
-import { aggregateAllPlayers, clutchAggregate, CLUTCH_MIN_MATCHES, CLUTCH_KING_TOOLTIP, CLUTCH_DROP_TOOLTIP, performanceStatus, type ClutchAgg, type PlayerAgg } from "@/lib/stats";
-import { RatingDisplay } from "@/components/RatingDisplay";
-import { Sparkles, Trophy, Shield, Info, Zap, AlertTriangle, Flame, TrendingDown, ChevronDown } from "lucide-react";
+import {
+  aggregateAllPlayers,
+  clutchAggregate,
+  CLUTCH_MIN_MATCHES,
+  CLUTCH_KING_TOOLTIP,
+  CLUTCH_DROP_TOOLTIP,
+  type ClutchAgg,
+  type PlayerAgg,
+} from "@/lib/stats";
+import {
+  Sparkles,
+  Trophy,
+  Shield,
+  Info,
+  Zap,
+  Flame,
+  TrendingDown,
+  ChevronDown,
+} from "lucide-react";
 import { SoccerBall } from "@/components/icons/SoccerBall";
 import { SoccerBoot } from "@/components/icons/SoccerBoot";
 import { PositionBadge } from "@/components/PositionBadge";
-
 
 const MIN_MATCHES = 9;
 
@@ -16,9 +31,9 @@ export const Route = createFileRoute("/rankings")({
   head: () => ({
     meta: [
       { title: "Club Legends — PitchSide" },
-      { name: "description", content: "Top 10 leaderboards: scorers, playmakers and best-rated players in your club." },
+      { name: "description", content: "Top leaderboards: scorers, playmakers and best-rated players in your club." },
       { property: "og:title", content: "Club Legends · Rankings" },
-      { property: "og:description", content: "Top 10 leaderboards across your career." },
+      { property: "og:description", content: "All-time leaderboards across your career." },
     ],
   }),
   component: RankingsPage,
@@ -28,11 +43,7 @@ function RankingsPage() {
   const players = usePlayers();
   const matches = useMatches();
   const aggs = useMemo(() => aggregateAllPlayers(players, matches), [players, matches]);
-
-  const eligible = useMemo(
-    () => aggs.filter((a) => a.matches >= MIN_MATCHES),
-    [aggs],
-  );
+  const eligible = useMemo(() => aggs.filter((a) => a.matches >= MIN_MATCHES), [aggs]);
 
   const topScorers = useMemo(
     () => [...eligible].filter((a) => a.goals > 0).sort((a, b) => b.goals - a.goals || b.gaPerGame - a.gaPerGame).slice(0, 10),
@@ -43,11 +54,7 @@ function RankingsPage() {
     [eligible],
   );
   const topRated = useMemo(
-    () =>
-      [...eligible]
-        .filter((a) => a.avgRating > 0)
-        .sort((a, b) => b.avgRating - a.avgRating)
-        .slice(0, 10),
+    () => [...eligible].filter((a) => a.avgRating > 0).sort((a, b) => b.avgRating - a.avgRating).slice(0, 10),
     [eligible],
   );
   const topMvps = useMemo(
@@ -58,17 +65,10 @@ function RankingsPage() {
     () => [...eligible].filter((a) => a.cleanSheets > 0).sort((a, b) => b.cleanSheets - a.cleanSheets || a.goalsConceded - b.goalsConceded).slice(0, 10),
     [eligible],
   );
-  // Super Subs: separate eligibility — at least 2 sub appearances is enough.
   const topSubs = useMemo(
-    () =>
-      [...aggs]
-        .filter((a) => a.subMatches >= 2 && a.subImpact > 0)
-        .sort((a, b) => b.subImpact - a.subImpact)
-        .slice(0, 10),
+    () => [...aggs].filter((a) => a.subMatches >= 2 && a.subImpact > 0).sort((a, b) => b.subImpact - a.subImpact).slice(0, 10),
     [aggs],
   );
-
-  // Clutch leaderboard: career-wide performance during matches 11–15 vs baseline.
   const topClutch = useMemo<ClutchAgg[]>(
     () =>
       players
@@ -79,6 +79,14 @@ function RankingsPage() {
     [players, matches],
   );
 
+  const toRow = (a: PlayerAgg, value: number, sub: string, formatted?: string): LegendRow => ({
+    id: a.player.id,
+    name: a.player.name,
+    value,
+    formatted,
+    sub,
+    position: a.player.position,
+  });
 
   return (
     <AppShell>
@@ -95,68 +103,284 @@ function RankingsPage() {
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <Leaderboard
-          title="Top 10 Scorers"
-          icon={<SoccerBall size={14} />}
-          rows={topScorers}
-          metric={(a) => `${a.goals}`}
-          metricLabel="Goals"
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <RankBoard
+          title="Top Scorers"
+          unit="goals"
+          icon={<SoccerBall size={16} />}
+          rows={topScorers.map((a) => toRow(a, a.goals, `${a.matches} apps · ${a.gaPerGame.toFixed(2)} G+A/G`))}
           empty="No goals logged yet."
+          explain={{
+            criteria: [
+              `Career total goals across all Weekend Leagues.`,
+              `Requires ${MIN_MATCHES}+ appearances to qualify.`,
+            ],
+            tiebreakers: ["Higher G+A per game", "More appearances"],
+          }}
         />
-        <Leaderboard
-          title="Top 10 Playmakers"
-          icon={<SoccerBoot size={14} />}
-          rows={topPlaymakers}
-          metric={(a) => `${a.assists}`}
-          metricLabel="Assists"
+        <RankBoard
+          title="Top Playmakers"
+          unit="assists"
+          icon={<SoccerBoot size={16} />}
+          rows={topPlaymakers.map((a) => toRow(a, a.assists, `${a.matches} apps · ${a.gaPerGame.toFixed(2)} G+A/G`))}
           empty="No assists logged yet."
+          explain={{
+            criteria: [
+              `Career total assists across all Weekend Leagues.`,
+              `Requires ${MIN_MATCHES}+ appearances to qualify.`,
+            ],
+            tiebreakers: ["Higher G+A per game", "More appearances"],
+          }}
         />
-        <Leaderboard
-          title="Top 10 Performance"
+        <RankBoard
+          title="Top Performance"
+          unit="avg rating"
           icon={<Sparkles className="h-4 w-4" />}
-          rows={topRated}
-          metric={(a) => <RatingDisplay matches={a.matches} ratedMatches={a.ratedMatches} avgRating={a.avgRating} />}
-          metricLabel="Avg Rating"
+          rows={topRated.map((a) => toRow(a, a.avgRating, `${a.ratedMatches} rated · ${a.matches} apps`, a.avgRating.toFixed(2)))}
+          maxOverride={10}
           empty={`Need ${MIN_MATCHES}+ matches with a rating.`}
-          subline={`Min ${MIN_MATCHES} matches · ⚠ flags Avg < 6.0`}
+          explain={{
+            criteria: [
+              `Career average of all match ratings.`,
+              `Min ${MIN_MATCHES} appearances and at least one rated match.`,
+              `Bars scaled on a 0–10 rating scale.`,
+            ],
+            tiebreakers: ["More rated matches", "More appearances"],
+          }}
         />
-        <Leaderboard
-          title="Top 10 MVPs"
+        <RankBoard
+          title="Top MVPs"
+          unit="MVPs"
           icon={<Trophy className="h-4 w-4" />}
-          rows={topMvps}
-          metric={(a) => `${a.mvpCount}`}
-          metricLabel="MVPs"
+          rows={topMvps.map((a) => toRow(a, a.mvpCount, `${a.matches} apps · ${a.avgRating.toFixed(2)} avg`))}
           empty="No MVP awards yet. Highest-rated player per match earns the badge."
+          explain={{
+            criteria: [
+              `MVP = highest-rated player in a match (one per match).`,
+              `Requires ${MIN_MATCHES}+ appearances to qualify.`,
+            ],
+            tiebreakers: ["Higher career avg rating"],
+          }}
         />
-        <Leaderboard
-          title="Top 10 Clean Sheets"
+        <RankBoard
+          title="Top Clean Sheets"
+          unit="CS"
           icon={<Shield className="h-4 w-4" />}
-          rows={topCleanSheets}
-          metric={(a) => `${a.cleanSheets}`}
-          metricLabel="CS"
+          rows={topCleanSheets.map((a) => toRow(a, a.cleanSheets, `${a.matches} apps · ${a.goalsConceded} GA`))}
           empty="No clean sheets yet."
+          explain={{
+            criteria: [
+              `Matches where the team conceded zero goals with the player on the pitch.`,
+              `Requires ${MIN_MATCHES}+ appearances to qualify.`,
+            ],
+            tiebreakers: ["Fewer total goals conceded"],
+          }}
         />
-        <Leaderboard
-          title="Top 10 Super Subs"
+        <RankBoard
+          title="Top Super Subs"
+          unit="impact"
           icon={<Zap className="h-4 w-4" />}
-          rows={topSubs}
-          metric={(a) => a.subImpact.toFixed(2)}
-          metricLabel="Impact"
+          rows={topSubs.map((a) => toRow(a, a.subImpact, `${a.subMatches} sub apps · ${a.goals}G/${a.assists}A`, a.subImpact.toFixed(2)))}
           empty="No substitute appearances yet. Mark players as Sub when logging matches."
-          subline="Min 2 sub appearances · (G+A/app) × √apps × rating"
+          explain={{
+            criteria: [
+              `Impact score for players coming off the bench.`,
+              `Formula: (G+A per sub app) × √(sub apps) × avg rating.`,
+              `Requires at least 2 sub appearances.`,
+            ],
+            tiebreakers: ["Higher score wins outright"],
+          }}
         />
+      </div>
 
+      <div className="mt-6">
         <ClutchLeaderboard rows={topClutch} />
       </div>
     </AppShell>
   );
 }
 
-function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
+interface LegendRow {
+  id: string;
+  name: string;
+  value: number;
+  formatted?: string;
+  sub: string;
+  position?: string;
+}
+
+interface ExplainConfig {
+  criteria: string[];
+  tiebreakers: string[];
+}
+
+function RankBoard({
+  title,
+  unit,
+  icon,
+  rows,
+  empty,
+  explain,
+  maxOverride,
+}: {
+  title: string;
+  unit: string;
+  icon: React.ReactNode;
+  rows: LegendRow[];
+  empty: string;
+  explain: ExplainConfig;
+  maxOverride?: number;
+}) {
+  const max = maxOverride ?? (rows.reduce((m, r) => Math.max(m, r.value), 0) || 1);
+  const hero = rows[0];
+  const rest = rows.slice(1);
+
+  return (
+    <div className="surface-card p-4 sm:p-5 flex flex-col min-w-0">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-2 pb-3 border-b border-border/50 min-w-0">
+        <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold flex items-center gap-2 min-w-0">
+          <span className="text-primary shrink-0">{icon}</span>
+          <span className="truncate">{title}</span>
+        </div>
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-mono shrink-0">
+          {unit}
+        </span>
+      </div>
+
+      {rows.length === 0 ? (
+        <div className="text-sm text-muted-foreground py-8 text-center">{empty}</div>
+      ) : (
+        <>
+          {/* Hero row — the #1 */}
+          {hero && (
+            <div className="mt-4 flex items-end justify-between gap-3 min-w-0">
+              <div className="min-w-0 flex-1">
+                <div className="text-[9px] uppercase tracking-[0.3em] text-primary font-bold">Leader</div>
+                <div className="font-display text-base sm:text-lg truncate mt-0.5">{hero.name}</div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5 truncate flex items-center gap-1.5">
+                  {hero.position && <PositionBadge position={hero.position as never} size="xs" />}
+                  {hero.sub}
+                </div>
+              </div>
+              <div className="font-display stat-num text-4xl sm:text-5xl leading-none text-foreground tabular-nums shrink-0">
+                {hero.formatted ?? hero.value}
+              </div>
+            </div>
+          )}
+
+          {/* Progress-bar leaderboard */}
+          <ol className="mt-4 pt-3 border-t border-border/40 space-y-2.5 flex-1">
+            {hero && <RankBar rank={1} row={hero} max={max} highlighted />}
+            {rest.map((r, i) => (
+              <RankBar key={r.id} rank={i + 2} row={r} max={max} />
+            ))}
+          </ol>
+        </>
+      )}
+
+      <ExplainPanel explain={explain} />
+    </div>
+  );
+}
+
+function RankBar({
+  rank,
+  row,
+  max,
+  highlighted = false,
+}: {
+  rank: number;
+  row: LegendRow;
+  max: number;
+  highlighted?: boolean;
+}) {
+  const pct = Math.max(2, (row.value / max) * 100);
+  return (
+    <li className="flex items-center gap-2.5 min-w-0">
+      <span
+        className={`w-6 text-center font-mono text-[10px] font-bold shrink-0 ${
+          highlighted ? "text-primary" : "text-muted-foreground/70"
+        }`}
+      >
+        {String(rank).padStart(2, "0")}
+      </span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between gap-2 min-w-0">
+          <span
+            className={`text-xs sm:text-[13px] truncate min-w-0 ${
+              highlighted ? "font-semibold text-foreground" : "text-foreground/80"
+            }`}
+          >
+            {row.name}
+          </span>
+          <span className="font-mono stat-num text-xs sm:text-[13px] shrink-0 tabular-nums text-foreground/90">
+            {row.formatted ?? row.value}
+          </span>
+        </div>
+        <div className="mt-1 h-[3px] bg-secondary/50 rounded-full overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all ${
+              highlighted ? "bg-primary" : "bg-foreground/25"
+            }`}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </div>
+    </li>
+  );
+}
+
+function ExplainPanel({ explain }: { explain: ExplainConfig }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="surface-card p-5 lg:col-span-3">
+    <div className="mt-4 pt-3 border-t border-border/40">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-foreground transition"
+        aria-expanded={open}
+      >
+        <span className="flex items-center gap-1.5">
+          <Info className="h-3 w-3" /> How this is ranked
+        </span>
+        <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="mt-3 space-y-3 text-[11px] leading-relaxed">
+          <div>
+            <div className="text-[9px] uppercase tracking-[0.3em] text-primary font-bold mb-1">Criteria</div>
+            <ul className="space-y-1 text-muted-foreground">
+              {explain.criteria.map((c, i) => (
+                <li key={i} className="flex gap-1.5">
+                  <span className="text-primary/60 shrink-0">•</span>
+                  <span>{c}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <div className="text-[9px] uppercase tracking-[0.3em] text-primary font-bold mb-1">Tie-breakers</div>
+            <ol className="space-y-1 text-muted-foreground list-decimal list-inside">
+              {explain.tiebreakers.map((t, i) => (
+                <li key={i}>{t}</li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
+  const [open, setOpen] = useState(false);
+  const hero = rows[0];
+  const rest = rows.slice(1);
+  const max = rows.reduce((m, r) => Math.max(m, Math.abs(r.clutchScore)), 0) || 1;
+
+  return (
+    <div className="surface-card p-4 sm:p-5">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -172,178 +396,127 @@ function ClutchLeaderboard({ rows }: { rows: ClutchAgg[] }) {
           <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
         </div>
       </button>
-      {open && (<div className="mt-4">
-      <div className="text-[11px] text-muted-foreground mb-3">
-        Career performance during the final WL stretch vs baseline. Min {CLUTCH_MIN_MATCHES} clutch apps.
-      </div>
 
-      {rows.length === 0 ? (
-        <div className="text-sm text-muted-foreground py-6 text-center">
-          No player has {CLUTCH_MIN_MATCHES}+ rated appearances in matches 11–15 yet.
+      {open && (
+        <div className="mt-4">
+          <div className="text-[11px] text-muted-foreground mb-3">
+            Career performance during the final WL stretch (matches 11–15) vs baseline. Min {CLUTCH_MIN_MATCHES} clutch apps.
+          </div>
+
+          {rows.length === 0 ? (
+            <div className="text-sm text-muted-foreground py-6 text-center">
+              No player has {CLUTCH_MIN_MATCHES}+ rated appearances in matches 11–15 yet.
+            </div>
+          ) : (
+            <>
+              {hero && (
+                <div className="mt-2 flex items-end justify-between gap-3 min-w-0 pb-4 border-b border-border/40">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[9px] uppercase tracking-[0.3em] text-primary font-bold flex items-center gap-1.5">
+                      <Flame className="h-3 w-3" /> Clutch Leader
+                    </div>
+                    <div className="font-display text-base sm:text-lg truncate mt-0.5">{hero.player.name}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5 truncate flex items-center gap-1.5">
+                      <PositionBadge position={hero.player.position} size="xs" />
+                      {hero.clutch.matches} clutch · {hero.clutch.avgRating.toFixed(2)} vs {hero.baseline.avgRating.toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="font-display stat-num text-4xl sm:text-5xl leading-none text-foreground tabular-nums shrink-0">
+                    {hero.clutchScore >= 0 ? "+" : ""}
+                    {hero.clutchScore.toFixed(2)}
+                  </div>
+                </div>
+              )}
+
+              <ol className="mt-4 space-y-2.5">
+                {hero && <ClutchBar rank={1} row={hero} max={max} highlighted />}
+                {rest.map((c, i) => (
+                  <ClutchBar key={c.player.id} rank={i + 2} row={c} max={max} />
+                ))}
+              </ol>
+            </>
+          )}
+
+          <ExplainPanel
+            explain={{
+              criteria: [
+                `"Clutch" window = matches 11–15 of each Weekend League.`,
+                `Score = rating Δ (clutch − baseline) + 1.5 × G+A per game Δ.`,
+                `Requires ${CLUTCH_MIN_MATCHES}+ appearances in the clutch window with at least one rated match.`,
+                `Clutch King badge for elite lift; Pressure Drop badge for a sharp decline.`,
+              ],
+              tiebreakers: ["Higher rating Δ", "Higher clutch avg rating"],
+            }}
+          />
         </div>
-      ) : (
-        <ol className="space-y-1.5">
-          {rows.map((c, i) => {
-            const rank = i + 1;
-            const medal =
-              rank === 1 ? "text-amber-300" :
-              rank === 2 ? "text-zinc-300" :
-              rank === 3 ? "text-amber-700" :
-              "text-muted-foreground";
-            const delta = c.ratingDelta;
-            const score = c.clutchScore;
-            const deltaTone = score >= 0.0001 ? "text-primary" : score <= -0.0001 ? "text-destructive" : "text-muted-foreground";
-            const sign = score > 0 ? "+" : "";
-            return (
-              <li
-                key={c.player.id}
-                className={`flex items-center gap-3 px-3 py-2 rounded-md border ${
-                  c.badge === "king"
-                    ? "border-primary/40 bg-primary/10"
-                    : c.badge === "drop"
-                      ? "border-destructive/40 bg-destructive/5"
-                      : "border-border/40 bg-background/50"
-                }`}
-              >
-                <div className={`stat-num font-display text-xl w-7 text-right shrink-0 ${medal}`}>{rank}</div>
-                <div className="min-w-0 flex-1">
-                  <div className="font-semibold truncate flex items-center gap-1.5">
-                    {c.player.name}
-                    {c.badge === "king" && (
-                      <span
-                        title={CLUTCH_KING_TOOLTIP}
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[11px] uppercase tracking-wider font-bold cursor-help"
-                      >
-                        <Flame className="h-2.5 w-2.5" /> Clutch King
-                      </span>
-                    )}
-                    {c.badge === "drop" && (
-                      <span
-                        title={CLUTCH_DROP_TOOLTIP}
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-destructive/20 text-destructive text-[11px] uppercase tracking-wider font-bold cursor-help"
-                      >
-                        <TrendingDown className="h-2.5 w-2.5" /> Pressure Drop
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground truncate flex items-center gap-1.5">
-                    <PositionBadge position={c.player.position} size="xs" /> {c.clutch.matches} clutch · {c.baseline.matches} total · {c.clutch.goals}G/{c.clutch.assists}A
-                  </div>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className="font-display text-base stat-num">
-                    <span className="text-foreground">{c.clutch.avgRating.toFixed(2)}</span>
-                    <span className="text-muted-foreground text-xs"> vs {c.baseline.avgRating.toFixed(2)}</span>
-                  </div>
-                  <div className={`text-[11px] font-mono ${deltaTone}`} title={`Score = rating Δ ${delta >= 0 ? "+" : ""}${delta.toFixed(2)} + 1.5× G+A/game Δ ${c.gaPerGameDelta >= 0 ? "+" : ""}${c.gaPerGameDelta.toFixed(2)}`}>
-                    {sign}{score.toFixed(2)} <span className="text-muted-foreground/70">score</span>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
       )}
-      </div>)}
     </div>
   );
 }
 
-function Leaderboard({
-  title, icon, rows, metric, metricLabel, empty, subline,
+function ClutchBar({
+  rank,
+  row,
+  max,
+  highlighted = false,
 }: {
-  title: string;
-  icon: React.ReactNode;
-  rows: PlayerAgg[];
-  metric: (a: PlayerAgg) => React.ReactNode;
-  metricLabel: string;
-  empty: string;
-  subline?: string;
+  rank: number;
+  row: ClutchAgg;
+  max: number;
+  highlighted?: boolean;
 }) {
-  const top3 = rows.slice(0, 3);
-  const rest = rows.slice(3);
-
+  const score = row.clutchScore;
+  const pct = Math.max(2, (Math.abs(score) / max) * 100);
+  const positive = score >= 0;
+  const barTone = positive
+    ? highlighted
+      ? "bg-primary"
+      : "bg-foreground/25"
+    : "bg-destructive/70";
+  const valueTone = positive ? "text-foreground/90" : "text-destructive";
   return (
-    <div className="surface-card p-5">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2 text-primary">
-          {icon}
-          <h2 className="font-display text-lg tracking-wider">{title}</h2>
+    <li className="flex items-center gap-2.5 min-w-0">
+      <span
+        className={`w-6 text-center font-mono text-[10px] font-bold shrink-0 ${
+          highlighted ? "text-primary" : "text-muted-foreground/70"
+        }`}
+      >
+        {String(rank).padStart(2, "0")}
+      </span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between gap-2 min-w-0">
+          <span
+            className={`text-xs sm:text-[13px] truncate min-w-0 flex items-center gap-1.5 ${
+              highlighted ? "font-semibold text-foreground" : "text-foreground/80"
+            }`}
+          >
+            {row.player.name}
+            {row.badge === "king" && (
+              <span
+                title={CLUTCH_KING_TOOLTIP}
+                className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded-full bg-primary/20 text-primary text-[9px] uppercase tracking-wider font-bold shrink-0"
+              >
+                <Flame className="h-2 w-2" /> King
+              </span>
+            )}
+            {row.badge === "drop" && (
+              <span
+                title={CLUTCH_DROP_TOOLTIP}
+                className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded-full bg-destructive/20 text-destructive text-[9px] uppercase tracking-wider font-bold shrink-0"
+              >
+                <TrendingDown className="h-2 w-2" /> Drop
+              </span>
+            )}
+          </span>
+          <span className={`font-mono stat-num text-xs sm:text-[13px] shrink-0 tabular-nums ${valueTone}`}>
+            {positive ? "+" : ""}
+            {score.toFixed(2)}
+          </span>
         </div>
-        <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">{metricLabel}</div>
+        <div className="mt-1 h-[3px] bg-secondary/50 rounded-full overflow-hidden">
+          <div className={`h-full rounded-full transition-all ${barTone}`} style={{ width: `${pct}%` }} />
+        </div>
       </div>
-      {subline && <div className="text-[11px] text-muted-foreground mb-3 -mt-2">{subline}</div>}
-      {rows.length === 0 ? (
-        <div className="text-sm text-muted-foreground py-6 text-center">{empty}</div>
-      ) : (
-        <>
-          {/* Podium: top 3 highlighted */}
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            {top3.map((a, i) => {
-              const rank = i + 1;
-              const tone =
-                rank === 1
-                  ? { ring: "ring-2 ring-amber-300/70", bg: "bg-gradient-to-b from-amber-400/20 to-amber-500/5", medal: "text-amber-300", crown: "👑" }
-                  : rank === 2
-                    ? { ring: "ring-1 ring-zinc-300/60", bg: "bg-gradient-to-b from-zinc-300/15 to-zinc-400/5", medal: "text-zinc-200", crown: "🥈" }
-                    : { ring: "ring-1 ring-amber-700/50", bg: "bg-gradient-to-b from-amber-700/15 to-amber-800/5", medal: "text-amber-600", crown: "🥉" };
-              const isFirst = rank === 1;
-              return (
-                <div
-                  key={a.player.id}
-                  className={`relative rounded-lg p-3 flex flex-col items-center text-center ${tone.bg} ${tone.ring} ${isFirst ? "scale-[1.04]" : ""}`}
-                  style={isFirst ? { boxShadow: "0 0 20px -6px rgba(250, 204, 21, 0.4)" } : undefined}
-                >
-                  <div className={`absolute -top-2 left-2 font-display stat-num text-base ${tone.medal}`}>
-                    #{rank}
-                  </div>
-                  <div className="text-xl mb-1" aria-hidden>{tone.crown}</div>
-                  <div className={`font-display ${isFirst ? "text-3xl" : "text-2xl"} stat-num text-primary leading-none`}>
-                    {metric(a)}
-                  </div>
-                  <div className="font-semibold text-xs mt-2 truncate w-full" title={a.player.name}>
-                    {a.player.name}
-                  </div>
-                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5 flex items-center justify-center gap-1.5">
-                    <PositionBadge position={a.player.position} size="xs" /> {a.matches}MP
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Compact list: positions 4+ */}
-          {rest.length > 0 && (
-            <ol className="space-y-1.5">
-              {rest.map((a, i) => {
-                const rank = i + 4;
-                const status = performanceStatus(a);
-                const rowAlert =
-                  status === "critical"
-                    ? "border-warn-critical/60 bg-warn-critical/5"
-                    : status === "caution"
-                      ? "border-warn-caution/50 bg-warn-caution/5"
-                      : "bg-background/50 border-border/40";
-                return (
-                  <li key={a.player.id} className={`flex items-center gap-3 px-3 py-2 rounded-md transition border ${rowAlert}`}>
-                    <div className="stat-num font-display text-base w-7 text-right shrink-0 text-muted-foreground">{rank}</div>
-                    <div className="min-w-0 flex-1">
-                      <div className="font-semibold truncate flex items-center gap-1.5 text-sm">
-                        {status === "critical" && <AlertTriangle className="h-3 w-3 text-warn-critical shrink-0" />}
-                        {a.player.name}
-                      </div>
-                      <div className="text-[11px] uppercase tracking-wider text-muted-foreground truncate flex items-center gap-1.5">
-                        <PositionBadge position={a.player.position} size="xs" /> {a.player.overall} · {a.matches} apps
-                      </div>
-                    </div>
-                    <div className="font-display text-lg stat-num text-primary shrink-0">{metric(a)}</div>
-                  </li>
-                );
-              })}
-            </ol>
-          )}
-        </>
-      )}
-    </div>
+    </li>
   );
 }
