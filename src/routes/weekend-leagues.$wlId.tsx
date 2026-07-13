@@ -14,7 +14,7 @@ import { ReportModal } from "@/components/ReportModal";
 import { RankBadge } from "@/components/RankBadge";
 import { LossStreakAlert } from "@/components/LossStreakAlert";
 import { PlayerCard } from "@/components/PlayerCard";
-import { PlayerDetailModal } from "@/components/PlayerDetailModal";
+
 import { ClubCrest } from "@/components/ClubCrest";
 import { OpponentCrest } from "@/components/OpponentCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
@@ -77,7 +77,7 @@ function WLDetail() {
   const [lossAlertOpen, setLossAlertOpen] = useState(false);
   const [lossAlertDismissed, setLossAlertDismissed] = useState(false);
   const [pickOpen, setPickOpen] = useState(false);
-  const [detailPlayer, setDetailPlayer] = useState<Player | null>(null);
+  const openPlayer = (p: Player) => navigate({ to: "/players/$id", params: { id: p.id } });
   const lossAlertShownAtRef = useRef<string | null>(null);
 
   const matches = useMemo(
@@ -397,12 +397,12 @@ function WLDetail() {
                       formation={wl.formation}
                       assignments={wl.startingAssignments}
                       players={players}
-                      onPick={setDetailPlayer}
+                      onPick={openPlayer}
                     />
                     <BenchList
                       benchIds={wl.benchPlayerIds ?? []}
                       players={players}
-                      onPick={setDetailPlayer}
+                      onPick={openPlayer}
                     />
                   </>
                 ) : (
@@ -516,9 +516,11 @@ function WLDetail() {
                         </div>
                         <div className="ml-1 hidden md:flex items-center gap-1 flex-wrap min-w-0">
                           <PlatformBadge platform={m.platform} size="xs" />
-                          {m.extraTime && <Tag tone="warn">ET</Tag>}
-                          {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
-                          {m.rageQuit && <Tag tone="rq">RQ</Tag>}
+                         {m.disconnect && <Tag tone="dc">DC</Tag>}
+                         {typeof m.connection === "number" && <Tag tone="conn">CONN {m.connection}/5</Tag>}
+                         {m.extraTime && <Tag tone="warn">ET</Tag>}
+                         {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
+                         {m.rageQuit && <Tag tone="rq">RQ</Tag>}
                         </div>
                       </div>
 
@@ -625,14 +627,6 @@ function WLDetail() {
         />
       )}
       {lossAlertOpen && <LossStreakAlert onClose={() => { setLossAlertOpen(false); setLossAlertDismissed(true); }} />}
-      {detailPlayer && (
-        <PlayerDetailModal
-          player={detailPlayer}
-          matches={allMatches}
-          wls={wls}
-          onClose={() => setDetailPlayer(null)}
-        />
-      )}
       {pickOpen && (
         <PlayerPickDialog
           onClose={() => setPickOpen(false)}
@@ -712,10 +706,12 @@ function InlineGD({ value }: { value: number }) {
 }
 
 
-function Tag({ children, tone }: { children: React.ReactNode; tone: "warn" | "info" | "rq" }) {
+function Tag({ children, tone }: { children: React.ReactNode; tone: "warn" | "info" | "rq" | "dc" | "conn" }) {
   const cls =
     tone === "warn" ? "bg-amber-500/20 text-amber-300 border-amber-500/40" :
     tone === "info" ? "bg-sky-500/20 text-sky-300 border-sky-500/40" :
+    tone === "dc"   ? "bg-fuchsia-500/25 text-fuchsia-200 border-fuchsia-500/60" :
+    tone === "conn" ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/40" :
     "bg-destructive/20 text-destructive border-destructive/40";
   return (
     <span className={`text-[11px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${cls}`}>
