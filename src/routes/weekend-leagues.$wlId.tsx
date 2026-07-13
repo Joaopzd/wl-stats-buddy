@@ -564,6 +564,8 @@ function WLDetail() {
                       <PlatformBadge platform={m.platform} size="xs" />
                       <span className="font-semibold text-foreground/80">vs {oppLabel}</span>
                       <span className="font-mono">· {totalG}G · {totalA}A</span>
+                      {m.disconnect && <Tag tone="dc">DC</Tag>}
+                      {typeof m.connection === "number" && <Tag tone="conn">CONN {m.connection}/5</Tag>}
                       {m.extraTime && <Tag tone="warn">ET</Tag>}
                       {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
                       {m.rageQuit && <Tag tone="rq">RQ</Tag>}
