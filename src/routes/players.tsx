@@ -1,11 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers, useWLs, useStoreLoading, store } from "@/lib/store";
 import { aggregatePlayer, consecutiveWLAbsence, isCleanSheetEligible, isGoalsConcededEligible } from "@/lib/stats";
 import { RatingDisplay } from "@/components/RatingDisplay";
 import { PlayerCard } from "@/components/PlayerCard";
-import { PlayerDetailModal } from "@/components/PlayerDetailModal";
+
 import { PositionBadge } from "@/components/PositionBadge";
 import { Plus, Trash2, Pencil, X, Search, Archive, Activity, Sparkles } from "lucide-react";
 import { v4 as uuid } from "uuid";
@@ -48,7 +48,7 @@ const RARITY_GROUPS: { label: string; items: Rarity[] }[] = [
       "FUT Birthday Icon", "Heroes Ultimate Scream", "Journey of Nations", "National Pride",
       "Icon TOTY", "MH TOTS", "TOTS Highlights",
       "UEFA Europa League", "UEFA Champions League", "UEFA Conference League", "Showdown",
-      "FOF: Greats of The Game Icon", "FOF: Greats of The Game Hero", "FOF: Glory Hunters", "FOF: Star Perform",
+      "FOF: Greats of The Game Icon", "FOF: Greats of The Game Hero", "FOF: Glory Hunters", "FOF: Star Perform", "FOF: Phenoms",
     ],
   },
   { label: "Legends", items: ["Icon Base", "Hero Base"] },
@@ -77,7 +77,7 @@ function PlayersPage() {
   const [minMvp, setMinMvp] = useState<string>("");
   const [minCs, setMinCs] = useState<string>("");
   const [minRating, setMinRating] = useState<string>("");
-  const [detailPlayer, setDetailPlayer] = useState<Player | null>(null);
+  const navigate = useNavigate();
   type RosterView = "active" | "dev" | "archived";
   const [rosterView, setRosterView] = useState<RosterView>("active");
 
@@ -315,7 +315,7 @@ function PlayersPage() {
               </thead>
               <tbody>
                 {filtered.map((a) => (
-                  <tr key={a.player.id} onClick={() => setDetailPlayer(a.player)} className="border-t border-border/40 hover:bg-secondary/30 cursor-pointer">
+                  <tr key={a.player.id} onClick={() => navigate({ to: "/players/$id", params: { id: a.player.id } })} className="border-t border-border/40 hover:bg-secondary/30 cursor-pointer">
                     <td className="p-2">
                       <div className="flex items-center gap-3 min-w-0">
                         <PlayerCard name={a.player.name} overall={a.player.overall} position={a.player.position} rarity={a.player.rarity} imageUrl={a.player.imageUrl} size="md" />
@@ -426,14 +426,6 @@ function PlayersPage() {
         />
       )}
 
-      {detailPlayer && (
-        <PlayerDetailModal
-          player={detailPlayer}
-          matches={matches}
-          wls={wls}
-          onClose={() => setDetailPlayer(null)}
-        />
-      )}
     </AppShell>
   );
 }

@@ -57,6 +57,7 @@ export const rarityIcon = (r: Rarity): ComponentType<LucideProps> => {
     case "FOF: Greats of The Game Hero": return Shield;
     case "FOF: Glory Hunters": return Trophy;
     case "FOF: Star Perform": return Star;
+    case "FOF: Phenoms": return Sparkles;
     default: return Circle;
   }
 };
@@ -200,6 +201,8 @@ export const rarityVisual = (r: Rarity): RarityVisual => {
       return solid("#4cd4a5", "#eebdf5");
     case "FOF: Star Perform":
       return solid("#13c49c", "#200b81");
+    case "FOF: Phenoms":
+      return solid("#3b3489", "#3b3489");
 
     // ===== Legends (kept) =====
     case "Icon Base":
@@ -281,6 +284,7 @@ export const raritySwatch = (r: Rarity): string => {
     "FOF: Greats of The Game Hero": "#6926e9",
     "FOF: Glory Hunters": "#4cd4a5",
     "FOF: Star Perform": "#13c49c",
+    "FOF: Phenoms": "#3b3489",
   };
   if (hexMap[r]) {
     // Rendered via inline style elsewhere; return a neutral utility for layout fallback.
