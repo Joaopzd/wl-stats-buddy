@@ -58,7 +58,18 @@ function Dashboard() {
 
   const summary = useMemo(() => aggregateAllTime(wls, matches), [wls, matches]);
   const platformStats = useMemo(() => platformRecords(matches), [matches]);
-  const leaders = useMemo(() => historicLeaders(players, matches), [players, matches]);
+  const aggs = useMemo(() => aggregateAllPlayers(players, matches).filter((a) => a.matches > 0), [players, matches]);
+  const topScorers = useMemo(() => [...aggs].filter((a) => a.goals > 0).sort((a, b) => b.goals - a.goals || b.ga - a.ga).slice(0, 5), [aggs]);
+  const topAssisters = useMemo(() => [...aggs].filter((a) => a.assists > 0).sort((a, b) => b.assists - a.assists || b.ga - a.ga).slice(0, 5), [aggs]);
+  const topContrib = useMemo(() => [...aggs].filter((a) => a.ga > 0).sort((a, b) => b.ga - a.ga || b.goals - a.goals).slice(0, 5), [aggs]);
+  const mostApps = useMemo(() => [...aggs].sort((a, b) => b.matches - a.matches || b.ga - a.ga).slice(0, 5), [aggs]);
+  const topRated = useMemo(() => {
+    const minApps = Math.max(1, Math.ceil(matches.length * 0.5));
+    return [...aggs]
+      .filter((a) => a.ratedMatches > 0 && a.matches >= minApps)
+      .sort((a, b) => b.avgRating - a.avgRating || b.ratedMatches - a.ratedMatches || b.matches - a.matches || b.ga - a.ga)
+      .slice(0, 5);
+  }, [aggs, matches.length]);
 
   return (
     <AppShell>
