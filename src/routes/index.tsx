@@ -3,8 +3,8 @@ import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { useMatches, usePlayers, useWLs, useClubName } from "@/lib/store";
 import {
+  aggregateAllPlayers,
   aggregateAllTime,
-  historicLeaders,
   platformRecords,
 } from "@/lib/stats";
 import { wlLabel } from "@/lib/types";
