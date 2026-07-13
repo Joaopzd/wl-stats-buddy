@@ -217,7 +217,7 @@ function Dashboard() {
             <LeaderBoardTile label="Most Apps" unit="appearances" icon={<Trophy className="h-3.5 w-3.5" />} rows={mostApps} metric={(a) => a.matches} sub={(a) => `${a.wins}W · ${Math.round(a.winRate * 100)}% WR`} empty="No matches yet." />
           </div>
 
-          <TopRatedBoard rows={leaders.topRated} />
+          <TopRatedBoard rows={topRated} />
           <TopRatedDetailsPanel totalMatches={matches.length} />
         </>
       )}
