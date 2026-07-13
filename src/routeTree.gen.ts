@@ -18,7 +18,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as WeekendLeaguesIndexRouteImport } from './routes/weekend-leagues.index'
 import { Route as WeekendLeaguesCompareRouteImport } from './routes/weekend-leagues.compare'
 import { Route as WeekendLeaguesWlIdRouteImport } from './routes/weekend-leagues.$wlId'
-import { Route as PlayersIdRouteImport } from './routes/players.$id'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -65,20 +64,14 @@ const WeekendLeaguesWlIdRoute = WeekendLeaguesWlIdRouteImport.update({
   path: '/weekend-leagues/$wlId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlayersIdRoute = PlayersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => PlayersRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/club': typeof ClubRoute
-  '/players': typeof PlayersRouteWithChildren
+  '/players': typeof PlayersRoute
   '/rankings': typeof RankingsRoute
   '/settings': typeof SettingsRoute
-  '/players/$id': typeof PlayersIdRoute
   '/weekend-leagues/$wlId': typeof WeekendLeaguesWlIdRoute
   '/weekend-leagues/compare': typeof WeekendLeaguesCompareRoute
   '/weekend-leagues/': typeof WeekendLeaguesIndexRoute
@@ -87,10 +80,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/club': typeof ClubRoute
-  '/players': typeof PlayersRouteWithChildren
+  '/players': typeof PlayersRoute
   '/rankings': typeof RankingsRoute
   '/settings': typeof SettingsRoute
-  '/players/$id': typeof PlayersIdRoute
   '/weekend-leagues/$wlId': typeof WeekendLeaguesWlIdRoute
   '/weekend-leagues/compare': typeof WeekendLeaguesCompareRoute
   '/weekend-leagues': typeof WeekendLeaguesIndexRoute
@@ -100,10 +92,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/club': typeof ClubRoute
-  '/players': typeof PlayersRouteWithChildren
+  '/players': typeof PlayersRoute
   '/rankings': typeof RankingsRoute
   '/settings': typeof SettingsRoute
-  '/players/$id': typeof PlayersIdRoute
   '/weekend-leagues/$wlId': typeof WeekendLeaguesWlIdRoute
   '/weekend-leagues/compare': typeof WeekendLeaguesCompareRoute
   '/weekend-leagues/': typeof WeekendLeaguesIndexRoute
@@ -117,7 +108,6 @@ export interface FileRouteTypes {
     | '/players'
     | '/rankings'
     | '/settings'
-    | '/players/$id'
     | '/weekend-leagues/$wlId'
     | '/weekend-leagues/compare'
     | '/weekend-leagues/'
@@ -129,7 +119,6 @@ export interface FileRouteTypes {
     | '/players'
     | '/rankings'
     | '/settings'
-    | '/players/$id'
     | '/weekend-leagues/$wlId'
     | '/weekend-leagues/compare'
     | '/weekend-leagues'
@@ -141,7 +130,6 @@ export interface FileRouteTypes {
     | '/players'
     | '/rankings'
     | '/settings'
-    | '/players/$id'
     | '/weekend-leagues/$wlId'
     | '/weekend-leagues/compare'
     | '/weekend-leagues/'
@@ -151,7 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   ClubRoute: typeof ClubRoute
-  PlayersRoute: typeof PlayersRouteWithChildren
+  PlayersRoute: typeof PlayersRoute
   RankingsRoute: typeof RankingsRoute
   SettingsRoute: typeof SettingsRoute
   WeekendLeaguesWlIdRoute: typeof WeekendLeaguesWlIdRoute
@@ -224,32 +212,14 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WeekendLeaguesWlIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/players/$id': {
-      id: '/players/$id'
-      path: '/$id'
-      fullPath: '/players/$id'
-      preLoaderRoute: typeof PlayersIdRouteImport
-      parentRoute: typeof PlayersRoute
-    }
   }
 }
-
-interface PlayersRouteChildren {
-  PlayersIdRoute: typeof PlayersIdRoute
-}
-
-const PlayersRouteChildren: PlayersRouteChildren = {
-  PlayersIdRoute: PlayersIdRoute,
-}
-
-const PlayersRouteWithChildren =
-  PlayersRoute._addFileChildren(PlayersRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   ClubRoute: ClubRoute,
-  PlayersRoute: PlayersRouteWithChildren,
+  PlayersRoute: PlayersRoute,
   RankingsRoute: RankingsRoute,
   SettingsRoute: SettingsRoute,
   WeekendLeaguesWlIdRoute: WeekendLeaguesWlIdRoute,
