@@ -888,9 +888,11 @@ function MatchTimeline({
                       <PlatformBadge platform={m.platform} size="xs" />
                     </div>
                     <div className="mt-1.5 flex flex-wrap justify-center gap-1">
-                      {m.extraTime && <Tag tone="warn">ET</Tag>}
-                      {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
-                      {m.rageQuit && <Tag tone="rq">RQ</Tag>}
+                     {m.disconnect && <Tag tone="dc">DC</Tag>}
+                     {typeof m.connection === "number" && <Tag tone="conn">C{m.connection}</Tag>}
+                     {m.extraTime && <Tag tone="warn">ET</Tag>}
+                     {m.penalties && <Tag tone="info">PEN{m.penaltyWinner === "us" ? "✓" : "✗"}</Tag>}
+                     {m.rageQuit && <Tag tone="rq">RQ</Tag>}
                     </div>
                     <div className="mt-1.5 text-[11px] font-mono text-muted-foreground text-center tabular-nums">
                       {totalG}G · {totalA}A
