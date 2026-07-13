@@ -211,10 +211,10 @@ function Dashboard() {
             meta="Career-long benchmarks"
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-            <LeaderPodium label="Top Scorer" agg={leaders.topScorer} metric={(a) => `${a.goals}`} sub="goals" icon={<SoccerBall size={14} className="text-primary" />} />
-            <LeaderPodium label="Top Assister" agg={leaders.topAssister} metric={(a) => `${a.assists}`} sub="assists" icon={<SoccerBoot size={14} className="text-primary" />} />
-            <LeaderPodium label="Top G+A" agg={leaders.topContrib} metric={(a) => `${a.ga}`} sub="contributions" icon={<Sparkles className="h-3.5 w-3.5 text-primary" />} />
-            <LeaderPodium label="Most Apps" agg={leaders.mostApps} metric={(a) => `${a.matches}`} sub="appearances" icon={<Trophy className="h-3.5 w-3.5 text-primary" />} />
+            <LeaderBoardTile label="Top Scorers" unit="goals" icon={<SoccerBall size={14} />} rows={topScorers} metric={(a) => a.goals} sub={(a) => `${a.matches} apps · ${a.gaPerGame.toFixed(2)} G+A/G`} empty="No goals logged yet." />
+            <LeaderBoardTile label="Top Assisters" unit="assists" icon={<SoccerBoot size={14} />} rows={topAssisters} metric={(a) => a.assists} sub={(a) => `${a.matches} apps · ${a.gaPerGame.toFixed(2)} G+A/G`} empty="No assists logged yet." />
+            <LeaderBoardTile label="Top G+A" unit="contributions" icon={<Sparkles className="h-3.5 w-3.5" />} rows={topContrib} metric={(a) => a.ga} sub={(a) => `${a.goals}G / ${a.assists}A`} empty="No contributions yet." />
+            <LeaderBoardTile label="Most Apps" unit="appearances" icon={<Trophy className="h-3.5 w-3.5" />} rows={mostApps} metric={(a) => a.matches} sub={(a) => `${a.wins}W · ${Math.round(a.winRate * 100)}% WR`} empty="No matches yet." />
           </div>
 
           <TopRatedBoard rows={leaders.topRated} />
