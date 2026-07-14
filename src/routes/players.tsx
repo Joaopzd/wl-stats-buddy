@@ -157,28 +157,29 @@ function PlayersPage() {
     return c;
   }, [aggs]);
 
-  // Auto-archive: any active/dev player absent from the two most recent WLs
+  // Auto-archive: any active/dev player absent from the four most recent WLs
   // gets flipped to Archived. Runs once per (players, wls, matches) change.
   const autoArchiveRan = useRef<string>("");
   useEffect(() => {
     if (loading) return;
-    if (wls.length < 2) return;
+    if (wls.length < 4) return;
     const scanKey = `${wls.length}:${wls.map((w) => w.id).join(",")}:${players.length}`;
     if (autoArchiveRan.current === scanKey) return;
     autoArchiveRan.current = scanKey;
     const toArchive: Player[] = [];
     for (const p of players) {
       if (p.isArchived) continue;
-      if (consecutiveWLAbsence(p, wls, matches) >= 2) toArchive.push(p);
+      if (consecutiveWLAbsence(p, wls, matches) >= 4) toArchive.push(p);
     }
     if (toArchive.length === 0) return;
     for (const p of toArchive) {
       store.updatePlayer(p.id, { isArchived: true, isInDevelopment: false });
     }
     toast.info(
-      `${toArchive.length} player${toArchive.length === 1 ? "" : "s"} auto-archived after 2 WL absence`,
+      `${toArchive.length} player${toArchive.length === 1 ? "" : "s"} auto-archived after 4 WL absence`,
     );
   }, [players, wls, matches, loading]);
+
 
   const setStatus = (p: Player, status: RosterView) => {
     const patch =
