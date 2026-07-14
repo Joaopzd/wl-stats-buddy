@@ -361,7 +361,12 @@ export function MatchDialog({
               ) : (
                 <div className="space-y-2.5">
                   {[...squad]
-                    .sort((a, b) => Number(startingIdSet.has(b.id)) - Number(startingIdSet.has(a.id)))
+                    .sort((a, b) => {
+                      const startDiff = Number(startingIdSet.has(b.id)) - Number(startingIdSet.has(a.id));
+                      if (startDiff !== 0) return startDiff;
+                      const order = ["GK","LB","CB","RB","CDM","CM","LM","RM","CAM","LW","RW","ST"];
+                      return order.indexOf(a.position) - order.indexOf(b.position);
+                    })
                     .map((p) => {
                       const perf = perfs[p.id];
                       const isSub = perf.role === "sub";
