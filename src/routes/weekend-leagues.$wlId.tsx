@@ -479,7 +479,7 @@ function WLDetail() {
               No matches yet.
             </div>
           ) : (
-            <div className="flex flex-col gap-2 max-h-[65vh] overflow-y-auto pr-1 scroll-accent">
+            <div className="flex flex-col gap-2">
               {matches.map((m) => {
                 const win = matchIsWin(m);
                 const totalG = m.performances.reduce((s, p) => s + (p.goals || 0), 0);
