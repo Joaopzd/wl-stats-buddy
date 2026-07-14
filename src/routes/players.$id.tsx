@@ -56,7 +56,7 @@ export const Route = createFileRoute("/players/$id")({
   }),
   component: PlayerProfilePage,
   notFoundComponent: () => (
-    <AppShell title="Player">
+    <AppShell>
       <div className="surface-card p-8 text-center text-sm text-muted-foreground">
         Player not found.
       </div>
@@ -76,14 +76,14 @@ function PlayerProfilePage() {
 
   if (loading && !player) {
     return (
-      <AppShell title="Player">
+      <AppShell>
         <div className="surface-card p-8 text-center text-sm text-muted-foreground">Loading…</div>
       </AppShell>
     );
   }
   if (!player) {
     return (
-      <AppShell title="Player">
+      <AppShell>
         <div className="surface-card p-8 text-center space-y-3">
           <div className="text-sm text-muted-foreground">This player doesn't exist or was removed.</div>
           <Link
@@ -98,7 +98,7 @@ function PlayerProfilePage() {
   }
 
   return (
-    <AppShell title={player.name}>
+    <AppShell>
       <PlayerProfile
         player={player}
         matches={matches}
