@@ -202,6 +202,23 @@ function PlayerProfile({
     return points;
   }, [player.id, wlsWithPlayer]);
 
+  // Last 5 matches played (chronological, newest first).
+  const last5 = useMemo(() => {
+    const rows: { match: Match; wl: WeekendLeague; perf: Match["performances"][number] }[] = [];
+    const sortedWls = [...wls].sort((a, b) => a.number - b.number || a.createdAt - b.createdAt);
+    for (const wl of sortedWls) {
+      const wlMatches = matches
+        .filter((m) => m.wlId === wl.id)
+        .sort((a, b) => a.index - b.index || a.createdAt - b.createdAt);
+      for (const m of wlMatches) {
+        const perf = m.performances.find((p) => p.playerId === player.id);
+        if (!perf) continue;
+        rows.push({ match: m, wl, perf });
+      }
+    }
+    return rows.slice(-5).reverse();
+  }, [player.id, matches, wls]);
+
   return (
     <div className="space-y-5">
       {/* Header bar */}
@@ -214,6 +231,14 @@ function PlayerProfile({
           <ArrowLeft className="h-3.5 w-3.5" /> Back
         </button>
         <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setEditOpen(true)}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-primary/60 bg-primary/10 text-primary hover:bg-primary/20 text-[11px] uppercase tracking-wider font-semibold"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+            Edit
+          </button>
           <button
             type="button"
             onClick={() => {
