@@ -123,6 +123,7 @@ function PlayerProfile({
   wls: WeekendLeague[];
   onBack: () => void;
 }) {
+  const [editOpen, setEditOpen] = useState(false);
   const career = useMemo(() => aggregatePlayer(player, matches), [player, matches]);
 
   const wlsWithPlayer = useMemo(() => {
