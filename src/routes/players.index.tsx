@@ -431,7 +431,7 @@ function PlayersPage() {
   );
 }
 
-function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: () => void }) {
+export function PlayerForm({ existing, onClose }: { existing: Player | null; onClose: () => void }) {
   const [name, setName] = useState(existing?.name ?? "");
   const [position, setPosition] = useState<Position>(existing?.position ?? "ST");
   const [secondaryPositions, setSecondaryPositions] = useState<Position[]>(existing?.secondaryPositions ?? []);

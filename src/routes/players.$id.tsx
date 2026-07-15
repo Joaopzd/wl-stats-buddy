@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -11,6 +11,7 @@ import {
   ArchiveRestore,
   FlaskConical,
   TrendingUp,
+  Pencil,
 } from "lucide-react";
 import {
   LineChart,
@@ -46,6 +47,8 @@ import { store, useMatches, usePlayers, useWLs, useStoreLoading } from "@/lib/st
 import { wlLabel } from "@/lib/types";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
 import { toast } from "sonner";
+import { PlayerForm } from "./players.index";
+import { PlatformBadge } from "@/components/PlatformBadge";
 
 export const Route = createFileRoute("/players/$id")({
   head: () => ({
@@ -120,6 +123,7 @@ function PlayerProfile({
   wls: WeekendLeague[];
   onBack: () => void;
 }) {
+  const [editOpen, setEditOpen] = useState(false);
   const career = useMemo(() => aggregatePlayer(player, matches), [player, matches]);
 
   const wlsWithPlayer = useMemo(() => {
@@ -198,6 +202,23 @@ function PlayerProfile({
     return points;
   }, [player.id, wlsWithPlayer]);
 
+  // Last 5 matches played (chronological, newest first).
+  const last5 = useMemo(() => {
+    const rows: { match: Match; wl: WeekendLeague; perf: Match["performances"][number] }[] = [];
+    const sortedWls = [...wls].sort((a, b) => a.number - b.number || a.createdAt - b.createdAt);
+    for (const wl of sortedWls) {
+      const wlMatches = matches
+        .filter((m) => m.wlId === wl.id)
+        .sort((a, b) => a.index - b.index || a.createdAt - b.createdAt);
+      for (const m of wlMatches) {
+        const perf = m.performances.find((p) => p.playerId === player.id);
+        if (!perf) continue;
+        rows.push({ match: m, wl, perf });
+      }
+    }
+    return rows.slice(-5).reverse();
+  }, [player.id, matches, wls]);
+
   return (
     <div className="space-y-5">
       {/* Header bar */}
@@ -210,6 +231,14 @@ function PlayerProfile({
           <ArrowLeft className="h-3.5 w-3.5" /> Back
         </button>
         <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setEditOpen(true)}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-primary/60 bg-primary/10 text-primary hover:bg-primary/20 text-[11px] uppercase tracking-wider font-semibold"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+            Edit
+          </button>
           <button
             type="button"
             onClick={() => {
@@ -366,49 +395,142 @@ function PlayerProfile({
         </div>
       </div>
 
+      {/* Last 5 Matches */}
+      <div className="surface-card p-4">
+        <SectionHeader title="Últimas 5 Partidas" />
+        {last5.length === 0 ? (
+          <div className="text-xs text-muted-foreground italic">Nenhuma partida registrada.</div>
+        ) : (
+          <div className="space-y-2">
+            {last5.map(({ match, wl, perf }) => {
+              const win = matchIsWin(match);
+              const ratingColor =
+                perf.rating >= 8
+                  ? "text-primary"
+                  : perf.rating >= 6
+                    ? "text-foreground"
+                    : perf.rating > 0
+                      ? "text-warn-caution"
+                      : "text-muted-foreground";
+              return (
+                <Link
+                  key={match.id}
+                  to="/weekend-leagues/$wlId"
+                  params={{ wlId: wl.id }}
+                  className="flex items-center gap-3 rounded-md border border-border/60 bg-background/40 px-3 py-2 hover:border-primary/60 transition"
+                >
+                  <div
+                    className={`h-9 w-1 rounded-full shrink-0 ${
+                      match.disconnect
+                        ? "bg-warn-caution"
+                        : win
+                          ? "bg-primary"
+                          : "bg-destructive"
+                    }`}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
+                      <span>{wlLabel(wl)}</span>
+                      <span className="opacity-50">·</span>
+                      <span>M{match.index}</span>
+                      <PlatformBadge platform={match.platform} />
+                      {match.disconnect && (
+                        <span className="text-warn-caution normal-case">DISC</span>
+                      )}
+                      {match.mvpPlayerId === player.id && (
+                        <Trophy className="h-3 w-3 text-amber-300" />
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="font-display stat-num text-base tracking-wider">
+                        {match.scoreFor} <span className="text-muted-foreground">–</span> {match.scoreAgainst}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                        <span className="inline-flex items-center gap-0.5">
+                          <SoccerBall className="h-3 w-3" /> {perf.goals}
+                        </span>
+                        <span className="inline-flex items-center gap-0.5">
+                          <SoccerBoot className="h-3 w-3" /> {perf.assists}
+                        </span>
+                        {perf.role === "sub" && (
+                          <span className="text-[9px] uppercase tracking-wider px-1 rounded bg-muted/50">SUB</span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                  <div className={`font-display stat-num text-lg ${ratingColor}`}>
+                    {perf.rating > 0 ? perf.rating.toFixed(1) : "—"}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="surface-card p-4">
           <SectionHeader title="Rating Evolution" />
           {ratingSeries.length >= 2 ? (
-            <div className="h-56">
+            <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={ratingSeries} margin={{ top: 8, right: 12, left: -12, bottom: 4 }}>
-                  <CartesianGrid stroke="hsl(var(--border) / 0.4)" strokeDasharray="3 3" />
+                <LineChart data={ratingSeries} margin={{ top: 12, right: 16, left: 0, bottom: 8 }}>
+                  <defs>
+                    <linearGradient id="ratingFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid stroke="hsl(var(--border) / 0.5)" strokeDasharray="4 4" vertical={false} />
                   <XAxis
                     dataKey="idx"
                     stroke="hsl(var(--muted-foreground))"
-                    tick={{ fontSize: 10 }}
+                    tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
                     tickLine={false}
-                    axisLine={false}
+                    axisLine={{ stroke: "hsl(var(--border))" }}
+                    label={{ value: "Partidas", position: "insideBottom", offset: -4, fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
                   />
                   <YAxis
                     domain={[Math.max(0, Math.floor(Math.min(...ratingSeries.map((p) => p.rating)) - 0.5)), 10]}
                     stroke="hsl(var(--muted-foreground))"
-                    tick={{ fontSize: 10 }}
+                    tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
                     tickLine={false}
                     axisLine={false}
-                    width={32}
+                    width={36}
                   />
                   <RTooltip
                     contentStyle={{
                       background: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: 6,
-                      fontSize: 11,
+                      border: "1px solid hsl(var(--primary) / 0.5)",
+                      borderRadius: 8,
+                      fontSize: 12,
+                      padding: "8px 12px",
                     }}
                     labelFormatter={(_, items) => items?.[0]?.payload?.label ?? ""}
                     formatter={(v: number) => [v.toFixed(2), "Rating"]}
+                    cursor={{ stroke: "hsl(var(--primary) / 0.4)", strokeWidth: 1 }}
                   />
-                  <ReferenceLine y={6} stroke="hsl(var(--muted-foreground) / 0.5)" strokeDasharray="2 4" />
-                  <ReferenceLine y={career.avgRating || 0} stroke="hsl(var(--primary) / 0.4)" strokeDasharray="4 4" />
+                  <ReferenceLine
+                    y={career.avgRating || 0}
+                    stroke="hsl(var(--primary))"
+                    strokeDasharray="6 4"
+                    strokeOpacity={0.6}
+                    label={{
+                      value: `Média ${(career.avgRating || 0).toFixed(2)}`,
+                      position: "insideTopRight",
+                      fill: "hsl(var(--primary))",
+                      fontSize: 10,
+                    }}
+                  />
                   <Line
                     type="monotone"
                     dataKey="rating"
                     stroke="hsl(var(--primary))"
-                    strokeWidth={2}
-                    dot={{ r: 2.5, fill: "hsl(var(--primary))" }}
-                    activeDot={{ r: 4 }}
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: "hsl(var(--primary))", strokeWidth: 0 }}
+                    activeDot={{ r: 6, stroke: "hsl(var(--background))", strokeWidth: 2 }}
+                    fill="url(#ratingFill)"
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -421,50 +543,54 @@ function PlayerProfile({
         <div className="surface-card p-4">
           <SectionHeader title="Win % Evolution" />
           {winSeries.length >= 2 ? (
-            <div className="h-56">
+            <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={winSeries} margin={{ top: 8, right: 12, left: -12, bottom: 4 }}>
-                  <CartesianGrid stroke="hsl(var(--border) / 0.4)" strokeDasharray="3 3" />
+                <LineChart data={winSeries} margin={{ top: 12, right: 16, left: 0, bottom: 8 }}>
+                  <CartesianGrid stroke="hsl(var(--border) / 0.5)" strokeDasharray="4 4" vertical={false} />
                   <XAxis
                     dataKey="wl"
                     stroke="hsl(var(--muted-foreground))"
-                    tick={{ fontSize: 10 }}
+                    tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
                     tickLine={false}
-                    axisLine={false}
+                    axisLine={{ stroke: "hsl(var(--border))" }}
                   />
                   <YAxis
                     domain={[0, 100]}
                     stroke="hsl(var(--muted-foreground))"
-                    tick={{ fontSize: 10 }}
+                    tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
                     tickLine={false}
                     axisLine={false}
-                    width={32}
+                    width={40}
                     tickFormatter={(v) => `${v}%`}
                   />
                   <RTooltip
                     contentStyle={{
                       background: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: 6,
-                      fontSize: 11,
+                      border: "1px solid hsl(var(--primary) / 0.5)",
+                      borderRadius: 8,
+                      fontSize: 12,
+                      padding: "8px 12px",
                     }}
                     formatter={(v: number, name) => [`${v.toFixed(0)}%`, name === "winPct" ? "Career" : "This WL"]}
+                    cursor={{ stroke: "hsl(var(--primary) / 0.4)", strokeWidth: 1 }}
                   />
-                  <ReferenceLine y={50} stroke="hsl(var(--muted-foreground) / 0.5)" strokeDasharray="2 4" />
+                  <ReferenceLine y={50} stroke="hsl(var(--muted-foreground) / 0.6)" strokeDasharray="4 4" />
                   <Line
                     type="monotone"
                     dataKey="wlWinPct"
                     stroke="hsl(var(--accent))"
-                    strokeWidth={1.5}
-                    strokeDasharray="4 4"
-                    dot={{ r: 2, fill: "hsl(var(--accent))" }}
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                    dot={{ r: 3, fill: "hsl(var(--accent))", strokeWidth: 0 }}
+                    activeDot={{ r: 5 }}
                   />
                   <Line
                     type="monotone"
                     dataKey="winPct"
                     stroke="hsl(var(--primary))"
-                    strokeWidth={2.5}
-                    dot={{ r: 3, fill: "hsl(var(--primary))" }}
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: "hsl(var(--primary))", strokeWidth: 0 }}
+                    activeDot={{ r: 6, stroke: "hsl(var(--background))", strokeWidth: 2 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -473,17 +599,21 @@ function PlayerProfile({
             <ChartEmpty label="Need at least 2 WLs played to draw the trend." />
           )}
           {winSeries.length >= 2 && (
-            <div className="mt-2 flex items-center gap-3 text-[10px] uppercase tracking-wider text-muted-foreground">
-              <span className="inline-flex items-center gap-1">
-                <span className="inline-block h-1.5 w-4 rounded-sm bg-primary" /> Career
+            <div className="mt-2 flex items-center gap-4 text-[10px] uppercase tracking-wider text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="inline-block h-1 w-6 rounded-sm bg-primary" /> Career
               </span>
-              <span className="inline-flex items-center gap-1">
-                <span className="inline-block h-1.5 w-4 rounded-sm bg-accent opacity-70" /> Per WL
+              <span className="inline-flex items-center gap-1.5">
+                <span className="inline-block h-1 w-6 rounded-sm bg-accent opacity-70" /> Per WL
               </span>
             </div>
           )}
         </div>
       </div>
+
+      {editOpen && (
+        <PlayerForm existing={player} onClose={() => setEditOpen(false)} />
+      )}
     </div>
   );
 }
