@@ -14,7 +14,7 @@ import type { Player, Position, Rarity } from "@/lib/types";
 import { rarityVisual, raritySwatch, raritySwatchStyle, rarityIcon } from "@/lib/format";
 import { compressImageToDataURL } from "@/lib/imageCompress";
 
-export const Route = createFileRoute("/players")({
+export const Route = createFileRoute("/players/")({
   head: () => ({
     meta: [
       { title: "Players — PitchSide" },

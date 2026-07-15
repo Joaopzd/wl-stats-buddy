@@ -11,11 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RankingsRouteImport } from './routes/rankings'
-import { Route as PlayersRouteImport } from './routes/players'
 import { Route as ClubRouteImport } from './routes/club'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WeekendLeaguesIndexRouteImport } from './routes/weekend-leagues.index'
+import { Route as PlayersIndexRouteImport } from './routes/players.index'
 import { Route as WeekendLeaguesCompareRouteImport } from './routes/weekend-leagues.compare'
 import { Route as WeekendLeaguesWlIdRouteImport } from './routes/weekend-leagues.$wlId'
 import { Route as PlayersIdRouteImport } from './routes/players.$id'
@@ -28,11 +28,6 @@ const SettingsRoute = SettingsRouteImport.update({
 const RankingsRoute = RankingsRouteImport.update({
   id: '/rankings',
   path: '/rankings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlayersRoute = PlayersRouteImport.update({
-  id: '/players',
-  path: '/players',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClubRoute = ClubRouteImport.update({
@@ -55,6 +50,11 @@ const WeekendLeaguesIndexRoute = WeekendLeaguesIndexRouteImport.update({
   path: '/weekend-leagues/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlayersIndexRoute = PlayersIndexRouteImport.update({
+  id: '/players/',
+  path: '/players/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WeekendLeaguesCompareRoute = WeekendLeaguesCompareRouteImport.update({
   id: '/weekend-leagues/compare',
   path: '/weekend-leagues/compare',
@@ -66,33 +66,33 @@ const WeekendLeaguesWlIdRoute = WeekendLeaguesWlIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlayersIdRoute = PlayersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => PlayersRoute,
+  id: '/players/$id',
+  path: '/players/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/club': typeof ClubRoute
-  '/players': typeof PlayersRouteWithChildren
   '/rankings': typeof RankingsRoute
   '/settings': typeof SettingsRoute
   '/players/$id': typeof PlayersIdRoute
   '/weekend-leagues/$wlId': typeof WeekendLeaguesWlIdRoute
   '/weekend-leagues/compare': typeof WeekendLeaguesCompareRoute
+  '/players/': typeof PlayersIndexRoute
   '/weekend-leagues/': typeof WeekendLeaguesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/club': typeof ClubRoute
-  '/players': typeof PlayersRouteWithChildren
   '/rankings': typeof RankingsRoute
   '/settings': typeof SettingsRoute
   '/players/$id': typeof PlayersIdRoute
   '/weekend-leagues/$wlId': typeof WeekendLeaguesWlIdRoute
   '/weekend-leagues/compare': typeof WeekendLeaguesCompareRoute
+  '/players': typeof PlayersIndexRoute
   '/weekend-leagues': typeof WeekendLeaguesIndexRoute
 }
 export interface FileRoutesById {
@@ -100,12 +100,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/club': typeof ClubRoute
-  '/players': typeof PlayersRouteWithChildren
   '/rankings': typeof RankingsRoute
   '/settings': typeof SettingsRoute
   '/players/$id': typeof PlayersIdRoute
   '/weekend-leagues/$wlId': typeof WeekendLeaguesWlIdRoute
   '/weekend-leagues/compare': typeof WeekendLeaguesCompareRoute
+  '/players/': typeof PlayersIndexRoute
   '/weekend-leagues/': typeof WeekendLeaguesIndexRoute
 }
 export interface FileRouteTypes {
@@ -114,36 +114,36 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/club'
-    | '/players'
     | '/rankings'
     | '/settings'
     | '/players/$id'
     | '/weekend-leagues/$wlId'
     | '/weekend-leagues/compare'
+    | '/players/'
     | '/weekend-leagues/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/account'
     | '/club'
-    | '/players'
     | '/rankings'
     | '/settings'
     | '/players/$id'
     | '/weekend-leagues/$wlId'
     | '/weekend-leagues/compare'
+    | '/players'
     | '/weekend-leagues'
   id:
     | '__root__'
     | '/'
     | '/account'
     | '/club'
-    | '/players'
     | '/rankings'
     | '/settings'
     | '/players/$id'
     | '/weekend-leagues/$wlId'
     | '/weekend-leagues/compare'
+    | '/players/'
     | '/weekend-leagues/'
   fileRoutesById: FileRoutesById
 }
@@ -151,11 +151,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   ClubRoute: typeof ClubRoute
-  PlayersRoute: typeof PlayersRouteWithChildren
   RankingsRoute: typeof RankingsRoute
   SettingsRoute: typeof SettingsRoute
+  PlayersIdRoute: typeof PlayersIdRoute
   WeekendLeaguesWlIdRoute: typeof WeekendLeaguesWlIdRoute
   WeekendLeaguesCompareRoute: typeof WeekendLeaguesCompareRoute
+  PlayersIndexRoute: typeof PlayersIndexRoute
   WeekendLeaguesIndexRoute: typeof WeekendLeaguesIndexRoute
 }
 
@@ -173,13 +174,6 @@ declare module '@tanstack/react-router' {
       path: '/rankings'
       fullPath: '/rankings'
       preLoaderRoute: typeof RankingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/players': {
-      id: '/players'
-      path: '/players'
-      fullPath: '/players'
-      preLoaderRoute: typeof PlayersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/club': {
@@ -210,6 +204,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WeekendLeaguesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/players/': {
+      id: '/players/'
+      path: '/players'
+      fullPath: '/players/'
+      preLoaderRoute: typeof PlayersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/weekend-leagues/compare': {
       id: '/weekend-leagues/compare'
       path: '/weekend-leagues/compare'
@@ -226,45 +227,26 @@ declare module '@tanstack/react-router' {
     }
     '/players/$id': {
       id: '/players/$id'
-      path: '/$id'
+      path: '/players/$id'
       fullPath: '/players/$id'
       preLoaderRoute: typeof PlayersIdRouteImport
-      parentRoute: typeof PlayersRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface PlayersRouteChildren {
-  PlayersIdRoute: typeof PlayersIdRoute
-}
-
-const PlayersRouteChildren: PlayersRouteChildren = {
-  PlayersIdRoute: PlayersIdRoute,
-}
-
-const PlayersRouteWithChildren =
-  PlayersRoute._addFileChildren(PlayersRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   ClubRoute: ClubRoute,
-  PlayersRoute: PlayersRouteWithChildren,
   RankingsRoute: RankingsRoute,
   SettingsRoute: SettingsRoute,
+  PlayersIdRoute: PlayersIdRoute,
   WeekendLeaguesWlIdRoute: WeekendLeaguesWlIdRoute,
   WeekendLeaguesCompareRoute: WeekendLeaguesCompareRoute,
+  PlayersIndexRoute: PlayersIndexRoute,
   WeekendLeaguesIndexRoute: WeekendLeaguesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
