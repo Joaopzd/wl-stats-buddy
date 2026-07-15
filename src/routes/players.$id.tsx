@@ -1,6 +1,18 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import {
+  ArrowLeft,
+  Trophy,
+  Shield,
+  Star,
+  AlertTriangle,
+  Info,
+  Archive,
+  ArchiveRestore,
+  FlaskConical,
+  TrendingUp,
+  Pencil,
+} from "lucide-react";
   ArrowLeft,
   Trophy,
   Shield,
