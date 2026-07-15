@@ -13,17 +13,6 @@ import {
   TrendingUp,
   Pencil,
 } from "lucide-react";
-  ArrowLeft,
-  Trophy,
-  Shield,
-  Star,
-  AlertTriangle,
-  Info,
-  Archive,
-  ArchiveRestore,
-  FlaskConical,
-  TrendingUp,
-} from "lucide-react";
 import {
   LineChart,
   Line,
