@@ -520,6 +520,38 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
               <input type="number" min={1} max={99} value={overall} onChange={(e) => setOverall(parseInt(e.target.value) || 0)} className="w-full bg-input border border-border rounded-md px-3 py-2 stat-num" />
             </Field>
           </div>
+          <div className="grid grid-cols-3 gap-3">
+            <Field label="Nacionalidade">
+              <input
+                value={nationality}
+                onChange={(e) => setNationality(e.target.value)}
+                placeholder="Ex: Brasil"
+                className="w-full bg-input border border-border rounded-md px-3 py-2"
+              />
+            </Field>
+            <Field label="Altura (cm)">
+              <input
+                type="number"
+                min={100}
+                max={230}
+                value={heightCm}
+                onChange={(e) => setHeightCm(e.target.value)}
+                placeholder="180"
+                className="w-full bg-input border border-border rounded-md px-3 py-2 stat-num"
+              />
+            </Field>
+            <Field label="Melhor Perna">
+              <select
+                value={preferredFoot}
+                onChange={(e) => setPreferredFoot(e.target.value as "" | "Left" | "Right")}
+                className="w-full bg-input border border-border rounded-md px-3 py-2"
+              >
+                <option value="">—</option>
+                <option value="Right">Direita</option>
+                <option value="Left">Esquerda</option>
+              </select>
+            </Field>
+          </div>
           <Field label={`Posições Secundárias (até 4) — ${secondaryPositions.filter((p) => p !== position).length}/4`}>
             <div className="flex flex-wrap gap-1.5">
               {POSITIONS.filter((p) => p !== position).map((p) => {
