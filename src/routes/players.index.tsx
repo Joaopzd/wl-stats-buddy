@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import type { Player, Position, Rarity } from "@/lib/types";
 import { rarityVisual, raritySwatch, raritySwatchStyle, rarityIcon } from "@/lib/format";
 import { compressImageToDataURL } from "@/lib/imageCompress";
+import { COUNTRIES, countryFlag } from "@/lib/countries";
+
 
 export const Route = createFileRoute("/players/")({
   head: () => ({
@@ -522,13 +524,20 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
           </div>
           <div className="grid grid-cols-3 gap-3">
             <Field label="Nacionalidade">
-              <input
+              <select
                 value={nationality}
                 onChange={(e) => setNationality(e.target.value)}
-                placeholder="Ex: Brasil"
                 className="w-full bg-input border border-border rounded-md px-3 py-2"
-              />
+              >
+                <option value="">—</option>
+                {COUNTRIES.map((c) => (
+                  <option key={c.code} value={c.name}>
+                    {c.flag} {c.name}
+                  </option>
+                ))}
+              </select>
             </Field>
+
             <Field label="Altura (cm)">
               <input
                 type="number"

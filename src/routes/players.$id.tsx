@@ -46,9 +46,11 @@ import {
 import { store, useMatches, usePlayers, useWLs, useStoreLoading } from "@/lib/store";
 import { wlLabel } from "@/lib/types";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
+import { countryFlag } from "@/lib/countries";
 import { toast } from "sonner";
 import { PlayerForm } from "./players.index";
 import { PlatformBadge } from "@/components/PlatformBadge";
+
 
 export const Route = createFileRoute("/players/$id")({
   head: () => ({
@@ -319,13 +321,21 @@ function PlayerProfile({
           </div>
 
           <div className="grid grid-cols-3 gap-2 max-w-md">
-            <Meta label="Nacionalidade" value={player.nationality || "—"} />
+            <Meta
+              label="Nacionalidade"
+              value={
+                player.nationality
+                  ? `${countryFlag(player.nationality)} ${player.nationality}`
+                  : "—"
+              }
+            />
             <Meta label="Altura" value={player.heightCm ? `${player.heightCm} cm` : "—"} />
             <Meta
               label="Melhor Perna"
               value={player.preferredFoot === "Right" ? "Direita" : player.preferredFoot === "Left" ? "Esquerda" : "—"}
             />
           </div>
+
 
           {lastWL && (
 
