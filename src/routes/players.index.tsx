@@ -438,6 +438,9 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
   const [overall, setOverall] = useState<number>(existing?.overall ?? 85);
   const [rarity, setRarity] = useState<Rarity>(existing?.rarity ?? "Gold");
   const [imageUrl, setImageUrl] = useState<string>(existing?.imageUrl ?? "");
+  const [nationality, setNationality] = useState<string>(existing?.nationality ?? "");
+  const [heightCm, setHeightCm] = useState<string>(existing?.heightCm ? String(existing.heightCm) : "");
+  const [preferredFoot, setPreferredFoot] = useState<"" | "Left" | "Right">(existing?.preferredFoot ?? "");
   const [previewBroken, setPreviewBroken] = useState(false);
 
   const toggleSecondary = (p: Position) => {
@@ -459,6 +462,10 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
     if (trimmedUrl && !/^(https?:\/\/|data:image\/)/i.test(trimmedUrl)) {
       return toast.error("Image must be an http(s) URL or uploaded file");
     }
+    const heightNum = heightCm.trim() ? parseInt(heightCm, 10) : NaN;
+    if (heightCm.trim() && (isNaN(heightNum) || heightNum < 100 || heightNum > 230)) {
+      return toast.error("Height must be between 100 and 230 cm");
+    }
     const patch = {
       name: name.trim(),
       position,
@@ -466,6 +473,9 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
       overall,
       rarity,
       imageUrl: trimmedUrl || undefined,
+      nationality: nationality.trim() || undefined,
+      heightCm: heightCm.trim() ? heightNum : undefined,
+      preferredFoot: preferredFoot || undefined,
     };
     if (existing) {
       try {
@@ -508,6 +518,38 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
             </Field>
             <Field label="Overall">
               <input type="number" min={1} max={99} value={overall} onChange={(e) => setOverall(parseInt(e.target.value) || 0)} className="w-full bg-input border border-border rounded-md px-3 py-2 stat-num" />
+            </Field>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <Field label="Nacionalidade">
+              <input
+                value={nationality}
+                onChange={(e) => setNationality(e.target.value)}
+                placeholder="Ex: Brasil"
+                className="w-full bg-input border border-border rounded-md px-3 py-2"
+              />
+            </Field>
+            <Field label="Altura (cm)">
+              <input
+                type="number"
+                min={100}
+                max={230}
+                value={heightCm}
+                onChange={(e) => setHeightCm(e.target.value)}
+                placeholder="180"
+                className="w-full bg-input border border-border rounded-md px-3 py-2 stat-num"
+              />
+            </Field>
+            <Field label="Melhor Perna">
+              <select
+                value={preferredFoot}
+                onChange={(e) => setPreferredFoot(e.target.value as "" | "Left" | "Right")}
+                className="w-full bg-input border border-border rounded-md px-3 py-2"
+              >
+                <option value="">—</option>
+                <option value="Right">Direita</option>
+                <option value="Left">Esquerda</option>
+              </select>
             </Field>
           </div>
           <Field label={`Posições Secundárias (até 4) — ${secondaryPositions.filter((p) => p !== position).length}/4`}>
