@@ -46,9 +46,11 @@ import {
 import { store, useMatches, usePlayers, useWLs, useStoreLoading } from "@/lib/store";
 import { wlLabel } from "@/lib/types";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
+import { countryFlag } from "@/lib/countries";
 import { toast } from "sonner";
 import { PlayerForm } from "./players.index";
 import { PlatformBadge } from "@/components/PlatformBadge";
+
 
 export const Route = createFileRoute("/players/$id")({
   head: () => ({
