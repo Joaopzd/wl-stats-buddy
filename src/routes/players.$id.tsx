@@ -318,6 +318,16 @@ function PlayerProfile({
             <Meta label="Rarity" value={player.rarity} small />
           </div>
 
+          <div className="grid grid-cols-3 gap-2 max-w-md">
+            <Meta label="Nacionalidade" value={player.nationality || "—"} />
+            <Meta label="Altura" value={player.heightCm ? `${player.heightCm} cm` : "—"} />
+            <Meta
+              label="Melhor Perna"
+              value={player.preferredFoot === "Right" ? "Direita" : player.preferredFoot === "Left" ? "Esquerda" : "—"}
+            />
+          </div>
+
+
           {lastWL && (
             <div className="rounded-md border border-primary/40 bg-primary/5 px-3 py-2 text-[11px] leading-tight flex items-center gap-2">
               <TrendingUp className="h-3.5 w-3.5 text-primary shrink-0" />
