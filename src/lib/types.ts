@@ -73,6 +73,12 @@ export interface Player {
   isArchived?: boolean;
   /** Player is being trained / tested. Hidden from active roster, still searchable in WL squad picker. */
   isInDevelopment?: boolean;
+  /** ISO country code or country name for the player's nationality. */
+  nationality?: string;
+  /** Height in centimeters. */
+  heightCm?: number;
+  /** Preferred foot. */
+  preferredFoot?: "Left" | "Right";
   createdAt: number;
 }
 
