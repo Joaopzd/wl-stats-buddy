@@ -462,6 +462,10 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
     if (trimmedUrl && !/^(https?:\/\/|data:image\/)/i.test(trimmedUrl)) {
       return toast.error("Image must be an http(s) URL or uploaded file");
     }
+    const heightNum = heightCm.trim() ? parseInt(heightCm, 10) : NaN;
+    if (heightCm.trim() && (isNaN(heightNum) || heightNum < 100 || heightNum > 230)) {
+      return toast.error("Height must be between 100 and 230 cm");
+    }
     const patch = {
       name: name.trim(),
       position,
@@ -469,6 +473,9 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
       overall,
       rarity,
       imageUrl: trimmedUrl || undefined,
+      nationality: nationality.trim() || undefined,
+      heightCm: heightCm.trim() ? heightNum : undefined,
+      preferredFoot: preferredFoot || undefined,
     };
     if (existing) {
       try {
