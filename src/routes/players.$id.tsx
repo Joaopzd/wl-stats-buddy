@@ -327,8 +327,8 @@ function PlayerProfile({
             />
           </div>
 
-
           {lastWL && (
+
             <div className="rounded-md border border-primary/40 bg-primary/5 px-3 py-2 text-[11px] leading-tight flex items-center gap-2">
               <TrendingUp className="h-3.5 w-3.5 text-primary shrink-0" />
               <span className="uppercase tracking-wider font-bold text-primary">Last WL played:</span>
