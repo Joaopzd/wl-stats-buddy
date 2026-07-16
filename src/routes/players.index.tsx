@@ -438,6 +438,9 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
   const [overall, setOverall] = useState<number>(existing?.overall ?? 85);
   const [rarity, setRarity] = useState<Rarity>(existing?.rarity ?? "Gold");
   const [imageUrl, setImageUrl] = useState<string>(existing?.imageUrl ?? "");
+  const [nationality, setNationality] = useState<string>(existing?.nationality ?? "");
+  const [heightCm, setHeightCm] = useState<string>(existing?.heightCm ? String(existing.heightCm) : "");
+  const [preferredFoot, setPreferredFoot] = useState<"" | "Left" | "Right">(existing?.preferredFoot ?? "");
   const [previewBroken, setPreviewBroken] = useState(false);
 
   const toggleSecondary = (p: Position) => {
