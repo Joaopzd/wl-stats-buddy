@@ -656,11 +656,13 @@ function Meta({
   value,
   accent,
   small,
+  leading,
 }: {
   label: string;
   value: string;
   accent?: boolean;
   small?: boolean;
+  leading?: React.ReactNode;
 }) {
   return (
     <div className="rounded-md border border-border/60 bg-background/40 px-2 py-1.5">
@@ -668,11 +670,12 @@ function Meta({
         {label}
       </div>
       <div
-        className={`font-display tracking-wider truncate ${
+        className={`font-display tracking-wider truncate flex items-center gap-1.5 ${
           accent ? "text-primary text-xl stat-num" : small ? "text-xs" : "text-base"
         }`}
       >
-        {value}
+        {leading}
+        <span className="truncate">{value}</span>
       </div>
     </div>
   );
