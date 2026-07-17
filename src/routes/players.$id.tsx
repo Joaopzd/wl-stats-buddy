@@ -322,17 +322,14 @@ function PlayerProfile({
 
           <div className="grid grid-cols-3 gap-2 max-w-md">
             <Meta
-              label="Nacionalidade"
-              value={
-                player.nationality
-                  ? `${countryFlag(player.nationality)} ${player.nationality}`
-                  : "—"
-              }
+              label="Nationality"
+              value={player.nationality || "—"}
+              leading={player.nationality ? <Flag country={player.nationality} /> : undefined}
             />
-            <Meta label="Altura" value={player.heightCm ? `${player.heightCm} cm` : "—"} />
+            <Meta label="Height" value={player.heightCm ? `${player.heightCm} cm` : "—"} />
             <Meta
-              label="Melhor Perna"
-              value={player.preferredFoot === "Right" ? "Direita" : player.preferredFoot === "Left" ? "Esquerda" : "—"}
+              label="Preferred Foot"
+              value={player.preferredFoot ?? "—"}
             />
           </div>
 
