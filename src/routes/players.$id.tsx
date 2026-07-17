@@ -414,9 +414,9 @@ function PlayerProfile({
 
       {/* Last 5 Matches */}
       <div className="surface-card p-4">
-        <SectionHeader title="Últimas 5 Partidas" />
+        <SectionHeader title="Last 5 Matches" />
         {last5.length === 0 ? (
-          <div className="text-xs text-muted-foreground italic">Nenhuma partida registrada.</div>
+          <div className="text-xs text-muted-foreground italic">No matches recorded yet.</div>
         ) : (
           <div className="space-y-2">
             {last5.map(({ match, wl, perf }) => {
@@ -506,7 +506,7 @@ function PlayerProfile({
                     tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
                     tickLine={false}
                     axisLine={{ stroke: "hsl(var(--border))" }}
-                    label={{ value: "Partidas", position: "insideBottom", offset: -4, fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                    label={{ value: "Matches", position: "insideBottom", offset: -4, fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
                   />
                   <YAxis
                     domain={[Math.max(0, Math.floor(Math.min(...ratingSeries.map((p) => p.rating)) - 0.5)), 10]}
@@ -534,7 +534,7 @@ function PlayerProfile({
                     strokeDasharray="6 4"
                     strokeOpacity={0.6}
                     label={{
-                      value: `Média ${(career.avgRating || 0).toFixed(2)}`,
+                      value: `Avg ${(career.avgRating || 0).toFixed(2)}`,
                       position: "insideTopRight",
                       fill: "hsl(var(--primary))",
                       fontSize: 10,
