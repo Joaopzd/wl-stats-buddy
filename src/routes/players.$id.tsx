@@ -46,7 +46,7 @@ import {
 import { store, useMatches, usePlayers, useWLs, useStoreLoading } from "@/lib/store";
 import { wlLabel } from "@/lib/types";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
-import { countryFlag } from "@/lib/countries";
+import { Flag } from "@/components/Flag";
 import { toast } from "sonner";
 import { PlayerForm } from "./players.index";
 import { PlatformBadge } from "@/components/PlatformBadge";
@@ -322,17 +322,14 @@ function PlayerProfile({
 
           <div className="grid grid-cols-3 gap-2 max-w-md">
             <Meta
-              label="Nacionalidade"
-              value={
-                player.nationality
-                  ? `${countryFlag(player.nationality)} ${player.nationality}`
-                  : "—"
-              }
+              label="Nationality"
+              value={player.nationality || "—"}
+              leading={player.nationality ? <Flag country={player.nationality} /> : undefined}
             />
-            <Meta label="Altura" value={player.heightCm ? `${player.heightCm} cm` : "—"} />
+            <Meta label="Height" value={player.heightCm ? `${player.heightCm} cm` : "—"} />
             <Meta
-              label="Melhor Perna"
-              value={player.preferredFoot === "Right" ? "Direita" : player.preferredFoot === "Left" ? "Esquerda" : "—"}
+              label="Preferred Foot"
+              value={player.preferredFoot ?? "—"}
             />
           </div>
 
@@ -417,9 +414,9 @@ function PlayerProfile({
 
       {/* Last 5 Matches */}
       <div className="surface-card p-4">
-        <SectionHeader title="Últimas 5 Partidas" />
+        <SectionHeader title="Last 5 Matches" />
         {last5.length === 0 ? (
-          <div className="text-xs text-muted-foreground italic">Nenhuma partida registrada.</div>
+          <div className="text-xs text-muted-foreground italic">No matches recorded yet.</div>
         ) : (
           <div className="space-y-2">
             {last5.map(({ match, wl, perf }) => {
@@ -509,7 +506,7 @@ function PlayerProfile({
                     tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
                     tickLine={false}
                     axisLine={{ stroke: "hsl(var(--border))" }}
-                    label={{ value: "Partidas", position: "insideBottom", offset: -4, fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                    label={{ value: "Matches", position: "insideBottom", offset: -4, fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
                   />
                   <YAxis
                     domain={[Math.max(0, Math.floor(Math.min(...ratingSeries.map((p) => p.rating)) - 0.5)), 10]}
@@ -537,7 +534,7 @@ function PlayerProfile({
                     strokeDasharray="6 4"
                     strokeOpacity={0.6}
                     label={{
-                      value: `Média ${(career.avgRating || 0).toFixed(2)}`,
+                      value: `Avg ${(career.avgRating || 0).toFixed(2)}`,
                       position: "insideTopRight",
                       fill: "hsl(var(--primary))",
                       fontSize: 10,
@@ -659,11 +656,13 @@ function Meta({
   value,
   accent,
   small,
+  leading,
 }: {
   label: string;
   value: string;
   accent?: boolean;
   small?: boolean;
+  leading?: React.ReactNode;
 }) {
   return (
     <div className="rounded-md border border-border/60 bg-background/40 px-2 py-1.5">
@@ -671,11 +670,12 @@ function Meta({
         {label}
       </div>
       <div
-        className={`font-display tracking-wider truncate ${
+        className={`font-display tracking-wider truncate flex items-center gap-1.5 ${
           accent ? "text-primary text-xl stat-num" : small ? "text-xs" : "text-base"
         }`}
       >
-        {value}
+        {leading}
+        <span className="truncate">{value}</span>
       </div>
     </div>
   );

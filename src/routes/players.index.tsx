@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import type { Player, Position, Rarity } from "@/lib/types";
 import { rarityVisual, raritySwatch, raritySwatchStyle, rarityIcon } from "@/lib/format";
 import { compressImageToDataURL } from "@/lib/imageCompress";
-import { COUNTRIES, countryFlag } from "@/lib/countries";
+import { COUNTRIES } from "@/lib/countries";
 
 
 export const Route = createFileRoute("/players/")({
@@ -50,7 +50,7 @@ const RARITY_GROUPS: { label: string; items: Rarity[] }[] = [
       "FUT Birthday Icon", "Heroes Ultimate Scream", "Journey of Nations", "National Pride",
       "Icon TOTY", "MH TOTS", "TOTS Highlights",
       "UEFA Europa League", "UEFA Champions League", "UEFA Conference League", "Showdown",
-      "FOF: Greats of The Game Icon", "FOF: Greats of The Game Hero", "FOF: Glory Hunters", "FOF: Star Perform", "FOF: Phenoms",
+      "FOF: Greats of The Game Icon", "FOF: Greats of The Game Hero", "FOF: Glory Hunters", "FOF: Star Perform", "FOF: Phenoms", "FoF: Summer Star",
     ],
   },
   { label: "Legends", items: ["Icon Base", "Hero Base"] },
@@ -523,7 +523,7 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
             </Field>
           </div>
           <div className="grid grid-cols-3 gap-3">
-            <Field label="Nacionalidade">
+            <Field label="Nationality">
               <select
                 value={nationality}
                 onChange={(e) => setNationality(e.target.value)}
@@ -532,13 +532,13 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
                 <option value="">—</option>
                 {COUNTRIES.map((c) => (
                   <option key={c.code} value={c.name}>
-                    {c.flag} {c.name}
+                    {c.name}
                   </option>
                 ))}
               </select>
             </Field>
 
-            <Field label="Altura (cm)">
+            <Field label="Height (cm)">
               <input
                 type="number"
                 min={100}
@@ -549,15 +549,15 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
                 className="w-full bg-input border border-border rounded-md px-3 py-2 stat-num"
               />
             </Field>
-            <Field label="Melhor Perna">
+            <Field label="Preferred Foot">
               <select
                 value={preferredFoot}
                 onChange={(e) => setPreferredFoot(e.target.value as "" | "Left" | "Right")}
                 className="w-full bg-input border border-border rounded-md px-3 py-2"
               >
                 <option value="">—</option>
-                <option value="Right">Direita</option>
-                <option value="Left">Esquerda</option>
+                <option value="Right">Right</option>
+                <option value="Left">Left</option>
               </select>
             </Field>
           </div>
