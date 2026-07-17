@@ -113,10 +113,10 @@ export function ReportModal({
             backgroundImage: "repeating-linear-gradient(90deg, transparent 0 39px, rgba(255,255,255,0.5) 39px 40px)",
           }} />
 
-          <div className="relative">
+          <div className="relative text-white">
             <div className="text-center mb-4">
               <div className="text-[11px] uppercase tracking-[0.4em] text-primary font-bold">FULL TIME · WEEKEND LEAGUE</div>
-              <div className="mt-1 text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">{wlLabel(wl)}</div>
+              <div className="mt-1 text-[11px] uppercase tracking-[0.25em] text-white/70 font-semibold">{wlLabel(wl)}</div>
             </div>
 
             {/* Crests + Scoreline */}
@@ -124,24 +124,24 @@ export function ReportModal({
               {/* Home (You) */}
               <div className="flex flex-col items-center text-center">
                 <ClubCrest size={64} overrideUrl={wl.clubCrestUrl} />
-                <div className="mt-2 font-display text-base sm:text-lg tracking-wider font-bold uppercase truncate max-w-full">
+                <div className="mt-2 font-display text-base sm:text-lg tracking-wider font-bold uppercase truncate max-w-full text-white">
                   {clubName}
                 </div>
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">You</div>
+                <div className="text-[11px] uppercase tracking-wider text-white/70">You</div>
               </div>
 
               {/* Wins / Losses — the headline result */}
               <div className="flex flex-col items-center">
                 <div className="flex items-baseline gap-3 leading-none">
                   <span className="font-display stat-num text-6xl sm:text-7xl text-primary font-bold tabular-nums">{record.wins}</span>
-                  <span className="text-3xl text-muted-foreground font-display">–</span>
-                  <span className="font-display stat-num text-6xl sm:text-7xl text-foreground font-bold tabular-nums">{record.losses}</span>
+                  <span className="text-3xl text-white/60 font-display">–</span>
+                  <span className="font-display stat-num text-6xl sm:text-7xl text-white font-bold tabular-nums">{record.losses}</span>
                 </div>
-                <div className="mt-1 text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">Wins · Losses</div>
+                <div className="mt-1 text-[11px] uppercase tracking-[0.25em] text-white/70 font-semibold">Wins · Losses</div>
                 <div className={`mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${
                   gd >= 0
-                    ? "bg-primary/15 text-primary border border-primary/30"
-                    : "bg-destructive/15 text-destructive border border-destructive/30"
+                    ? "bg-primary/20 text-primary border border-primary/40"
+                    : "bg-destructive/20 text-destructive-foreground border border-destructive/50"
                 }`}>
                   {gd >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                   {totalG}–{record.goalsAgainst} · GD {gd >= 0 ? "+" : ""}{gd}
@@ -151,25 +151,25 @@ export function ReportModal({
               {/* Away (Average opponent) */}
               <div className="flex flex-col items-center text-center">
                 <OpponentCrest size={64} />
-                <div className="mt-2 font-display text-base sm:text-lg tracking-wider font-bold uppercase truncate max-w-full">
+                <div className="mt-2 font-display text-base sm:text-lg tracking-wider font-bold uppercase truncate max-w-full text-white">
                   {opponentName || "Opponents"}
                 </div>
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Aggregate</div>
+                <div className="text-[11px] uppercase tracking-wider text-white/70">Aggregate</div>
               </div>
             </div>
 
             {/* Rank + meta strip */}
             <div className="mt-5 flex items-center justify-center gap-2 flex-wrap">
               <RankBadge rank={rank} size="lg" />
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/70 text-foreground text-[11px] font-bold uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white text-[11px] font-bold uppercase tracking-wider border border-white/15">
                 <Trophy className="h-3 w-3 text-primary" /> {record.wins}W · {record.losses}L · {winPct}%
               </span>
               {wl.formation && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/70 text-foreground text-[11px] font-bold uppercase tracking-wider">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white text-[11px] font-bold uppercase tracking-wider border border-white/15">
                   <LayoutGrid className="h-3 w-3" /> {wl.formation}
                 </span>
               )}
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/70 text-foreground text-[11px] font-bold uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white text-[11px] font-bold uppercase tracking-wider border border-white/15">
                 <Flame className="h-3 w-3 text-primary" /> Best {streak}
               </span>
             </div>
