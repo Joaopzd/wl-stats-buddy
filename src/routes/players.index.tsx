@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import type { Player, Position, Rarity } from "@/lib/types";
 import { rarityVisual, raritySwatch, raritySwatchStyle, rarityIcon } from "@/lib/format";
 import { compressImageToDataURL } from "@/lib/imageCompress";
-import { COUNTRIES, countryFlag } from "@/lib/countries";
+import { COUNTRIES } from "@/lib/countries";
 
 
 export const Route = createFileRoute("/players/")({
