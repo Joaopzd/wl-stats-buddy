@@ -204,6 +204,8 @@ export const rarityVisual = (r: Rarity): RarityVisual => {
       return solid("#13c49c", "#200b81");
     case "FOF: Phenoms":
       return solid("#3b3489", "#3b3489");
+    case "FoF: Summer Star":
+      return solid("#5906e1", "#ebd4f3");
 
     // ===== Legends (kept) =====
     case "Icon Base":
