@@ -301,6 +301,32 @@ export interface PlatformRecord {
   wins: number;
   losses: number;
   winRate: number;
+  /** Difficulty-adjusted win rate (0–1). Weighted by match index + ET/pen context. */
+  adjustedWinRate: number;
+}
+
+/**
+ * Difficulty weight for a single match. Later matches in a WL and
+ * extra-time / penalty deciders are harder, so wins there are worth more
+ * (and losses hurt less proportionally). Weight range ~1.0 → ~1.85.
+ */
+export function matchDifficultyWeight(m: Match): number {
+  const idx = Math.min(15, Math.max(1, m.index || 1));
+  let w = 1 + (idx - 1) * 0.05; // 1.00 → 1.70 across M1..M15
+  if (m.extraTime) w += 0.1;
+  if (m.penalties) w += 0.05;
+  return w;
+}
+
+/** Weighted win rate over a match set (0–1). Falls back to 0 when empty. */
+export function adjustedWinRate(matches: Match[]): number {
+  let wsum = 0, wwin = 0;
+  for (const m of matches) {
+    const w = matchDifficultyWeight(m);
+    wsum += w;
+    if (matchIsWin(m)) wwin += w;
+  }
+  return wsum ? wwin / wsum : 0;
 }
 
 export function platformRecords(matches: Match[]): PlatformRecord[] {
@@ -318,6 +344,7 @@ export function platformRecords(matches: Match[]): PlatformRecord[] {
       wins,
       losses,
       winRate: ms.length ? wins / ms.length : 0,
+      adjustedWinRate: adjustedWinRate(ms),
     };
   });
 }
@@ -473,6 +500,8 @@ export interface AllTimeSummary {
   goalsAgainst: number;
   goalDiff: number;
   winRate: number;
+  /** Difficulty-adjusted win rate across every logged match. */
+  adjustedWinRate: number;
   bestResult: { wl: WeekendLeague; wins: number } | null;
   bestRank: WLRank;
   currentRank: WLRank;
@@ -499,9 +528,58 @@ export function aggregateAllTime(wls: WeekendLeague[], matches: Match[]): AllTim
     goalsAgainst: ga,
     goalDiff: gf - ga,
     winRate: played ? wins / played : 0,
+    adjustedWinRate: adjustedWinRate(matches),
     bestResult: best,
     bestRank: best ? rankFromWins(best.wins) : "Unranked",
     currentRank: last ? rankFromWins(wlRecord(last, matches).wins) : "Unranked",
+  };
+}
+
+/** Rolling comparison between the latest WL and the one before it. */
+export interface WeekDelta {
+  current: WeekendLeague | null;
+  previous: WeekendLeague | null;
+  wins: number;
+  winsDelta: number;
+  losses: number;
+  lossesDelta: number;
+  goalDiff: number;
+  goalDiffDelta: number;
+  winRate: number;
+  winRateDelta: number;
+  adjWinRate: number;
+  adjWinRateDelta: number;
+  played: number;
+}
+
+export function weekDelta(wls: WeekendLeague[], matches: Match[]): WeekDelta {
+  const sorted = [...wls].sort((a, b) => b.number - a.number);
+  const current = sorted[0] ?? null;
+  const previous = sorted[1] ?? null;
+  const curMatches = current ? matches.filter((m) => m.wlId === current.id) : [];
+  const prevMatches = previous ? matches.filter((m) => m.wlId === previous.id) : [];
+  const curR = current ? wlRecord(current, matches) : { wins: 0, losses: 0, played: 0, goalsFor: 0, goalsAgainst: 0 };
+  const prevR = previous ? wlRecord(previous, matches) : { wins: 0, losses: 0, played: 0, goalsFor: 0, goalsAgainst: 0 };
+  const curWR = curR.played ? curR.wins / curR.played : 0;
+  const prevWR = prevR.played ? prevR.wins / prevR.played : 0;
+  const curAdj = adjustedWinRate(curMatches);
+  const prevAdj = adjustedWinRate(prevMatches);
+  const curGD = curR.goalsFor - curR.goalsAgainst;
+  const prevGD = prevR.goalsFor - prevR.goalsAgainst;
+  return {
+    current,
+    previous,
+    wins: curR.wins,
+    winsDelta: curR.wins - prevR.wins,
+    losses: curR.losses,
+    lossesDelta: curR.losses - prevR.losses,
+    goalDiff: curGD,
+    goalDiffDelta: curGD - prevGD,
+    winRate: curWR,
+    winRateDelta: curWR - prevWR,
+    adjWinRate: curAdj,
+    adjWinRateDelta: curAdj - prevAdj,
+    played: curR.played,
   };
 }
 
