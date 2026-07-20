@@ -159,7 +159,18 @@ function WLList() {
                         <ClubCrest size={12} overrideUrl={wl.clubCrestUrl} />
                         <span className="truncate">{wl.clubName || "Weekend League"}</span>
                       </div>
-                      <div className="font-semibold text-sm truncate leading-tight">{label}</div>
+                      <div className="font-semibold text-sm truncate leading-tight flex items-center gap-1.5">
+                        <span className="truncate">{label}</span>
+                        {!wl.closed && r.played < 15 ? (
+                          <span className="shrink-0 inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-400 border border-amber-400/30">
+                            <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" /> In Progress
+                          </span>
+                        ) : r.played >= 15 || wl.closed ? (
+                          <span className="shrink-0 inline-flex items-center text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/30">
+                            Closed
+                          </span>
+                        ) : null}
+                      </div>
                       <div className="mt-1 flex items-center gap-1">
                         {form.map((m, i) => {
                           const win = matchIsWin(m);
