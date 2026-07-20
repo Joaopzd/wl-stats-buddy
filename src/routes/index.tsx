@@ -198,6 +198,12 @@ function Dashboard() {
                     <span>{p.wins}W · {p.losses}L · {p.played} MP</span>
                     <span>{gf}·{ga}</span>
                   </div>
+                  <div className="mt-1 flex items-center justify-between text-[10px] font-mono">
+                    <span className="text-muted-foreground/80 uppercase tracking-wider">Adj. WR</span>
+                    <span className={color}>
+                      {p.played === 0 ? "—" : `${Math.round(p.adjustedWinRate * 100)}%`}
+                    </span>
+                  </div>
                 </div>
               );
             })}
