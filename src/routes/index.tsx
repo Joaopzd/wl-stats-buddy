@@ -33,7 +33,7 @@ import { PositionBadge } from "@/components/PositionBadge";
 import { RankBadge } from "@/components/RankBadge";
 import { ClubCrest } from "@/components/ClubCrest";
 import { PlatformBadge } from "@/components/PlatformBadge";
-import { DashboardAIBanner } from "@/components/DashboardAIBanner";
+import { WeekSummaryBanner } from "@/components/WeekSummaryBanner";
 import type { PlayerAgg } from "@/lib/stats";
 
 export const Route = createFileRoute("/")({
@@ -105,6 +105,11 @@ function Dashboard() {
         </div>
       ) : (
         <>
+          {/* ---------- Week Summary (replaces standalone AI insight) ---------- */}
+          <div className="mb-6">
+            <WeekSummaryBanner wls={wls} matches={matches} />
+          </div>
+
           {/* ---------- TIER 1: General Performance Summary ---------- */}
           <TierHeader
             icon={<Activity className="h-4 w-4 text-primary" />}
@@ -127,6 +132,12 @@ function Dashboard() {
               icon={<Percent className="h-4 w-4 text-primary" />}
               label="Win Rate"
               value={`${Math.round(summary.winRate * 100)}%`}
+              tone="primary"
+            />
+            <SummaryTile
+              icon={<Sparkles className="h-4 w-4 text-primary" />}
+              label="Adj. Win Rate"
+              value={`${Math.round(summary.adjustedWinRate * 100)}%`}
               tone="primary"
             />
             <div className="surface-card p-3 flex flex-col gap-1">
@@ -153,13 +164,11 @@ function Dashboard() {
           <TierHeader
             icon={<Target className="h-4 w-4 text-primary" />}
             label="Tier 2"
-            title="Platform Analytics & AI Insights"
+            title="Platform Analytics"
             meta="Split by opponent's platform"
           />
-          <div className="mb-4">
-            <DashboardAIBanner wls={wls} matches={matches} players={players} />
-          </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+
             {platformStats.map((p) => {
               const pct = Math.round(p.winRate * 100);
               const tone = p.played === 0 ? "muted" : pct >= 60 ? "good" : pct >= 40 ? "ok" : "bad";
