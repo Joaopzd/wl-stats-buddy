@@ -114,7 +114,7 @@ export function clutchAggregate(player: Player, matches: Match[]): ClutchAgg {
   const clutchScore = ratingDelta + CLUTCH_GA_WEIGHT * gaPerGameDelta;
   let badge: ClutchBadge = null;
   if (clutch.matches >= CLUTCH_MIN_MATCHES && bothRated) {
-    if (clutchScore <= CLUTCH_DROP_DELTA) badge = "drop";
+    if (clutchScore < 0) badge = "drop";
     else if (clutchScore > 0) badge = "king";
   }
   return {
