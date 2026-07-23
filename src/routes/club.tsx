@@ -292,7 +292,7 @@ function ClubPage() {
 
       <ClubEras profiles={profiles} wls={wls} matches={matches} players={players} />
 
-      <ClubLegends players={players} matches={scopedMatches} />
+      <ClubLegends players={players} matches={scopedMatches} eraLabel={activeProfile ? activeProfile.name : "All Eras"} isAll={!activeProfile} />
 
       <BestXI players={players} matches={scopedMatches} wls={scopedWLs} />
 
@@ -647,9 +647,13 @@ function MiniStat({ label, value, tone }: { label: string; value: number | strin
 function ClubLegends({
   players,
   matches,
+  eraLabel,
+  isAll,
 }: {
   players: import("@/lib/types").Player[];
   matches: import("@/lib/types").Match[];
+  eraLabel: string;
+  isAll: boolean;
 }) {
   const boards = useMemo(() => {
     const aggs = players.map((p) => aggregatePlayer(p, matches)).filter((a) => a.matches > 0);
@@ -722,8 +726,9 @@ function ClubLegends({
             All-Time Leaderboards
           </h2>
         </div>
-        <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold hidden sm:block">
-          Loyalists · Scorers · Creators
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] uppercase tracking-[0.2em] font-bold whitespace-nowrap ${isAll ? "border-border bg-secondary/50 text-muted-foreground" : "border-primary/50 bg-primary/10 text-primary"}`}>
+          <Globe className="h-3 w-3" />
+          {isAll ? "All Eras" : eraLabel}
         </span>
       </div>
 

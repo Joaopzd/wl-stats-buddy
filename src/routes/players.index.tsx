@@ -340,17 +340,17 @@ function PlayersPage() {
                     <td className="p-3 text-right stat-num">
                       {a.mvpCount > 0 ? <span className="text-amber-300 font-semibold">{a.mvpCount}</span> : <span className="text-muted-foreground/60">0</span>}
                     </td>
-                    <td className="p-3 text-right stat-num">
+                    <td className={`p-3 text-right stat-num ${!isCleanSheetEligible(a.player.position) ? "bg-muted/20" : ""}`}>
                       {!isCleanSheetEligible(a.player.position) ? (
-                        <span className="text-muted-foreground/40">—</span>
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/50 italic">N/A</span>
                       ) : a.cleanSheets > 0 ? (
                         <span className="text-sky-300 font-semibold">{a.cleanSheets}</span>
                       ) : (
                         <span className="text-muted-foreground/60">0</span>
                       )}
                     </td>
-                    <td className="p-3 text-right stat-num text-muted-foreground">
-                      {isGoalsConcededEligible(a.player.position) ? a.goalsConceded : <span className="text-muted-foreground/40">—</span>}
+                    <td className={`p-3 text-right stat-num text-muted-foreground ${!isGoalsConcededEligible(a.player.position) ? "bg-muted/20" : ""}`}>
+                      {isGoalsConcededEligible(a.player.position) ? a.goalsConceded : <span className="text-[10px] uppercase tracking-wider text-muted-foreground/50 italic">N/A</span>}
                     </td>
                     <td className="p-3 text-right stat-num">
                       <RatingDisplay
@@ -368,13 +368,13 @@ function PlayersPage() {
                         <span className="text-muted-foreground/60">0</span>
                       )}
                     </td>
-                    <td className="p-3 text-right stat-num">
+                    <td className={`p-3 text-right stat-num ${a.subMatches === 0 ? "bg-muted/20" : ""}`}>
                       {a.subMatches > 0 ? (
                         <span className={a.subImpact >= 1.5 ? "text-accent font-semibold" : a.subImpact >= 0.75 ? "text-foreground" : "text-muted-foreground"}>
                           {a.subImpact.toFixed(2)}
                         </span>
                       ) : (
-                        <span className="text-muted-foreground/40">—</span>
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/50 italic">N/A</span>
                       )}
                     </td>
                     <td className="p-3 text-right whitespace-nowrap">
