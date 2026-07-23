@@ -292,7 +292,7 @@ function ClubPage() {
 
       <ClubEras profiles={profiles} wls={wls} matches={matches} players={players} />
 
-      <ClubLegends players={players} matches={scopedMatches} />
+      <ClubLegends players={players} matches={scopedMatches} eraLabel={activeProfile ? activeProfile.name : "All Eras"} isAll={!activeProfile} />
 
       <BestXI players={players} matches={scopedMatches} wls={scopedWLs} />
 
