@@ -54,8 +54,8 @@ export const CLUTCH_MIN_INDEX = 11;
 export const CLUTCH_MAX_INDEX = 15;
 /** Minimum high-pressure appearances required before a clutch badge is awarded. */
 export const CLUTCH_MIN_MATCHES = 5;
-/** Composite clutch score drop (rating + G/A weighted) that earns a Pressure Drop badge. */
-export const CLUTCH_DROP_DELTA = -1.0;
+/** Composite clutch score threshold that earns a Pressure Drop badge (any negative delta). */
+export const CLUTCH_DROP_DELTA = 0;
 /** Weight applied to (G+A per game) delta when composing the clutch score. */
 export const CLUTCH_GA_WEIGHT = 1.5;
 
@@ -64,7 +64,7 @@ export const CLUTCH_KING_TOOLTIP =
   `Clutch King — Awarded when a player has at least ${CLUTCH_MIN_MATCHES} appearances in the high-pressure stretch (matches ${CLUTCH_MIN_INDEX}–${CLUTCH_MAX_INDEX}) and their composite clutch score (rating delta + ${CLUTCH_GA_WEIGHT}× G+A/game delta vs baseline) is positive.`;
 /** Human-readable tooltip explaining the Pressure Drop badge rule. */
 export const CLUTCH_DROP_TOOLTIP =
-  `Pressure Drop — Awarded when a player has at least ${CLUTCH_MIN_MATCHES} appearances in matches ${CLUTCH_MIN_INDEX}–${CLUTCH_MAX_INDEX} and their composite clutch score (rating + ${CLUTCH_GA_WEIGHT}× G+A/game vs baseline) drops by ${Math.abs(CLUTCH_DROP_DELTA).toFixed(1)} or more.`;
+  `Pressure Drop — Awarded when a player has at least ${CLUTCH_MIN_MATCHES} appearances in matches ${CLUTCH_MIN_INDEX}–${CLUTCH_MAX_INDEX} and their composite clutch score (rating + ${CLUTCH_GA_WEIGHT}× G+A/game vs baseline) is negative compared to their baseline.`;
 
 export function isClutchMatch(m: Match): boolean {
   return m.index >= CLUTCH_MIN_INDEX && m.index <= CLUTCH_MAX_INDEX;
