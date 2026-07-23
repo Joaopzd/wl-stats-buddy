@@ -726,9 +726,11 @@ function ClubLegends({
             All-Time Leaderboards
           </h2>
         </div>
-        <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold hidden sm:block">
-          Loyalists · Scorers · Creators
-        </span>
+          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] uppercase tracking-[0.2em] font-bold whitespace-nowrap ${isAll ? "border-border bg-secondary/50 text-muted-foreground" : "border-primary/50 bg-primary/10 text-primary"}`}>
+            <Globe className="h-3 w-3" />
+            {isAll ? "All Eras" : eraLabel}
+          </span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
