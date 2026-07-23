@@ -647,9 +647,13 @@ function MiniStat({ label, value, tone }: { label: string; value: number | strin
 function ClubLegends({
   players,
   matches,
+  eraLabel,
+  isAll,
 }: {
   players: import("@/lib/types").Player[];
   matches: import("@/lib/types").Match[];
+  eraLabel: string;
+  isAll: boolean;
 }) {
   const boards = useMemo(() => {
     const aggs = players.map((p) => aggregatePlayer(p, matches)).filter((a) => a.matches > 0);
