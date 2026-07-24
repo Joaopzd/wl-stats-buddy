@@ -54,6 +54,7 @@ export type Rarity =
   | "FOF: Star Perform"
   | "FOF: Phenoms"
   | "FoF: Summer Star"
+  | "Futties"
   // Legends
   | "Icon Base"
   | "Hero Base";
