@@ -726,12 +726,21 @@ function StatGrid({
   player,
   managerAvg,
   managerCount,
+  clutchScore,
+  clutchApps,
 }: {
   agg: ReturnType<typeof aggregatePlayer>;
   player: Player;
   managerAvg: number;
   managerCount: number;
+  clutchScore: number;
+  clutchApps: number;
 }) {
+  const clutchEligible = clutchApps >= 5;
+  const clutchAccent = clutchEligible && clutchScore > 0;
+  const clutchValue = clutchEligible
+    ? `${clutchScore >= 0 ? "+" : ""}${clutchScore.toFixed(2)}`
+    : "—";
   return (
     <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
       <Stat label="MP" value={agg.matches} />
