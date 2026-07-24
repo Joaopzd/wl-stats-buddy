@@ -164,9 +164,9 @@ function PlayerProfile({
   );
 
   // ----- Chart data -----
-  // Rating evolution — one point per rated match, chronological.
+  // Rating evolution — one point per rated match plus 5-match moving average.
   const ratingSeries = useMemo(() => {
-    const points: { idx: number; label: string; rating: number }[] = [];
+    const raw: { idx: number; label: string; rating: number }[] = [];
     let idx = 0;
     const sortedWls = [...wls].sort((a, b) => a.number - b.number || a.createdAt - b.createdAt);
     for (const wl of sortedWls) {
@@ -177,18 +177,26 @@ function PlayerProfile({
         const perf = m.performances.find((p) => p.playerId === player.id);
         if (!perf || !perf.rating || perf.rating <= 0) continue;
         idx += 1;
-        points.push({ idx, label: `WL${wl.number} M${m.index}`, rating: perf.rating });
+        raw.push({ idx, label: `WL${wl.number} M${m.index}`, rating: perf.rating });
       }
     }
-    return points;
+    const WINDOW = 5;
+    return raw.map((p, i) => {
+      const from = Math.max(0, i - WINDOW + 1);
+      const slice = raw.slice(from, i + 1);
+      const ma = slice.reduce((s, x) => s + x.rating, 0) / slice.length;
+      return { ...p, ma: Number(ma.toFixed(3)) };
+    });
   }, [player.id, matches, wls]);
 
-  // Win% evolution — cumulative win rate per WL played.
+  // Win% evolution — includes ALL WLs. Career carries forward; per-WL is null when not played.
   const winSeries = useMemo(() => {
+    const sortedWls = [...wls].sort((a, b) => a.number - b.number || a.createdAt - b.createdAt);
     let played = 0;
     let wins = 0;
-    const points: { wl: string; winPct: number; wlWinPct: number }[] = [];
-    for (const { wl, wlMatches } of wlsWithPlayer) {
+    const points: { wl: string; winPct: number | null; wlWinPct: number | null }[] = [];
+    for (const wl of sortedWls) {
+      const wlMatches = matches.filter((m) => m.wlId === wl.id);
       let wlPlayed = 0;
       let wlWins = 0;
       for (const m of wlMatches) {
@@ -203,12 +211,12 @@ function PlayerProfile({
       }
       points.push({
         wl: `WL${wl.number}`,
-        winPct: played ? (wins / played) * 100 : 0,
-        wlWinPct: wlPlayed ? (wlWins / wlPlayed) * 100 : 0,
+        winPct: played ? (wins / played) * 100 : null,
+        wlWinPct: wlPlayed ? (wlWins / wlPlayed) * 100 : null,
       });
     }
     return points;
-  }, [player.id, wlsWithPlayer]);
+  }, [player.id, matches, wls]);
 
   // Last 5 matches played (chronological, newest first).
   const last5 = useMemo(() => {
