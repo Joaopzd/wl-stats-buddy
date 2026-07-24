@@ -409,6 +409,8 @@ function PlayerProfile({
             player={player}
             managerAvg={managerCareer.avg}
             managerCount={managerCareer.count}
+            clutchScore={clutchCareer.clutchScore}
+            clutchApps={clutchCareer.clutch.matches}
           />
         </div>
         <div className="surface-card p-4">
@@ -419,6 +421,8 @@ function PlayerProfile({
               player={player}
               managerAvg={managerLast.avg}
               managerCount={managerLast.count}
+              clutchScore={clutchLast ? clutchLast.clutchScore : 0}
+              clutchApps={clutchLast ? clutchLast.clutch.matches : 0}
             />
           ) : (
             <div className="text-xs text-muted-foreground italic">Hasn't played a match yet.</div>
