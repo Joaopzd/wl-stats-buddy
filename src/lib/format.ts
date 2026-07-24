@@ -59,6 +59,7 @@ export const rarityIcon = (r: Rarity): ComponentType<LucideProps> => {
     case "FOF: Star Perform": return Star;
     case "FOF: Phenoms": return Sparkles;
     case "FoF: Summer Star": return Sun;
+    case "Futties": return Sparkles;
     default: return Circle;
   }
 };
