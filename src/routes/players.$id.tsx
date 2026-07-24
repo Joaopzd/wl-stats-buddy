@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/tooltip";
 import {
   aggregatePlayer,
+  clutchAggregate,
   eyeTestMismatch,
   isCleanSheetEligible,
   isGoalsConcededEligible,
@@ -127,6 +128,7 @@ function PlayerProfile({
 }) {
   const [editOpen, setEditOpen] = useState(false);
   const career = useMemo(() => aggregatePlayer(player, matches), [player, matches]);
+  const clutchCareer = useMemo(() => clutchAggregate(player, matches), [player, matches]);
 
   const wlsWithPlayer = useMemo(() => {
     const sorted = [...wls].sort((a, b) => a.number - b.number || a.createdAt - b.createdAt);
@@ -144,6 +146,10 @@ function PlayerProfile({
     () => (lastWL ? aggregatePlayer(player, lastWL.wlMatches) : null),
     [player, lastWL],
   );
+  const clutchLast = useMemo(
+    () => (lastWL ? clutchAggregate(player, lastWL.wlMatches) : null),
+    [player, lastWL],
+  );
 
   const managerCareer = useMemo(() => managerRatingAggregate(player.id, wls), [player.id, wls]);
   const managerLast = useMemo(
@@ -158,9 +164,9 @@ function PlayerProfile({
   );
 
   // ----- Chart data -----
-  // Rating evolution — one point per rated match, chronological.
+  // Rating evolution — one point per rated match plus 5-match moving average.
   const ratingSeries = useMemo(() => {
-    const points: { idx: number; label: string; rating: number }[] = [];
+    const raw: { idx: number; label: string; rating: number }[] = [];
     let idx = 0;
     const sortedWls = [...wls].sort((a, b) => a.number - b.number || a.createdAt - b.createdAt);
     for (const wl of sortedWls) {
@@ -171,18 +177,26 @@ function PlayerProfile({
         const perf = m.performances.find((p) => p.playerId === player.id);
         if (!perf || !perf.rating || perf.rating <= 0) continue;
         idx += 1;
-        points.push({ idx, label: `WL${wl.number} M${m.index}`, rating: perf.rating });
+        raw.push({ idx, label: `WL${wl.number} M${m.index}`, rating: perf.rating });
       }
     }
-    return points;
+    const WINDOW = 5;
+    return raw.map((p, i) => {
+      const from = Math.max(0, i - WINDOW + 1);
+      const slice = raw.slice(from, i + 1);
+      const ma = slice.reduce((s, x) => s + x.rating, 0) / slice.length;
+      return { ...p, ma: Number(ma.toFixed(3)) };
+    });
   }, [player.id, matches, wls]);
 
-  // Win% evolution — cumulative win rate per WL played.
+  // Win% evolution — includes ALL WLs. Career carries forward; per-WL is null when not played.
   const winSeries = useMemo(() => {
+    const sortedWls = [...wls].sort((a, b) => a.number - b.number || a.createdAt - b.createdAt);
     let played = 0;
     let wins = 0;
-    const points: { wl: string; winPct: number; wlWinPct: number }[] = [];
-    for (const { wl, wlMatches } of wlsWithPlayer) {
+    const points: { wl: string; winPct: number | null; wlWinPct: number | null }[] = [];
+    for (const wl of sortedWls) {
+      const wlMatches = matches.filter((m) => m.wlId === wl.id);
       let wlPlayed = 0;
       let wlWins = 0;
       for (const m of wlMatches) {
@@ -197,12 +211,12 @@ function PlayerProfile({
       }
       points.push({
         wl: `WL${wl.number}`,
-        winPct: played ? (wins / played) * 100 : 0,
-        wlWinPct: wlPlayed ? (wlWins / wlPlayed) * 100 : 0,
+        winPct: played ? (wins / played) * 100 : null,
+        wlWinPct: wlPlayed ? (wlWins / wlPlayed) * 100 : null,
       });
     }
     return points;
-  }, [player.id, wlsWithPlayer]);
+  }, [player.id, matches, wls]);
 
   // Last 5 matches played (chronological, newest first).
   const last5 = useMemo(() => {
@@ -395,6 +409,8 @@ function PlayerProfile({
             player={player}
             managerAvg={managerCareer.avg}
             managerCount={managerCareer.count}
+            clutchScore={clutchCareer.clutchScore}
+            clutchApps={clutchCareer.clutch.matches}
           />
         </div>
         <div className="surface-card p-4">
@@ -405,6 +421,8 @@ function PlayerProfile({
               player={player}
               managerAvg={managerLast.avg}
               managerCount={managerLast.count}
+              clutchScore={clutchLast ? clutchLast.clutchScore : 0}
+              clutchApps={clutchLast ? clutchLast.clutch.matches : 0}
             />
           ) : (
             <div className="text-xs text-muted-foreground italic">Hasn't played a match yet.</div>
@@ -530,30 +548,47 @@ function PlayerProfile({
                   />
                   <ReferenceLine
                     y={career.avgRating || 0}
-                    stroke="hsl(var(--primary))"
-                    strokeDasharray="6 4"
-                    strokeOpacity={0.6}
-                    label={{
-                      value: `Avg ${(career.avgRating || 0).toFixed(2)}`,
-                      position: "insideTopRight",
-                      fill: "hsl(var(--primary))",
-                      fontSize: 10,
-                    }}
+                    stroke="hsl(var(--muted-foreground))"
+                    strokeDasharray="4 4"
+                    strokeOpacity={0.5}
                   />
                   <Line
                     type="monotone"
                     dataKey="rating"
-                    stroke="hsl(var(--primary))"
+                    name="Match rating"
+                    stroke="hsl(var(--primary) / 0.35)"
+                    strokeWidth={1}
+                    dot={{ r: 3, fill: "hsl(var(--primary))", strokeWidth: 0 }}
+                    activeDot={{ r: 5, stroke: "hsl(var(--background))", strokeWidth: 2 }}
+                    isAnimationActive={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="ma"
+                    name="5-match avg"
+                    stroke="hsl(var(--accent))"
                     strokeWidth={3}
-                    dot={{ r: 4, fill: "hsl(var(--primary))", strokeWidth: 0 }}
-                    activeDot={{ r: 6, stroke: "hsl(var(--background))", strokeWidth: 2 }}
-                    fill="url(#ratingFill)"
+                    dot={false}
+                    activeDot={{ r: 5, stroke: "hsl(var(--background))", strokeWidth: 2 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           ) : (
             <ChartEmpty label="Need at least 2 rated matches to draw the trend." />
+          )}
+          {ratingSeries.length >= 2 && (
+            <div className="mt-2 flex flex-wrap items-center gap-4 text-[10px] uppercase tracking-wider text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="inline-block h-1.5 w-6 rounded-sm bg-accent" /> 5-match moving avg
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" /> Match rating
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="inline-block h-px w-6 border-t border-dashed border-muted-foreground" /> Career avg {(career.avgRating || 0).toFixed(2)}
+              </span>
+            </div>
           )}
         </div>
 
@@ -595,20 +630,25 @@ function PlayerProfile({
                   <Line
                     type="monotone"
                     dataKey="wlWinPct"
+                    name="Per WL"
                     stroke="hsl(var(--accent))"
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                    dot={{ r: 3, fill: "hsl(var(--accent))", strokeWidth: 0 }}
-                    activeDot={{ r: 5 }}
+                    strokeWidth={3}
+                    connectNulls
+                    dot={{ r: 4, fill: "hsl(var(--accent))", strokeWidth: 0 }}
+                    activeDot={{ r: 6, stroke: "hsl(var(--background))", strokeWidth: 2 }}
                   />
                   <Line
                     type="monotone"
                     dataKey="winPct"
+                    name="Career"
                     stroke="hsl(var(--primary))"
-                    strokeWidth={3}
-                    dot={{ r: 4, fill: "hsl(var(--primary))", strokeWidth: 0 }}
-                    activeDot={{ r: 6, stroke: "hsl(var(--background))", strokeWidth: 2 }}
+                    strokeWidth={2}
+                    strokeDasharray="6 4"
+                    connectNulls
+                    dot={{ r: 3, fill: "hsl(var(--primary))", strokeWidth: 0 }}
+                    activeDot={{ r: 5, stroke: "hsl(var(--background))", strokeWidth: 2 }}
                   />
+
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -686,12 +726,21 @@ function StatGrid({
   player,
   managerAvg,
   managerCount,
+  clutchScore,
+  clutchApps,
 }: {
   agg: ReturnType<typeof aggregatePlayer>;
   player: Player;
   managerAvg: number;
   managerCount: number;
+  clutchScore: number;
+  clutchApps: number;
 }) {
+  const clutchEligible = clutchApps >= 5;
+  const clutchAccent = clutchEligible && clutchScore > 0;
+  const clutchValue = clutchEligible
+    ? `${clutchScore >= 0 ? "+" : ""}${clutchScore.toFixed(2)}`
+    : "—";
   return (
     <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
       <Stat label="MP" value={agg.matches} />
@@ -725,6 +774,12 @@ function StatGrid({
         label="Sub Impact"
         value={agg.subMatches > 0 ? agg.subImpact.toFixed(2) : "—"}
         accent={agg.subImpact >= 1.5}
+      />
+      <Stat
+        label="Clutch"
+        value={clutchValue}
+        icon={<TrendingUp className="h-3 w-3 text-primary" />}
+        accent={clutchAccent}
       />
 
       {isCleanSheetEligible(player.position) && (
