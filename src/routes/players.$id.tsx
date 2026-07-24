@@ -630,20 +630,25 @@ function PlayerProfile({
                   <Line
                     type="monotone"
                     dataKey="wlWinPct"
+                    name="Per WL"
                     stroke="hsl(var(--accent))"
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                    dot={{ r: 3, fill: "hsl(var(--accent))", strokeWidth: 0 }}
-                    activeDot={{ r: 5 }}
+                    strokeWidth={3}
+                    connectNulls
+                    dot={{ r: 4, fill: "hsl(var(--accent))", strokeWidth: 0 }}
+                    activeDot={{ r: 6, stroke: "hsl(var(--background))", strokeWidth: 2 }}
                   />
                   <Line
                     type="monotone"
                     dataKey="winPct"
+                    name="Career"
                     stroke="hsl(var(--primary))"
-                    strokeWidth={3}
-                    dot={{ r: 4, fill: "hsl(var(--primary))", strokeWidth: 0 }}
-                    activeDot={{ r: 6, stroke: "hsl(var(--background))", strokeWidth: 2 }}
+                    strokeWidth={2}
+                    strokeDasharray="6 4"
+                    connectNulls
+                    dot={{ r: 3, fill: "hsl(var(--primary))", strokeWidth: 0 }}
+                    activeDot={{ r: 5, stroke: "hsl(var(--background))", strokeWidth: 2 }}
                   />
+
                 </LineChart>
               </ResponsiveContainer>
             </div>
