@@ -292,6 +292,7 @@ export const raritySwatch = (r: Rarity): string => {
     "FOF: Star Perform": "#13c49c",
     "FOF: Phenoms": "#3b3489",
     "FoF: Summer Star": "#5906e1",
+    Futties: "#e82e79",
   };
   if (hexMap[r]) {
     // Rendered via inline style elsewhere; return a neutral utility for layout fallback.
