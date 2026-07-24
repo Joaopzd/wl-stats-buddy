@@ -775,6 +775,12 @@ function StatGrid({
         value={agg.subMatches > 0 ? agg.subImpact.toFixed(2) : "—"}
         accent={agg.subImpact >= 1.5}
       />
+      <Stat
+        label="Clutch"
+        value={clutchValue}
+        icon={<TrendingUp className="h-3 w-3 text-primary" />}
+        accent={clutchAccent}
+      />
 
       {isCleanSheetEligible(player.position) && (
         <Stat
