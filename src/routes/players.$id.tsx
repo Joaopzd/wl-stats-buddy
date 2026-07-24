@@ -548,30 +548,47 @@ function PlayerProfile({
                   />
                   <ReferenceLine
                     y={career.avgRating || 0}
-                    stroke="hsl(var(--primary))"
-                    strokeDasharray="6 4"
-                    strokeOpacity={0.6}
-                    label={{
-                      value: `Avg ${(career.avgRating || 0).toFixed(2)}`,
-                      position: "insideTopRight",
-                      fill: "hsl(var(--primary))",
-                      fontSize: 10,
-                    }}
+                    stroke="hsl(var(--muted-foreground))"
+                    strokeDasharray="4 4"
+                    strokeOpacity={0.5}
                   />
                   <Line
                     type="monotone"
                     dataKey="rating"
-                    stroke="hsl(var(--primary))"
+                    name="Match rating"
+                    stroke="hsl(var(--primary) / 0.35)"
+                    strokeWidth={1}
+                    dot={{ r: 3, fill: "hsl(var(--primary))", strokeWidth: 0 }}
+                    activeDot={{ r: 5, stroke: "hsl(var(--background))", strokeWidth: 2 }}
+                    isAnimationActive={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="ma"
+                    name="5-match avg"
+                    stroke="hsl(var(--accent))"
                     strokeWidth={3}
-                    dot={{ r: 4, fill: "hsl(var(--primary))", strokeWidth: 0 }}
-                    activeDot={{ r: 6, stroke: "hsl(var(--background))", strokeWidth: 2 }}
-                    fill="url(#ratingFill)"
+                    dot={false}
+                    activeDot={{ r: 5, stroke: "hsl(var(--background))", strokeWidth: 2 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           ) : (
             <ChartEmpty label="Need at least 2 rated matches to draw the trend." />
+          )}
+          {ratingSeries.length >= 2 && (
+            <div className="mt-2 flex flex-wrap items-center gap-4 text-[10px] uppercase tracking-wider text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="inline-block h-1.5 w-6 rounded-sm bg-accent" /> 5-match moving avg
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" /> Match rating
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="inline-block h-px w-6 border-t border-dashed border-muted-foreground" /> Career avg {(career.avgRating || 0).toFixed(2)}
+              </span>
+            </div>
           )}
         </div>
 
