@@ -128,6 +128,7 @@ function PlayerProfile({
 }) {
   const [editOpen, setEditOpen] = useState(false);
   const career = useMemo(() => aggregatePlayer(player, matches), [player, matches]);
+  const clutchCareer = useMemo(() => clutchAggregate(player, matches), [player, matches]);
 
   const wlsWithPlayer = useMemo(() => {
     const sorted = [...wls].sort((a, b) => a.number - b.number || a.createdAt - b.createdAt);
@@ -143,6 +144,10 @@ function PlayerProfile({
   const lastWL = wlsWithPlayer.length ? wlsWithPlayer[wlsWithPlayer.length - 1] : null;
   const lastAgg = useMemo(
     () => (lastWL ? aggregatePlayer(player, lastWL.wlMatches) : null),
+    [player, lastWL],
+  );
+  const clutchLast = useMemo(
+    () => (lastWL ? clutchAggregate(player, lastWL.wlMatches) : null),
     [player, lastWL],
   );
 
