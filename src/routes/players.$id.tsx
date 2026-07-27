@@ -279,9 +279,9 @@ function PlayerProfile({
               const next = !player.isArchived;
               store.updatePlayer(player.id, {
                 isArchived: next,
-                ...(next ? { isInDevelopment: false } : {}),
+                ...(next ? { isInDevelopment: false } : { restoredAt: Date.now() }),
               });
-              toast.success(next ? `${player.name} archived` : `${player.name} restored`);
+              toast.success(next ? `${player.name} archived` : `${player.name} restored — absence counter reset`);
             }}
             className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:border-primary/60 text-[11px] uppercase tracking-wider font-semibold"
           >
