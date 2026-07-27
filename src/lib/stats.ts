@@ -633,6 +633,9 @@ export function consecutiveWLAbsence(
   let absent = 0;
   for (const wl of sorted) {
     if (player.createdAt > wl.createdAt) break;
+    // A manual restore grants a fresh grace window: WLs that already
+    // existed before the restore don't count toward the absence streak.
+    if (player.restoredAt && wl.createdAt < player.restoredAt) break;
     const played = matches.some(
       (m) => m.wlId === wl.id && m.performances.some((p) => p.playerId === player.id),
     );
