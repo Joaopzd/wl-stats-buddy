@@ -631,10 +631,10 @@ function PlayerProfile({
                     type="monotone"
                     dataKey="wlWinPct"
                     name="Per WL"
-                    stroke="var(--accent)"
+                    stroke="#38BDF8"
                     strokeWidth={3}
                     connectNulls
-                    dot={{ r: 4, fill: "var(--accent)", strokeWidth: 0 }}
+                    dot={{ r: 4, fill: "#38BDF8", strokeWidth: 0 }}
                     activeDot={{ r: 6, stroke: "var(--background)", strokeWidth: 2 }}
                   />
                   <Line
