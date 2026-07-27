@@ -184,11 +184,12 @@ function PlayersPage() {
 
 
   const setStatus = (p: Player, status: RosterView) => {
+    const wasArchived = !!p.isArchived;
     const patch =
       status === "active"
-        ? { isArchived: false, isInDevelopment: false }
+        ? { isArchived: false, isInDevelopment: false, ...(wasArchived ? { restoredAt: Date.now() } : {}) }
         : status === "dev"
-        ? { isArchived: false, isInDevelopment: true }
+        ? { isArchived: false, isInDevelopment: true, ...(wasArchived ? { restoredAt: Date.now() } : {}) }
         : { isArchived: true, isInDevelopment: false };
     store.updatePlayer(p.id, patch);
     toast.success(
