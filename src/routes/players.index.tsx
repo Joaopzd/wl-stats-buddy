@@ -50,7 +50,7 @@ const RARITY_GROUPS: { label: string; items: Rarity[] }[] = [
       "FUT Birthday Icon", "Heroes Ultimate Scream", "Journey of Nations", "National Pride",
       "Icon TOTY", "MH TOTS", "TOTS Highlights",
       "UEFA Europa League", "UEFA Champions League", "UEFA Conference League", "Showdown",
-      "FOF: Greats of The Game Icon", "FOF: Greats of The Game Hero", "FOF: Glory Hunters", "FOF: Star Perform", "FOF: Phenoms", "FoF: Summer Star",
+      "FOF: Greats of The Game Icon", "FOF: Greats of The Game Hero", "FOF: Glory Hunters", "FOF: Star Perform", "FOF: Phenoms", "FoF: Summer Star", "Futties",
     ],
   },
   { label: "Legends", items: ["Icon Base", "Hero Base"] },
@@ -184,11 +184,12 @@ function PlayersPage() {
 
 
   const setStatus = (p: Player, status: RosterView) => {
+    const wasArchived = !!p.isArchived;
     const patch =
       status === "active"
-        ? { isArchived: false, isInDevelopment: false }
+        ? { isArchived: false, isInDevelopment: false, ...(wasArchived ? { restoredAt: Date.now() } : {}) }
         : status === "dev"
-        ? { isArchived: false, isInDevelopment: true }
+        ? { isArchived: false, isInDevelopment: true, ...(wasArchived ? { restoredAt: Date.now() } : {}) }
         : { isArchived: true, isInDevelopment: false };
     store.updatePlayer(p.id, patch);
     toast.success(

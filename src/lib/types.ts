@@ -75,6 +75,8 @@ export interface Player {
   isArchived?: boolean;
   /** Player is being trained / tested. Hidden from active roster, still searchable in WL squad picker. */
   isInDevelopment?: boolean;
+  /** Timestamp when the player was last manually restored to Active/Dev from Archive. Resets the auto-archive absence counter. */
+  restoredAt?: number;
   /** ISO country code or country name for the player's nationality. */
   nationality?: string;
   /** Height in centimeters. */
