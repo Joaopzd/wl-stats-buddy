@@ -566,7 +566,7 @@ function PlayerProfile({
                     type="monotone"
                     dataKey="ma"
                     name="5-match avg"
-                    stroke="var(--accent)"
+                    stroke="#38BDF8"
                     strokeWidth={3}
                     dot={false}
                     activeDot={{ r: 5, stroke: "var(--background)", strokeWidth: 2 }}
