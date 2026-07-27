@@ -661,7 +661,7 @@ function PlayerProfile({
                 <span className="inline-block h-1 w-6 rounded-sm bg-primary" /> Career
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="inline-block h-1 w-6 rounded-sm bg-accent opacity-70" /> Per WL
+                <span className="inline-block h-1 w-6 rounded-sm" style={{ background: "#38BDF8" }} /> Per WL
               </span>
             </div>
           )}
