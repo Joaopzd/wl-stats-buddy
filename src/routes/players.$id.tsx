@@ -580,7 +580,7 @@ function PlayerProfile({
           {ratingSeries.length >= 2 && (
             <div className="mt-2 flex flex-wrap items-center gap-4 text-[10px] uppercase tracking-wider text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
-                <span className="inline-block h-1.5 w-6 rounded-sm bg-accent" /> 5-match moving avg
+                <span className="inline-block h-1.5 w-6 rounded-sm" style={{ background: "#38BDF8" }} /> 5-match moving avg
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" /> Match rating
