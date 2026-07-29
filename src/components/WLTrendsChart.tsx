@@ -135,9 +135,12 @@ export function WLTrendsChart({ wls, matches }: Props) {
         <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-primary" /> WL Trends
         </h2>
-        <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-          {data.length} session{data.length === 1 ? "" : "s"} shown
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+            {data.length} session{data.length === 1 ? "" : "s"} shown
+          </span>
+          <ChartContrastToggle />
+        </div>
       </div>
 
       {/* Filters */}
