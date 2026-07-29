@@ -88,6 +88,7 @@ const RANGES: { key: RangeFilter; label: string }[] = [
 
 export function WLTrendsChart({ wls, matches }: Props) {
   const initial = useMemo(() => loadFilters(), []);
+  const chart = useChartTheme();
   const [platform, setPlatform] = useState<PlatformFilter>(initial.platform);
   const [range, setRange] = useState<RangeFilter>(initial.range);
 
