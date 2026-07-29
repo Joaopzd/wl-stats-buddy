@@ -15,6 +15,8 @@ import { TrendingUp, Filter } from "lucide-react";
 import type { Match, Platform, WeekendLeague } from "@/lib/types";
 import { wlRecord } from "@/lib/stats";
 import { wlLabel } from "@/lib/types";
+import { useChartTheme } from "@/lib/chartTheme";
+import { ChartContrastToggle } from "@/components/ChartContrastToggle";
 
 interface Props {
   wls: WeekendLeague[];
@@ -88,6 +90,7 @@ const RANGES: { key: RangeFilter; label: string }[] = [
 
 export function WLTrendsChart({ wls, matches }: Props) {
   const initial = useMemo(() => loadFilters(), []);
+  const chart = useChartTheme();
   const [platform, setPlatform] = useState<PlatformFilter>(initial.platform);
   const [range, setRange] = useState<RangeFilter>(initial.range);
 
@@ -132,9 +135,12 @@ export function WLTrendsChart({ wls, matches }: Props) {
         <h2 className="font-display text-2xl tracking-wider flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-primary" /> WL Trends
         </h2>
-        <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-          {data.length} session{data.length === 1 ? "" : "s"} shown
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+            {data.length} session{data.length === 1 ? "" : "s"} shown
+          </span>
+          <ChartContrastToggle />
+        </div>
       </div>
 
       {/* Filters */}
@@ -191,13 +197,13 @@ export function WLTrendsChart({ wls, matches }: Props) {
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={data} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
-                  <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} stroke="var(--border)" />
-                  <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} stroke="var(--border)" allowDecimals={false} />
+                  <CartesianGrid stroke={chart.grid} strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fill: chart.axis, fontSize: 10 }} stroke={chart.axis} />
+                  <YAxis tick={{ fill: chart.axis, fontSize: 10 }} stroke={chart.axis} allowDecimals={false} />
                   <Tooltip content={<TrendTooltip />} cursor={{ fill: "var(--secondary)", opacity: 0.4 }} animationDuration={150} />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Bar dataKey="wins" name="Wins" fill="var(--primary)" radius={[3, 3, 0, 0]} />
-                  <Bar dataKey="losses" name="Losses" fill="var(--destructive)" radius={[3, 3, 0, 0]} />
+                  <Legend wrapperStyle={{ fontSize: 11, color: chart.axis }} />
+                  <Bar dataKey="wins" name="Wins" fill={chart.series[0]} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="losses" name="Losses" fill={chart.series[2]} radius={[3, 3, 0, 0]} />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
@@ -210,15 +216,16 @@ export function WLTrendsChart({ wls, matches }: Props) {
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={data} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
-                  <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} stroke="var(--border)" />
-                  <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} stroke="var(--border)" />
-                  <Tooltip content={<TrendTooltip />} cursor={{ stroke: "var(--accent)", strokeWidth: 1 }} animationDuration={150} />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <ReferenceLine y={0} stroke="var(--border)" />
-                  <Line type="monotone" dataKey="gf" name="Scored" stroke="var(--primary)" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
-                  <Line type="monotone" dataKey="ga" name="Conceded" stroke="var(--destructive)" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
-                  <Line type="monotone" dataKey="gd" name="GD" stroke="var(--accent)" strokeWidth={2} strokeDasharray="4 3" dot={{ r: 3 }} activeDot={{ r: 5 }} />
+                  <CartesianGrid stroke={chart.grid} strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fill: chart.axis, fontSize: 10 }} stroke={chart.axis} />
+                  <YAxis tick={{ fill: chart.axis, fontSize: 10 }} stroke={chart.axis} />
+                  <Tooltip content={<TrendTooltip />} cursor={{ stroke: chart.reference, strokeWidth: 1 }} animationDuration={150} />
+                  <Legend wrapperStyle={{ fontSize: 11, color: chart.axis }} />
+                  <ReferenceLine y={0} stroke={chart.reference} />
+                  <Line type="monotone" dataKey="gf" name="Scored" stroke={chart.series[0]} strokeWidth={chart.strokeThin} dot={{ r: chart.dot }} activeDot={{ r: 5 }} />
+                  <Line type="monotone" dataKey="ga" name="Conceded" stroke={chart.series[2]} strokeWidth={chart.strokeThin} dot={{ r: chart.dot }} activeDot={{ r: 5 }} />
+                  <Line type="monotone" dataKey="gd" name="GD" stroke={chart.series[1]} strokeWidth={chart.strokeThin} strokeDasharray="4 3" dot={{ r: chart.dot }} activeDot={{ r: 5 }} />
+
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
