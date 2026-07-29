@@ -19,10 +19,13 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  Legend,
   Tooltip as RTooltip,
   ResponsiveContainer,
   ReferenceLine,
 } from "recharts";
+import { ChartContrastToggle } from "@/components/ChartContrastToggle";
+import { useChartTheme } from "@/lib/chartTheme";
 import { AppShell } from "@/components/AppShell";
 import { PositionBadge } from "@/components/PositionBadge";
 import { PlayerCard } from "@/components/PlayerCard";
