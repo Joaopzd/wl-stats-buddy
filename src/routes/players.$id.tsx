@@ -546,8 +546,8 @@ function PlayerProfile({
                     }}
                     labelStyle={{ color: chart.tooltipText, fontWeight: 700, marginBottom: 4 }}
                     itemStyle={{ color: chart.tooltipText }}
-                    labelFormatter={(_, items) => items?.[0]?.payload?.label ?? ""}
-                    formatter={(v: number, name) => [typeof v === "number" ? v.toFixed(2) : "—", name]}
+                    labelFormatter={(_: unknown, items: Array<{ payload?: { label?: string } }>) => items?.[0]?.payload?.label ?? ""}
+                    formatter={(v: unknown, name: unknown) => [typeof v === "number" ? v.toFixed(2) : "—", name as string]}
                     cursor={{ stroke: chart.reference, strokeWidth: 1 }}
                   />
                   <Legend
