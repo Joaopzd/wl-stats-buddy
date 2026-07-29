@@ -504,6 +504,9 @@ function PlayerProfile({
       </div>
 
       {/* Charts */}
+      <div className="mb-2 flex items-center justify-end">
+        <ChartContrastToggle />
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="surface-card p-4">
           <SectionHeader title="Rating Evolution" />
@@ -511,65 +514,75 @@ function PlayerProfile({
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={ratingSeries} margin={{ top: 12, right: 16, left: 0, bottom: 8 }}>
-                  <defs>
-                    <linearGradient id="ratingFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.35} />
-                      <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid stroke="color-mix(in srgb, var(--border) calc(0.5 * 100%), transparent)" strokeDasharray="4 4" vertical={false} />
+                  <CartesianGrid stroke={chart.grid} strokeDasharray="4 4" vertical={false} />
                   <XAxis
                     dataKey="idx"
-                    stroke="var(--muted-foreground)"
-                    tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+                    stroke={chart.axis}
+                    tick={{ fontSize: 11, fill: chart.axis }}
                     tickLine={false}
-                    axisLine={{ stroke: "var(--border)" }}
-                    label={{ value: "Matches", position: "insideBottom", offset: -4, fill: "var(--muted-foreground)", fontSize: 10 }}
+                    axisLine={{ stroke: chart.axis }}
+                    label={{ value: "Matches", position: "insideBottom", offset: -4, fill: chart.axis, fontSize: 10 }}
                   />
                   <YAxis
                     domain={[Math.max(0, Math.floor(Math.min(...ratingSeries.map((p) => p.rating)) - 0.5)), 10]}
-                    stroke="var(--muted-foreground)"
-                    tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+                    stroke={chart.axis}
+                    tick={{ fontSize: 11, fill: chart.axis }}
                     tickLine={false}
                     axisLine={false}
                     width={36}
                   />
                   <RTooltip
                     contentStyle={{
-                      background: "var(--card)",
-                      border: "1px solid color-mix(in srgb, var(--primary) calc(0.5 * 100%), transparent)",
+                      background: chart.tooltipBg,
+                      border: `1px solid ${chart.tooltipBorder}`,
                       borderRadius: 8,
                       fontSize: 12,
                       padding: "8px 12px",
+                      color: chart.tooltipText,
                     }}
+                    labelStyle={{ color: chart.tooltipText, fontWeight: 700, marginBottom: 4 }}
+                    itemStyle={{ color: chart.tooltipText }}
                     labelFormatter={(_, items) => items?.[0]?.payload?.label ?? ""}
-                    formatter={(v: number) => [v.toFixed(2), "Rating"]}
-                    cursor={{ stroke: "color-mix(in srgb, var(--primary) calc(0.4 * 100%), transparent)", strokeWidth: 1 }}
+                    formatter={(v: number, name) => [typeof v === "number" ? v.toFixed(2) : "—", name]}
+                    cursor={{ stroke: chart.reference, strokeWidth: 1 }}
+                  />
+                  <Legend
+                    verticalAlign="top"
+                    align="right"
+                    height={26}
+                    iconType="plainline"
+                    wrapperStyle={{ fontSize: 11, color: chart.axis }}
                   />
                   <ReferenceLine
                     y={career.avgRating || 0}
-                    stroke="var(--muted-foreground)"
+                    stroke={chart.reference}
                     strokeDasharray="4 4"
-                    strokeOpacity={0.5}
+                    label={{
+                      value: `Career avg ${(career.avgRating || 0).toFixed(2)}`,
+                      position: "insideTopRight",
+                      fill: chart.axis,
+                      fontSize: 10,
+                    }}
                   />
                   <Line
                     type="monotone"
                     dataKey="rating"
                     name="Match rating"
-                    stroke="color-mix(in srgb, var(--primary) calc(0.35 * 100%), transparent)"
-                    strokeWidth={1}
-                    dot={{ r: 3, fill: "var(--primary)", strokeWidth: 0 }}
-                    activeDot={{ r: 5, stroke: "var(--background)", strokeWidth: 2 }}
+                    stroke={chart.series[0]}
+                    strokeWidth={chart.strokeThin}
+                    strokeOpacity={chart.high ? 0.9 : 0.55}
+                    dot={{ r: chart.dot, fill: chart.series[0], strokeWidth: 0 }}
+                    activeDot={{ r: chart.dot + 2, stroke: "var(--background)", strokeWidth: 2 }}
                     isAnimationActive={false}
                   />
                   <Line
                     type="monotone"
                     dataKey="ma"
                     name="5-match avg"
-                    stroke="#38BDF8"
-                    strokeWidth={3}
+                    stroke={chart.series[1]}
+                    strokeWidth={chart.stroke}
                     dot={false}
-                    activeDot={{ r: 5, stroke: "var(--background)", strokeWidth: 2 }}
+                    activeDot={{ r: chart.dot + 2, stroke: "var(--background)", strokeWidth: 2 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -580,10 +593,10 @@ function PlayerProfile({
           {ratingSeries.length >= 2 && (
             <div className="mt-2 flex flex-wrap items-center gap-4 text-[10px] uppercase tracking-wider text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
-                <span className="inline-block h-1.5 w-6 rounded-sm" style={{ background: "#38BDF8" }} /> 5-match moving avg
+                <span className="inline-block h-1.5 w-6 rounded-sm" style={{ background: chart.series[1] }} /> 5-match moving avg
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" /> Match rating
+                <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: chart.series[0] }} /> Match rating
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <span className="inline-block h-px w-6 border-t border-dashed border-muted-foreground" /> Career avg {(career.avgRating || 0).toFixed(2)}
@@ -598,18 +611,18 @@ function PlayerProfile({
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={winSeries} margin={{ top: 12, right: 16, left: 0, bottom: 8 }}>
-                  <CartesianGrid stroke="color-mix(in srgb, var(--border) calc(0.5 * 100%), transparent)" strokeDasharray="4 4" vertical={false} />
+                  <CartesianGrid stroke={chart.grid} strokeDasharray="4 4" vertical={false} />
                   <XAxis
                     dataKey="wl"
-                    stroke="var(--muted-foreground)"
-                    tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+                    stroke={chart.axis}
+                    tick={{ fontSize: 11, fill: chart.axis }}
                     tickLine={false}
-                    axisLine={{ stroke: "var(--border)" }}
+                    axisLine={{ stroke: chart.axis }}
                   />
                   <YAxis
                     domain={[0, 100]}
-                    stroke="var(--muted-foreground)"
-                    tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+                    stroke={chart.axis}
+                    tick={{ fontSize: 11, fill: chart.axis }}
                     tickLine={false}
                     axisLine={false}
                     width={40}
@@ -617,36 +630,46 @@ function PlayerProfile({
                   />
                   <RTooltip
                     contentStyle={{
-                      background: "var(--card)",
-                      border: "1px solid color-mix(in srgb, var(--primary) calc(0.5 * 100%), transparent)",
+                      background: chart.tooltipBg,
+                      border: `1px solid ${chart.tooltipBorder}`,
                       borderRadius: 8,
                       fontSize: 12,
                       padding: "8px 12px",
+                      color: chart.tooltipText,
                     }}
-                    formatter={(v: number, name) => [`${v.toFixed(0)}%`, name === "winPct" ? "Career" : "This WL"]}
-                    cursor={{ stroke: "color-mix(in srgb, var(--primary) calc(0.4 * 100%), transparent)", strokeWidth: 1 }}
+                    labelStyle={{ color: chart.tooltipText, fontWeight: 700, marginBottom: 4 }}
+                    itemStyle={{ color: chart.tooltipText }}
+                    formatter={(v: number, name) => [typeof v === "number" ? `${v.toFixed(0)}%` : "—", name]}
+                    cursor={{ stroke: chart.reference, strokeWidth: 1 }}
                   />
-                  <ReferenceLine y={50} stroke="color-mix(in srgb, var(--muted-foreground) calc(0.6 * 100%), transparent)" strokeDasharray="4 4" />
+                  <Legend
+                    verticalAlign="top"
+                    align="right"
+                    height={26}
+                    iconType="plainline"
+                    wrapperStyle={{ fontSize: 11, color: chart.axis }}
+                  />
+                  <ReferenceLine y={50} stroke={chart.reference} strokeDasharray="4 4" />
                   <Line
                     type="monotone"
                     dataKey="wlWinPct"
                     name="Per WL"
-                    stroke="#38BDF8"
-                    strokeWidth={3}
+                    stroke={chart.series[1]}
+                    strokeWidth={chart.stroke}
                     connectNulls
-                    dot={{ r: 4, fill: "#38BDF8", strokeWidth: 0 }}
-                    activeDot={{ r: 6, stroke: "var(--background)", strokeWidth: 2 }}
+                    dot={{ r: chart.dot + 1, fill: chart.series[1], strokeWidth: 0 }}
+                    activeDot={{ r: chart.dot + 3, stroke: "var(--background)", strokeWidth: 2 }}
                   />
                   <Line
                     type="monotone"
                     dataKey="winPct"
                     name="Career"
-                    stroke="var(--primary)"
-                    strokeWidth={2}
+                    stroke={chart.series[0]}
+                    strokeWidth={chart.strokeThin}
                     strokeDasharray="6 4"
                     connectNulls
-                    dot={{ r: 3, fill: "var(--primary)", strokeWidth: 0 }}
-                    activeDot={{ r: 5, stroke: "var(--background)", strokeWidth: 2 }}
+                    dot={{ r: chart.dot, fill: chart.series[0], strokeWidth: 0 }}
+                    activeDot={{ r: chart.dot + 2, stroke: "var(--background)", strokeWidth: 2 }}
                   />
 
                 </LineChart>
@@ -658,15 +681,16 @@ function PlayerProfile({
           {winSeries.length >= 2 && (
             <div className="mt-2 flex items-center gap-4 text-[10px] uppercase tracking-wider text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
-                <span className="inline-block h-1 w-6 rounded-sm bg-primary" /> Career
+                <span className="inline-block h-1 w-6 rounded-sm" style={{ background: chart.series[0] }} /> Career (dashed)
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="inline-block h-1 w-6 rounded-sm" style={{ background: "#38BDF8" }} /> Per WL
+                <span className="inline-block h-1 w-6 rounded-sm" style={{ background: chart.series[1] }} /> Per WL
               </span>
             </div>
           )}
         </div>
       </div>
+
 
       {editOpen && (
         <PlayerForm existing={player} onClose={() => setEditOpen(false)} />
