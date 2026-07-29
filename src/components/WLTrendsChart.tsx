@@ -15,6 +15,8 @@ import { TrendingUp, Filter } from "lucide-react";
 import type { Match, Platform, WeekendLeague } from "@/lib/types";
 import { wlRecord } from "@/lib/stats";
 import { wlLabel } from "@/lib/types";
+import { useChartTheme } from "@/lib/chartTheme";
+import { ChartContrastToggle } from "@/components/ChartContrastToggle";
 
 interface Props {
   wls: WeekendLeague[];
