@@ -130,6 +130,7 @@ function PlayerProfile({
   onBack: () => void;
 }) {
   const [editOpen, setEditOpen] = useState(false);
+  const chart = useChartTheme();
   const career = useMemo(() => aggregatePlayer(player, matches), [player, matches]);
   const clutchCareer = useMemo(() => clutchAggregate(player, matches), [player, matches]);
 
