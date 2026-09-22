@@ -61,6 +61,27 @@ export type Rarity =
 
 export type Platform = "PC" | "PS5" | "Xbox";
 
+export interface PlayerAttributes {
+  pace: number;
+  shooting: number;
+  passing: number;
+  dribbling: number;
+  defending: number;
+  physical: number;
+}
+ 
+export interface PlayerEvolution {
+  /** Nome livre pra identificar a evolução, ex: "Evo Finalização". */
+  label?: string;
+  /** Overall resultante depois de aplicar a evolução. */
+  newOverall: number;
+  /** Raridade resultante (evoluções normalmente sobem de raridade). */
+  newRarity: Rarity;
+  /** Só os atributos que mudaram — some com os atributos base na hora de exibir. */
+  attributeDeltas: Partial<PlayerAttributes>;
+  appliedAt: number;
+}
+
 export interface Player {
   id: string;
   name: string;
@@ -84,6 +105,13 @@ export interface Player {
   /** Preferred foot. */
   preferredFoot?: "Left" | "Right";
   createdAt: number;
+   /** Ratings/atributos (PAC/SHO/PAS/DRI/DEF/PHY). Opcional p/ jogadores legados. */
+  attributes?: PlayerAttributes;
+//   /** id da linha em fc27_ratings de onde os atributos foram importados, se veio do catálogo. */
+  catalogId?: number;
+//   /** Evolução aplicada nesta carta (simples: só valores + raridade, sem árvore complexa). */
+  evolution?: PlayerEvolution;
+  
 }
 
 export interface MatchPlayerStat {
@@ -215,8 +243,35 @@ export interface WLTactics {
 }
 
 
-
 /** Convenience: render the user-facing label for a WL. */
 export function wlLabel(wl: Pick<WeekendLeague, "number" | "customName">): string {
   return wl.customName?.trim() || `WL #${wl.number}`;
+}
+
+/** Overall efetivo da carta, já considerando evolução aplicada. */
+export function getEffectiveOverall(player: Pick<Player, "overall" | "evolution">): number {
+  return player.evolution?.newOverall ?? player.overall;
+}
+ 
+/** Raridade efetiva da carta, já considerando evolução aplicada. */
+export function getEffectiveRarity(player: Pick<Player, "rarity" | "evolution">): Rarity {
+  return player.evolution?.newRarity ?? player.rarity;
+}
+ 
+/** Atributos efetivos (base + deltas da evolução), prontos pra renderizar no card. */
+export function getEffectiveAttributes(
+  player: Pick<Player, "attributes" | "evolution">
+): PlayerAttributes | undefined {
+  if (!player.attributes) return undefined;
+  if (!player.evolution) return player.attributes;
+  const deltas = player.evolution.attributeDeltas;
+  const clamp99 = (n: number) => Math.max(0, Math.min(99, n));
+  return {
+    pace: clamp99(player.attributes.pace + (deltas.pace ?? 0)),
+    shooting: clamp99(player.attributes.shooting + (deltas.shooting ?? 0)),
+    passing: clamp99(player.attributes.passing + (deltas.passing ?? 0)),
+    dribbling: clamp99(player.attributes.dribbling + (deltas.dribbling ?? 0)),
+    defending: clamp99(player.attributes.defending + (deltas.defending ?? 0)),
+    physical: clamp99(player.attributes.physical + (deltas.physical ?? 0)),
+  };
 }
