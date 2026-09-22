@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      fc27_ratings: {
+        Row: {
+          id: number
+          name: string
+          club: string | null
+          league: string | null
+          nationality: string | null
+          position: string
+          overall: number
+          pace: number | null
+          shooting: number | null
+          passing: number | null
+          dribbling: number | null
+          defending: number | null
+          physical: number | null
+          skill_moves: number | null
+          weak_foot: number | null
+          preferred_foot: string | null
+          height_cm: number | null
+          age: number | null
+          image_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          id: number
+          name: string
+          club?: string | null
+          league?: string | null
+          nationality?: string | null
+          position: string
+          overall: number
+          pace?: number | null
+          shooting?: number | null
+          passing?: number | null
+          dribbling?: number | null
+          defending?: number | null
+          physical?: number | null
+          skill_moves?: number | null
+          weak_foot?: number | null
+          preferred_foot?: string | null
+          height_cm?: number | null
+          age?: number | null
+          image_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          name?: string
+          club?: string | null
+          league?: string | null
+          nationality?: string | null
+          position?: string
+          overall?: number
+          pace?: number | null
+          shooting?: number | null
+          passing?: number | null
+          dribbling?: number | null
+          defending?: number | null
+          physical?: number | null
+          skill_moves?: number | null
+          weak_foot?: number | null
+          preferred_foot?: string | null
+          height_cm?: number | null
+          age?: number | null
+          image_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       matches: {
         Row: {
           created_at: string

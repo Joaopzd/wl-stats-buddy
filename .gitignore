@@ -20,6 +20,9 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Seed data (CSV files from Kaggle — too large for git, never commit secrets)
+data/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
