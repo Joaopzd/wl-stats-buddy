@@ -1,7 +1,17 @@
 import { useState, useEffect } from "react";
-import type { Position, Rarity } from "@/lib/types";
+import { TrendingUp } from "lucide-react";
+import type { Position, Rarity, PlayerAttributes } from "@/lib/types";
 import { rarityVisual, rarityIcon } from "@/lib/format";
 import { positionBadgeStyle } from "@/lib/positionGroup";
+
+const ATTRIBUTE_LABELS: { key: keyof PlayerAttributes; label: string }[] = [
+  { key: "pace", label: "PAC" },
+  { key: "shooting", label: "SHO" },
+  { key: "passing", label: "PAS" },
+  { key: "dribbling", label: "DRI" },
+  { key: "defending", label: "DEF" },
+  { key: "physical", label: "PHY" },
+];
 
 export function PlayerCard({
   name,
@@ -9,6 +19,8 @@ export function PlayerCard({
   position,
   rarity,
   imageUrl,
+  attributes,
+  isEvolved,
   size = "md",
 }: {
   name: string;
@@ -16,6 +28,10 @@ export function PlayerCard({
   position: Position;
   rarity: Rarity;
   imageUrl?: string;
+  /** Atributos (PAC/SHO/PAS/DRI/DEF/PHY). Quando presentes, o card os desenha em vez de depender de imagem. */
+  attributes?: PlayerAttributes;
+  /** Mostra um selo indicando que essa é uma carta evoluída. */
+  isEvolved?: boolean;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
 }) {
   // Strict 3:4 aspect ratio across all sizes to match real player cards.
@@ -31,11 +47,16 @@ export function PlayerCard({
             : "w-48 h-64 text-base";
   const v = rarityVisual(rarity);
 
+  // Atributos só cabem visualmente em cards grandes.
+  const showAttributes = (size === "lg" || size === "xl") && !!attributes;
+
   const [broken, setBroken] = useState(false);
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setBroken(false); setLoaded(false); }, [imageUrl]);
 
-  const showImage = !!imageUrl && !broken;
+  // Com atributos disponíveis, o card gerado a partir dos dados tem prioridade sobre uma
+  // imagem externa — a imagem vira só um override cosmético opcional (ex: foto/face custom).
+  const showImage = !!imageUrl && !broken && !showAttributes;
 
   return (
     <div
@@ -55,6 +76,17 @@ export function PlayerCard({
           </div>
         );
       })()}
+
+      {isEvolved && size !== "xs" && (
+        <div
+          className="absolute top-0.5 right-0.5 z-10 rounded-full bg-emerald-500/90 backdrop-blur-sm p-0.5 flex items-center justify-center"
+          title="Carta evoluída"
+          aria-hidden
+        >
+          <TrendingUp size={size === "lg" || size === "xl" ? 14 : 10} className="text-white" strokeWidth={2.6} />
+        </div>
+      )}
+
       {showImage && (
         <img
           src={imageUrl}
@@ -67,6 +99,7 @@ export function PlayerCard({
           className={`absolute inset-0 w-full h-full object-contain object-center transition-opacity duration-200 ${loaded ? "opacity-100" : "opacity-0"}`}
         />
       )}
+
       {(!showImage || !loaded) && (
         <>
           <div className="flex items-baseline gap-0.5 leading-none">
@@ -83,6 +116,17 @@ export function PlayerCard({
           <div className={`${size === "xs" ? "text-[7px]" : size === "lg" ? "text-xs" : size === "xl" ? "text-sm" : "text-[8px]"} truncate max-w-full uppercase tracking-tight`}>
             {name.split(" ").slice(-1)[0]}
           </div>
+
+          {showAttributes && (
+            <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 w-full px-1 mt-1">
+              {ATTRIBUTE_LABELS.map(({ key, label }) => (
+                <div key={key} className="flex items-center justify-between gap-1">
+                  <span className="font-bold tabular-nums">{attributes![key]}</span>
+                  <span className="opacity-80 text-[0.85em]">{label}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </>
       )}
     </div>
