@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, User } from "lucide-react";
 import type { Position, Rarity, PlayerAttributes } from "@/lib/types";
 import { rarityVisual, rarityIcon } from "@/lib/format";
 import { positionBadgeStyle } from "@/lib/positionGroup";
@@ -28,7 +28,7 @@ export function PlayerCard({
   position: Position;
   rarity: Rarity;
   imageUrl?: string;
-  /** Atributos (PAC/SHO/PAS/DRI/DEF/PHY). Quando presentes, o card os desenha em vez de depender de imagem. */
+  /** Atributos (PAC/SHO/PAS/DRI/DEF/PHY). Em tamanhos grandes (lg/xl), aparecem impressos sobre o retrato (imagem custom ou silhueta). */
   attributes?: PlayerAttributes;
   /** Mostra um selo indicando que essa é uma carta evoluída. */
   isEvolved?: boolean;
@@ -54,14 +54,15 @@ export function PlayerCard({
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setBroken(false); setLoaded(false); }, [imageUrl]);
 
-  // Com atributos disponíveis, o card gerado a partir dos dados tem prioridade sobre uma
-  // imagem externa — a imagem vira só um override cosmético opcional (ex: foto/face custom).
-  const showImage = !!imageUrl && !broken && !showAttributes;
+  // Imagem custom sempre pode aparecer — nos tamanhos compactos ela cobre o card
+  // inteiro; nos grandes (com atributos), ela vira o retrato dentro da moldura.
+  const showImage = !!imageUrl && !broken;
+  const showFullBleedImage = showImage && !showAttributes;
 
   return (
     <div
-      className={`${sizes} rounded-md shrink-0 relative overflow-hidden shadow-md ${showImage && loaded ? "" : v.className} ${showImage && loaded ? "p-0 flex" : "p-1 flex flex-col items-center justify-between font-display"}`}
-      style={showImage && loaded ? undefined : v.style}
+      className={`${sizes} rounded-md shrink-0 relative overflow-hidden shadow-md ${showFullBleedImage && loaded ? "" : v.className} ${showFullBleedImage && loaded ? "p-0 flex" : showAttributes ? "p-1.5 flex flex-col font-display" : "p-1 flex flex-col items-center justify-between font-display"}`}
+      style={showFullBleedImage && loaded ? undefined : v.style}
       title={`${name} · ${rarity}`}
     >
       {size !== "xs" && (() => {
@@ -87,45 +88,83 @@ export function PlayerCard({
         </div>
       )}
 
-      {showImage && (
-        <img
-          src={imageUrl}
-          alt={name}
-          loading="lazy"
-          decoding="async"
-          onLoad={() => setLoaded(true)}
-          onError={() => setBroken(true)}
-          style={{ imageRendering: "auto" }}
-          className={`absolute inset-0 w-full h-full object-contain object-center transition-opacity duration-200 ${loaded ? "opacity-100" : "opacity-0"}`}
-        />
-      )}
-
-      {(!showImage || !loaded) && (
+      {showAttributes ? (
         <>
-          <div className="flex items-baseline gap-0.5 leading-none">
-            <span className={size === "xs" ? "text-xs" : size === "lg" ? "text-2xl" : size === "xl" ? "text-4xl" : "text-base"}>{overall}</span>
-          </div>
-          <div className={`leading-none ${size === "lg" ? "text-base" : size === "xl" ? "text-xl" : ""}`}>
+          <div className="flex items-baseline gap-1 leading-none z-10 pl-3">
+            <span className={size === "xl" ? "text-4xl" : "text-2xl"}>{overall}</span>
             <span
-              className="inline-block rounded px-1 border font-bold"
+              className="inline-block rounded px-1 border font-bold text-xs"
               style={positionBadgeStyle(position)}
             >
               {position}
             </span>
           </div>
-          <div className={`${size === "xs" ? "text-[7px]" : size === "lg" ? "text-xs" : size === "xl" ? "text-sm" : "text-[8px]"} truncate max-w-full uppercase tracking-tight`}>
+
+          {/* Retrato: imagem custom quando existir, senão uma silhueta gerada — nunca some por causa dos atributos. */}
+          <div className="relative flex-1 my-1.5 rounded overflow-hidden bg-black/15">
+            {showImage && (
+              <img
+                src={imageUrl}
+                alt={name}
+                loading="lazy"
+                decoding="async"
+                onLoad={() => setLoaded(true)}
+                onError={() => setBroken(true)}
+                className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-200 ${loaded ? "opacity-100" : "opacity-0"}`}
+              />
+            )}
+            {(!showImage || !loaded) && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <User size={size === "xl" ? 64 : 36} className="opacity-25" strokeWidth={1.5} />
+              </div>
+            )}
+          </div>
+
+          <div className={`${size === "xl" ? "text-sm" : "text-xs"} w-full text-center truncate uppercase tracking-tight font-bold bg-black/20 rounded px-1 py-0.5 z-10`}>
             {name.split(" ").slice(-1)[0]}
           </div>
 
-          {showAttributes && (
-            <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 w-full px-1 mt-1">
-              {ATTRIBUTE_LABELS.map(({ key, label }) => (
-                <div key={key} className="flex items-center justify-between gap-1">
-                  <span className="font-bold tabular-nums">{attributes![key]}</span>
-                  <span className="opacity-80 text-[0.85em]">{label}</span>
-                </div>
-              ))}
-            </div>
+          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 w-full px-1 pt-1.5 z-10">
+            {ATTRIBUTE_LABELS.map(({ key, label }) => (
+              <div key={key} className="flex items-center justify-between gap-1">
+                <span className="font-bold tabular-nums">{attributes![key]}</span>
+                <span className="opacity-80 text-[0.85em]">{label}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          {showFullBleedImage && (
+            <img
+              src={imageUrl}
+              alt={name}
+              loading="lazy"
+              decoding="async"
+              onLoad={() => setLoaded(true)}
+              onError={() => setBroken(true)}
+              style={{ imageRendering: "auto" }}
+              className={`absolute inset-0 w-full h-full object-contain object-center transition-opacity duration-200 ${loaded ? "opacity-100" : "opacity-0"}`}
+            />
+          )}
+
+          {(!showFullBleedImage || !loaded) && (
+            <>
+              <div className="flex items-baseline gap-0.5 leading-none">
+                <span className={size === "xs" ? "text-xs" : "text-base"}>{overall}</span>
+              </div>
+              <div className="leading-none">
+                <span
+                  className="inline-block rounded px-1 border font-bold"
+                  style={positionBadgeStyle(position)}
+                >
+                  {position}
+                </span>
+              </div>
+              <div className={`${size === "xs" ? "text-[7px]" : "text-[8px]"} truncate max-w-full uppercase tracking-tight`}>
+                {name.split(" ").slice(-1)[0]}
+              </div>
+            </>
           )}
         </>
       )}
