@@ -81,6 +81,22 @@ export interface PlayerEvolution {
   attributeDeltas: Partial<PlayerAttributes>;
   appliedAt: number;
 }
+// novos campos vindos do catálogo FC 27
+club?: string;
+league?: string;
+gender?: string;
+skillMoves?: number;
+weakFoot?: number;
+weightKg?: number;
+birthdate?: string;
+playstyles?: string[];
+pace?: number;
+shooting?: number;
+passing?: number;
+dribbling?: number;
+defending?: number;
+physical?: number;
+catalogPlayerId?: number; // liga a carta ao fc27_ratings.id — útil pra evolução depois
 
 export interface Player {
   id: string;
