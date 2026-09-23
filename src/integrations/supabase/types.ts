@@ -14,6 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      fc27_ratings: {
+        Row: {
+          birthdate: string | null
+          club: string | null
+          defending: number | null
+          dribbling: number | null
+          edition: string
+          gender: string | null
+          height_cm: number | null
+          id: number
+          image_url: string | null
+          league: string | null
+          name: string
+          nationality: string | null
+          overall: number
+          pace: number | null
+          passing: number | null
+          physical: number | null
+          position: string
+          preferred_foot: string | null
+          shooting: number | null
+          skill_moves: number | null
+          snapshot_date: string | null
+          updated_at: string
+          weak_foot: number | null
+        }
+        Insert: {
+          birthdate?: string | null
+          club?: string | null
+          defending?: number | null
+          dribbling?: number | null
+          edition?: string
+          gender?: string | null
+          height_cm?: number | null
+          id: number
+          image_url?: string | null
+          league?: string | null
+          name: string
+          nationality?: string | null
+          overall: number
+          pace?: number | null
+          passing?: number | null
+          physical?: number | null
+          position: string
+          preferred_foot?: string | null
+          shooting?: number | null
+          skill_moves?: number | null
+          snapshot_date?: string | null
+          updated_at?: string
+          weak_foot?: number | null
+        }
+        Update: {
+          birthdate?: string | null
+          club?: string | null
+          defending?: number | null
+          dribbling?: number | null
+          edition?: string
+          gender?: string | null
+          height_cm?: number | null
+          id?: number
+          image_url?: string | null
+          league?: string | null
+          name?: string
+          nationality?: string | null
+          overall?: number
+          pace?: number | null
+          passing?: number | null
+          physical?: number | null
+          position?: string
+          preferred_foot?: string | null
+          shooting?: number | null
+          skill_moves?: number | null
+          snapshot_date?: string | null
+          updated_at?: string
+          weak_foot?: number | null
+        }
+        Relationships: []
+      }
       matches: {
         Row: {
           created_at: string
@@ -154,7 +232,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      reset_my_data: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
