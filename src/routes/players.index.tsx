@@ -7,7 +7,7 @@ import { RatingDisplay } from "@/components/RatingDisplay";
 import { PlayerCard } from "@/components/PlayerCard";
 
 import { PositionBadge } from "@/components/PositionBadge";
-import { Plus, Trash2, Pencil, X, Search, Archive, Activity, Sparkles } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Search, Archive, Activity, Sparkles, ImagePlus } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import type { Player, Position, Rarity } from "@/lib/types";
@@ -15,6 +15,7 @@ import { rarityVisual, raritySwatch, raritySwatchStyle, rarityIcon } from "@/lib
 import { compressImageToDataURL } from "@/lib/imageCompress";
 import { COUNTRIES } from "@/lib/countries";
 import { PlayerCatalogSearch, type FC27CatalogRow } from "@/components/PlayerCatalogSearch";
+import { BulkImageAssign } from "@/components/BulkImageAssign";
 
 
 export const Route = createFileRoute("/players/")({
@@ -66,6 +67,7 @@ function PlayersPage() {
   const loading = useStoreLoading();
   const [editing, setEditing] = useState<Player | null>(null);
   const [creating, setCreating] = useState(false);
+  const [bulkImageOpen, setBulkImageOpen] = useState(false);
   const [search, setSearch] = useState("");
   type SortKey = "name" | "ovr" | "matches" | "goals" | "assists" | "ga" | "rating" | "mvp" | "cs" | "gc" | "pos" | "subApps" | "subImpact";
   const [sort, setSort] = useState<SortKey>("ga");
@@ -207,9 +209,14 @@ function PlayersPage() {
           <h1 className="font-display text-4xl tracking-wider">Player Database</h1>
           <p className="text-sm text-muted-foreground mt-1">{players.length} registered</p>
         </div>
-        <button onClick={() => setCreating(true)} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90 shadow-[var(--shadow-neon)]">
-          <Plus className="h-4 w-4" /> Add Player
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setBulkImageOpen(true)} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md border border-border text-muted-foreground hover:text-foreground font-semibold uppercase tracking-wider text-sm">
+            <ImagePlus className="h-4 w-4" /> Atribuir Imagens
+          </button>
+          <button onClick={() => setCreating(true)} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm hover:opacity-90 shadow-[var(--shadow-neon)]">
+            <Plus className="h-4 w-4" /> Add Player
+          </button>
+        </div>
       </div>
 
       {/* Roster view tabs: Active / In Development / Archived */}
@@ -430,6 +437,8 @@ function PlayersPage() {
           onClose={() => { setCreating(false); setEditing(null); }}
         />
       )}
+
+      {bulkImageOpen && <BulkImageAssign onClose={() => setBulkImageOpen(false)} />}
 
     </AppShell>
   );
