@@ -14,6 +14,7 @@ import type { Player, Position, Rarity } from "@/lib/types";
 import { rarityVisual, raritySwatch, raritySwatchStyle, rarityIcon } from "@/lib/format";
 import { compressImageToDataURL } from "@/lib/imageCompress";
 import { COUNTRIES } from "@/lib/countries";
+import { PlayerCatalogSearch, type FC27CatalogRow } from "@/components/PlayerCatalogSearch";
 
 
 export const Route = createFileRoute("/players/")({
@@ -446,6 +447,65 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
   const [preferredFoot, setPreferredFoot] = useState<"" | "Left" | "Right">(existing?.preferredFoot ?? "");
   const [previewBroken, setPreviewBroken] = useState(false);
 
+  // Campos vindos do catálogo FC 27 (preenchidos pela busca abaixo).
+  // Em modo de edição, começam com o que já estava salvo no jogador.
+  const [catalogStats, setCatalogStats] = useState<Partial<Player>>(() =>
+    existing
+      ? {
+          club: existing.club,
+          league: existing.league,
+          gender: existing.gender,
+          skillMoves: existing.skillMoves,
+          weakFoot: existing.weakFoot,
+          weightKg: existing.weightKg,
+          birthdate: existing.birthdate,
+          playstyles: existing.playstyles,
+          pace: existing.pace,
+          shooting: existing.shooting,
+          passing: existing.passing,
+          dribbling: existing.dribbling,
+          defending: existing.defending,
+          physical: existing.physical,
+          catalogPlayerId: existing.catalogPlayerId,
+        }
+      : {},
+  );
+
+  const handleCatalogSelect = (row: FC27CatalogRow) => {
+    setName(row.name);
+    if (POSITIONS.includes(row.position as Position)) setPosition(row.position as Position);
+    setOverall(row.overall);
+    setNationality(row.nationality ?? "");
+    setHeightCm(row.height_cm ? String(row.height_cm) : "");
+    if (row.preferred_foot === "Left" || row.preferred_foot === "Right") {
+      setPreferredFoot(row.preferred_foot);
+    }
+    const altPositions = (row.alternate_positions ?? "")
+      .split(/\s+/)
+      .filter((p): p is Position => POSITIONS.includes(p as Position) && p !== row.position)
+      .slice(0, 4);
+    setSecondaryPositions(altPositions);
+
+    setCatalogStats({
+      club: row.club ?? undefined,
+      league: row.league ?? undefined,
+      gender: row.gender ?? undefined,
+      skillMoves: row.skill_moves ?? undefined,
+      weakFoot: row.weak_foot ?? undefined,
+      weightKg: row.weight_kg ?? undefined,
+      birthdate: row.birthdate ?? undefined,
+      playstyles: row.playstyles ? row.playstyles.split(",").map((s) => s.trim()) : undefined,
+      pace: row.pace ?? undefined,
+      shooting: row.shooting ?? undefined,
+      passing: row.passing ?? undefined,
+      dribbling: row.dribbling ?? undefined,
+      defending: row.defending ?? undefined,
+      physical: row.physical ?? undefined,
+      catalogPlayerId: row.id,
+    });
+    toast.success(`Dados de ${row.name} preenchidos a partir do catálogo`);
+  };
+
   const toggleSecondary = (p: Position) => {
     setSecondaryPositions((prev) => {
       if (prev.includes(p)) return prev.filter((x) => x !== p);
@@ -479,6 +539,7 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
       nationality: nationality.trim() || undefined,
       heightCm: heightCm.trim() ? heightNum : undefined,
       preferredFoot: preferredFoot || undefined,
+      ...catalogStats,
     };
     if (existing) {
       try {
@@ -510,6 +571,14 @@ export function PlayerForm({ existing, onClose }: { existing: Player | null; onC
           <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
         </div>
         <div className="space-y-4">
+          {!existing && (
+            <Field label="Buscar no catálogo FC 27 (opcional)">
+              <PlayerCatalogSearch onSelect={handleCatalogSelect} />
+              <p className="text-[11px] text-muted-foreground mt-1.5">
+                Selecione um jogador pra preencher nome, posição, atributos e nacionalidade automaticamente. Você pode ajustar tudo depois.
+              </p>
+            </Field>
+          )}
           <Field label="Name">
             <input value={name} onChange={(e) => setName(e.target.value)} autoFocus className="w-full bg-input border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary" />
           </Field>
