@@ -81,7 +81,11 @@ export interface PlayerEvolution {
   attributeDeltas: Partial<PlayerAttributes>;
   appliedAt: number;
 }
-// novos campos vindos do catálogo FC 27
+
+
+export interface Player {
+  id: string;
+  name: string;// novos campos vindos do catálogo FC 27
 club?: string;
 league?: string;
 gender?: string;
@@ -97,10 +101,6 @@ dribbling?: number;
 defending?: number;
 physical?: number;
 catalogPlayerId?: number; // liga a carta ao fc27_ratings.id — útil pra evolução depois
-
-export interface Player {
-  id: string;
-  name: string;
   position: Position;
   /** Up to 4 secondary positions the player can also play. */
   secondaryPositions?: Position[];
