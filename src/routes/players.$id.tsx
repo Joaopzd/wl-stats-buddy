@@ -351,6 +351,17 @@ function PlayerProfile({
             />
           </div>
 
+          {(player.club || player.league || player.weightKg || player.birthdate) && (
+            <div className="grid grid-cols-3 gap-2 max-w-md">
+              <Meta label="Club" value={player.club ?? "—"} small />
+              <Meta label="League" value={player.league ?? "—"} small />
+              <Meta
+                label="Age"
+                value={player.birthdate ? String(ageFromBirthdate(player.birthdate)) : "—"}
+              />
+            </div>
+          )}
+
 
           {lastWL && (
 
@@ -403,6 +414,8 @@ function PlayerProfile({
           )}
         </div>
       </div>
+
+      <CardAttributesPanel player={player} />
 
       {/* Career & Last WL stats side-by-side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -699,6 +712,118 @@ function PlayerProfile({
       {editOpen && (
         <PlayerForm existing={player} onClose={() => setEditOpen(false)} />
       )}
+    </div>
+  );
+}
+
+function ageFromBirthdate(birthdate: string): number {
+  const b = new Date(birthdate);
+  const now = new Date();
+  let age = now.getFullYear() - b.getFullYear();
+  const hasHadBirthdayThisYear =
+    now.getMonth() > b.getMonth() || (now.getMonth() === b.getMonth() && now.getDate() >= b.getDate());
+  if (!hasHadBirthdayThisYear) age -= 1;
+  return age;
+}
+
+function AttributeBar({ label, value }: { label: string; value: number }) {
+  const color = value >= 85 ? "bg-primary" : value >= 70 ? "bg-accent" : "bg-muted-foreground/60";
+  return (
+    <div className="flex items-center gap-2">
+      <span className="w-20 shrink-0 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+        {label}
+      </span>
+      <div className="flex-1 h-2 rounded-full bg-secondary/60 overflow-hidden">
+        <div className={`h-full rounded-full ${color}`} style={{ width: `${Math.min(value, 99)}%` }} />
+      </div>
+      <span className="w-7 text-right stat-num text-sm font-bold">{value}</span>
+    </div>
+  );
+}
+
+function StarRating({ value }: { value: number }) {
+  return (
+    <span className="inline-flex items-center gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          key={i}
+          className={`h-3 w-3 ${i < value ? "text-amber-300 fill-amber-300" : "text-muted-foreground/30"}`}
+        />
+      ))}
+    </span>
+  );
+}
+
+function CardAttributesPanel({ player }: { player: Player }) {
+  const facets: { label: string; value: number | undefined }[] = [
+    { label: "Pace", value: player.pace },
+    { label: "Shooting", value: player.shooting },
+    { label: "Passing", value: player.passing },
+    { label: "Dribbling", value: player.dribbling },
+    { label: "Defending", value: player.defending },
+    { label: "Physical", value: player.physical },
+  ];
+  const hasFacets = facets.some((f) => typeof f.value === "number");
+  const hasExtra = player.skillMoves || player.weakFoot || player.weightKg || (player.playstyles?.length ?? 0) > 0;
+
+  if (!hasFacets && !hasExtra) return null;
+
+  return (
+    <div className="surface-card p-4">
+      <SectionHeader title="Card Attributes" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+        {hasFacets && (
+          <div className="space-y-2">
+            {facets
+              .filter((f): f is { label: string; value: number } => typeof f.value === "number")
+              .map((f) => (
+                <AttributeBar key={f.label} label={f.label} value={f.value} />
+              ))}
+          </div>
+        )}
+        <div className="space-y-3">
+          {(player.skillMoves || player.weakFoot) && (
+            <div className="flex items-center gap-6">
+              {player.skillMoves && (
+                <div>
+                  <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold mb-1">
+                    Skill Moves
+                  </div>
+                  <StarRating value={player.skillMoves} />
+                </div>
+              )}
+              {player.weakFoot && (
+                <div>
+                  <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold mb-1">
+                    Weak Foot
+                  </div>
+                  <StarRating value={player.weakFoot} />
+                </div>
+              )}
+            </div>
+          )}
+          {player.weightKg && (
+            <Meta label="Weight" value={`${player.weightKg} kg`} small />
+          )}
+          {player.playstyles && player.playstyles.length > 0 && (
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold mb-1.5">
+                PlayStyles
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {player.playstyles.map((ps) => (
+                  <span
+                    key={ps}
+                    className="text-[10px] uppercase tracking-wider px-2 py-1 rounded bg-primary/10 text-primary border border-primary/30 font-semibold"
+                  >
+                    {ps}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
