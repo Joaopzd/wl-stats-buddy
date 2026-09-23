@@ -20,6 +20,7 @@ import { Route as PlayersIndexRouteImport } from './routes/players.index'
 import { Route as WeekendLeaguesCompareRouteImport } from './routes/weekend-leagues.compare'
 import { Route as WeekendLeaguesWlIdRouteImport } from './routes/weekend-leagues.$wlId'
 import { Route as PlayersIdRouteImport } from './routes/players.$id'
+import { Route as ApiPublicSeedFc27RatingsRouteImport } from './routes/api/public/seed-fc27-ratings'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -76,6 +77,12 @@ const PlayersIdRoute = PlayersIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => PlayersRoute,
 } as any)
+const ApiPublicSeedFc27RatingsRoute =
+  ApiPublicSeedFc27RatingsRouteImport.update({
+    id: '/api/public/seed-fc27-ratings',
+    path: '/api/public/seed-fc27-ratings',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/weekend-leagues/compare': typeof WeekendLeaguesCompareRoute
   '/players/': typeof PlayersIndexRoute
   '/weekend-leagues/': typeof WeekendLeaguesIndexRoute
+  '/api/public/seed-fc27-ratings': typeof ApiPublicSeedFc27RatingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,6 +109,7 @@ export interface FileRoutesByTo {
   '/weekend-leagues/compare': typeof WeekendLeaguesCompareRoute
   '/players': typeof PlayersIndexRoute
   '/weekend-leagues': typeof WeekendLeaguesIndexRoute
+  '/api/public/seed-fc27-ratings': typeof ApiPublicSeedFc27RatingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -115,6 +124,7 @@ export interface FileRoutesById {
   '/weekend-leagues/compare': typeof WeekendLeaguesCompareRoute
   '/players/': typeof PlayersIndexRoute
   '/weekend-leagues/': typeof WeekendLeaguesIndexRoute
+  '/api/public/seed-fc27-ratings': typeof ApiPublicSeedFc27RatingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/weekend-leagues/compare'
     | '/players/'
     | '/weekend-leagues/'
+    | '/api/public/seed-fc27-ratings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/weekend-leagues/compare'
     | '/players'
     | '/weekend-leagues'
+    | '/api/public/seed-fc27-ratings'
   id:
     | '__root__'
     | '/'
@@ -155,6 +167,7 @@ export interface FileRouteTypes {
     | '/weekend-leagues/compare'
     | '/players/'
     | '/weekend-leagues/'
+    | '/api/public/seed-fc27-ratings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -167,6 +180,7 @@ export interface RootRouteChildren {
   WeekendLeaguesWlIdRoute: typeof WeekendLeaguesWlIdRoute
   WeekendLeaguesCompareRoute: typeof WeekendLeaguesCompareRoute
   WeekendLeaguesIndexRoute: typeof WeekendLeaguesIndexRoute
+  ApiPublicSeedFc27RatingsRoute: typeof ApiPublicSeedFc27RatingsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -248,6 +262,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlayersIdRouteImport
       parentRoute: typeof PlayersRoute
     }
+    '/api/public/seed-fc27-ratings': {
+      id: '/api/public/seed-fc27-ratings'
+      path: '/api/public/seed-fc27-ratings'
+      fullPath: '/api/public/seed-fc27-ratings'
+      preLoaderRoute: typeof ApiPublicSeedFc27RatingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -274,6 +295,7 @@ const rootRouteChildren: RootRouteChildren = {
   WeekendLeaguesWlIdRoute: WeekendLeaguesWlIdRoute,
   WeekendLeaguesCompareRoute: WeekendLeaguesCompareRoute,
   WeekendLeaguesIndexRoute: WeekendLeaguesIndexRoute,
+  ApiPublicSeedFc27RatingsRoute: ApiPublicSeedFc27RatingsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
