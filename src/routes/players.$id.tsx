@@ -308,6 +308,7 @@ function PlayerProfile({
             position={player.position}
             rarity={player.rarity}
             imageUrl={player.imageUrl}
+            attributes={cardAttributesFrom(player)}
             size="xl"
           />
         </div>
@@ -714,6 +715,21 @@ function PlayerProfile({
       )}
     </div>
   );
+}
+
+function cardAttributesFrom(player: Player) {
+  const { pace, shooting, passing, dribbling, defending, physical } = player;
+  if (
+    typeof pace !== "number" ||
+    typeof shooting !== "number" ||
+    typeof passing !== "number" ||
+    typeof dribbling !== "number" ||
+    typeof defending !== "number" ||
+    typeof physical !== "number"
+  ) {
+    return undefined;
+  }
+  return { pace, shooting, passing, dribbling, defending, physical };
 }
 
 function ageFromBirthdate(birthdate: string): number {
