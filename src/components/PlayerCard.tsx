@@ -3,6 +3,17 @@ import { TrendingUp, User } from "lucide-react";
 import type { Position, Rarity, PlayerAttributes } from "@/lib/types";
 import { rarityVisual, rarityIcon } from "@/lib/format";
 import { positionBadgeStyle } from "@/lib/positionGroup";
+import { Flag } from "@/components/Flag";
+
+function initials(text: string, max = 3) {
+  return text
+    .split(/[\s-]+/)
+    .filter(Boolean)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, max)
+    .toUpperCase();
+}
 
 const ATTRIBUTE_LABELS: { key: keyof PlayerAttributes; label: string }[] = [
   { key: "pace", label: "PAC" },
@@ -21,6 +32,10 @@ export function PlayerCard({
   imageUrl,
   attributes,
   isEvolved,
+  secondaryPositions,
+  nationality,
+  club,
+  league,
   size = "md",
 }: {
   name: string;
@@ -32,6 +47,14 @@ export function PlayerCard({
   attributes?: PlayerAttributes;
   /** Mostra um selo indicando que essa é uma carta evoluída. */
   isEvolved?: boolean;
+  /** Posições alternativas — aparecem como abas na lateral direita (só no tamanho xl). */
+  secondaryPositions?: Position[];
+  /** Nacionalidade — vira a bandeirinha no rodapé (só no tamanho xl). */
+  nationality?: string;
+  /** Clube — vira um badge com iniciais no rodapé (não a logo real, só no tamanho xl). */
+  club?: string;
+  /** Liga — mesma ideia do clube. */
+  league?: string;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
 }) {
   // Strict 3:4 aspect ratio across all sizes to match real player cards.
@@ -88,6 +111,19 @@ export function PlayerCard({
         </div>
       )}
 
+      {size === "xl" && secondaryPositions && secondaryPositions.length > 0 && (
+        <div className="absolute right-0 top-9 z-10 flex flex-col gap-0.5 items-end">
+          {secondaryPositions.slice(0, 3).map((p) => (
+            <span
+              key={p}
+              className="text-[9px] font-bold px-1.5 py-0.5 rounded-l bg-black/45 backdrop-blur-sm text-white"
+            >
+              {p}
+            </span>
+          ))}
+        </div>
+      )}
+
       {showAttributes ? (
         <>
           <div className="flex items-baseline gap-1 leading-none z-10 pl-3">
@@ -124,14 +160,43 @@ export function PlayerCard({
             {name.split(" ").slice(-1)[0]}
           </div>
 
-          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 w-full px-1 pt-1.5 z-10">
-            {ATTRIBUTE_LABELS.map(({ key, label }) => (
-              <div key={key} className="flex items-center justify-between gap-1">
-                <span className="font-bold tabular-nums">{attributes![key]}</span>
-                <span className="opacity-80 text-[0.85em]">{label}</span>
-              </div>
-            ))}
+          <div className={`grid ${size === "xl" ? "grid-cols-6 gap-x-1" : "grid-cols-2 gap-x-2 gap-y-0.5"} w-full px-1 pt-1.5 z-10`}>
+            {ATTRIBUTE_LABELS.map(({ key, label }) =>
+              size === "xl" ? (
+                <div key={key} className="flex flex-col items-center leading-tight">
+                  <span className="font-bold tabular-nums text-sm">{attributes![key]}</span>
+                  <span className="opacity-70 text-[9px]">{label}</span>
+                </div>
+              ) : (
+                <div key={key} className="flex items-center justify-between gap-1">
+                  <span className="font-bold tabular-nums">{attributes![key]}</span>
+                  <span className="opacity-80 text-[0.85em]">{label}</span>
+                </div>
+              ),
+            )}
           </div>
+
+          {size === "xl" && (nationality || club || league) && (
+            <div className="flex items-center justify-center gap-1.5 z-10 pt-1.5">
+              {nationality && <Flag country={nationality} />}
+              {club && (
+                <span
+                  className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-secondary/70 border border-border"
+                  title={club}
+                >
+                  {initials(club)}
+                </span>
+              )}
+              {league && (
+                <span
+                  className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-secondary/40 border border-border/60"
+                  title={league}
+                >
+                  {initials(league)}
+                </span>
+              )}
+            </div>
+          )}
         </>
       ) : (
         <>
