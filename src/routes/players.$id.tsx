@@ -309,6 +309,10 @@ function PlayerProfile({
             rarity={player.rarity}
             imageUrl={player.imageUrl}
             attributes={cardAttributesFrom(player)}
+            secondaryPositions={player.secondaryPositions}
+            nationality={player.nationality}
+            club={player.club}
+            league={player.league}
             size="xl"
           />
         </div>
