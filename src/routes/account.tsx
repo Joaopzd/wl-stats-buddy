@@ -6,6 +6,7 @@ import { lovable } from "@/integrations/lovable";
 import { CheckCircle2, LogIn, LogOut, ShieldCheck, User as UserIcon, Cloud, CloudOff, Pencil, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { PENDING_ANON_MIGRATION_KEY } from "@/components/AuthButton";
+import { ResetDataButton } from "@/components/ResetDataButton";
 import logoAsset from "@/assets/pitchside-logo.png.asset.json";
 
 export const Route = createFileRoute("/account")({
@@ -232,6 +233,17 @@ function AccountPage() {
                   <CheckCircle2 className="h-4 w-4 text-primary" />
                   Disponível em qualquer dispositivo
                 </div>
+              </div>
+
+              <div className="mt-6 pt-5 border-t border-border/60">
+                <div className="text-[10px] uppercase tracking-[0.3em] text-destructive/80 font-bold mb-2">
+                  Zona de Perigo
+                </div>
+                <p className="text-[11px] text-muted-foreground mb-3 max-w-md">
+                  Vinha do FC 26 e quer recomeçar do zero no FC 27? Isso apaga todos os seus jogadores,
+                  Weekend Leagues e partidas — sem volta.
+                </p>
+                <ResetDataButton />
               </div>
 
               <div className="mt-6 flex items-center justify-between gap-3">
