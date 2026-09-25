@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { X, Zap, Flag as FlagIcon, AlertTriangle, ChevronDown, ChevronUp, Activity, Target, WifiOff, Signal, Repeat, Crosshair } from "lucide-react";
+import { X, Zap, Flag as FlagIcon, AlertTriangle, ChevronDown, ChevronUp, Activity, Target, WifiOff, Signal, Repeat, Crosshair, Shield, Plus, Trash2 } from "lucide-react";
 import { PositionBadge } from "./PositionBadge";
 import { store } from "@/lib/store";
 import type { Match, MatchPlayerStat, MatchTactic, Platform, PenaltyWinner, Player, WeekendLeague } from "@/lib/types";
 import { wlLabel } from "@/lib/types";
+import { rankFromWins } from "@/lib/stats";
+import { RankBadge } from "@/components/RankBadge";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import { ClubCrest } from "./ClubCrest";
@@ -44,6 +46,15 @@ export function MatchDialog({
   const [shotsFor, setShotsFor] = useState<number>(existingMatch?.shotsFor ?? 0);
   const [shotsAgainst, setShotsAgainst] = useState<number>(existingMatch?.shotsAgainst ?? 0);
   const [disconnect, setDisconnect] = useState<boolean>(existingMatch?.disconnect ?? false);
+  const [opponentWins, setOpponentWins] = useState<number>(existingMatch?.opponentWins ?? 0);
+  const [opponentLosses, setOpponentLosses] = useState<number>(existingMatch?.opponentLosses ?? 0);
+  const [opponentScorers, setOpponentScorers] = useState<{ name: string; goals: number }[]>(
+    existingMatch?.opponentScorers ?? [],
+  );
+  const addOpponentScorer = () => setOpponentScorers((s) => [...s, { name: "", goals: 1 }]);
+  const updateOpponentScorer = (i: number, patch: Partial<{ name: string; goals: number }>) =>
+    setOpponentScorers((s) => s.map((row, idx) => (idx === i ? { ...row, ...patch } : row)));
+  const removeOpponentScorer = (i: number) => setOpponentScorers((s) => s.filter((_, idx) => idx !== i));
   // Minimized by default for a cleaner add-match flow; opens on demand.
   const [detailsOpen, setDetailsOpen] = useState<boolean>(
     !!(existingMatch && (existingMatch.extraTime || existingMatch.penalties || existingMatch.rageQuit || existingMatch.disconnect || (existingMatch.tactics?.length ?? 0) > 0 || existingMatch.possessionFor != null || (existingMatch.xgFor ?? 0) > 0 || (existingMatch.xgAgainst ?? 0) > 0)),
@@ -108,6 +119,9 @@ export function MatchDialog({
         shotsAgainst: undefined as number | undefined,
         disconnect: true,
         connection,
+        opponentWins,
+        opponentLosses,
+        opponentScorers: undefined as { name: string; goals: number }[] | undefined,
       };
       if (existingMatch) {
         store.updateMatch(existingMatch.id, { scoreFor: 0, scoreAgainst: 1, platform, performances: [], ...flags });
@@ -162,6 +176,11 @@ export function MatchDialog({
       shotsAgainst: Math.max(0, Math.round(shotsAgainst)) || undefined,
       disconnect: false,
       connection,
+      opponentWins,
+      opponentLosses,
+      opponentScorers: opponentScorers.filter((s) => s.name.trim()).length
+        ? opponentScorers.filter((s) => s.name.trim())
+        : undefined,
     };
 
     if (existingMatch) {
@@ -238,6 +257,66 @@ export function MatchDialog({
 
           {/* Body: page (modal) scrolls — no inner scroll on player list */}
           <div className="px-5 sm:px-6 pt-5">
+            <div className="mb-4 surface-card p-3">
+              <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-2">
+                <Shield className="h-3.5 w-3.5 text-primary" /> Opponent Form (this weekend)
+              </span>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">W</span>
+                  <div className="w-14"><NumBox v={opponentWins} on={setOpponentWins} accent /></div>
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground ml-1">L</span>
+                  <div className="w-14"><NumBox v={opponentLosses} on={setOpponentLosses} /></div>
+                </div>
+                <RankBadge rank={rankFromWins(opponentWins)} size="sm" />
+              </div>
+
+              {/* Opponent goal scorers — optional, only meaningful if they scored */}
+              <div className="mt-3 pt-3 border-t border-border/40">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Who scored for them (optional)</span>
+                  <button
+                    type="button"
+                    onClick={addOpponentScorer}
+                    className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-primary hover:opacity-80 font-semibold"
+                  >
+                    <Plus className="h-3 w-3" /> Add
+                  </button>
+                </div>
+                {opponentScorers.length > 0 && (
+                  <div className="space-y-1.5">
+                    {opponentScorers.map((row, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <input
+                          value={row.name}
+                          onChange={(e) => updateOpponentScorer(i, { name: e.target.value })}
+                          placeholder="Opponent player name"
+                          className="flex-1 h-8 bg-background/80 border border-border rounded px-2 text-xs outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                        />
+                        <div className="w-12"><NumBox v={row.goals} on={(v) => updateOpponentScorer(i, { goals: v })} /></div>
+                        <button
+                          type="button"
+                          onClick={() => removeOpponentScorer(i)}
+                          className="text-muted-foreground hover:text-destructive p-1"
+                          aria-label="Remove"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                    {(() => {
+                      const total = opponentScorers.reduce((s, r) => s + (r.goals || 0), 0);
+                      return total !== scoreAgainst ? (
+                        <div className="text-[11px] text-amber-400">
+                          ⚠ Opponent scorers total ({total}) doesn't match opponent score ({scoreAgainst}).
+                        </div>
+                      ) : null;
+                    })()}
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="mb-4">
               <span className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1.5">Platform</span>
               <div className="flex gap-1 bg-input border border-border rounded-md p-1">

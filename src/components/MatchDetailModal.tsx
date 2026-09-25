@@ -2,7 +2,8 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { X, Star, Zap, Flag as FlagIcon, AlertTriangle, Trophy, Pencil, ChevronDown } from "lucide-react";
 import type { Match, Player, WeekendLeague } from "@/lib/types";
-import { matchIsWin } from "@/lib/stats";
+import { matchIsWin, rankFromWins } from "@/lib/stats";
+import { RankBadge } from "./RankBadge";
 import { ClubCrest } from "./ClubCrest";
 import { OpponentCrest } from "./OpponentCrest";
 import { PlatformBadge } from "./PlatformBadge";
@@ -118,6 +119,28 @@ export function MatchDetailModal({
               <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[8rem] text-center">
                 {opponentName}
               </div>
+              {(match.opponentWins != null || match.opponentLosses != null) && (
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-mono text-muted-foreground">
+                    {match.opponentWins ?? 0}-{match.opponentLosses ?? 0}
+                  </span>
+                  <RankBadge rank={rankFromWins(match.opponentWins ?? 0)} size="sm" />
+                </div>
+              )}
+              {match.opponentScorers && match.opponentScorers.length > 0 && (
+                <div className="flex items-start gap-1.5 max-w-[12rem] text-sm leading-tight text-foreground font-semibold justify-center">
+                  <SoccerBall size={14} className="mt-[3px] text-destructive shrink-0" />
+                  <span className="text-center">
+                    {match.opponentScorers.map((s, i) => (
+                      <span key={s.name + i}>
+                        {s.name.split(" ").slice(-1)[0]}
+                        {s.goals > 1 ? ` (${s.goals})` : ""}
+                        {i < match.opponentScorers!.length - 1 ? ", " : ""}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
           <div className="mt-3 flex justify-center">
