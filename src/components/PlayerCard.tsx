@@ -5,16 +5,7 @@ import { rarityVisual, rarityIcon } from "@/lib/format";
 import { positionBadgeStyle } from "@/lib/positionGroup";
 import { Flag } from "@/components/Flag";
 import { ClubBadge } from "@/components/ClubBadge";
-
-function initials(text: string, max = 3) {
-  return text
-    .split(/[\s-]+/)
-    .filter(Boolean)
-    .map((w) => w[0])
-    .join("")
-    .slice(0, max)
-    .toUpperCase();
-}
+import { LeagueBadge } from "@/components/LeagueBadge";
 
 const ATTRIBUTE_LABELS: { key: keyof PlayerAttributes; label: string }[] = [
   { key: "pace", label: "PAC" },
@@ -180,15 +171,8 @@ export function PlayerCard({
           {size === "xl" && (nationality || club || league) && (
             <div className="flex items-center justify-center gap-1.5 z-10 pt-1.5">
               {nationality && <Flag country={nationality} />}
-              {club && <ClubBadge club={club} size={14} />}
-              {league && (
-                <span
-                  className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-secondary/40 border border-border/60"
-                  title={league}
-                >
-                  {initials(league)}
-                </span>
-              )}
+              {club && <ClubBadge club={club} size={20} />}
+              {league && <LeagueBadge league={league} size={20} />}
             </div>
           )}
         </>
