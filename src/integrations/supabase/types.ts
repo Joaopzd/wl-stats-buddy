@@ -16,15 +16,19 @@ export type Database = {
     Tables: {
       fc27_ratings: {
         Row: {
+          alternate_positions: string | null
           birthdate: string | null
           club: string | null
+          common_name: string | null
           defending: number | null
           dribbling: number | null
           edition: string
+          first_name: string | null
           gender: string | null
           height_cm: number | null
           id: number
           image_url: string | null
+          last_name: string | null
           league: string | null
           name: string
           nationality: string | null
@@ -32,6 +36,7 @@ export type Database = {
           pace: number | null
           passing: number | null
           physical: number | null
+          playstyles: string | null
           position: string
           preferred_foot: string | null
           shooting: number | null
@@ -39,17 +44,22 @@ export type Database = {
           snapshot_date: string | null
           updated_at: string
           weak_foot: number | null
+          weight_kg: number | null
         }
         Insert: {
+          alternate_positions?: string | null
           birthdate?: string | null
           club?: string | null
+          common_name?: string | null
           defending?: number | null
           dribbling?: number | null
           edition?: string
+          first_name?: string | null
           gender?: string | null
           height_cm?: number | null
           id: number
           image_url?: string | null
+          last_name?: string | null
           league?: string | null
           name: string
           nationality?: string | null
@@ -57,6 +67,7 @@ export type Database = {
           pace?: number | null
           passing?: number | null
           physical?: number | null
+          playstyles?: string | null
           position: string
           preferred_foot?: string | null
           shooting?: number | null
@@ -64,17 +75,22 @@ export type Database = {
           snapshot_date?: string | null
           updated_at?: string
           weak_foot?: number | null
+          weight_kg?: number | null
         }
         Update: {
+          alternate_positions?: string | null
           birthdate?: string | null
           club?: string | null
+          common_name?: string | null
           defending?: number | null
           dribbling?: number | null
           edition?: string
+          first_name?: string | null
           gender?: string | null
           height_cm?: number | null
           id?: number
           image_url?: string | null
+          last_name?: string | null
           league?: string | null
           name?: string
           nationality?: string | null
@@ -82,6 +98,7 @@ export type Database = {
           pace?: number | null
           passing?: number | null
           physical?: number | null
+          playstyles?: string | null
           position?: string
           preferred_foot?: string | null
           shooting?: number | null
@@ -89,6 +106,7 @@ export type Database = {
           snapshot_date?: string | null
           updated_at?: string
           weak_foot?: number | null
+          weight_kg?: number | null
         }
         Relationships: []
       }

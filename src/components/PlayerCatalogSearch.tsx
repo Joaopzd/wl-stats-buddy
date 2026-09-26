@@ -1,32 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Search, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
-export interface FC27CatalogRow {
-  id: number;
-  name: string;
-  common_name: string | null;
-  club: string | null;
-  league: string | null;
-  nationality: string | null;
-  gender: string | null;
-  position: string;
-  alternate_positions: string | null;
-  overall: number;
-  pace: number | null;
-  shooting: number | null;
-  passing: number | null;
-  dribbling: number | null;
-  defending: number | null;
-  physical: number | null;
-  skill_moves: number | null;
-  weak_foot: number | null;
-  preferred_foot: string | null;
-  height_cm: number | null;
-  weight_kg: number | null;
-  birthdate: string | null;
-  playstyles: string | null;
-}
+export type FC27CatalogRow = Database["public"]["Tables"]["fc27_ratings"]["Row"];
 
 export function PlayerCatalogSearch({
   onSelect,
@@ -53,7 +30,7 @@ export function PlayerCatalogSearch({
         .or(`name.ilike.%${q}%,common_name.ilike.%${q}%`)
         .order("overall", { ascending: false })
         .limit(8);
-      if (!error) setResults((data as FC27CatalogRow[]) ?? []);
+      if (!error) setResults(data ?? []);
       setLoading(false);
     }, 300);
     return () => clearTimeout(timeout);
