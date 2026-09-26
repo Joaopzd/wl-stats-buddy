@@ -4,6 +4,7 @@ import type { Position, Rarity, PlayerAttributes } from "@/lib/types";
 import { rarityVisual, rarityIcon } from "@/lib/format";
 import { positionBadgeStyle } from "@/lib/positionGroup";
 import { Flag } from "@/components/Flag";
+import { ClubBadge } from "@/components/ClubBadge";
 
 function initials(text: string, max = 3) {
   return text
@@ -51,7 +52,7 @@ export function PlayerCard({
   secondaryPositions?: Position[];
   /** Nacionalidade — vira a bandeirinha no rodapé (só no tamanho xl). */
   nationality?: string;
-  /** Clube — vira um badge com iniciais no rodapé (não a logo real, só no tamanho xl). */
+  /** Clube — vira a badge real do time (via TheSportsDB) no rodapé (só no tamanho xl). */
   club?: string;
   /** Liga — mesma ideia do clube. */
   league?: string;
@@ -179,14 +180,7 @@ export function PlayerCard({
           {size === "xl" && (nationality || club || league) && (
             <div className="flex items-center justify-center gap-1.5 z-10 pt-1.5">
               {nationality && <Flag country={nationality} />}
-              {club && (
-                <span
-                  className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-secondary/70 border border-border"
-                  title={club}
-                >
-                  {initials(club)}
-                </span>
-              )}
+              {club && <ClubBadge club={club} size={14} />}
               {league && (
                 <span
                   className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-secondary/40 border border-border/60"
