@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
+import { resolveClubSearchTerm } from "@/lib/clubAliases";
 
 // Cadastre-se gratuitamente em https://www.thesportsdb.com/api.php e coloque
 // sua chave em VITE_THESPORTSDB_KEY no .env (a chave de teste "123" foi
 // descontinuada e hoje não retorna mais badges).
 const THESPORTSDB_KEY = import.meta.env.VITE_THESPORTSDB_KEY || "3";
+
+type TheSportsDbTeam = {
+  strTeam?: string;
+  strSport?: string;
+  strBadge?: string | null;
+  intLoved?: string | null;
+};
 
 const memoryCache = new Map<string, string | null>();
 
@@ -23,6 +31,29 @@ function writeToStorage(name: string, url: string | null) {
   } catch {
     // modo privado, quota cheia, etc — ignora
   }
+}
+
+/**
+ * Entre vários times com nomes parecidos (ex.: "Arsenal" existe na Inglaterra,
+ * na Rússia e na Argentina), escolhe o mais provável:
+ * 1) nome exatamente igual ao termo buscado
+ * 2) só times de futebol (descarta clubes de outros esportes com o mesmo nome)
+ * 3) o mais "popular" (intLoved), que costuma ser o time profissional relevante
+ */
+function pickBestTeam(teams: TheSportsDbTeam[], query: string): TheSportsDbTeam | null {
+  if (!teams || teams.length === 0) return null;
+
+  const soccerTeams = teams.filter((t) => t.strSport === "Soccer");
+  const pool = soccerTeams.length > 0 ? soccerTeams : teams;
+
+  const q = query.trim().toLowerCase();
+  const exact = pool.find((t) => t.strTeam?.trim().toLowerCase() === q);
+  if (exact) return exact;
+
+  const sorted = [...pool].sort(
+    (a, b) => (Number(b.intLoved) || 0) - (Number(a.intLoved) || 0),
+  );
+  return sorted[0] ?? null;
 }
 
 export function useTeamBadge(teamName?: string) {
@@ -50,7 +81,8 @@ export function useTeamBadge(teamName?: string) {
     let cancelled = false;
     setLoading(true);
 
-    const url = `https://www.thesportsdb.com/api/v1/json/${THESPORTSDB_KEY}/searchteams.php?t=${encodeURIComponent(teamName)}`;
+    const searchTerm = resolveClubSearchTerm(teamName);
+    const url = `https://www.thesportsdb.com/api/v1/json/${THESPORTSDB_KEY}/searchteams.php?t=${encodeURIComponent(searchTerm)}`;
 
     fetch(url)
       .then((res) => {
@@ -59,10 +91,14 @@ export function useTeamBadge(teamName?: string) {
       })
       .then((data) => {
         if (cancelled) return;
-        const badge: string | null = data?.teams?.[0]?.strBadge || null;
+        const best = pickBestTeam(data?.teams ?? [], searchTerm);
+        const badge: string | null = best?.strBadge || null;
         if (!badge) {
-          // Ajuda a diagnosticar: chave inválida, time não encontrado, etc.
-          console.warn(`[useTeamBadge] Sem badge para "${teamName}". Resposta:`, data);
+          // Ajuda a diagnosticar: chave inválida, apelido sem alias cadastrado, etc.
+          console.warn(
+            `[useTeamBadge] Sem badge para "${teamName}" (buscado como "${searchTerm}"). Resposta:`,
+            data,
+          );
         }
         memoryCache.set(teamName, badge);
         writeToStorage(teamName, badge);
