@@ -55,6 +55,7 @@ import { toast } from "sonner";
 import { PlayerForm } from "./players.index";
 import { PlatformBadge } from "@/components/PlatformBadge";
 import { ClubBadge } from "@/components/ClubBadge";
+import { LeagueBadge } from "@/components/LeagueBadge";
 
 
 export const Route = createFileRoute("/players/$id")({
@@ -363,9 +364,14 @@ function PlayerProfile({
                 label="Club"
                 value={player.club ?? "—"}
                 small
-                leading={player.club ? <ClubBadge club={player.club} size={16} /> : undefined}
+                leading={player.club ? <ClubBadge club={player.club} size={28} /> : undefined}
               />
-              <Meta label="League" value={player.league ?? "—"} small />
+              <Meta
+                label="League"
+                value={player.league ?? "—"}
+                small
+                leading={player.league ? <LeagueBadge league={player.league} size={28} /> : undefined}
+              />
               <Meta
                 label="Age"
                 value={player.birthdate ? String(ageFromBirthdate(player.birthdate)) : "—"}
