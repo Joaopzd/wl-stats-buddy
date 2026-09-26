@@ -6,6 +6,11 @@ import { resolveClubSearchTerm } from "@/lib/clubAliases";
 // descontinuada e hoje não retorna mais badges).
 const THESPORTSDB_KEY = import.meta.env.VITE_THESPORTSDB_KEY || "3";
 
+// Suba esse número sempre que mudar a lógica de busca/escolha do time — isso
+// invalida automaticamente qualquer cache antigo salvo no navegador do usuário,
+// sem precisar pedir pra ele limpar o localStorage manualmente.
+const CACHE_VERSION = "v2";
+
 type TheSportsDbTeam = {
   strTeam?: string;
   strSport?: string;
@@ -15,9 +20,13 @@ type TheSportsDbTeam = {
 
 const memoryCache = new Map<string, string | null>();
 
+function storageKey(name: string) {
+  return `teamBadge:${CACHE_VERSION}:${name}`;
+}
+
 function readFromStorage(name: string): string | null | undefined {
   try {
-    const raw = localStorage.getItem(`teamBadge:${name}`);
+    const raw = localStorage.getItem(storageKey(name));
     if (raw === null) return undefined;
     return raw === "null" ? null : raw;
   } catch {
@@ -27,7 +36,7 @@ function readFromStorage(name: string): string | null | undefined {
 
 function writeToStorage(name: string, url: string | null) {
   try {
-    localStorage.setItem(`teamBadge:${name}`, url ?? "null");
+    localStorage.setItem(storageKey(name), url ?? "null");
   } catch {
     // modo privado, quota cheia, etc — ignora
   }
