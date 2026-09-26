@@ -38,24 +38,9 @@ const POSITIONS: Position[] = [
 ];
 
 const RARITY_GROUPS: { label: string; items: Rarity[] }[] = [
-  { label: "Standard", items: ["Gold", "Silver", "Bronze"] },
-  {
-    label: "Specials / Promos",
-    items: [
-      "TOTW", "Cornerstone", "Winter Wildcards", "TOTY", "TOTS",
-      "Ratings Reload", "Ultimate Scream", "FoF Captains", "FC Pro Live",
-      "Thunderstruck", "Joga Bonito", "Unbreakables", "Time Warp",
-      "Future Stars", "Knockout Royalty", "UEFA Primetime", "UEFA RTTF",
-      "FUT Birthday", "Fantasy FC", "FoF Answer the Call",
-      "Path to Glory", "Trophy Titans", "Evo", "FUT Champions TOTS",
-      "Prime Heroes", "World Tour", "EOAE",
-      "FUT Birthday Icon", "Heroes Ultimate Scream", "Journey of Nations", "National Pride",
-      "Icon TOTY", "MH TOTS", "TOTS Highlights",
-      "UEFA Europa League", "UEFA Champions League", "UEFA Conference League", "Showdown",
-      "FOF: Greats of The Game Icon", "FOF: Greats of The Game Hero", "FOF: Glory Hunters", "FOF: Star Perform", "FOF: Phenoms", "FoF: Summer Star", "Futties",
-    ],
-  },
-  { label: "Legends", items: ["Icon Base", "Hero Base"] },
+  { label: "Standard", items: ["Bronze", "Silver", "Gold", "TOTW"] },
+  { label: "Special Cards", items: ["Squad Foundations", "OTW", "Destined for Glory"] },
+  { label: "Base Legends", items: ["Base Icon", "Base Hero", "Base Hall of Fut"] },
 ];
 
 const ALL_RARITIES: Rarity[] = RARITY_GROUPS.flatMap((g) => g.items);
