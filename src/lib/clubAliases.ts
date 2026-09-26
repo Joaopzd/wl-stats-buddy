@@ -42,7 +42,7 @@ export const CLUB_ALIASES: Record<string, string> = {
   "bvb": "Borussia Dortmund",
 
   // França
-  "psg": "Paris Saint-Germain",
+  "Paris SG": "Paris Saint-Germain",
 
   // Brasil (nomes populares que às vezes não batem direto)
   "flamengo": "Flamengo",
