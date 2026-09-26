@@ -186,6 +186,11 @@ export interface Match {
   mvpPlayerId?: string;
   /** Selected generic opponent crest id (see lib/crests). */
   opponentCrestId?: string;
+  /** Opponent's record at the time of the match. */
+  opponentWins?: number;
+  opponentLosses?: number;
+  /** Opponent goalscorers, when recorded. */
+  opponentScorers?: { name: string; goals: number }[];
   /** Optional tactical adjustments / context tags taken during the match. */
   tactics?: MatchTactic[];
   /** Possession % for the user's team (0–100). Opponent is the complement. */
