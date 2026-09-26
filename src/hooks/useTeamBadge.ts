@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 
-const THESPORTSDB_KEY = "123"; // chave pública gratuita da TheSportsDB
+// Cadastre-se gratuitamente em https://www.thesportsdb.com/api.php e coloque
+// sua chave em VITE_THESPORTSDB_KEY no .env (a chave de teste "123" foi
+// descontinuada e hoje não retorna mais badges).
+const THESPORTSDB_KEY = import.meta.env.VITE_THESPORTSDB_KEY || "3";
+
 const memoryCache = new Map<string, string | null>();
 
 function readFromStorage(name: string): string | null | undefined {
@@ -46,19 +50,27 @@ export function useTeamBadge(teamName?: string) {
     let cancelled = false;
     setLoading(true);
 
-    fetch(
-      `https://www.thesportsdb.com/api/v1/json/${THESPORTSDB_KEY}/searchteams.php?t=${encodeURIComponent(teamName)}`,
-    )
-      .then((res) => res.json())
+    const url = `https://www.thesportsdb.com/api/v1/json/${THESPORTSDB_KEY}/searchteams.php?t=${encodeURIComponent(teamName)}`;
+
+    fetch(url)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         if (cancelled) return;
-        const badge: string | null = data?.teams?.[0]?.strTeamBadge || null;
+        const badge: string | null = data?.teams?.[0]?.strBadge || null;
+        if (!badge) {
+          // Ajuda a diagnosticar: chave inválida, time não encontrado, etc.
+          console.warn(`[useTeamBadge] Sem badge para "${teamName}". Resposta:`, data);
+        }
         memoryCache.set(teamName, badge);
         writeToStorage(teamName, badge);
         setBadgeUrl(badge);
       })
-      .catch(() => {
+      .catch((err) => {
         if (cancelled) return;
+        console.error(`[useTeamBadge] Falha ao buscar "${teamName}":`, err);
         memoryCache.set(teamName, null);
         setBadgeUrl(null);
       })
