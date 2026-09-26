@@ -12,6 +12,8 @@ import { RankBadge } from "@/components/RankBadge";
 import { ClubCrest } from "@/components/ClubCrest";
 import { OpponentCrest } from "@/components/OpponentCrest";
 import { store, useOpponentName } from "@/lib/store";
+import { wlDifficulty } from "@/lib/difficulty";
+import { DifficultyBadge } from "@/components/DifficultyBadge";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
@@ -72,6 +74,7 @@ export function ReportModal({
     : null;
 
   const rank = rankFromWins(record.wins);
+  const difficulty = wlDifficulty(matches);
 
   const gfPerMatch = matches.length ? totalG / matches.length : 0;
   const gaPerMatch = matches.length ? record.goalsAgainst / matches.length : 0;
@@ -146,6 +149,11 @@ export function ReportModal({
                   {gd >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                   {totalG}–{record.goalsAgainst} · GD {gd >= 0 ? "+" : ""}{gd}
                 </div>
+                {difficulty && (
+                  <div className="mt-2">
+                    <DifficultyBadge label={difficulty.label} score={difficulty.score} />
+                  </div>
+                )}
               </div>
 
               {/* Away (Average opponent) */}
